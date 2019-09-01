@@ -32,21 +32,21 @@ import javax.persistence.Persistence;
  * @author desbenn
  */
 public class ValidatorAdapter implements Validator {
+
     private final EntityManagerFactory emf;
     private final EntityManager em;
 
     public ValidatorAdapter() {
-        emf = Persistence.createEntityManagerFactory("JMTSPU"); // tk get from bundle       
+        emf = Persistence.createEntityManagerFactory("JMTSPU");
         em = emf.createEntityManager();
     }
-    
+
     public EntityManager getEntityManager() {
         return em;
     }
-    
+
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        System.out.println("ValidatorAdapter validate method to be implemented");
     }
-    
+
 }
