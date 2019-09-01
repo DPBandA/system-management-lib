@@ -17,26 +17,43 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.utils;
+package jm.com.dpbennett.sm.util;
 
-import java.text.Collator;
-import javax.faces.model.SelectItem;
+import java.util.List;
+import javax.faces.model.ListDataModel;
+import jm.com.dpbennett.business.entity.Job;
+import org.primefaces.model.SelectableDataModel;
 
 /**
  *
  * @author dbennett
  */
-public class SortableSelectItem extends SelectItem implements Comparable {
+public class JobDataModel extends ListDataModel<Job> implements SelectableDataModel<Job> {
 
-    public SortableSelectItem() {
+    private List<Job> list;
+
+    public JobDataModel() {
     }
 
-    public SortableSelectItem(Object value, String label) {
-        super(value, label);
+    public JobDataModel(List<Job> list) {
+        super(list);
+        this.list = list;
     }
 
     @Override
-    public int compareTo(Object o) {
-        return Collator.getInstance().compare(this.getLabel(), ((SortableSelectItem) o).getLabel());
+    public Object getRowKey(Job job) {
+        return job.getId();
     }
+
+    @Override
+    public Job getRowData(String rowKey) {
+        for (Job job : list) {
+            if (job.getId().toString().equals(rowKey)) {
+                return job;
+            }
+        }
+
+        return null;
+    }
+
 }

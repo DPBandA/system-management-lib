@@ -17,43 +17,44 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.utils;
+package jm.com.dpbennett.sm.util;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+import javax.faces.model.ListDataModel;
+import jm.com.dpbennett.business.entity.Job;
+import org.primefaces.model.SelectableDataModel;
 
 /**
  *
  * @author dbennett
  */
-@XmlRootElement
-public class DataItem extends SortableSelectItem {
+public class JobSeachDataModel extends ListDataModel<Object[]> implements SelectableDataModel<Job> {
 
-    public DataItem() {
-        super("", "");
+    private List<Object[]> list;
+
+    public JobSeachDataModel() {
     }
 
-    public DataItem(Object value, String label) {
-        super(value, label);
-    }
-
-    @Override
-    public String getLabel() {
-        return super.getLabel(); 
+    public JobSeachDataModel(List<Object[]> list) {
+        super(list);
+        this.list = list;
     }
 
     @Override
-    public void setLabel(String label) {
-        super.setLabel(label);
+    public Object getRowKey(Job job) {
+        return job.getId();
     }
 
     @Override
-    public Object getValue() {
-        return super.getValue(); 
-    }
+    public Job getRowData(String rowKey) {
+        for (Object[] jobRowData : list) {
+            if ( ((Long)jobRowData[1]).toString().equals(rowKey )) {
+                // (Long) rowData[1] // jod id
+                return new Job((Long)jobRowData[1]);
+            }
+        }
 
-    @Override
-    public void setValue(Object value) {
-        super.setValue(value); 
+        return null;
     }
 
 }

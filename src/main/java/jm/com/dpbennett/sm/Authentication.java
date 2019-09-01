@@ -32,7 +32,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.SystemOption;
-import jm.com.dpbennett.sm.utils.Utils;
+import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 
 /**

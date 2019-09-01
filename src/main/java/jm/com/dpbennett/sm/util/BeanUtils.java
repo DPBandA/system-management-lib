@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jm.com.dpbennett.sm.utils;
+package jm.com.dpbennett.sm.util;
 
 import javax.faces.context.FacesContext;
 

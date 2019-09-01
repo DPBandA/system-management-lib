@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.utils;
+package jm.com.dpbennett.sm.util;
 
 import jm.com.dpbennett.business.entity.utils.BusinessEntityUtils;
 import java.util.ArrayList;
