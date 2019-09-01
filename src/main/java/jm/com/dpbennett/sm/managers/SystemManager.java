@@ -166,7 +166,7 @@ public class SystemManager implements Serializable,
     }
 
     public void updateAllForms() {
-        //PrimeFaces.current().ajax().update("dashboardForm");
+        PrimeFaces.current().ajax().update("dashboardForm");
         PrimeFaces.current().ajax().update("mainTabViewForm");
         PrimeFaces.current().ajax().update("headerForm");
     }
@@ -262,7 +262,7 @@ public class SystemManager implements Serializable,
     }
 
     public void updateDashboard(String tabId) {
-        //PrimeFaces.current().ajax().update("dashboardForm");
+        PrimeFaces.current().ajax().update("dashboardForm");
     }
 
     public void initUI() {
@@ -1007,7 +1007,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editUser() {
-        PrimeFacesUtils.openDialog(getSelectedUser(), "adminUserDialog", true, true, true, 430, 750);
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 430, 750);
     }
 
     public JobManagerUser getSelectedUser() {
@@ -1206,7 +1206,7 @@ public class SystemManager implements Serializable,
         selectedUser = new JobManagerUser();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
 
-        PrimeFacesUtils.openDialog(selectedUser, "adminUserDialog", true, true, true, 430, 750);
+        PrimeFacesUtils.openDialog(selectedUser, "userDialog", true, true, true, 430, 750);
     }
 
     public void createNewClassification() {
