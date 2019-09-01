@@ -166,7 +166,7 @@ public class SystemManager implements Serializable,
     }
 
     public void updateAllForms() {
-        PrimeFaces.current().ajax().update("dashboardForm");
+        //PrimeFaces.current().ajax().update("dashboardForm");
         PrimeFaces.current().ajax().update("mainTabViewForm");
         PrimeFaces.current().ajax().update("headerForm");
     }
@@ -262,7 +262,7 @@ public class SystemManager implements Serializable,
     }
 
     public void updateDashboard(String tabId) {
-        PrimeFaces.current().ajax().update("dashboardForm");
+        //PrimeFaces.current().ajax().update("dashboardForm");
     }
 
     public void initUI() {
