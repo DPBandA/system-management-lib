@@ -25,34 +25,22 @@ import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import jm.com.dpbennett.business.entity.AccountingCode;
-import jm.com.dpbennett.business.entity.BusinessOffice;
-import jm.com.dpbennett.business.entity.Classification;
 import jm.com.dpbennett.business.entity.Country;
 import jm.com.dpbennett.business.entity.DatePeriod;
-import jm.com.dpbennett.business.entity.Department;
-import jm.com.dpbennett.business.entity.DocumentReport;
-import jm.com.dpbennett.business.entity.DocumentStandard;
-import jm.com.dpbennett.business.entity.DocumentType;
 import jm.com.dpbennett.business.entity.Employee;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.LdapContext;
 import jm.com.dpbennett.business.entity.Preference;
-import jm.com.dpbennett.business.entity.Sector;
-import jm.com.dpbennett.business.entity.Service;
 import jm.com.dpbennett.business.entity.SystemOption;
-import jm.com.dpbennett.business.entity.Tax;
 import jm.com.dpbennett.business.entity.utils.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
-import jm.com.dpbennett.sm.util.Utils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
@@ -84,14 +72,9 @@ public class SystemManager implements Serializable,
     private String searchType;
     private Boolean startSearchDateDisabled;
     private Boolean endSearchDateDisabled;
-    private Boolean privilegeValue;
     private Boolean searchTextVisible;
     private Boolean isActiveUsersOnly;
-    private Boolean isActiveClassificationsOnly;
-    private Boolean isActiveSectorsOnly;
-    private Boolean isActiveServicesOnly;
     private Boolean isActiveLdapsOnly;
-    private Boolean isActiveDocumentTypesOnly;
     private Date startDate;
     private Date endDate;
     private JobManagerUser selectedUser;
@@ -100,25 +83,12 @@ public class SystemManager implements Serializable,
     private String userSearchText;
     private String generalSearchText;
     private String systemOptionSearchText;
-    private String classificationSearchText;
-    private String sectorSearchText;
-    private String serviceSearchText;
     private String ldapSearchText;
-    private String documentTypeSearchText;
     private List<JobManagerUser> foundUsers;
     private List<SystemOption> foundSystemOptions;
     private List<LdapContext> foundLdapContexts;
-    private List<Classification> foundClassifications;
-    private List<Sector> foundSectors;
-    private List<Service> foundServices;
-    private List<DocumentStandard> foundDocumentStandards;
-    private List<DocumentType> foundDocumentTypes;
-    private DocumentType selectedDocumentType;
     private SystemOption selectedSystemOption;
-    private Classification selectedClassification;
-    private Sector selectedSector;
     private LdapContext selectedLdapContext;
-    private Service selectedService;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
     private List<SearchActionListener> searchActionListeners;
@@ -313,12 +283,6 @@ public class SystemManager implements Serializable,
         }
     }
 
-    private void notifyUIUpdateListeners() {
-        for (SystemManager.UIUpdateListener uiUpdateListener : uiUpdateListeners) {
-            uiUpdateListener.completeUIUpdate();
-        }
-    }
-
     public void closePreferencesDialog2(CloseEvent closeEvent) {
         closePreferencesDialog1(null);
     }
@@ -342,51 +306,12 @@ public class SystemManager implements Serializable,
         return authentication;
     }
 
-    public List<Tax> completeTax(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager();
-
-            List<Tax> taxes = Tax.findTaxesByNameAndDescription(em, query);
-
-            return taxes;
-
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<AccountingCode> completeAccountingCode(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager();
-
-            List<AccountingCode> codes = AccountingCode.findActiveAccountingCodes(em, query);
-
-            return codes;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
     public String getDateStr(Date date) {
         if (date != null) {
             return BusinessEntityUtils.getDateInMediumDateFormat(date);
         } else {
             return "";
         }
-    }
-
-    public String getServiceSearchText() {
-        return serviceSearchText;
-    }
-
-    public void setServiceSearchText(String serviceSearchText) {
-        this.serviceSearchText = serviceSearchText;
     }
 
     public ArrayList<String> completeCountry(String query) {
@@ -400,33 +325,6 @@ public class SystemManager implements Serializable,
 
             return countriesList;
         } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Service> completeService(String query) {
-
-        try {
-            return Service.findAllByName(getEntityManager(), query);
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
-    }
-
-    public List<BusinessOffice> completeBusinessOffice(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager();
-
-            List<BusinessOffice> offices = BusinessOffice.findActiveBusinessOfficesByName(em, query);
-
-            return offices;
-        } catch (Exception e) {
-
             System.out.println(e);
             return new ArrayList<>();
         }
@@ -446,26 +344,11 @@ public class SystemManager implements Serializable,
         return DateUtils.getDateSearchFields("All");
     }
 
-    // tk Put in LegalMetrologyManager
-    public List<SelectItem> getTestMeasures() {
-
-        return getStringListAsSelectItems(getEntityManager(), "petrolTestMeasures");
-    }
-
-    public List<SelectItem> getEquipmentWorkingStatus() {
-
-        return getStringListAsSelectItems(getEntityManager(), "equipmentWorkingStatusList");
-    }
-
+    // tk move to JM
     public List<SelectItem> getWorkProgressList() {
 
         return getStringListAsSelectItems(getEntityManager(),
                 "workProgressList");
-    }
-
-    public List getContactTypes() {
-
-        return getStringListAsSelectItems(getEntityManager(), "personalContactTypes");
     }
 
     public List<SelectItem> getJamaicaParishes() {
@@ -533,23 +416,14 @@ public class SystemManager implements Serializable,
         foundLdapContexts = null;
         foundSystemOptions = null;
         foundLdapContexts = null;
-        foundClassifications = null;
-        foundDocumentStandards = null;
         // Search texts
         searchText = "";
         userSearchText = "";
         generalSearchText = "";
         systemOptionSearchText = "";
-        classificationSearchText = "";
-        sectorSearchText = "";
-        serviceSearchText = "";
         ldapSearchText = "";
-        documentTypeSearchText = "";
         // Active flags
-        isActiveSectorsOnly = true;
         isActiveLdapsOnly = true;
-        isActiveDocumentTypesOnly = true;
-        isActiveServicesOnly = true;
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -559,52 +433,12 @@ public class SystemManager implements Serializable,
         loginActionListeners = new ArrayList<>();
     }
 
-    public Boolean getIsActiveServicesOnly() {
-        return isActiveServicesOnly;
-    }
-
-    public void setIsActiveServicesOnly(Boolean isActiveServicesOnly) {
-        this.isActiveServicesOnly = isActiveServicesOnly;
-    }
-
-    public Boolean getIsActiveDocumentTypesOnly() {
-        return isActiveDocumentTypesOnly;
-    }
-
-    public void setIsActiveDocumentTypesOnly(Boolean isActiveDocumentTypesOnly) {
-        this.isActiveDocumentTypesOnly = isActiveDocumentTypesOnly;
-    }
-
-    public String getDocumentTypeSearchText() {
-        return documentTypeSearchText;
-    }
-
-    public void setDocumentTypeSearchText(String documentTypeSearchText) {
-        this.documentTypeSearchText = documentTypeSearchText;
-    }
-
-    public DocumentType getSelectedDocumentType() {
-        return selectedDocumentType;
-    }
-
-    public void setSelectedDocumentType(DocumentType selectedDocumentType) {
-        this.selectedDocumentType = selectedDocumentType;
-    }
-
     public Boolean getIsActiveLdapsOnly() {
         return isActiveLdapsOnly;
     }
 
     public void setIsActiveLdapsOnly(Boolean isActiveLdapsOnly) {
         this.isActiveLdapsOnly = isActiveLdapsOnly;
-    }
-
-    public Boolean getIsActiveSectorsOnly() {
-        return isActiveSectorsOnly;
-    }
-
-    public void setIsActiveSectorsOnly(Boolean isActiveSectorsOnly) {
-        this.isActiveSectorsOnly = isActiveSectorsOnly;
     }
 
     public LdapContext getSelectedLdapContext() {
@@ -621,38 +455,6 @@ public class SystemManager implements Serializable,
 
     public void setLdapSearchText(String ldapSearchText) {
         this.ldapSearchText = ldapSearchText;
-    }
-
-    public String getSectorSearchText() {
-        return sectorSearchText;
-    }
-
-    public void setSectorSearchText(String sectorSearchText) {
-        this.sectorSearchText = sectorSearchText;
-    }
-
-    public Sector getSelectedSector() {
-        return selectedSector;
-    }
-
-    public void setSelectedSector(Sector selectedSector) {
-        this.selectedSector = selectedSector;
-    }
-
-    public Service getSelectedService() {
-        return selectedService;
-    }
-
-    public void setSelectedService(Service selectedService) {
-        this.selectedService = selectedService;
-    }
-
-    public Classification getSelectedClassification() {
-        return selectedClassification;
-    }
-
-    public void setSelectedClassification(Classification selectedClassification) {
-        this.selectedClassification = selectedClassification;
     }
 
     public void reset() {
@@ -674,25 +476,6 @@ public class SystemManager implements Serializable,
                 + "PF('layoutVar').toggle('west');");
     }
 
-    public Boolean getIsActiveClassificationsOnly() {
-        if (isActiveClassificationsOnly == null) {
-            isActiveClassificationsOnly = true;
-        }
-        return isActiveClassificationsOnly;
-    }
-
-    public void setIsActiveClassificationsOnly(Boolean isActiveClassificationsOnly) {
-        this.isActiveClassificationsOnly = isActiveClassificationsOnly;
-    }
-
-    public String getClassificationSearchText() {
-        return classificationSearchText;
-    }
-
-    public void setClassificationSearchText(String classificationSearchText) {
-        this.classificationSearchText = classificationSearchText;
-    }
-
     public Boolean getIsActiveUsersOnly() {
         if (isActiveUsersOnly == null) {
             isActiveUsersOnly = true;
@@ -702,74 +485,6 @@ public class SystemManager implements Serializable,
 
     public void setIsActiveUsersOnly(Boolean isActiveUsersOnly) {
         this.isActiveUsersOnly = isActiveUsersOnly;
-    }
-
-    public Boolean getPrivilegeValue() {
-        if (privilegeValue == null) {
-            privilegeValue = false;
-        }
-        return privilegeValue;
-    }
-
-    public void setPrivilegeValue(Boolean privilegeValue) {
-        this.privilegeValue = privilegeValue;
-    }
-
-    public void onPrivilegeValueChanged(ValueChangeEvent event) {
-        System.out.println("Test" + event.getSource());
-
-    }
-
-    public List<DocumentType> getFoundDocumentTypes() {
-        if (foundDocumentTypes == null) {
-            foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager());
-        }
-
-        return foundDocumentTypes;
-    }
-
-    public void setFoundDocumentTypes(List<DocumentType> foundDocumentTypes) {
-        this.foundDocumentTypes = foundDocumentTypes;
-    }
-
-    public List<Sector> getFoundSectors() {
-        if (foundSectors == null) {
-            foundSectors = Sector.findAllActiveSectors(getEntityManager());
-        }
-        return foundSectors;
-    }
-
-    public void setFoundSectors(List<Sector> foundSectors) {
-        this.foundSectors = foundSectors;
-    }
-
-    public List<Service> getFoundServices() {
-        if (foundServices == null) {
-            foundServices = Service.findAllActive(getEntityManager());
-        }
-        return foundServices;
-    }
-
-    public void setFoundServices(List<Service> foundServices) {
-        this.foundServices = foundServices;
-    }
-
-    public List<DocumentStandard> getFoundDocumentStandards() {
-        if (foundDocumentStandards == null) {
-            foundDocumentStandards = DocumentStandard.findAllDocumentStandards(getEntityManager());
-        }
-        return foundDocumentStandards;
-    }
-
-    public void setFoundDocumentStandards(List<DocumentStandard> foundDocumentStandards) {
-        this.foundDocumentStandards = foundDocumentStandards;
-    }
-
-    public List<Classification> getFoundClassifications() {
-        if (foundClassifications == null) {
-            foundClassifications = Classification.findAllActiveClassifications(getEntityManager());
-        }
-        return foundClassifications;
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -809,22 +524,6 @@ public class SystemManager implements Serializable,
 
         getFoundLdapContexts().get(event.getRowIndex()).save(getEntityManager());
 
-    }
-
-    public void onClassificationCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager(), getFoundClassifications().get(event.getRowIndex()));
-    }
-
-    public void onSectorCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager(), getFoundSectors().get(event.getRowIndex()));
-    }
-
-    public void onServiceCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager(), getFoundServices().get(event.getRowIndex()));
-    }
-
-    public void onDocumentStandardCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager(), getFoundDocumentStandards().get(event.getRowIndex()));
     }
 
     public List<LdapContext> getFoundLdapContexts() {
@@ -874,41 +573,6 @@ public class SystemManager implements Serializable,
 
     public void setUserSearchText(String userSearchText) {
         this.userSearchText = userSearchText;
-    }
-
-    public void doClassificationSearch() {
-
-        if (getIsActiveClassificationsOnly()) {
-            foundClassifications = Classification.findActiveClassificationsByName(getEntityManager(), getClassificationSearchText());
-        } else {
-            foundClassifications = Classification.findClassificationsByName(getEntityManager(), getClassificationSearchText());
-        }
-
-    }
-
-    public void doSectorSearch() {
-
-        if (getIsActiveSectorsOnly()) {
-            foundSectors = Sector.findActiveSectorsByName(getEntityManager(), getSectorSearchText());
-        } else {
-            foundSectors = Sector.findSectorsByName(getEntityManager(), getSectorSearchText());
-        }
-
-    }
-
-    public void doServiceSearch() {
-        if (getIsActiveServicesOnly()) {
-            foundServices = Service.findAllActiveByName(getEntityManager(), getServiceSearchText());
-        } else {
-            foundServices = Service.findAllByName(getEntityManager(), getServiceSearchText());
-        }
-    }
-
-    public void doDocumentTypeSearch() {
-
-        foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
-
-        selectSystemAdminTab("dataListsTabViewVar", "Document types", 4, 4);
     }
 
     /**
@@ -984,10 +648,6 @@ public class SystemManager implements Serializable,
         PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
     }
 
-    public void editClassification() {
-        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, 325, 600);
-    }
-
     public void editLdapContext() {
         PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
     }
@@ -996,14 +656,6 @@ public class SystemManager implements Serializable,
         selectedLdapContext = new LdapContext();
 
         PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
-    }
-
-    public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 175, 400);
-    }
-
-    public void editBusiness() {
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 600, 700);
     }
 
     public void editUser() {
@@ -1039,18 +691,7 @@ public class SystemManager implements Serializable,
         this.activeNavigationTabIndex = activeNavigationTabIndex;
     }
 
-    public void loadDocument() {
-    }
-
     public void cancelUserEdit(ActionEvent actionEvent) {
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void cancelBusinessEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
@@ -1058,15 +699,7 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void cancelClassificationEdit(ActionEvent actionEvent) {
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
     public void cancelLdapContextEdit(ActionEvent actionEvent) {
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void cancelSectorEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
@@ -1082,24 +715,9 @@ public class SystemManager implements Serializable,
 
     }
 
-    public void saveSelectedDocumentType() {
-
-        selectedDocumentType.save(getEntityManager());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
     public void saveSelectedSystemOption() {
 
         selectedSystemOption.save(getEntityManager());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-
-    }
-
-    public void saveSelectedClassification() {
-
-        selectedClassification.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
 
@@ -1113,40 +731,6 @@ public class SystemManager implements Serializable,
 
     }
 
-    public void saveSelectedSector() {
-
-        selectedSector.save(getEntityManager());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-
-    }
-
-    public void saveSelectedService() {
-
-        selectedService.save(getEntityManager());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-
-    }
-
-    public void updateSelectedUserEmployee() {
-        if (selectedUser.getEmployee() != null) {
-            if (selectedUser.getEmployee().getId() != null) {
-                selectedUser.setEmployee(Employee.findEmployeeById(getEntityManager(), selectedUser.getEmployee().getId()));
-            } else {
-                Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
-                if (selectedUser.getEmployee() != null) {
-                    selectedUser.setEmployee(employee);
-                }
-            }
-        } else {
-            Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
-            if (selectedUser.getEmployee() != null) {
-                selectedUser.setEmployee(employee);
-            }
-        }
-    }
-
     public void updateSelectedUser() {
 
         EntityManager em = getEntityManager();
@@ -1154,10 +738,6 @@ public class SystemManager implements Serializable,
         if (selectedUser.getId() != null) {
             selectedUser = JobManagerUser.findJobManagerUserById(em, selectedUser.getId());
         }
-    }
-
-    public void updateCanEnterDepartmentJob() {
-
     }
 
     public void updateFoundUser(SelectEvent event) {
@@ -1169,14 +749,6 @@ public class SystemManager implements Serializable,
             foundUser = u;
             selectedUser = u;
         }
-    }
-
-    public List getPersonalTitles() {
-        return Utils.getPersonalTitles();
-    }
-
-    public List getSexes() {
-        return Utils.getSexes();
     }
 
     public List<String> completeUser(String query) {
@@ -1209,74 +781,11 @@ public class SystemManager implements Serializable,
         PrimeFacesUtils.openDialog(selectedUser, "userDialog", true, true, true, 430, 750);
     }
 
-    public void createNewClassification() {
-        selectedClassification = new Classification();
-
-        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, 325, 600);
-    }
-
-    public void createNewSector() {
-        selectedSector = new Sector();
-
-        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, 275, 600);
-    }
-
-    public void createNewService() {
-        selectedService = new Service();
-
-        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, 0, 600);
-    }
-
-    public void createNewDocumentType() {
-        selectedDocumentType = new DocumentType();
-
-        getMainTabView().openTab("System Administration");
-        PrimeFaces.current().executeScript("PF('centerTabVar').select(4);");
-
-        PrimeFacesUtils.openDialog(null, "documentTypeDialog", true, true, true, 275, 400);
-
-    }
-
-    public void editSector() {
-        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, 275, 600);
-    }
-
-    public void editService() {
-        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, 0, 600);
-    }
-
-    public void editDocumentType() {
-        openDocumentTypeDialog("documentTypeDialog");
-    }
-
-    public void createNewDocumentStandard() {
-        foundDocumentStandards.add(0, new DocumentStandard());
-    }
-
     public void createNewSystemOption() {
 
         selectedSystemOption = new SystemOption();
 
         PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
-    }
-
-    public void createNewFinancialSystemOption() {
-
-        selectedSystemOption = new SystemOption();
-        selectedSystemOption.setCategory("Finance");
-
-        getMainTabView().openTab("Financial Administration");
-
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
-    }
-
-    public void fetchDepartment(ActionEvent action) {
-    }
-
-    public void fetchEmployee(ActionEvent action) {
-    }
-
-    public void exportDocumentReportTable() {
     }
 
     public Tab getActiveTab() {
@@ -1351,34 +860,6 @@ public class SystemManager implements Serializable,
         this.searchType = searchType;
     }
 
-    public List<BusinessOffice> getBusinessOffices() {
-        return BusinessOffice.findAllBusinessOffices(getEntityManager());
-    }
-
-    public List<Department> getDepartments() {
-        return Department.findAllDepartments(getEntityManager());
-    }
-
-    public List<DocumentType> getDocumentTypes() {
-        return DocumentType.findAllDocumentTypes(getEntityManager());
-    }
-
-    public List<Classification> getClassifications() {
-        return Classification.findAllClassifications(getEntityManager());
-    }
-
-    public List<DocumentReport> getDocumentReports() {
-        return DocumentReport.findAllDocumentReports(getEntityManager());
-    }
-
-    public List<Employee> getEmployees() {
-        return Employee.findAllEmployees(getEntityManager());
-    }
-
-    public List<JobManagerUser> getLoggedInJobManagerUsers() {
-        return new ArrayList<>();
-    }
-
     public List<SystemOption> getAllSystemOptions() {
         foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager());
 
@@ -1425,9 +906,6 @@ public class SystemManager implements Serializable,
         return new Date();
     }
 
-    public void updateUserPrivilege(ValueChangeEvent event) {
-    }
-
     public void handleUserDialogReturn() {
     }
 
@@ -1455,7 +933,7 @@ public class SystemManager implements Serializable,
 
     @Override
     public void completeLogout() {
-        System.out.println("completeLogout()...Not supported yet in SystemManager.");
+        System.out.println("completeLogout()...Not supported yet in System Manager.");
     }
 
     public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
