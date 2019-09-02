@@ -180,15 +180,7 @@ public class SystemManager implements Serializable,
 
     public String getApplicationHeader() {
 
-        if (applicationHeader != null) {
-            return applicationHeader;
-
-        } else {
-            applicationHeader = (String) SystemOption.getOptionValueObject(getEntityManager(),
-                    "applicationHeader");
-        }
-
-        return (!"".equals(applicationHeader) ? applicationHeader : "System Management");
+        return "System Management";
 
     }
 
