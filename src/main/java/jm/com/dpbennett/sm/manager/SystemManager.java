@@ -73,18 +73,13 @@ public class SystemManager implements Serializable,
     private Boolean startSearchDateDisabled;
     private Boolean endSearchDateDisabled;
     private Boolean searchTextVisible;
-    private Boolean isActiveUsersOnly;
     private Boolean isActiveLdapsOnly;
     private Date startDate;
     private Date endDate;
-    private JobManagerUser selectedUser;
-    private JobManagerUser foundUser;
     private String searchText;
-    private String userSearchText;
     private String generalSearchText;
     private String systemOptionSearchText;
     private String ldapSearchText;
-    private List<JobManagerUser> foundUsers;
     private List<SystemOption> foundSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private SystemOption selectedSystemOption;
@@ -95,17 +90,12 @@ public class SystemManager implements Serializable,
     private List<LoginActionListener> loginActionListeners;
     private Dashboard dashboard;
     private Boolean westLayoutUnitCollapsed;
-    private String applicationHeader;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
-    }
-
-    public void setApplicationHeader(String applicationHeader) {
-        this.applicationHeader = applicationHeader;
     }
 
     public void doDefaultSearch() {
@@ -399,18 +389,15 @@ public class SystemManager implements Serializable,
         activeTabIndex = 0;
         activeNavigationTabIndex = 0;
         activeTabForm = "";
-        applicationHeader = null;
         searchType = "General";
         dateSearchField = "dateReceived";
         dateSearchPeriod = "thisMonth";
         searchTextVisible = true;
-        foundUsers = null;
         foundLdapContexts = null;
         foundSystemOptions = null;
         foundLdapContexts = null;
         // Search texts
         searchText = "";
-        userSearchText = "";
         generalSearchText = "";
         systemOptionSearchText = "";
         ldapSearchText = "";
@@ -466,17 +453,6 @@ public class SystemManager implements Serializable,
                 + "PrimeFaces.changeTheme('"
                 + getUser().getUserInterfaceThemeName() + "');"
                 + "PF('layoutVar').toggle('west');");
-    }
-
-    public Boolean getIsActiveUsersOnly() {
-        if (isActiveUsersOnly == null) {
-            isActiveUsersOnly = true;
-        }
-        return isActiveUsersOnly;
-    }
-
-    public void setIsActiveUsersOnly(Boolean isActiveUsersOnly) {
-        this.isActiveUsersOnly = isActiveUsersOnly;
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -552,21 +528,6 @@ public class SystemManager implements Serializable,
         this.generalSearchText = generalSearchText;
     }
 
-    public List<JobManagerUser> getFoundUsers() {
-        if (foundUsers == null) {
-            foundUsers = JobManagerUser.findAllActiveJobManagerUsers(getEntityManager());
-        }
-        return foundUsers;
-    }
-
-    public String getUserSearchText() {
-        return userSearchText;
-    }
-
-    public void setUserSearchText(String userSearchText) {
-        this.userSearchText = userSearchText;
-    }
-
     /**
      * Select an system administration tab based on whether or not the tab is
      * already opened.
@@ -606,34 +567,8 @@ public class SystemManager implements Serializable,
 
     }
 
-    public void doUserSearch() {
-
-        if (getIsActiveUsersOnly()) {
-            foundUsers = JobManagerUser.findActiveJobManagerUsersByName(getEntityManager(), getUserSearchText());
-        } else {
-            foundUsers = JobManagerUser.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
-        }
-
-    }
-
     public void openSystemBrowser() {
         getMainTabView().openTab("System Administration");
-    }
-
-    public String getFoundUser() {
-
-        if (foundUser != null) {
-            return foundUser.getUsername();
-        } else {
-            foundUser = new JobManagerUser();
-            foundUser.setUsername("");
-
-            return foundUser.getUsername();
-        }
-    }
-
-    public void setFoundUser(String username) {
-        foundUser.setUsername(username);
     }
 
     public void editSystemOption() {
@@ -648,23 +583,6 @@ public class SystemManager implements Serializable,
         selectedLdapContext = new LdapContext();
 
         PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
-    }
-
-    public void editUser() {
-        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 430, 750);
-    }
-
-    public JobManagerUser getSelectedUser() {
-        // init with current logged on user if null
-        if (selectedUser == null) {
-            selectedUser = new JobManagerUser();
-        }
-
-        return selectedUser;
-    }
-
-    public void setSelectedUser(JobManagerUser selectedUser) {
-        this.selectedUser = selectedUser;
     }
 
     public Boolean getSearchTextVisible() {
@@ -683,10 +601,6 @@ public class SystemManager implements Serializable,
         this.activeNavigationTabIndex = activeNavigationTabIndex;
     }
 
-    public void cancelUserEdit(ActionEvent actionEvent) {
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
     public void cancelSystemOptionEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -697,14 +611,6 @@ public class SystemManager implements Serializable,
 
     public void cancelDialogEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void saveSelectedUser(ActionEvent actionEvent) {
-
-        selectedUser.save(getEntityManager());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-
     }
 
     public void saveSelectedSystemOption() {
@@ -721,56 +627,6 @@ public class SystemManager implements Serializable,
 
         PrimeFaces.current().dialog().closeDynamic(null);
 
-    }
-
-    public void updateSelectedUser() {
-
-        EntityManager em = getEntityManager();
-
-        if (selectedUser.getId() != null) {
-            selectedUser = JobManagerUser.findJobManagerUserById(em, selectedUser.getId());
-        }
-    }
-
-    public void updateFoundUser(SelectEvent event) {
-
-        EntityManager em = getEntityManager();
-
-        JobManagerUser u = JobManagerUser.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
-        if (u != null) {
-            foundUser = u;
-            selectedUser = u;
-        }
-    }
-
-    public List<String> completeUser(String query) {
-
-        try {
-            List<JobManagerUser> users = JobManagerUser.findJobManagerUsersByUsername(getEntityManager(), query);
-            List<String> suggestions = new ArrayList<>();
-            if (users != null) {
-                if (!users.isEmpty()) {
-                    for (JobManagerUser u : users) {
-                        suggestions.add(u.getUsername());
-                    }
-                }
-            }
-
-            return suggestions;
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
-    }
-
-    public void createNewUser() {
-        EntityManager em = getEntityManager();
-
-        selectedUser = new JobManagerUser();
-        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
-
-        PrimeFacesUtils.openDialog(selectedUser, "userDialog", true, true, true, 430, 750);
     }
 
     public void createNewSystemOption() {
