@@ -31,7 +31,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.Country;
 import jm.com.dpbennett.business.entity.DatePeriod;
-import jm.com.dpbennett.business.entity.Employee;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.LdapContext;
 import jm.com.dpbennett.business.entity.Preference;
@@ -48,7 +47,6 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.CloseEvent;
-import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
@@ -67,17 +65,7 @@ public class SystemManager implements Serializable,
     private int activeNavigationTabIndex;
     private String activeTabForm;
     private Tab activeTab;
-    private String dateSearchField;
-    private String dateSearchPeriod;
-    private String searchType;
-    private Boolean startSearchDateDisabled;
-    private Boolean endSearchDateDisabled;
-    private Boolean searchTextVisible;
     private Boolean isActiveLdapsOnly;
-    private Date startDate;
-    private Date endDate;
-    private String searchText;
-    private String generalSearchText;
     private String systemOptionSearchText;
     private String ldapSearchText;
     private List<SystemOption> foundSystemOptions;
@@ -238,6 +226,13 @@ public class SystemManager implements Serializable,
         getDashboard().reset(getUser());
         
         addDashboardTab(new TabPanel("System Administration", "System Administration"));
+        
+        // Set the first tab as the selected tab
+        if (!getDashboard().getTabs().isEmpty()) {
+            getDashboard().
+                    setSelectedTabId(getDashboard().
+                            getTabs().get(0).getId());
+        }
     }
 
     public Dashboard getDashboard() {
@@ -246,23 +241,6 @@ public class SystemManager implements Serializable,
 
     public void setDashboard(Dashboard dashboard) {
         this.dashboard = dashboard;
-    }
-
-    public List<String> completePreferenceValue(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager();
-
-            List<String> preferenceValues = Preference.findAllPreferenceValues(em, query);
-
-            return preferenceValues;
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
     }
 
     public void closePreferencesDialog2(CloseEvent closeEvent) {
@@ -286,14 +264,6 @@ public class SystemManager implements Serializable,
         }
 
         return authentication;
-    }
-
-    public String getDateStr(Date date) {
-        if (date != null) {
-            return BusinessEntityUtils.getDateInMediumDateFormat(date);
-        } else {
-            return "";
-        }
     }
 
     public ArrayList<String> completeCountry(String query) {
@@ -326,7 +296,6 @@ public class SystemManager implements Serializable,
         return DateUtils.getDateSearchFields("All");
     }
 
-    // tk move to JM
     public List<SelectItem> getWorkProgressList() {
 
         return getStringListAsSelectItems(getEntityManager(),
@@ -352,6 +321,7 @@ public class SystemManager implements Serializable,
         return list;
     }
 
+    // tk make system option
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
 
@@ -389,16 +359,9 @@ public class SystemManager implements Serializable,
         activeTabIndex = 0;
         activeNavigationTabIndex = 0;
         activeTabForm = "";
-        searchType = "General";
-        dateSearchField = "dateReceived";
-        dateSearchPeriod = "thisMonth";
-        searchTextVisible = true;
         foundLdapContexts = null;
         foundSystemOptions = null;
         foundLdapContexts = null;
-        // Search texts
-        searchText = "";
-        generalSearchText = "";
         systemOptionSearchText = "";
         ldapSearchText = "";
         // Active flags
@@ -520,14 +483,6 @@ public class SystemManager implements Serializable,
         this.systemOptionSearchText = systemOptionSearchText;
     }
 
-    public String getGeneralSearchText() {
-        return generalSearchText;
-    }
-
-    public void setGeneralSearchText(String generalSearchText) {
-        this.generalSearchText = generalSearchText;
-    }
-
     /**
      * Select an system administration tab based on whether or not the tab is
      * already opened.
@@ -585,14 +540,6 @@ public class SystemManager implements Serializable,
         PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
     }
 
-    public Boolean getSearchTextVisible() {
-        return searchTextVisible;
-    }
-
-    public void setSearchTextVisible(Boolean searchTextVisible) {
-        this.searchTextVisible = searchTextVisible;
-    }
-
     public int getActiveNavigationTabIndex() {
         return activeNavigationTabIndex;
     }
@@ -642,70 +589,6 @@ public class SystemManager implements Serializable,
 
     public void setActiveTab(Tab activeTab) {
         this.activeTab = activeTab;
-    }
-
-    public String getDateSearchField() {
-        return dateSearchField;
-    }
-
-    public void setDateSearchField(String dateSearchField) {
-        this.dateSearchField = dateSearchField;
-    }
-
-    public String getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    public void setDateSearchPeriod(String dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Boolean getEndSearchDateDisabled() {
-        return endSearchDateDisabled;
-    }
-
-    public void setEndSearchDateDisabled(Boolean endSearchDateDisabled) {
-        this.endSearchDateDisabled = endSearchDateDisabled;
-    }
-
-    public String getSearchText() {
-        return searchText;
-    }
-
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Boolean getStartSearchDateDisabled() {
-        return startSearchDateDisabled;
-    }
-
-    public void setStartSearchDateDisabled(Boolean startSearchDateDisabled) {
-        this.startSearchDateDisabled = startSearchDateDisabled;
-    }
-
-    public String getSearchType() {
-        return searchType;
-    }
-
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
     }
 
     public List<SystemOption> getAllSystemOptions() {
