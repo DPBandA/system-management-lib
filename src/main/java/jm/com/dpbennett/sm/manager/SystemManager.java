@@ -55,7 +55,7 @@ import org.primefaces.event.ToggleEvent;
  *
  * @author Desmond Bennett
  */
-public class SystemManager implements Serializable, 
+public class SystemManager implements Serializable,
         Authentication.AuthenticationListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
@@ -69,6 +69,7 @@ public class SystemManager implements Serializable,
     private String systemOptionSearchText;
     private String ldapSearchText;
     private List<SystemOption> foundSystemOptions;
+    private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
@@ -85,6 +86,59 @@ public class SystemManager implements Serializable,
     public SystemManager() {
         init();
     }
+    
+    public void onFinancialSystemOptionCellEdit(CellEditEvent event) {
+        int index = event.getRowIndex();
+        Object oldValue = event.getOldValue();
+        Object newValue = event.getNewValue();
+
+        try {
+            if (newValue != null && !newValue.equals(oldValue)) {
+                if (!newValue.toString().trim().equals("")) {
+                    EntityManager em = getEntityManager();
+
+                    em.getTransaction().begin();
+                    SystemOption option = getFoundFinancialSystemOptions().get(index);
+                    BusinessEntityUtils.saveBusinessEntity(em, option);
+                    em.getTransaction().commit();
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+    }
+
+    public List<SystemOption> getFoundFinancialSystemOptions() {
+        if (foundFinancialSystemOptions == null) {
+            foundFinancialSystemOptions = SystemOption.findAllFinancialSystemOptions(getEntityManager());
+        }
+        return foundFinancialSystemOptions;
+    }
+
+    public void setFoundFinancialSystemOptions(List<SystemOption> foundFinancialSystemOptions) {
+        this.foundFinancialSystemOptions = foundFinancialSystemOptions;
+    }
+
+    public void doFinancialSystemOptionSearch() {
+
+        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager(), getSystemOptionSearchText());
+
+        if (foundFinancialSystemOptions == null) {
+            foundFinancialSystemOptions = new ArrayList<>();
+        }
+
+    }
+
+    public void createNewFinancialSystemOption() {
+
+        selectedSystemOption = new SystemOption();
+        selectedSystemOption.setCategory("Finance");
+
+        getMainTabView().openTab("Financial Administration");
+
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
+    }
 
     public void doDefaultSearch() {
         notifyListenersToDoDefaultSearch();
@@ -95,7 +149,7 @@ public class SystemManager implements Serializable,
             systemActionListener.doDefaultSearch();
         }
     }
-    
+
     private void notifyListenersToDoLogin() {
         for (LoginActionListener loginActionListener : loginActionListeners) {
             loginActionListener.doLogin();
@@ -213,20 +267,20 @@ public class SystemManager implements Serializable,
     private void initMainTabView() {
 
         getMainTabView().reset(getUser());
-        
+
         getMainTabView().openTab("System Administration");
     }
-    
+
     public void addDashboardTab(TabPanel tab) {
-         getDashboard().getTabs().add(tab);
+        getDashboard().getTabs().add(tab);
     }
-  
+
     private void initDashboard() {
 
         getDashboard().reset(getUser());
-        
+
         addDashboardTab(new TabPanel("System Administration", "System Administration"));
-        
+
         // Set the first tab as the selected tab
         if (!getDashboard().getTabs().isEmpty()) {
             getDashboard().
@@ -658,7 +712,7 @@ public class SystemManager implements Serializable,
 
         initUI();
         updateAllForms();
-        
+
         notifyListenersToDoLogin();
     }
 
@@ -676,7 +730,7 @@ public class SystemManager implements Serializable,
         searchActionListeners.clear();
         searchActionListeners.add(searchActionListener);
     }
-    
+
     public void addSingleLoginActionListener(LoginActionListener loginActionListener) {
         loginActionListeners.clear();
         loginActionListeners.add(loginActionListener);
@@ -691,8 +745,8 @@ public class SystemManager implements Serializable,
 
         public void doDefaultSearch();
     }
-    
-     public interface LoginActionListener {
+
+    public interface LoginActionListener {
 
         public void doLogin();
     }
