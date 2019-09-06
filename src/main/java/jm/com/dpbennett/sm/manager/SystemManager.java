@@ -33,8 +33,9 @@ import jm.com.dpbennett.business.entity.Country;
 import jm.com.dpbennett.business.entity.DatePeriod;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.LdapContext;
-import jm.com.dpbennett.business.entity.Preference;
 import jm.com.dpbennett.business.entity.SystemOption;
+import jm.com.dpbennett.business.entity.DocumentType;
+import jm.com.dpbennett.business.entity.Email;
 import jm.com.dpbennett.business.entity.utils.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -66,13 +67,21 @@ public class SystemManager implements Serializable,
     private String activeTabForm;
     private Tab activeTab;
     private Boolean isActiveLdapsOnly;
+    private Boolean isActiveDocumentTypesOnly;
+    private Boolean isActiveEmailsOnly;
     private String systemOptionSearchText;
     private String ldapSearchText;
+    private String documentTypeSearchText;
+    private String emailSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
+    private List<DocumentType> foundDocumentTypes;
+    private List<Email> foundEmails;
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
+    private DocumentType selectedDocumentType;
+    private Email selectedEmail;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
     private List<SearchActionListener> searchActionListeners;
@@ -86,7 +95,89 @@ public class SystemManager implements Serializable,
     public SystemManager() {
         init();
     }
-    
+
+    public Boolean getIsActiveEmailsOnly() {
+        return isActiveEmailsOnly;
+    }
+
+    public void setIsActiveEmailsOnly(Boolean isActiveEmailsOnly) {
+        this.isActiveEmailsOnly = isActiveEmailsOnly;
+    }
+
+    public String getEmailSearchText() {
+        return emailSearchText;
+    }
+
+    public void setEmailSearchText(String emailSearchText) {
+        this.emailSearchText = emailSearchText;
+    }
+
+    public void doEmailSearch() {
+
+        if (getIsActiveEmailsOnly()) {
+            foundEmails = Email.findActiveEmails(getEntityManager(), getEmailSearchText());
+        } else {
+            foundEmails = Email.findEmails(getEntityManager(), getEmailSearchText());
+        }
+
+    }
+
+    public void editEmailTemplate() {
+        PrimeFacesUtils.openDialog(null, "emailTemplateDialog", true, true, true, 550, 700);
+    }
+
+    public void createNewEmailTemplate() {
+
+        selectedEmail = new Email();
+
+        editEmailTemplate();
+    }
+
+    public List getEmailCategories() {
+        ArrayList categories = new ArrayList();
+
+        categories.add(new SelectItem("", ""));
+        categories.add(new SelectItem("Purchase Requisition", "Purchase Requisition"));
+        categories.add(new SelectItem("Job", "Job"));
+
+        return categories;
+    }
+
+    public List getEmailTypes() {
+        ArrayList categories = new ArrayList();
+
+        categories.add(new SelectItem("", ""));
+        categories.add(new SelectItem("Template", "Template"));
+        categories.add(new SelectItem("Instance", "Instance"));
+
+        return categories;
+    }
+
+    public List getContentTypes() {
+        ArrayList types = new ArrayList();
+
+        types.add(new SelectItem("text/plain", "text/plain"));
+        types.add(new SelectItem("text/html", "text/html"));
+        types.add(new SelectItem("text/html; charset=utf-8", "text/html; charset=utf-8"));
+
+        return types;
+    }
+
+    public void saveSelectedEmail() {
+
+        selectedEmail.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public Email getSelectedEmail() {
+        return selectedEmail;
+    }
+
+    public void setSelectedEmail(Email selectedEmail) {
+        this.selectedEmail = selectedEmail;
+    }
+
     public void onFinancialSystemOptionCellEdit(CellEditEvent event) {
         int index = event.getRowIndex();
         Object oldValue = event.getOldValue();
@@ -418,8 +509,11 @@ public class SystemManager implements Serializable,
         foundLdapContexts = null;
         systemOptionSearchText = "";
         ldapSearchText = "";
+        documentTypeSearchText = "";
         // Active flags
         isActiveLdapsOnly = true;
+        isActiveDocumentTypesOnly = true;
+        isActiveEmailsOnly = true;
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -427,6 +521,94 @@ public class SystemManager implements Serializable,
         searchActionListeners = new ArrayList<>();
         uiUpdateListeners = new ArrayList<>();
         loginActionListeners = new ArrayList<>();
+    }
+    
+    public List<Email> getFoundEmails() {
+        if (foundEmails == null) {
+            foundEmails = Email.findAllActiveEmails(getEntityManager());
+        }
+
+        return foundEmails;
+    }
+
+    public void setFoundEmails(List<Email> foundEmails) {
+        this.foundEmails = foundEmails;
+    }
+
+    public Boolean getIsActiveDocumentTypesOnly() {
+        return isActiveDocumentTypesOnly;
+    }
+
+    public void setIsActiveDocumentTypesOnly(Boolean isActiveDocumentTypesOnly) {
+        this.isActiveDocumentTypesOnly = isActiveDocumentTypesOnly;
+    }
+
+    public String getDocumentTypeSearchText() {
+        return documentTypeSearchText;
+    }
+
+    public void setDocumentTypeSearchText(String documentTypeSearchText) {
+        this.documentTypeSearchText = documentTypeSearchText;
+    }
+
+    public DocumentType getSelectedDocumentType() {
+        return selectedDocumentType;
+    }
+
+    public void setSelectedDocumentType(DocumentType selectedDocumentType) {
+        this.selectedDocumentType = selectedDocumentType;
+    }
+
+    public List<DocumentType> getFoundDocumentTypes() {
+        if (foundDocumentTypes == null) {
+            foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager());
+        }
+
+        return foundDocumentTypes;
+    }
+
+    public void setFoundDocumentTypes(List<DocumentType> foundDocumentTypes) {
+        this.foundDocumentTypes = foundDocumentTypes;
+    }
+
+    public void doDocumentTypeSearch() {
+
+        foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
+
+        //selectSystemAdminTab("dataListsTabViewVar", "Document types", 4, 4);
+    }
+
+    public void openDocumentTypeDialog(String url) {
+        PrimeFacesUtils.openDialog(null, url, true, true, true, 175, 400);
+    }
+
+    public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void saveSelectedDocumentType() {
+
+        selectedDocumentType.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void createNewDocumentType() {
+        selectedDocumentType = new DocumentType();
+
+        getMainTabView().openTab("System Administration");
+
+        //PrimeFaces.current().executeScript("PF('centerTabVar').select(4);");
+        editDocumentType();
+
+    }
+
+    public void editDocumentType() {
+        openDocumentTypeDialog("documentTypeDialog");
+    }
+
+    public List<DocumentType> getDocumentTypes() {
+        return DocumentType.findAllDocumentTypes(getEntityManager());
     }
 
     public Boolean getIsActiveLdapsOnly() {
