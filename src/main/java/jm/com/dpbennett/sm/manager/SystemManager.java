@@ -264,13 +264,13 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().ajax().update("headerForm");
     }
 
-    public void setupAuthentication() {
-
-        if (!getAuthentication().getUserLoggedIn()) {
-            getAuthentication().reset();
-            getAuthentication().addLoginListener(this);
-        }
-    }
+//    public void setupAuthentication() {
+//
+//        if (!getAuthentication().getUserLoggedIn()) {
+//            getAuthentication().reset();
+//            getAuthentication().addLoginListener(this);
+//        }
+//    }
 
     public void logout() {
         getUser().logActivity("Logged out", getEntityManager());
@@ -510,6 +510,8 @@ public class SystemManager implements Serializable,
         searchActionListeners = new ArrayList<>();
         uiUpdateListeners = new ArrayList<>();
         loginActionListeners = new ArrayList<>();
+        
+        getAuthentication().addLoginListener(this);
     }
     
     public List<Email> getFoundEmails() {
