@@ -914,7 +914,7 @@ public class SystemManager implements Serializable,
     }
 
     public void addSingleLoginActionListener(LoginActionListener loginActionListener) {
-        loginActionListeners.clear();
+        //loginActionListeners.clear();
         loginActionListeners.add(loginActionListener);
     }
 
