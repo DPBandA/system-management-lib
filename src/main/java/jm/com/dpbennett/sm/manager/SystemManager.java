@@ -350,27 +350,16 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().ajax().update("dashboardForm");
     }
 
-    public void initUI() {
-        initDashboard();
-        initMainTabView();
-    }
-
     private void initMainTabView() {
 
         getMainTabView().reset(getUser());
-
         getMainTabView().openTab("System Administration");
-    }
-
-    public void addDashboardTab(TabPanel tab) {
-        getDashboard().getTabs().add(tab);
     }
 
     private void initDashboard() {
 
         getDashboard().reset(getUser());
-
-        addDashboardTab(new TabPanel("System Administration", "System Administration"));
+        getDashboard().openTab("System Administration");
 
         // Set the first tab as the selected tab
         if (!getDashboard().getTabs().isEmpty()) {
@@ -892,7 +881,8 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().executeScript("PrimeFaces.changeTheme('"
                 + getUser().getUserInterfaceThemeName() + "');");
 
-        initUI();
+        initDashboard();
+        initMainTabView();
         updateAllForms();
 
         notifyListenersToDoLogin();
@@ -900,7 +890,8 @@ public class SystemManager implements Serializable,
 
     @Override
     public void completeLogout() {
-        System.out.println("completeLogout()...Not supported yet in System Manager.");
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
     }
 
     public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
@@ -909,12 +900,10 @@ public class SystemManager implements Serializable,
     }
 
     public void addSingleSearchActionListener(SearchActionListener searchActionListener) {
-        searchActionListeners.clear();
         searchActionListeners.add(searchActionListener);
     }
 
     public void addSingleLoginActionListener(LoginActionListener loginActionListener) {
-        //loginActionListeners.clear();
         loginActionListeners.add(loginActionListener);
     }
 

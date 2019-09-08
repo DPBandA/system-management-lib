@@ -56,10 +56,14 @@ public class Dashboard implements Serializable {
     public void removeAllTabs() {
         tabs.clear();
     }
+    
+    public void openTab(String tabId) {
+        addTab(tabId, true);
+        //select(tabId);
+    }
 
     // tk change to addTab since rendering is not actually being done here
     public void addTab(
-            EntityManager em,
             String tabId,
             Boolean render) {
 
