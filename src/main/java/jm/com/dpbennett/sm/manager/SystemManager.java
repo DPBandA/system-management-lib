@@ -264,14 +264,6 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().ajax().update("headerForm");
     }
 
-//    public void setupAuthentication() {
-//
-//        if (!getAuthentication().getUserLoggedIn()) {
-//            getAuthentication().reset();
-//            getAuthentication().addLoginListener(this);
-//        }
-//    }
-
     public void logout() {
         getUser().logActivity("Logged out", getEntityManager());
         reset();
@@ -358,7 +350,7 @@ public class SystemManager implements Serializable,
 
     private void initDashboard() {
 
-        getDashboard().reset(getUser());
+        getDashboard().reset(getUser(), false);
         getDashboard().openTab("System Administration");
 
         // Set the first tab as the selected tab
@@ -510,10 +502,10 @@ public class SystemManager implements Serializable,
         searchActionListeners = new ArrayList<>();
         uiUpdateListeners = new ArrayList<>();
         loginActionListeners = new ArrayList<>();
-        
+
         getAuthentication().addLoginListener(this);
     }
-    
+
     public List<Email> getFoundEmails() {
         if (foundEmails == null) {
             foundEmails = Email.findAllActiveEmails(getEntityManager());
@@ -566,7 +558,6 @@ public class SystemManager implements Serializable,
 
         foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
 
-        //selectSystemAdminTab("dataListsTabViewVar", "Document types", 4, 4);
     }
 
     public void openDocumentTypeDialog(String url) {
@@ -589,7 +580,6 @@ public class SystemManager implements Serializable,
 
         getMainTabView().openTab("System Administration");
 
-        //PrimeFaces.current().executeScript("PF('centerTabVar').select(4);");
         editDocumentType();
 
     }

@@ -56,7 +56,7 @@ public class Dashboard implements Serializable {
     public void removeAllTabs() {
         tabs.clear();
     }
-    
+
     public void openTab(String tabId) {
         addTab(tabId, true);
         //select(tabId);
@@ -175,11 +175,13 @@ public class Dashboard implements Serializable {
         this.tabIndex = tabIndex;
     }
 
-    public void reset(JobManagerUser user) {
+    public void reset(JobManagerUser user, boolean removeAllTabs) {
         this.user = user;
-        
-        removeAllTabs();
-        
+
+        if (removeAllTabs) {
+            removeAllTabs();
+        }
+
         setRender(true);
     }
 
