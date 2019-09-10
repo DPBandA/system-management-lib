@@ -95,6 +95,14 @@ public class SystemManager implements Serializable,
     public SystemManager() {
         init();
     }
+    
+    public String getDateStr(Date date) {
+        if (date != null) {
+            return BusinessEntityUtils.getDateInMediumDateFormat(date);
+        } else {
+            return "";
+        }
+    }
 
     public Boolean getIsActiveEmailsOnly() {
         return isActiveEmailsOnly;
