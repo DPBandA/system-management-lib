@@ -95,7 +95,7 @@ public class SystemManager implements Serializable,
     public SystemManager() {
         init();
     }
-    
+
     public String getDateStr(Date date) {
         if (date != null) {
             return BusinessEntityUtils.getDateInMediumDateFormat(date);
@@ -353,20 +353,26 @@ public class SystemManager implements Serializable,
     private void initMainTabView() {
 
         getMainTabView().reset(getUser());
-        getMainTabView().openTab("System Administration");
+
+        if (getUser().getModules().getAdminModule()) {
+            getMainTabView().openTab("System Administration");
+        }
     }
 
     private void initDashboard() {
 
         getDashboard().reset(getUser(), false);
-        getDashboard().openTab("System Administration");
+
+        if (getUser().getModules().getAdminModule()) {
+            getDashboard().openTab("System Administration");
+        }
 
         // Set the first tab as the selected tab
-        if (!getDashboard().getTabs().isEmpty()) {
-            getDashboard().
-                    setSelectedTabId(getDashboard().
-                            getTabs().get(0).getId());
-        }
+//        if (!getDashboard().getTabs().isEmpty()) {
+//            getDashboard().
+//                    setSelectedTabId(getDashboard().
+//                            getTabs().get(0).getId());
+//        }
     }
 
     public Dashboard getDashboard() {
