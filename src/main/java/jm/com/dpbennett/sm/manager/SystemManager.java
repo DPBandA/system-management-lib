@@ -366,13 +366,6 @@ public class SystemManager implements Serializable,
         if (getUser().getModules().getAdminModule()) {
             getDashboard().openTab("System Administration");
         }
-
-        // Set the first tab as the selected tab
-//        if (!getDashboard().getTabs().isEmpty()) {
-//            getDashboard().
-//                    setSelectedTabId(getDashboard().
-//                            getTabs().get(0).getId());
-//        }
     }
 
     public Dashboard getDashboard() {
