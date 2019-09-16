@@ -84,7 +84,7 @@ public class SystemManager implements Serializable,
     private Email selectedEmail;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
-    private List<SearchActionListener> searchActionListeners;
+//    private List<SearchActionListener> searchActionListeners;
     private List<LoginActionListener> loginActionListeners;
     private Dashboard dashboard;
     private Boolean westLayoutUnitCollapsed;
@@ -240,14 +240,14 @@ public class SystemManager implements Serializable,
     }
 
     public void doDefaultSearch() {
-        notifyListenersToDoDefaultSearch();
+//        notifyListenersToDoDefaultSearch();
     }
 
-    private void notifyListenersToDoDefaultSearch() {
-        for (SearchActionListener systemActionListener : searchActionListeners) {
-            systemActionListener.doDefaultSearch();
-        }
-    }
+//    private void notifyListenersToDoDefaultSearch() {
+//        for (SearchActionListener systemActionListener : searchActionListeners) {
+//            systemActionListener.doDefaultSearch();
+//        }
+//    }
 
     private void notifyListenersToDoLogin() {
         for (LoginActionListener loginActionListener : loginActionListeners) {
@@ -506,7 +506,7 @@ public class SystemManager implements Serializable,
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
         westLayoutUnitCollapsed = true;
-        searchActionListeners = new ArrayList<>();
+//        searchActionListeners = new ArrayList<>();
         uiUpdateListeners = new ArrayList<>();
         loginActionListeners = new ArrayList<>();
 
@@ -898,11 +898,15 @@ public class SystemManager implements Serializable,
         uiUpdateListeners.add(uiUpdateListener);
     }
 
-    public void addSingleSearchActionListener(SearchActionListener searchActionListener) {
-        searchActionListeners.add(searchActionListener);
-    }
+//    public void addSingleSearchActionListener(SearchActionListener searchActionListener) {
+//        searchActionListeners.remove(searchActionListener); // tk
+//        
+//        searchActionListeners.add(searchActionListener);
+//    }
 
     public void addSingleLoginActionListener(LoginActionListener loginActionListener) {
+        loginActionListeners.remove(loginActionListener); // tk
+        
         loginActionListeners.add(loginActionListener);
     }
 
@@ -911,10 +915,10 @@ public class SystemManager implements Serializable,
         public void completeUIUpdate();
     }
 
-    public interface SearchActionListener {
-
-        public void doDefaultSearch();
-    }
+//    public interface SearchActionListener {
+//
+//        public void doDefaultSearch();
+//    }
 
     public interface LoginActionListener {
 

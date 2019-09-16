@@ -22,7 +22,6 @@ package jm.com.dpbennett.sm.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import org.primefaces.PrimeFaces;
 
