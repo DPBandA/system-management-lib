@@ -434,6 +434,12 @@ public class SystemManager implements Serializable,
         return getStringListAsSelectItems(getEntityManager(),
                 "workProgressList");
     }
+    
+    public List<SelectItem> getServiceLocationList() {
+
+        return getStringListAsSelectItems(getEntityManager(),
+                "serviceLocationList");
+    }
 
     public List<SelectItem> getJamaicaParishes() {
 
