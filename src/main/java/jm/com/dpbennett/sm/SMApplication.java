@@ -27,6 +27,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 /**
@@ -40,8 +41,12 @@ public class SMApplication implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF1;
-    @PersistenceUnit(unitName = "AccPacPU")
-    private EntityManagerFactory EMF2;
+    //@PersistenceContext(unitName = "JMTSPU")
+    //private EntityManager em;
+    //@PersistenceUnit(unitName = "AccPacPU")
+    //private EntityManagerFactory EMF2;
+    //@PersistenceContext(unitName = "AccPacPU")
+    //private EntityManager em2;
     private final Map<String, String> themes = new TreeMap<>();
 
     public SMApplication() {
@@ -57,11 +62,11 @@ public class SMApplication implements Serializable {
     }
 
     public EntityManager getEntityManager1() {
-        return EMF1.createEntityManager();
+        return  EMF1.createEntityManager();
     }
 
-    public EntityManager getEntityManager2() {
-        return EMF2.createEntityManager();
-    }
+//    public EntityManager getEntityManager2() {
+//        return em2; //EMF2.createEntityManager();
+//    }
 
 }

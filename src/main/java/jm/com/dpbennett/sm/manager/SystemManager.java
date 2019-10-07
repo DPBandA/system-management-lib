@@ -28,6 +28,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.Country;
 import jm.com.dpbennett.business.entity.DatePeriod;
@@ -61,6 +62,8 @@ public class SystemManager implements Serializable,
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
+    //@PersistenceContext(unitName = "JMTSPU")
+    //private EntityManager em;
     private MainTabView mainTabView;
     private int activeTabIndex;
     private int activeNavigationTabIndex;

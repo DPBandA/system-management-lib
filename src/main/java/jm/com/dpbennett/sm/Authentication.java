@@ -29,6 +29,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.JobManagerUser;
 import jm.com.dpbennett.business.entity.SystemOption;
@@ -42,6 +43,8 @@ import org.primefaces.PrimeFaces;
 public class Authentication implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
+    //@PersistenceContext(unitName = "JMTSPU")
+    //private EntityManager em;
     private EntityManagerFactory EMF;
     private JobManagerUser user;
     private String username;
@@ -115,6 +118,7 @@ public class Authentication implements Serializable {
 
     public EntityManager getEntityManager() {
         return EMF.createEntityManager();
+        //return em;
     }
 
     public String getPassword() {
@@ -266,6 +270,7 @@ public class Authentication implements Serializable {
         setUserLoggedIn(false);
 
         try {
+                       
             // Find user and determine if authentication is required for this user
             user = JobManagerUser.findActiveJobManagerUserByUsername(em, username);
 
