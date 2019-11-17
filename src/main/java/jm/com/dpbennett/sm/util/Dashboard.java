@@ -22,7 +22,7 @@ package jm.com.dpbennett.sm.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jm.com.dpbennett.business.entity.JobManagerUser;
+import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
 import org.primefaces.PrimeFaces;
 
 /**

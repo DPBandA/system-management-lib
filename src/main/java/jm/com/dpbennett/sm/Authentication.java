@@ -31,8 +31,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
-import jm.com.dpbennett.business.entity.JobManagerUser;
-import jm.com.dpbennett.business.entity.SystemOption;
+import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 

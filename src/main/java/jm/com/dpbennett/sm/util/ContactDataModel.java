@@ -21,7 +21,7 @@ package jm.com.dpbennett.sm.util;
 
 import java.util.List;
 import javax.faces.model.ListDataModel;
-import jm.com.dpbennett.business.entity.Contact;
+import jm.com.dpbennett.business.entity.hrm.Contact;
 import org.primefaces.model.SelectableDataModel;
 
 /**

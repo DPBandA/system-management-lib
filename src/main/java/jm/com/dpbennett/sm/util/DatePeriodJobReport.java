@@ -19,7 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.util;
 
-import jm.com.dpbennett.business.entity.utils.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +27,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import jm.com.dpbennett.business.entity.DatePeriod;
-import jm.com.dpbennett.business.entity.Department;
-import jm.com.dpbennett.business.entity.JobReportItem;
-import jm.com.dpbennett.business.entity.JobSubCategory;
-import jm.com.dpbennett.business.entity.Sector;
-import jm.com.dpbennett.business.entity.utils.DatePeriodJobReportColumnData;
+import jm.com.dpbennett.business.entity.hrm.Department;
+import jm.com.dpbennett.business.entity.rm.JobReportItem;
+import jm.com.dpbennett.business.entity.fm.JobSubCategory;
+import jm.com.dpbennett.business.entity.fm.Sector;
+import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
 
 
 /**

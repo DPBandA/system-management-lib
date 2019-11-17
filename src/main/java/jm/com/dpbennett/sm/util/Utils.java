@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import javax.faces.model.SelectItem;
-import jm.com.dpbennett.business.entity.JobManagerUser;
+import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -19,9 +19,9 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.Employee;
-import jm.com.dpbennett.business.entity.SystemOption;
-import jm.com.dpbennett.business.entity.utils.ReturnMessage;
+import jm.com.dpbennett.business.entity.hrm.Employee;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 
 /**
  *
