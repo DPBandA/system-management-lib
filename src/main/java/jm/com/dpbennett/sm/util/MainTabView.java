@@ -22,7 +22,7 @@ package jm.com.dpbennett.sm.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
+import jm.com.dpbennett.business.entity.hrm.User;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -34,9 +34,9 @@ public class MainTabView implements Serializable {
     private Boolean render;
     private Integer tabIndex;
     private List<TabPanel> tabs;
-    private JobManagerUser user;
+    private User user;
 
-    public MainTabView(JobManagerUser user) {
+    public MainTabView(User user) {
         this.user = user;
         tabs = new ArrayList<>();
         tabIndex = 0;
@@ -175,7 +175,7 @@ public class MainTabView implements Serializable {
         tabs.clear();
     }
 
-    public void reset(JobManagerUser user) {
+    public void reset(User user) {
         this.user = user;
 
         removeAllTabs();
@@ -192,14 +192,14 @@ public class MainTabView implements Serializable {
         this.tabs = tabs;
     }
 
-    public JobManagerUser getUser() {
+    public User getUser() {
         if (user == null) {
-            return new JobManagerUser();
+            return new User();
         }
         return user;
     }
 
-    public void setUser(JobManagerUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 

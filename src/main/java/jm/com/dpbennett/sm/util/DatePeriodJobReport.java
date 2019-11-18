@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import jm.com.dpbennett.business.entity.DatePeriod;
+import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.rm.JobReportItem;
 import jm.com.dpbennett.business.entity.fm.JobSubCategory;

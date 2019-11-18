@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import javax.faces.model.SelectItem;
-import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
+import jm.com.dpbennett.business.entity.hrm.User;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -358,7 +358,7 @@ public class Utils {
     public static ReturnMessage postMail(
             Session mailSession,
             Employee fromEmployee,
-            JobManagerUser toUser,
+            User toUser,
             String subject,
             String message,
             String contentType,

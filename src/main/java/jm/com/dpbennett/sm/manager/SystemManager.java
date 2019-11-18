@@ -30,10 +30,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
-import jm.com.dpbennett.business.entity.Country;
-import jm.com.dpbennett.business.entity.DatePeriod;
-import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
-import jm.com.dpbennett.business.entity.LdapContext;
+import jm.com.dpbennett.business.entity.sm.Country;
+import jm.com.dpbennett.business.entity.rm.DatePeriod;
+import jm.com.dpbennett.business.entity.hrm.User;
+import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Email;
@@ -850,7 +850,7 @@ public class SystemManager implements Serializable,
         return "";
     }
 
-    public JobManagerUser getUser() {
+    public User getUser() {
         return getAuthentication().getUser();
     }
 

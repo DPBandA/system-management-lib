@@ -22,7 +22,7 @@ package jm.com.dpbennett.sm.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
+import jm.com.dpbennett.business.entity.hrm.User;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -31,13 +31,13 @@ import org.primefaces.PrimeFaces;
  */
 public class Dashboard implements Serializable {
 
-    private JobManagerUser user;
+    private User user;
     private List<TabPanel> tabs;
     private Boolean render;
     private Integer tabIndex;
     private String selectedTabId;
 
-    public Dashboard(JobManagerUser user) {
+    public Dashboard(User user) {
         this.user = user;
         tabs = new ArrayList<>();
         tabIndex = 0;
@@ -97,11 +97,11 @@ public class Dashboard implements Serializable {
         return -1;
     }
 
-    public JobManagerUser getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(JobManagerUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -174,7 +174,7 @@ public class Dashboard implements Serializable {
         this.tabIndex = tabIndex;
     }
 
-    public void reset(JobManagerUser user, boolean removeAllTabs) {
+    public void reset(User user, boolean removeAllTabs) {
         this.user = user;
 
         if (removeAllTabs) {

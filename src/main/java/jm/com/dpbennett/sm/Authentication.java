@@ -31,7 +31,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
-import jm.com.dpbennett.business.entity.jmts.JobManagerUser;
+import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
@@ -46,7 +46,7 @@ public class Authentication implements Serializable {
     //@PersistenceContext(unitName = "JMTSPU")
     //private EntityManager em;
     private EntityManagerFactory EMF;
-    private JobManagerUser user;
+    private User user;
     private String username;
     private String logonMessage;
     private String password;
@@ -60,11 +60,11 @@ public class Authentication implements Serializable {
         loginAttempts = 0;
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
-        user = new JobManagerUser();
+        user = new User();
         loginListeners = new ArrayList<>();
     }
 
-    public Authentication(JobManagerUser user) {
+    public Authentication(User user) {
         password = "";
         username = "";
         loginAttempts = 0;
@@ -80,7 +80,7 @@ public class Authentication implements Serializable {
         loginAttempts = 0;
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
-        user = new JobManagerUser();    
+        user = new User();    
         PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
@@ -143,13 +143,13 @@ public class Authentication implements Serializable {
      * @param em
      * @return
      */
-    public JobManagerUser getUser(EntityManager em) {
+    public User getUser(EntityManager em) {
         if (user == null) {
-            return new JobManagerUser();
+            return new User();
         } else {
             try {
                 if (user.getId() != null) {
-                    JobManagerUser foundUser = em.find(JobManagerUser.class, user.getId());
+                    User foundUser = em.find(User.class, user.getId());
                     if (foundUser != null) {
                         em.refresh(foundUser);
                         user = foundUser;
@@ -157,21 +157,21 @@ public class Authentication implements Serializable {
                 }
             } catch (Exception e) {
                 System.out.println(e);
-                return new JobManagerUser();
+                return new User();
             }
         }
 
         return user;
     }
 
-    public JobManagerUser getUser() {
+    public User getUser() {
         if (user == null) {
-            return new JobManagerUser();
+            return new User();
         }
         return user;
     }
 
-    public void setUser(JobManagerUser user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -204,9 +204,9 @@ public class Authentication implements Serializable {
         InitialLdapContext ctx;
 
         try {
-            List<jm.com.dpbennett.business.entity.LdapContext> ctxs = jm.com.dpbennett.business.entity.LdapContext.findAllActiveLdapContexts(em);
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
 
-            for (jm.com.dpbennett.business.entity.LdapContext ldapContext : ctxs) {
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
                 ctx = ldapContext.getInitialLDAPContext(username, password);
 
                 if (checkForLDAPUser(em, username, ctx)) {
@@ -272,7 +272,7 @@ public class Authentication implements Serializable {
         try {
                        
             // Find user and determine if authentication is required for this user
-            user = JobManagerUser.findActiveJobManagerUserByUsername(em, username);
+            user = User.findActiveJobManagerUserByUsername(em, username);
 
             if (user != null) {
                 em.refresh(user);
