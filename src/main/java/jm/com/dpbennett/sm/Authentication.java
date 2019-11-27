@@ -29,7 +29,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -52,7 +51,7 @@ public class Authentication implements Serializable {
     private String password;
     private Integer loginAttempts;
     private Boolean userLoggedIn;
-    private List<AuthenticationListener> loginListeners;
+    private List<AuthenticationListener> authenticationListeners;
 
     public Authentication() {
         password = "";
@@ -61,7 +60,7 @@ public class Authentication implements Serializable {
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
         user = new User();
-        loginListeners = new ArrayList<>();
+        authenticationListeners = new ArrayList<>();
     }
 
     public Authentication(User user) {
@@ -71,7 +70,7 @@ public class Authentication implements Serializable {
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
         this.user = user;
-        loginListeners = new ArrayList<>();
+        authenticationListeners = new ArrayList<>();
     }
 
     public void reset() {
@@ -80,22 +79,24 @@ public class Authentication implements Serializable {
         loginAttempts = 0;
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
-        user = new User();    
+        user = new User();
         PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
-    public void addLoginListener(AuthenticationListener loginListener) {        
-            loginListeners.add(loginListener);
+    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
+        authenticationListeners.remove(authenticationListener);
+
+        authenticationListeners.add(authenticationListener);
     }
 
     private void notifyLoginListeners() {
-        for (AuthenticationListener loginListener : loginListeners) {
+        for (AuthenticationListener loginListener : authenticationListeners) {
             loginListener.completeLogin();
         }
     }
-    
+
     public void notifyLogoutListeners() {
-        for (AuthenticationListener loginListener : loginListeners) {
+        for (AuthenticationListener loginListener : authenticationListeners) {
             loginListener.completeLogout();
         }
     }
@@ -136,7 +137,7 @@ public class Authentication implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     /**
      * Get user as currently stored in the database
      *
@@ -270,7 +271,7 @@ public class Authentication implements Serializable {
         setUserLoggedIn(false);
 
         try {
-                       
+
             // Find user and determine if authentication is required for this user
             user = User.findActiveJobManagerUserByUsername(em, username);
 
@@ -323,7 +324,7 @@ public class Authentication implements Serializable {
     public interface AuthenticationListener {
 
         public void completeLogin();
-        
+
         public void completeLogout();
     }
 }

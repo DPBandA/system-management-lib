@@ -58,7 +58,7 @@ import org.primefaces.event.ToggleEvent;
  * @author Desmond Bennett
  */
 public class SystemManager implements Serializable,
-        Authentication.AuthenticationListener {
+        AuthenticationListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -511,11 +511,10 @@ public class SystemManager implements Serializable,
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
         westLayoutUnitCollapsed = true;
-//        searchActionListeners = new ArrayList<>();
         uiUpdateListeners = new ArrayList<>();
         authenticationListeners = new ArrayList<>();
 
-        getAuthentication().addLoginListener(this);
+        getAuthentication().addSingleAuthenticationListener(this);
     }
 
     public List<Email> getFoundEmails() {
@@ -894,10 +893,11 @@ public class SystemManager implements Serializable,
 
     @Override
     public void completeLogout() {
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
         
         notifyListenersToCompleteLogout();
+        
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
     }
 
     public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
@@ -906,7 +906,7 @@ public class SystemManager implements Serializable,
     }
 
     public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
-        authenticationListeners.remove(authenticationListener); // tk
+        authenticationListeners.remove(authenticationListener);
         
         authenticationListeners.add(authenticationListener);
     }
@@ -915,9 +915,5 @@ public class SystemManager implements Serializable,
 
         public void completeUIUpdate();
     }
-
-//    public interface LoginActionListener {
-//
-//        public void doLogin();
-//    }
+    
 }
