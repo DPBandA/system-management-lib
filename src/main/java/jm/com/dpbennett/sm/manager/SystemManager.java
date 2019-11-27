@@ -28,7 +28,6 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -39,6 +38,7 @@ import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
@@ -62,8 +62,6 @@ public class SystemManager implements Serializable,
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
-    //@PersistenceContext(unitName = "JMTSPU")
-    //private EntityManager em;
     private MainTabView mainTabView;
     private int activeTabIndex;
     private int activeNavigationTabIndex;
@@ -87,8 +85,7 @@ public class SystemManager implements Serializable,
     private Email selectedEmail;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
-//    private List<SearchActionListener> searchActionListeners;
-    private List<LoginActionListener> loginActionListeners;
+    private List<AuthenticationListener> authenticationListeners;
     private Dashboard dashboard;
     private Boolean westLayoutUnitCollapsed;
 
@@ -243,18 +240,17 @@ public class SystemManager implements Serializable,
     }
 
     public void doDefaultSearch() {
-//        notifyListenersToDoDefaultSearch();
     }
 
-//    private void notifyListenersToDoDefaultSearch() {
-//        for (SearchActionListener systemActionListener : searchActionListeners) {
-//            systemActionListener.doDefaultSearch();
-//        }
-//    }
-
-    private void notifyListenersToDoLogin() {
-        for (LoginActionListener loginActionListener : loginActionListeners) {
-            loginActionListener.doLogin();
+    private void notifyListenersToCompleteLogin() {
+        for (AuthenticationListener authenticationListener : authenticationListeners) {
+            authenticationListener.completeLogin();
+        }
+    }
+    
+    private void notifyListenersToCompleteLogout() {
+        for (AuthenticationListener authenticationListener : authenticationListeners) {
+            authenticationListener.completeLogout();
         }
     }
 
@@ -517,7 +513,7 @@ public class SystemManager implements Serializable,
         westLayoutUnitCollapsed = true;
 //        searchActionListeners = new ArrayList<>();
         uiUpdateListeners = new ArrayList<>();
-        loginActionListeners = new ArrayList<>();
+        authenticationListeners = new ArrayList<>();
 
         getAuthentication().addLoginListener(this);
     }
@@ -893,13 +889,15 @@ public class SystemManager implements Serializable,
         initMainTabView();
         updateAllForms();
 
-        notifyListenersToDoLogin();
+        notifyListenersToCompleteLogin();
     }
 
     @Override
     public void completeLogout() {
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
+        
+        notifyListenersToCompleteLogout();
     }
 
     public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
@@ -907,16 +905,10 @@ public class SystemManager implements Serializable,
         uiUpdateListeners.add(uiUpdateListener);
     }
 
-//    public void addSingleSearchActionListener(SearchActionListener searchActionListener) {
-//        searchActionListeners.remove(searchActionListener); // tk
-//        
-//        searchActionListeners.add(searchActionListener);
-//    }
-
-    public void addSingleLoginActionListener(LoginActionListener loginActionListener) {
-        loginActionListeners.remove(loginActionListener); // tk
+    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
+        authenticationListeners.remove(authenticationListener); // tk
         
-        loginActionListeners.add(loginActionListener);
+        authenticationListeners.add(authenticationListener);
     }
 
     public interface UIUpdateListener {
@@ -924,13 +916,8 @@ public class SystemManager implements Serializable,
         public void completeUIUpdate();
     }
 
-//    public interface SearchActionListener {
+//    public interface LoginActionListener {
 //
-//        public void doDefaultSearch();
+//        public void doLogin();
 //    }
-
-    public interface LoginActionListener {
-
-        public void doLogin();
-    }
 }
