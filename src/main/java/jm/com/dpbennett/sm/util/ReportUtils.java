@@ -471,6 +471,11 @@ public class ReportUtils {
         if (row == null) {
             row = sheet.createRow(rowIndex);
         }
+        
+        
+
+        row.setHeight((short)-1);
+        
         XSSFCell cell = row.getCell(cellIndex);
         if (cell == null) {
             cell = row.createCell(cellIndex);
