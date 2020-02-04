@@ -21,6 +21,7 @@ package jm.com.dpbennett.sm.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -490,20 +491,34 @@ public class ReportUtils {
 
         try {
             if (value != null) {
-                if (dataType.equals("java.lang.Long")) {
-                    cell.setCellValue((Long) value);
-                } else if (dataType.equals("java.lang.Integer")) {
-                    cell.setCellValue((Integer) value);
-                } else if (dataType.equals("java.lang.Double")) {
-                    cell.setCellValue((Double) value);
-                } else if (dataType.equals("Currency")) {
-                    cell.setCellValue((Double) value);
-                } else if (dataType.equals("java.lang.Boolean")) {
-                    cell.setCellValue((Boolean) value);
-                } else if (dataType.equals("java.lang.String")) {
-                    cell.setCellValue(new XSSFRichTextString(value.toString()));
-                } else if (dataType.equals("java.util.Date")) {
-                    cell.setCellValue((Date) value);
+                switch (dataType) {
+                    case "java.lang.Long":
+                        cell.setCellValue((Long) value);
+                        break;
+                    case "java.math.BigDecimal":
+                        Long longValue = ((BigDecimal) value).longValueExact();
+                        cell.setCellValue(longValue);
+                        break;    
+                    case "java.lang.Integer":
+                        cell.setCellValue((Integer) value);
+                        break;
+                    case "java.lang.Double":
+                        cell.setCellValue((Double) value);
+                        break;
+                    case "Currency":
+                        cell.setCellValue((Double) value);
+                        break;
+                    case "java.lang.Boolean":
+                        cell.setCellValue((Boolean) value);
+                        break;
+                    case "java.lang.String":
+                        cell.setCellValue(new XSSFRichTextString(value.toString()));
+                        break;
+                    case "java.util.Date":
+                        cell.setCellValue((Date) value);
+                        break;
+                    default:
+                        break;
                 }
 
                 cell.setCellStyle(newStyle);
