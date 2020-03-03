@@ -236,7 +236,7 @@ public class SystemManager implements Serializable,
 
         getMainTabView().openTab("Financial Administration");
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
     }
 
     public void doDefaultSearch() {
@@ -755,7 +755,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editSystemOption() {
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
     }
 
     public void editLdapContext() {
@@ -808,7 +808,7 @@ public class SystemManager implements Serializable,
 
         selectedSystemOption = new SystemOption();
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 430, 500);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
     }
 
     public Tab getActiveTab() {
