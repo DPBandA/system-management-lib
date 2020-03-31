@@ -450,6 +450,11 @@ public class SystemManager implements Serializable,
 
         return getStringListAsSelectItems(getEntityManager(), "jamaicaParishes");
     }
+    
+    public List<SelectItem> getTypesOfBusinessList () {
+
+        return getStringListAsSelectItems(getEntityManager(), "typesOfBusinessList ");
+    }
 
     public static List<SelectItem> getStringListAsSelectItems(EntityManager em,
             String systemOption) {
