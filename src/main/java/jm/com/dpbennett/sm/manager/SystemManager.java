@@ -277,6 +277,16 @@ public class SystemManager implements Serializable,
         getAuthentication().notifyLogoutListeners();
         getAuthentication().reset();
     }
+    
+    public String getSupportURL() {
+        return (String) SystemOption.getOptionValueObject(
+                    getEntityManager(), "supportURL");
+    }
+    
+    public Boolean getShowSupportURL() {
+        return (Boolean) SystemOption.getOptionValueObject(
+                    getEntityManager(), "showSupportURL");
+    }
 
     public void editPreferences() {
     }
