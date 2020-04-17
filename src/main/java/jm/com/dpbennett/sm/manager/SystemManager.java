@@ -35,7 +35,6 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
-import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
@@ -69,20 +68,16 @@ public class SystemManager implements Serializable,
     private Tab activeTab;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
-    private Boolean isActiveEmailsOnly;
     private String systemOptionSearchText;
     private String ldapSearchText;
     private String documentTypeSearchText;
-    private String emailSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
-    private List<Email> foundEmails;
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
-    private Email selectedEmail;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
@@ -102,88 +97,6 @@ public class SystemManager implements Serializable,
         } else {
             return "";
         }
-    }
-
-    public Boolean getIsActiveEmailsOnly() {
-        return isActiveEmailsOnly;
-    }
-
-    public void setIsActiveEmailsOnly(Boolean isActiveEmailsOnly) {
-        this.isActiveEmailsOnly = isActiveEmailsOnly;
-    }
-
-    public String getEmailSearchText() {
-        return emailSearchText;
-    }
-
-    public void setEmailSearchText(String emailSearchText) {
-        this.emailSearchText = emailSearchText;
-    }
-
-    public void doEmailSearch() {
-
-        if (getIsActiveEmailsOnly()) {
-            foundEmails = Email.findActiveEmails(getEntityManager(), getEmailSearchText());
-        } else {
-            foundEmails = Email.findEmails(getEntityManager(), getEmailSearchText());
-        }
-
-    }
-
-    public void editEmailTemplate() {
-        PrimeFacesUtils.openDialog(null, "emailTemplateDialog", true, true, true, 550, 700);
-    }
-
-    public void createNewEmailTemplate() {
-
-        selectedEmail = new Email();
-
-        editEmailTemplate();
-    }
-
-    public List getEmailCategories() {
-        ArrayList categories = new ArrayList();
-
-        categories.add(new SelectItem("", ""));
-        categories.add(new SelectItem("Purchase Requisition", "Purchase Requisition"));
-        categories.add(new SelectItem("Job", "Job"));
-
-        return categories;
-    }
-
-    public List getEmailTypes() {
-        ArrayList categories = new ArrayList();
-
-        categories.add(new SelectItem("", ""));
-        categories.add(new SelectItem("Template", "Template"));
-        categories.add(new SelectItem("Instance", "Instance"));
-
-        return categories;
-    }
-
-    public List getContentTypes() {
-        ArrayList types = new ArrayList();
-
-        types.add(new SelectItem("text/plain", "text/plain"));
-        types.add(new SelectItem("text/html", "text/html"));
-        types.add(new SelectItem("text/html; charset=utf-8", "text/html; charset=utf-8"));
-
-        return types;
-    }
-
-    public void saveSelectedEmail() {
-
-        selectedEmail.save(getEntityManager());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public Email getSelectedEmail() {
-        return selectedEmail;
-    }
-
-    public void setSelectedEmail(Email selectedEmail) {
-        this.selectedEmail = selectedEmail;
     }
 
     public void onFinancialSystemOptionCellEdit(CellEditEvent event) {
@@ -527,7 +440,6 @@ public class SystemManager implements Serializable,
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
-        isActiveEmailsOnly = true;
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -536,18 +448,6 @@ public class SystemManager implements Serializable,
         authenticationListeners = new ArrayList<>();
 
         getAuthentication().addSingleAuthenticationListener(this);
-    }
-
-    public List<Email> getFoundEmails() {
-        if (foundEmails == null) {
-            foundEmails = Email.findAllActiveEmails(getEntityManager());
-        }
-
-        return foundEmails;
-    }
-
-    public void setFoundEmails(List<Email> foundEmails) {
-        this.foundEmails = foundEmails;
     }
 
     public Boolean getIsActiveDocumentTypesOnly() {
