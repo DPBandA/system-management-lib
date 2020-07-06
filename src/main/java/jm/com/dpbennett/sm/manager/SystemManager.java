@@ -35,6 +35,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
+import jm.com.dpbennett.business.entity.fm.Category;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
@@ -78,6 +79,7 @@ public class SystemManager implements Serializable,
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
+    private Category selectedCategory;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
@@ -160,7 +162,7 @@ public class SystemManager implements Serializable,
             authenticationListener.completeLogin();
         }
     }
-    
+
     private void notifyListenersToCompleteLogout() {
         for (AuthenticationListener authenticationListener : authenticationListeners) {
             authenticationListener.completeLogout();
@@ -190,15 +192,15 @@ public class SystemManager implements Serializable,
         getAuthentication().notifyLogoutListeners();
         getAuthentication().reset();
     }
-    
+
     public String getSupportURL() {
         return (String) SystemOption.getOptionValueObject(
-                    getEntityManager(), "supportURL");
+                getEntityManager(), "supportURL");
     }
-    
+
     public Boolean getShowSupportURL() {
         return (Boolean) SystemOption.getOptionValueObject(
-                    getEntityManager(), "showSupportURL");
+                getEntityManager(), "showSupportURL");
     }
 
     public void editPreferences() {
@@ -356,13 +358,13 @@ public class SystemManager implements Serializable,
         return getStringListAsSelectItems(getEntityManager(),
                 "workProgressList");
     }
-    
+
     public List<SelectItem> getIdentificationTypeList() {
 
         return getStringListAsSelectItems(getEntityManager(),
                 "identificationTypeList");
     }
-    
+
     public List<SelectItem> getServiceLocationList() {
 
         return getStringListAsSelectItems(getEntityManager(),
@@ -373,8 +375,8 @@ public class SystemManager implements Serializable,
 
         return getStringListAsSelectItems(getEntityManager(), "jamaicaParishes");
     }
-    
-    public List<SelectItem> getTypesOfBusinessList () {
+
+    public List<SelectItem> getTypesOfBusinessList() {
 
         return getStringListAsSelectItems(getEntityManager(), "typesOfBusinessList ");
     }
@@ -514,6 +516,19 @@ public class SystemManager implements Serializable,
 
         editDocumentType();
 
+    }
+    
+    public void createNewCategory() {
+        selectedCategory = new Category();
+
+        getMainTabView().openTab("System Administration");
+
+        editCategory();
+
+    }
+    
+    public void editCategory() {
+        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 175, 400);
     }
 
     public void editDocumentType() {
@@ -814,9 +829,9 @@ public class SystemManager implements Serializable,
 
     @Override
     public void completeLogout() {
-        
+
         notifyListenersToCompleteLogout();
-        
+
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
     }
@@ -828,7 +843,7 @@ public class SystemManager implements Serializable,
 
     public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
         authenticationListeners.remove(authenticationListener);
-        
+
         authenticationListeners.add(authenticationListener);
     }
 
@@ -836,5 +851,13 @@ public class SystemManager implements Serializable,
 
         public void completeUIUpdate();
     }
-    
+
+    public Category getSelectedCategory() {
+        return selectedCategory;
+    }
+
+    public void setSelectedCategory(Category selectedCategory) {
+        this.selectedCategory = selectedCategory;
+    }
+
 }
