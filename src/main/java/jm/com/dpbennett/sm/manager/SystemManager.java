@@ -35,7 +35,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
-import jm.com.dpbennett.business.entity.fm.Category;
+import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
@@ -72,10 +72,12 @@ public class SystemManager implements Serializable,
     private String systemOptionSearchText;
     private String ldapSearchText;
     private String documentTypeSearchText;
+    private String categorySearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
+    private List<Category> foundCategories;
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
@@ -439,6 +441,7 @@ public class SystemManager implements Serializable,
         systemOptionSearchText = "";
         ldapSearchText = "";
         documentTypeSearchText = "";
+        categorySearchText = "";
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
@@ -488,9 +491,28 @@ public class SystemManager implements Serializable,
         this.foundDocumentTypes = foundDocumentTypes;
     }
 
+    public List<Category> getFoundCategories() {
+        if (foundCategories == null) {
+            foundCategories = Category.findAllCategories(getEntityManager());
+        }
+        
+        return foundCategories;
+    }
+
+    public void setFoundCategories(List<Category> foundCategories) {
+        this.foundCategories = foundCategories;
+    }
+       
+
     public void doDocumentTypeSearch() {
 
         foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
+
+    }
+    
+    public void doCategorySearch() {
+
+        //foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
 
     }
 
@@ -527,6 +549,13 @@ public class SystemManager implements Serializable,
 
     }
     
+    public void saveSelectedCategory() {
+
+        selectedCategory.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
     public void editCategory() {
         PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 175, 400);
     }
@@ -534,7 +563,7 @@ public class SystemManager implements Serializable,
     public void editDocumentType() {
         openDocumentTypeDialog("documentTypeDialog");
     }
-
+   
     public List<DocumentType> getDocumentTypes() {
         return DocumentType.findAllDocumentTypes(getEntityManager());
     }
@@ -860,4 +889,12 @@ public class SystemManager implements Serializable,
         this.selectedCategory = selectedCategory;
     }
 
+    public String getCategorySearchText() {
+        return categorySearchText;
+    }
+
+    public void setCategorySearchText(String categorySearchText) {
+        this.categorySearchText = categorySearchText;
+    }
+    
 }
