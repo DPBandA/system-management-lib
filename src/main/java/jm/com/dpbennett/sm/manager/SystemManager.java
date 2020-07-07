@@ -512,7 +512,7 @@ public class SystemManager implements Serializable,
     
     public void doCategorySearch() {
 
-        //foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
+        foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
 
     }
 
