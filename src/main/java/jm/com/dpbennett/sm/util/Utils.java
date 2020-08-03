@@ -105,7 +105,7 @@ public class Utils {
     public static ReturnMessage postMail(
             Session mailSession,
             Employee fromEmployee,
-            User toUser,
+            Employee toEmployee,
             String subject,
             String message,
             String contentType,
@@ -143,15 +143,9 @@ public class Utils {
             msg.setFrom(addressFrom);
 
             InternetAddress[] addressTo = new InternetAddress[1];
-            if (toUser != null) {
-                if (toUser.getEmployee().getInternet().getEmail1().isEmpty()) {
-                    addressTo[0] = new InternetAddress(toUser.getUsername() + "@"
-                            + ((List<String>) SystemOption.getOptionValueObject(em, "domainNames")).get(0));
-                } else {
-                    addressTo[0] = new InternetAddress(toUser.getEmployee().getInternet().getEmail1());
-                }
+            if (toEmployee != null) {               
+                    addressTo[0] = new InternetAddress(toEmployee.getInternet().getEmail1());
             } else {
-                // tk send message to developer. username and full name to be obtained from database in future.
                 addressTo[0] = new InternetAddress(
                         (String) SystemOption.getOptionValueObject(em, "administratorEmailAddress"));
             }
