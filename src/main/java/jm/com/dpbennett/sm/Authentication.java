@@ -210,10 +210,12 @@ public class Authentication implements Serializable {
             for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
                 ctx = ldapContext.getInitialLDAPContext(username, password);
 
-                if (checkForLDAPUser(em, username, ctx)) {
-                    // user exists in LDAP                    
-                    userValidated = true;
-                    break;
+                if (ctx != null) {
+                    if (checkForLDAPUser(em, username, ctx)) {
+                        // user exists in LDAP                    
+                        userValidated = true;
+                        break;
+                    }
                 }
             }
 
