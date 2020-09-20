@@ -333,6 +333,8 @@ public class SystemManager implements Serializable,
 
             ArrayList<Country> countries = new ArrayList<>(Country.findCountriesByName(em, query));
             ArrayList<String> countriesList = (ArrayList<String>) (ArrayList<?>) countries;
+            
+            countriesList.add(0, "-- Unknown --");
 
             return countriesList;
         } catch (Exception e) {
