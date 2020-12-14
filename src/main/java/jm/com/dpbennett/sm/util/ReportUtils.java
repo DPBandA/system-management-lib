@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.util.SearchParameters;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -88,17 +89,17 @@ public class ReportUtils {
         return "Search Results (found: " + searchResultsList.size() + ")";
     }
     
-    public static List getCategories() {
-        ArrayList categories = new ArrayList();
-
-        categories.add(new SelectItem("", ""));
-        categories.add(new SelectItem("Client", "Client"));
-        categories.add(new SelectItem("Job", "Job"));
-        categories.add(new SelectItem("Legal", "Legal"));
-
-        return categories;
+    public static List getCategories(EntityManager em) {
+//        ArrayList categories = new ArrayList();
+//
+//        categories.add(new SelectItem("", ""));
+//        categories.add(new SelectItem("Client", "Client"));
+//        categories.add(new SelectItem("Job", "Job"));
+//        categories.add(new SelectItem("Legal", "Legal"));
+//
+//        return categories;
         
-        //return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
+        return getStringListAsSelectItems(em, "reportCategories");
 
     } 
     
@@ -477,8 +478,6 @@ public class ReportUtils {
             row = sheet.createRow(rowIndex);
         }
         
-        
-
         row.setHeight((short)-1);
         
         XSSFCell cell = row.getCell(cellIndex);
