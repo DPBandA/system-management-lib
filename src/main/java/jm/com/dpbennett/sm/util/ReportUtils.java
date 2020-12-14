@@ -29,6 +29,7 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.util.SearchParameters;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -96,6 +97,9 @@ public class ReportUtils {
         categories.add(new SelectItem("Legal", "Legal"));
 
         return categories;
+        
+        //return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
+
     } 
     
     public static List getMimeTypes() {

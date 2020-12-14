@@ -429,6 +429,7 @@ public class SystemManager implements Serializable,
         categories.add(new SelectItem("Legal", "Legal"));
         categories.add(new SelectItem("Metrology", "Metrology"));
         categories.add(new SelectItem("Notification", "Notification"));
+        categories.add(new SelectItem("Report", "Report"));
 
         return categories;
     }
