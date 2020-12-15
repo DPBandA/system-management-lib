@@ -90,14 +90,6 @@ public class ReportUtils {
     }
     
     public static List getCategories(EntityManager em) {
-//        ArrayList categories = new ArrayList();
-//
-//        categories.add(new SelectItem("", ""));
-//        categories.add(new SelectItem("Client", "Client"));
-//        categories.add(new SelectItem("Job", "Job"));
-//        categories.add(new SelectItem("Legal", "Legal"));
-//
-//        return categories;
         
         return getStringListAsSelectItems(em, "reportCategories");
 
@@ -245,10 +237,8 @@ public class ReportUtils {
                     style = wb.createCellStyle();
                 }   style.setDataFormat(wb.createDataFormat().getFormat("J$#,##0.00"));
                 break;
-        //style = wb.createCellStyle();
             case "java.lang.Boolean":
                 break;
-        //style = wb.createCellStyle();
             case "java.lang.String":
                 break;
             case "java.util.Date":
@@ -286,10 +276,8 @@ public class ReportUtils {
                     style = wb.createCellStyle();
                 }   style.setDataFormat(wb.createDataFormat().getFormat("J$#,##0.00"));
                 break;
-        //style = wb.createCellStyle();
             case "java.lang.Boolean":
                 break;
-        //style = wb.createCellStyle();
             case "java.lang.String":
                 break;
             case "java.util.Date":
@@ -487,7 +475,7 @@ public class ReportUtils {
 
         XSSFCellStyle newStyle;
         if (style != null) {
-            newStyle = style; //setExcelCellDataFormat(wb, dataType, style);
+            newStyle = style;
         } else {
             newStyle = cell.getCellStyle();
         }
@@ -539,9 +527,8 @@ public class ReportUtils {
         Class c;
         Method m;
 
-        // split the path into class and methods string
         String[] path = methodPath.split("/");
-        // get array of method names
+        
         String[] methodNames = path[1].split("\\.");
 
         int i = -1;
