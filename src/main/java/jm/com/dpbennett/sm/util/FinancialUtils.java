@@ -8,6 +8,8 @@ package jm.com.dpbennett.sm.util;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import javax.persistence.EntityManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 
 /**
  *
@@ -18,18 +20,12 @@ public class FinancialUtils {
     /**
      * NB: Payment types to be put in database...
      *
+     * @param em
      * @return
      */
-    public static List getPaymentTypes() {
-        ArrayList paymentTypes = new ArrayList();
-
-        paymentTypes.add(new SelectItem("Cash", "Cash"));
-        paymentTypes.add(new SelectItem("Cheque", "Cheque"));
-        paymentTypes.add(new SelectItem("Credit Card", "Credit Card"));
-        paymentTypes.add(new SelectItem("Debit Card", "Debit Card"));
-        paymentTypes.add(new SelectItem("Other", "Other"));
-
-        return paymentTypes;
+    public static List<SelectItem> getPaymentTypes(EntityManager em) {
+       
+        return getStringListAsSelectItems(em, "cashPaymentTypes");
     }
 
     /**
