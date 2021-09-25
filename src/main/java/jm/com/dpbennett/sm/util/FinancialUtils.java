@@ -24,7 +24,7 @@ public class FinancialUtils {
      * @return
      */
     public static List<SelectItem> getPaymentTypes(EntityManager em) {
-       
+
         return getStringListAsSelectItems(em, "cashPaymentTypes");
     }
 
@@ -32,28 +32,25 @@ public class FinancialUtils {
      * NB: Payment purposes to be put in database...
      *
      * @return
+     * @param em
      */
-    public static List getPaymentPurposes() {
-        ArrayList paymentPurposes = new ArrayList();
+    public static List getPaymentPurposes(EntityManager em) {
 
-        paymentPurposes.add(new SelectItem("Deposit", "Deposit"));
-        paymentPurposes.add(new SelectItem("Intermediate", "Intermediate payment"));
-        paymentPurposes.add(new SelectItem("Final", "Final payment"));
-        paymentPurposes.add(new SelectItem("Other", "Other"));
-
-        return paymentPurposes;
+        return getStringListAsSelectItems(em, "cashPaymentPurposes");
     }
 
-    public static List getCostTypeList() {
-        ArrayList costTypes = new ArrayList();
-
-        costTypes.add(new SelectItem("--", "--"));
-        costTypes.add(new SelectItem("FIXED", "Fixed"));
-        costTypes.add(new SelectItem("HEADING", "Heading"));
-        costTypes.add(new SelectItem("VARIABLE", "Variable"));
-        costTypes.add(new SelectItem("SUBCONTRACT", "Subcontract"));
-
-        return costTypes;
+    public static List getCostTypeList(EntityManager em) {
+//        ArrayList costTypes = new ArrayList();
+//
+//        costTypes.add(new SelectItem("--", "--"));
+//        costTypes.add(new SelectItem("FIXED", "Fixed"));
+//        costTypes.add(new SelectItem("HEADING", "Heading"));
+//        costTypes.add(new SelectItem("VARIABLE", "Variable"));
+//        costTypes.add(new SelectItem("SUBCONTRACT", "Subcontract"));
+//
+//        return costTypes;
+        
+        return getStringListAsSelectItems(em, "cashPaymentPurposes");
     }
 
     /**
