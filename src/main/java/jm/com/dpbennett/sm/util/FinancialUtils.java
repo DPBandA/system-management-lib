@@ -5,7 +5,6 @@
  */
 package jm.com.dpbennett.sm.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
@@ -40,7 +39,7 @@ public class FinancialUtils {
     }
 
     public static List getCostTypeList(EntityManager em) {
-        
+
         return getStringListAsSelectItems(em, "costTypes");
     }
 
@@ -48,15 +47,22 @@ public class FinancialUtils {
      * Returns the discount type that can be applied to a payment/amount NB: To
      * be deprecated
      *
+     * @param em
      * @return
      */
-    public static List getDiscountTypes() {
-        ArrayList discountTypes = new ArrayList();
+    public static List getDiscountTypes(EntityManager em) {
 
-        discountTypes.add(new SelectItem("Currency", "Currency: "));
-        discountTypes.add(new SelectItem("Percentage", "Percentage: "));
+        return getStringListAsSelectItems(em, "discountTypes");
+    }
 
-        return discountTypes;
+    public static List getValueTypes(EntityManager em) {
+
+        return getStringListAsSelectItems(em, "valueTypes");
+    }
+    
+    public static List getAccountingCodeTypes(EntityManager em) {
+
+        return getStringListAsSelectItems(em, "accountingCodeTypes");
     }
 
 }
