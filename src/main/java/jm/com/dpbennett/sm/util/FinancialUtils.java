@@ -40,17 +40,8 @@ public class FinancialUtils {
     }
 
     public static List getCostTypeList(EntityManager em) {
-//        ArrayList costTypes = new ArrayList();
-//
-//        costTypes.add(new SelectItem("--", "--"));
-//        costTypes.add(new SelectItem("FIXED", "Fixed"));
-//        costTypes.add(new SelectItem("HEADING", "Heading"));
-//        costTypes.add(new SelectItem("VARIABLE", "Variable"));
-//        costTypes.add(new SelectItem("SUBCONTRACT", "Subcontract"));
-//
-//        return costTypes;
         
-        return getStringListAsSelectItems(em, "cashPaymentPurposes");
+        return getStringListAsSelectItems(em, "costTypes");
     }
 
     /**
