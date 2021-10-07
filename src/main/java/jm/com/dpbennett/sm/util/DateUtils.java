@@ -21,6 +21,7 @@ public class DateUtils {
         dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
         dateSearchFields.add(new SelectItem("dateSubmitted", "Date submitted"));
         dateSearchFields.add(new SelectItem("dateCostingApproved", "Date costing approved"));
+        dateSearchFields.add(new SelectItem("dateCostingInvoiced", "Date job invoiced"));
         dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
         dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
         dateSearchFields.add(new SelectItem("dateSamplesCollected", "Date sample(s) collected"));
