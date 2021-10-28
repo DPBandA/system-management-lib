@@ -17,18 +17,18 @@ public class FileUtils {
 
     /**
      * Adds an entry to a Zip file.
-     * @param costingFilename
-     * @param costingFileBytes
+     * @param filename
+     * @param fileBytes
      * @param zos
      */
-    public static void zipFile(String costingFilename,
-            byte[] costingFileBytes,
+    public static void zipFile(String filename,
+            byte[] fileBytes,
             ZipOutputStream zos) {
 
         try {
-            ZipEntry ze = new ZipEntry(costingFilename);
+            ZipEntry ze = new ZipEntry(filename);
             zos.putNextEntry(ze);
-            zos.write(costingFileBytes);
+            zos.write(fileBytes);
         } catch (IOException e) {
             System.out.println(e);
         }
