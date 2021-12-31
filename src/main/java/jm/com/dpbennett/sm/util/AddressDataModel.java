@@ -40,10 +40,10 @@ public class AddressDataModel extends ListDataModel<Address> implements Selectab
         this. list = list;
     }
 
-    @Override
-    public Object getRowKey(Address address) {
-        return address.getId();
-    }
+//    @Override
+//    public Object getRowKey(Address address) {
+//        return address.getId();
+//    }
 
     @Override
     public Address getRowData(String rowKey) {
@@ -54,5 +54,10 @@ public class AddressDataModel extends ListDataModel<Address> implements Selectab
         }
 
         return null;
+    }
+
+    @Override
+    public String getRowKey(Address t) {
+        return t.getId().toString();
     }
 }
