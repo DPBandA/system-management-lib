@@ -72,7 +72,7 @@ public class Dashboard implements Serializable {
             // TabPanel is being removed and update the dashboard          
             tabs.remove(tab);
             // Update dashboard and select the appropriate tab
-            update("dashboardForm:dashboardAccordion");
+            update("appForm:dashboardAccordion");
             select(render);
         } else if (tab != null && render) {
             // TabPanel already added so select and update the dashboard
@@ -83,7 +83,7 @@ public class Dashboard implements Serializable {
             // TabPanel is to be rendered 
             tabs.add(new TabPanel(tabId, tabId));
             // Update tabview and select the appropriate tab
-            update("dashboardForm:dashboardAccordion");
+            update("appForm:dashboardAccordion");
             select(render);
         }
     }

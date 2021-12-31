@@ -86,7 +86,7 @@ public class SystemManager implements Serializable,
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
     private Dashboard dashboard;
-    private Boolean westLayoutUnitCollapsed;
+    //private Boolean westLayoutUnitCollapsed;
 
     /**
      * Creates a new instance of SystemManager
@@ -183,9 +183,9 @@ public class SystemManager implements Serializable,
     }
 
     public void updateAllForms() {
-        PrimeFaces.current().ajax().update("dashboardForm");
-        PrimeFaces.current().ajax().update("mainTabViewForm");
-        PrimeFaces.current().ajax().update("headerForm");
+        //PrimeFaces.current().ajax().update("dashboardForm");
+        //PrimeFaces.current().ajax().update("mainTabViewForm");
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     public void logout() {
@@ -212,18 +212,18 @@ public class SystemManager implements Serializable,
         return getUser().getId() != null;
     }
 
-    public Boolean getWestLayoutUnitCollapsed() {
-        return westLayoutUnitCollapsed;
-    }
-
-    public void setWestLayoutUnitCollapsed(Boolean westLayoutUnitCollapsed) {
-        this.westLayoutUnitCollapsed = westLayoutUnitCollapsed;
-    }
+//    public Boolean getWestLayoutUnitCollapsed() {
+//        return westLayoutUnitCollapsed;
+//    }
+//
+//    public void setWestLayoutUnitCollapsed(Boolean westLayoutUnitCollapsed) {
+//        this.westLayoutUnitCollapsed = westLayoutUnitCollapsed;
+//    }
 
     public void handleLayoutUnitToggle(ToggleEvent event) {
 
         if (event.getComponent().getId().equals("dashboard")) {
-            westLayoutUnitCollapsed = !event.getVisibility().name().equals("VISIBLE");
+            //westLayoutUnitCollapsed = !event.getVisibility().name().equals("VISIBLE");
         }
     }
 
@@ -308,7 +308,8 @@ public class SystemManager implements Serializable,
 
     public void closePreferencesDialog1(ActionEvent actionEvent) {
 
-        PrimeFaces.current().ajax().update("headerForm");
+        PrimeFaces.current().ajax().update("appForm");
+        
         PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
 
@@ -451,7 +452,7 @@ public class SystemManager implements Serializable,
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
-        westLayoutUnitCollapsed = true;
+        //westLayoutUnitCollapsed = true;
         uiUpdateListeners = new ArrayList<>();
         authenticationListeners = new ArrayList<>();
 
@@ -602,14 +603,13 @@ public class SystemManager implements Serializable,
         mainTabView.removeAllTabs();
         mainTabView.setRender(false);
         uiUpdateListeners = new ArrayList<>();
-        westLayoutUnitCollapsed = true;
+        //westLayoutUnitCollapsed = true;
 
         updateAllForms();
 
         // Return to default theme
         PrimeFaces.current().executeScript(
-                "PF('longProcessDialogVar').hide();"
-                + "PrimeFaces.changeTheme('"
+                "PrimeFaces.changeTheme('"
                 + getUser().getUserInterfaceThemeName() + "');"
                 + "PF('layoutVar').toggle('west');");
     }
@@ -842,10 +842,9 @@ public class SystemManager implements Serializable,
 
         getUser().save(getEntityManager());
 
-        if (getWestLayoutUnitCollapsed()) {
-            setWestLayoutUnitCollapsed(false);
-            PrimeFaces.current().executeScript("PF('layoutVar').toggle('west');");
-        }
+//        if (getWestLayoutUnitCollapsed()) {
+//            setWestLayoutUnitCollapsed(false);
+//        }
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
