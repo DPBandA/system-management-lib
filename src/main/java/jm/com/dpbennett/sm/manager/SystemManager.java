@@ -184,8 +184,6 @@ public class SystemManager implements Serializable,
     }
 
     public void updateAllForms() {
-        //PrimeFaces.current().ajax().update("dashboardForm");
-        //PrimeFaces.current().ajax().update("mainTabViewForm");
         PrimeFaces.current().ajax().update("appForm");
     }
 
@@ -213,18 +211,10 @@ public class SystemManager implements Serializable,
         return getUser().getId() != null;
     }
 
-//    public Boolean getWestLayoutUnitCollapsed() {
-//        return westLayoutUnitCollapsed;
-//    }
-//
-//    public void setWestLayoutUnitCollapsed(Boolean westLayoutUnitCollapsed) {
-//        this.westLayoutUnitCollapsed = westLayoutUnitCollapsed;
-//    }
-
     public void handleLayoutUnitToggle(ToggleEvent event) {
 
         if (event.getComponent().getId().equals("dashboard")) {
-            //westLayoutUnitCollapsed = !event.getVisibility().name().equals("VISIBLE");
+            
         }
     }
 
@@ -453,7 +443,6 @@ public class SystemManager implements Serializable,
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
-        //westLayoutUnitCollapsed = true;
         uiUpdateListeners = new ArrayList<>();
         authenticationListeners = new ArrayList<>();
 
