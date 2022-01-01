@@ -1,6 +1,6 @@
 /*
 System Management
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -603,15 +603,9 @@ public class SystemManager implements Serializable,
         mainTabView.removeAllTabs();
         mainTabView.setRender(false);
         uiUpdateListeners = new ArrayList<>();
-        //westLayoutUnitCollapsed = true;
 
-        updateAllForms();
-
-        // Return to default theme
-        PrimeFaces.current().executeScript(
-                "PrimeFaces.changeTheme('"
-                + getUser().getUserInterfaceThemeName() + "');"
-                + "PF('layoutVar').toggle('west');");
+        updateAllForms();       
+        
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -842,14 +836,7 @@ public class SystemManager implements Serializable,
 
         getUser().save(getEntityManager());
 
-//        if (getWestLayoutUnitCollapsed()) {
-//            setWestLayoutUnitCollapsed(false);
-//        }
-
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        PrimeFaces.current().executeScript("PrimeFaces.changeTheme('"
-                + getUser().getUserInterfaceThemeName() + "');");
 
         initDashboard();
         initMainTabView();
