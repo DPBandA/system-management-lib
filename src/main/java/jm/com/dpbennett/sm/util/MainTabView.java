@@ -154,18 +154,18 @@ public class MainTabView implements Serializable {
         if (tab != null && !render) {
             // TabPanel is being removed so remove and update the tab view          
             tabs.remove(tab);
-            update("mainTabViewForm:mainTabView");           
+            update("appForm:mainTabView");           
                 select(render);            
         } else if (tab != null && render) {
             // TabPanel already added so just update and select
-            update("mainTabViewForm:mainTabView");            
+            update("appForm:mainTabView");            
             select(render);
         } else if (tab == null && !render) {
             // TabPanel is not be added            
         } else if (tab == null && render) {
             // TabPanel is to be added so add and render
             tabs.add(new TabPanel(tabId, tabId));
-            update("mainTabViewForm:mainTabView");
+            update("appForm:mainTabView");
             select(render);
         }
 
