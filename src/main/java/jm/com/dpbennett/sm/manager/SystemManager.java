@@ -175,7 +175,8 @@ public class SystemManager implements Serializable,
         getUser().setPollTime(new Date());
 
         if ((Boolean) SystemOption.getOptionValueObject(getEntityManager(), "debugMode")) {
-            System.out.println("Handling keep alive session: doing polling ..." + getUser().getPollTime());
+            System.out.println(getApplicationHeader() + 
+                    " keeping session alive: " + getUser().getPollTime());
         }
         if (getUser().getId() != null) {
             getUser().save(getEntityManager());
@@ -229,7 +230,7 @@ public class SystemManager implements Serializable,
 
     public String getApplicationHeader() {
 
-        return "System Management";
+        return "System Management"; // tk make system option
 
     }
 
@@ -717,7 +718,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editSystemOption() {
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 575, 550);
     }
 
     public void editLdapContext() {
@@ -770,7 +771,7 @@ public class SystemManager implements Serializable,
 
         selectedSystemOption = new SystemOption();
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
+        editSystemOption();
     }
 
     public Tab getActiveTab() {
