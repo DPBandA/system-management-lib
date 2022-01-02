@@ -511,7 +511,7 @@ public class SystemManager implements Serializable,
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 175, 400);
+        PrimeFacesUtils.openDialog(null, url, true, true, true, 275, 400);
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
@@ -551,7 +551,7 @@ public class SystemManager implements Serializable,
     }
     
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 175, 400);
+        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 300, 400);
     }
 
     public void editDocumentType() {
@@ -711,13 +711,14 @@ public class SystemManager implements Serializable,
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 350, 550);
     }
 
     public void createNewLdapContext() {
         selectedLdapContext = new LdapContext();
+        selectedLdapContext.setActive(true);
 
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
+        editLdapContext();
     }
 
     public int getActiveNavigationTabIndex() {
