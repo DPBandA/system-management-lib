@@ -153,7 +153,7 @@ public class SystemManager implements Serializable,
 
         getMainTabView().openTab("Financial Administration");
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 600, 600);
     }
 
     public void doDefaultSearch() {
