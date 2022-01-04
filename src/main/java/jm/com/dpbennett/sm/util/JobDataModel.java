@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -40,10 +40,10 @@ public class JobDataModel extends ListDataModel<Job> implements SelectableDataMo
         this.list = list;
     }
 
-    @Override
-    public Object getRowKey(Job job) {
-        return job.getId();
-    }
+//    @Override
+//    public Object getRowKey(Job job) {
+//        return job.getId();
+//    }
 
     @Override
     public Job getRowData(String rowKey) {
@@ -54,6 +54,11 @@ public class JobDataModel extends ListDataModel<Job> implements SelectableDataMo
         }
 
         return null;
+    }
+
+    @Override
+    public String getRowKey(Job t) {
+        return t.getId().toString();
     }
 
 }

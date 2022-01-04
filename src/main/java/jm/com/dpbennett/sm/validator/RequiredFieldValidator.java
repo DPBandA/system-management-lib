@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Business Entity Library (BEL) 
+Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -118,7 +118,7 @@ public class RequiredFieldValidator implements Validator {
             case "discountAmount":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Discount Amount", "Please enter a valid discount amount");
             default:
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "All fields with bold labels are required");
         }
     }
 }

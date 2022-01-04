@@ -20,6 +20,8 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sm.util;
 
 import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 import javax.faces.model.ListDataModel;
 import jm.com.dpbennett.business.entity.hrm.Contact;
 import org.primefaces.model.SelectableDataModel;
@@ -40,10 +42,10 @@ public class ContactDataModel extends ListDataModel<Contact> implements Selectab
         this. list = list;
     }
 
-    @Override
-    public Object getRowKey(Contact contact) {
-        return contact.getId();
-    }
+//    @Override
+//    public Object getRowKey(Contact contact) {
+//        return contact.getId();
+//    }
 
     @Override
     public Contact getRowData(String rowKey) {
@@ -54,5 +56,10 @@ public class ContactDataModel extends ListDataModel<Contact> implements Selectab
         }
 
         return null;
+    }
+
+    @Override
+    public String getRowKey(Contact t) {
+        return t.getId().toString();
     }
 }

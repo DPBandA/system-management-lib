@@ -1,6 +1,6 @@
 /*
 System Management
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -86,7 +86,7 @@ public class SystemManager implements Serializable,
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
     private Dashboard dashboard;
-    private Boolean westLayoutUnitCollapsed;
+    //private Boolean westLayoutUnitCollapsed;
 
     /**
      * Creates a new instance of SystemManager
@@ -175,7 +175,8 @@ public class SystemManager implements Serializable,
         getUser().setPollTime(new Date());
 
         if ((Boolean) SystemOption.getOptionValueObject(getEntityManager(), "debugMode")) {
-            System.out.println("Handling keep alive session: doing polling ..." + getUser().getPollTime());
+            System.out.println(getApplicationHeader() + 
+                    " keeping session alive: " + getUser().getPollTime());
         }
         if (getUser().getId() != null) {
             getUser().save(getEntityManager());
@@ -183,9 +184,7 @@ public class SystemManager implements Serializable,
     }
 
     public void updateAllForms() {
-        PrimeFaces.current().ajax().update("dashboardForm");
-        PrimeFaces.current().ajax().update("mainTabViewForm");
-        PrimeFaces.current().ajax().update("headerForm");
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     public void logout() {
@@ -212,24 +211,16 @@ public class SystemManager implements Serializable,
         return getUser().getId() != null;
     }
 
-    public Boolean getWestLayoutUnitCollapsed() {
-        return westLayoutUnitCollapsed;
-    }
-
-    public void setWestLayoutUnitCollapsed(Boolean westLayoutUnitCollapsed) {
-        this.westLayoutUnitCollapsed = westLayoutUnitCollapsed;
-    }
-
     public void handleLayoutUnitToggle(ToggleEvent event) {
 
         if (event.getComponent().getId().equals("dashboard")) {
-            westLayoutUnitCollapsed = !event.getVisibility().name().equals("VISIBLE");
+            
         }
     }
 
     public String getApplicationHeader() {
 
-        return "System Management";
+        return "System Management"; // tk make system option
 
     }
 
@@ -308,7 +299,8 @@ public class SystemManager implements Serializable,
 
     public void closePreferencesDialog1(ActionEvent actionEvent) {
 
-        PrimeFaces.current().ajax().update("headerForm");
+        PrimeFaces.current().ajax().update("appForm");
+        
         PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
 
@@ -451,7 +443,6 @@ public class SystemManager implements Serializable,
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
-        westLayoutUnitCollapsed = true;
         uiUpdateListeners = new ArrayList<>();
         authenticationListeners = new ArrayList<>();
 
@@ -520,7 +511,7 @@ public class SystemManager implements Serializable,
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 175, 400);
+        PrimeFacesUtils.openDialog(null, url, true, true, true, 275, 400);
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
@@ -560,7 +551,7 @@ public class SystemManager implements Serializable,
     }
     
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 175, 400);
+        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 300, 400);
     }
 
     public void editDocumentType() {
@@ -602,16 +593,9 @@ public class SystemManager implements Serializable,
         mainTabView.removeAllTabs();
         mainTabView.setRender(false);
         uiUpdateListeners = new ArrayList<>();
-        westLayoutUnitCollapsed = true;
 
-        updateAllForms();
-
-        // Return to default theme
-        PrimeFaces.current().executeScript(
-                "PF('longProcessDialogVar').hide();"
-                + "PrimeFaces.changeTheme('"
-                + getUser().getUserInterfaceThemeName() + "');"
-                + "PF('layoutVar').toggle('west');");
+        updateAllForms();       
+        
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -723,17 +707,18 @@ public class SystemManager implements Serializable,
     }
 
     public void editSystemOption() {
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 575, 550);
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 350, 550);
     }
 
     public void createNewLdapContext() {
         selectedLdapContext = new LdapContext();
+        selectedLdapContext.setActive(true);
 
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 240, 450);
+        editLdapContext();
     }
 
     public int getActiveNavigationTabIndex() {
@@ -776,7 +761,7 @@ public class SystemManager implements Serializable,
 
         selectedSystemOption = new SystemOption();
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 450, 500);
+        editSystemOption();
     }
 
     public Tab getActiveTab() {
@@ -842,15 +827,7 @@ public class SystemManager implements Serializable,
 
         getUser().save(getEntityManager());
 
-        if (getWestLayoutUnitCollapsed()) {
-            setWestLayoutUnitCollapsed(false);
-            PrimeFaces.current().executeScript("PF('layoutVar').toggle('west');");
-        }
-
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        PrimeFaces.current().executeScript("PrimeFaces.changeTheme('"
-                + getUser().getUserInterfaceThemeName() + "');");
 
         initDashboard();
         initMainTabView();
