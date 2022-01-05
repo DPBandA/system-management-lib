@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -93,6 +94,110 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+    
+    public void closePreferencesDialog2(CloseEvent closeEvent) {
+        closePreferencesDialog1(null);
+    }
+
+    public void closePreferencesDialog1(ActionEvent actionEvent) {
+
+        PrimeFaces.current().ajax().update("appForm");
+
+        PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
+    }
+    
+    public void updateDashboardTabs(AjaxBehaviorEvent event) {
+
+        switch (event.getComponent().getId()) {
+            case "jobManagementAndTrackingUnit":
+                getDashboard().addTab("Job Management",
+                        getUser().getModules().getJobManagementAndTrackingModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "financialAdminUnit":
+                getDashboard().addTab("Financial Administration",
+                        getUser().getModules().getFinancialAdminModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "adminUnit":
+                getDashboard().addTab("System Administration",
+                        getUser().getModules().getAdminModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "complianceUnit":
+                getDashboard().addTab("Standards Compliance",
+                        getUser().getModules().getComplianceModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "foodsUnit":
+                getDashboard().addTab("Foods Inspectorate",
+                        getUser().getModules().getFoodsModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "standardsUnit":
+                getDashboard().addTab("Standards",
+                        getUser().getModules().getStandardsModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "certificationUnit":
+                getDashboard().addTab("Certification",
+                        getUser().getModules().getCertificationModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "serviceRequestUnit":
+                getDashboard().addTab("Service Request",
+                        getUser().getModules().getServiceRequestModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "legalOfficeUnit":
+                getDashboard().addTab("Legal Office",
+                        getUser().getModules().getLegalOfficeModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "crmUnit":
+                getDashboard().addTab("Client Management",
+                        getUser().getModules().getCrmModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "legalMetrologyUnit":
+                getDashboard().addTab("Legal Metrology",
+                        getUser().getModules().getLegalMetrologyModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "hrmUnit":
+                getDashboard().addTab("Human Resource",
+                        getUser().getModules().getHrmModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "reportUnit":
+                getDashboard().addTab("Report Management",
+                        getUser().getModules().getReportModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;
+            case "purchaseManagementUnit":
+                getDashboard().addTab("Procurement",
+                        getUser().getModules().getPurchaseManagementModule());
+                getUser().getModules().setIsDirty(true);
+                getUser().save(getEntityManager());
+                break;    
+            default:
+                break;
+        }
+
     }
 
     public String getDateStr(Date date) {
@@ -291,17 +396,6 @@ public class SystemManager implements Serializable,
 
     public void setDashboard(Dashboard dashboard) {
         this.dashboard = dashboard;
-    }
-
-    public void closePreferencesDialog2(CloseEvent closeEvent) {
-        closePreferencesDialog1(null);
-    }
-
-    public void closePreferencesDialog1(ActionEvent actionEvent) {
-
-        PrimeFaces.current().ajax().update("appForm");
-        
-        PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
 
     /**
