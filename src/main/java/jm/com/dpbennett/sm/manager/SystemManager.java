@@ -26,6 +26,7 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -36,6 +37,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
@@ -50,6 +52,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.CloseEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
@@ -70,6 +73,7 @@ public class SystemManager implements Serializable,
     private Tab activeTab;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
+    private Boolean isActiveUsersOnly;
     private String systemOptionSearchText;
     private String ldapSearchText;
     private String documentTypeSearchText;
@@ -87,7 +91,11 @@ public class SystemManager implements Serializable,
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
     private Dashboard dashboard;
-    //private Boolean westLayoutUnitCollapsed;
+    // User related
+    private User selectedUser;
+    private User foundUser;
+    private String userSearchText;
+    private List<User> foundUsers;
 
     /**
      * Creates a new instance of SystemManager
@@ -96,6 +104,289 @@ public class SystemManager implements Serializable,
         init();
     }
     
+    public List<Employee> completeActiveEmployee(String query) {
+        EntityManager em;
+
+        try {
+
+            em = getEntityManager();
+            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+
+            if (employees != null) {
+                return employees;
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+    
+     public void updatePreferences() {
+        getUser().save(getEntityManager());
+    }
+
+    public void updatePreferedJobTableView(SelectEvent event) {
+        getUser().save(getEntityManager());
+    }
+    
+    public Boolean getIsActiveUsersOnly() {
+
+        return isActiveUsersOnly;
+    }
+
+    public void setIsActiveUsersOnly(Boolean isActiveUsersOnly) {
+        this.isActiveUsersOnly = isActiveUsersOnly;
+    }
+
+    public void updateModuleAccess(AjaxBehaviorEvent event) {
+        switch (event.getComponent().getId()) {
+            case "canAccessComplianceUnit":
+                getSelectedUser().getModules().setComplianceModule(getSelectedUser().
+                        getPrivilege().getCanAccessComplianceUnit());
+                break;
+            case "canAccessCertificationUnit":
+                getSelectedUser().getModules().setCertificationModule(getSelectedUser().
+                        getPrivilege().getCanAccessCertificationUnit());
+                break;
+            case "canAccessFoodsUnit":
+                getSelectedUser().getModules().setFoodsModule(getSelectedUser().
+                        getPrivilege().getCanAccessFoodsUnit());
+                break;
+            case "canAccessJobManagementUnit":
+                getSelectedUser().getModules().setJobManagementAndTrackingModule(getSelectedUser().
+                        getPrivilege().getCanAccessJobManagementUnit());
+                break;
+            case "canAccessLegalMetrologyUnit":
+                getSelectedUser().getModules().setLegalMetrologyModule(getSelectedUser().
+                        getPrivilege().getCanAccessLegalMetrologyUnit());
+                break;
+            case "canAccessLegalOfficeUnit":
+                getSelectedUser().getModules().setLegalOfficeModule(getSelectedUser().
+                        getPrivilege().getCanAccessLegalOfficeUnit());
+                break;
+            case "canAccessServiceRequestUnit":
+                getSelectedUser().getModules().setServiceRequestModule(getSelectedUser().
+                        getPrivilege().getCanAccessServiceRequestUnit());
+                break;
+            case "canAccessStandardsUnit":
+                getSelectedUser().getModules().setStandardsModule(getSelectedUser().
+                        getPrivilege().getCanAccessStandardsUnit());
+                break;
+            case "canAccessCRMUnit":
+                getSelectedUser().getModules().setCrmModule(getSelectedUser().
+                        getPrivilege().getCanAccessCRMUnit());
+                break;
+            case "canBeFinancialAdministrator":
+                getSelectedUser().getModules().setFinancialAdminModule(getSelectedUser().
+                        getPrivilege().getCanBeFinancialAdministrator());
+                break;
+            case "canAccessHRMUnit":
+                getSelectedUser().getModules().setHrmModule(getSelectedUser().
+                        getPrivilege().getCanAccessHRMUnit());
+                break;
+            case "canBeJMTSAdministrator":
+                getSelectedUser().getModules().setAdminModule(getSelectedUser().
+                        getPrivilege().getCanBeJMTSAdministrator());
+                break;
+            case "canAccessReportUnit":
+                getSelectedUser().getModules().setReportModule(getSelectedUser().
+                        getPrivilege().getCanAccessReportUnit());
+                break;
+            case "canAccessProcurementUnit":
+                getSelectedUser().getModules().setReportModule(getSelectedUser().
+                        getPrivilege().getCanAccessProcurementUnit());
+                break;
+            default:
+                break;
+
+        }
+
+        getSelectedUser().getPrivilege().setIsDirty(true);
+        getSelectedUser().getModules().setIsDirty(true);
+    }
+
+    public List<User> getFoundUsers() {
+        if (foundUsers == null) {
+            foundUsers = User.findAllActiveJobManagerUsers(getEntityManager());
+        }
+        return foundUsers;
+    }
+
+    public String getUserSearchText() {
+        return userSearchText;
+    }
+
+    public void setUserSearchText(String userSearchText) {
+        this.userSearchText = userSearchText;
+    }
+
+    public void doUserSearch() {
+
+        if (getIsActiveUsersOnly()) {
+            foundUsers = User.findActiveJobManagerUsersByName(getEntityManager(), getUserSearchText());
+        } else {
+            foundUsers = User.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
+        }
+
+    }
+
+    public String getFoundUser() {
+
+        if (foundUser != null) {
+            return foundUser.getUsername();
+        } else {
+            foundUser = new User();
+            foundUser.setUsername("");
+
+            return foundUser.getUsername();
+        }
+    }
+
+    public void setFoundUser(String username) {
+        foundUser.setUsername(username);
+    }
+
+    public void editUser() {
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 550, 750);
+    }
+
+    public User getSelectedUser() {
+        // init with current logged on user if null
+        if (selectedUser == null) {
+            selectedUser = new User();
+        }
+
+        return selectedUser;
+    }
+
+    public void setSelectedUser(User selectedUser) {
+        this.selectedUser = selectedUser;
+    }
+
+    public void cancelUserEdit(ActionEvent actionEvent) {
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void updateSelectedUserEmployee() {
+        if (selectedUser.getEmployee() != null) {
+            if (selectedUser.getEmployee().getId() != null) {
+                selectedUser.setEmployee(Employee.findEmployeeById(getEntityManager(), selectedUser.getEmployee().getId()));
+            } else {
+                Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
+                if (selectedUser.getEmployee() != null) {
+                    selectedUser.setEmployee(employee);
+                }
+            }
+        } else {
+            Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
+            if (selectedUser.getEmployee() != null) {
+                selectedUser.setEmployee(employee);
+            }
+        }
+    }
+
+    public void updateSelectedUser() {
+
+        EntityManager em = getEntityManager();
+
+        if (selectedUser.getId() != null) {
+            selectedUser = User.findJobManagerUserById(em, selectedUser.getId());
+        }
+    }
+
+    public void updateFoundUser(SelectEvent event) {
+
+        EntityManager em = getEntityManager();
+
+        User u = User.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
+        if (u != null) {
+            foundUser = u;
+            selectedUser = u;
+        }
+    }
+
+    public List<String> completeUser(String query) {
+
+        try {
+            List<User> users = User.findJobManagerUsersByUsername(getEntityManager(), query);
+            List<String> suggestions = new ArrayList<>();
+            if (users != null) {
+                if (!users.isEmpty()) {
+                    for (User u : users) {
+                        suggestions.add(u.getUsername());
+                    }
+                }
+            }
+
+            return suggestions;
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+
+    public void createNewUser() {
+        EntityManager em = getEntityManager();
+
+        selectedUser = new User();
+        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+
+        editUser();
+    }
+
+    public void updateUserPrivilege(ValueChangeEvent event) {
+    }
+
+    public void handleUserDialogReturn() {
+    }
+
+    public void updatePrivileges(AjaxBehaviorEvent event) {
+        switch (event.getComponent().getId()) {
+            // Job Privileges
+            case "canEnterJob":
+                selectedUser.getPrivilege().
+                        setCanEnterDepartmentJob(selectedUser.getPrivilege().getCanEnterJob());
+                selectedUser.getPrivilege().
+                        setCanEnterOwnJob(selectedUser.getPrivilege().getCanEnterJob());
+                break;
+            case "canEditJob":
+                selectedUser.getPrivilege().setCanEditDepartmentJob(selectedUser.
+                        getPrivilege().getCanEditJob());
+                selectedUser.getPrivilege().setCanEditOwnJob(selectedUser.getPrivilege().getCanEditJob());
+                break;
+            case "canEnterDepartmentJob":
+            case "canEnterOwnJob":
+            case "canEditDepartmentalJob":
+            case "canEditOwnJob":
+            case "canApproveJobCosting":
+            // Organizational Privileges    
+            case "canAddClient":
+            case "canAddSupplier":
+            case "canDeleteClient":
+            case "canAddEmployee":
+            case "canDeleteEmployee":
+            case "canAddDepartment":
+            case "canDeleteDepartment":
+            case "canBeSuperUser":
+                break;
+            default:
+                break;
+        }
+
+        selectedUser.getPrivilege().setIsDirty(true);
+    }
+
+    public void saveSelectedUser(ActionEvent actionEvent) {
+
+        selectedUser.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+
     public void closePreferencesDialog2(CloseEvent closeEvent) {
         closePreferencesDialog1(null);
     }
@@ -106,7 +397,7 @@ public class SystemManager implements Serializable,
 
         PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
-    
+
     public void updateDashboardTabs(AjaxBehaviorEvent event) {
 
         switch (event.getComponent().getId()) {
@@ -193,7 +484,7 @@ public class SystemManager implements Serializable,
                         getUser().getModules().getPurchaseManagementModule());
                 getUser().getModules().setIsDirty(true);
                 getUser().save(getEntityManager());
-                break;    
+                break;
             default:
                 break;
         }
@@ -280,8 +571,8 @@ public class SystemManager implements Serializable,
         getUser().setPollTime(new Date());
 
         if ((Boolean) SystemOption.getOptionValueObject(getEntityManager(), "debugMode")) {
-            System.out.println(getApplicationHeader() + 
-                    " keeping session alive: " + getUser().getPollTime());
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
         }
         if (getUser().getId() != null) {
             getUser().save(getEntityManager());
@@ -319,7 +610,7 @@ public class SystemManager implements Serializable,
     public void handleLayoutUnitToggle(ToggleEvent event) {
 
         if (event.getComponent().getId().equals("dashboard")) {
-            
+
         }
     }
 
@@ -419,7 +710,7 @@ public class SystemManager implements Serializable,
 
             ArrayList<Country> countries = new ArrayList<>(Country.findCountriesByName(em, query));
             ArrayList<String> countriesList = (ArrayList<String>) (ArrayList<?>) countries;
-            
+
             countriesList.add(0, "-- Unknown --");
 
             return countriesList;
@@ -531,9 +822,11 @@ public class SystemManager implements Serializable,
         ldapSearchText = "";
         documentTypeSearchText = "";
         categorySearchText = "";
+        userSearchText = "";
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
+        isActiveUsersOnly = true;
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -583,21 +876,20 @@ public class SystemManager implements Serializable,
         if (foundCategories == null) {
             foundCategories = Category.findAllCategories(getEntityManager());
         }
-        
+
         return foundCategories;
     }
 
     public void setFoundCategories(List<Category> foundCategories) {
         this.foundCategories = foundCategories;
     }
-       
 
     public void doDocumentTypeSearch() {
 
         foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
 
     }
-    
+
     public void doCategorySearch() {
 
         foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
@@ -627,7 +919,7 @@ public class SystemManager implements Serializable,
         editDocumentType();
 
     }
-    
+
     public void createNewCategory() {
         selectedCategory = new Category();
 
@@ -636,14 +928,14 @@ public class SystemManager implements Serializable,
         editCategory();
 
     }
-    
+
     public void saveSelectedCategory() {
 
         selectedCategory.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void editCategory() {
         PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 300, 400);
     }
@@ -651,7 +943,7 @@ public class SystemManager implements Serializable,
     public void editDocumentType() {
         openDocumentTypeDialog("documentTypeDialog");
     }
-   
+
     public List<DocumentType> getDocumentTypes() {
         return DocumentType.findAllDocumentTypes(getEntityManager());
     }
@@ -688,8 +980,8 @@ public class SystemManager implements Serializable,
         mainTabView.setRender(false);
         uiUpdateListeners = new ArrayList<>();
 
-        updateAllForms();       
-        
+        updateAllForms();
+
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -896,10 +1188,6 @@ public class SystemManager implements Serializable,
         return getAuthentication().getUser();
     }
 
-    public void updatePreferences() {
-        getUser().save(getEntityManager());
-    }
-
     public MainTabView getMainTabView() {
         return mainTabView;
     }
@@ -910,9 +1198,6 @@ public class SystemManager implements Serializable,
 
     public Date getCurrentDate() {
         return new Date();
-    }
-
-    public void handleUserDialogReturn() {
     }
 
     @Override
@@ -970,5 +1255,5 @@ public class SystemManager implements Serializable,
     public void setCategorySearchText(String categorySearchText) {
         this.categorySearchText = categorySearchText;
     }
-    
+
 }
