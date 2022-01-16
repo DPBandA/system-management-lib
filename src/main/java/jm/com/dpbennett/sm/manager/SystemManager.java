@@ -31,6 +31,7 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import jm.com.dpbennett.business.entity.auth.Privilege;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.User;
@@ -78,15 +79,18 @@ public class SystemManager implements Serializable,
     private String ldapSearchText;
     private String documentTypeSearchText;
     private String categorySearchText;
+    private String privilegeSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
     private List<Category> foundCategories;
+    private List<Privilege> foundActivePrivileges;
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
+    private Privilege selectedPrivilege;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
@@ -102,6 +106,22 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+
+    public String getPrivilegeSearchText() {
+        return privilegeSearchText;
+    }
+
+    public void setPrivilegeSearchText(String privilegeSearchText) {
+        this.privilegeSearchText = privilegeSearchText;
+    }
+
+    public Privilege getSelectedPrivilege() {
+        return selectedPrivilege;
+    }
+
+    public void setSelectedPrivilege(Privilege selectedPrivilege) {
+        this.selectedPrivilege = selectedPrivilege;
     }
     
     public List<Employee> completeActiveEmployee(String query) {
@@ -822,6 +842,7 @@ public class SystemManager implements Serializable,
         ldapSearchText = "";
         documentTypeSearchText = "";
         categorySearchText = "";
+        privilegeSearchText = "";
         userSearchText = "";
         // Active flags
         isActiveLdapsOnly = true;
@@ -884,6 +905,19 @@ public class SystemManager implements Serializable,
         this.foundCategories = foundCategories;
     }
 
+    public List<Privilege> getFoundActivePrivileges() {
+        if (foundActivePrivileges == null) {
+            //foundActivePrivileges = Privilege.findAllActivePrivileges(getEntityManager());
+        }
+        
+        return foundActivePrivileges;
+    }
+
+    public void setFoundActivePrivileges(List<Privilege> foundActivePrivileges) {
+        this.foundActivePrivileges = foundActivePrivileges;
+    }   
+    
+
     public void doDocumentTypeSearch() {
 
         foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
@@ -893,6 +927,13 @@ public class SystemManager implements Serializable,
     public void doCategorySearch() {
 
         foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
+
+    }
+    
+    public void doActivePrivilegeSearch() {
+
+        //foundActivePrivileges = 
+        //        Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
 
     }
 
@@ -928,12 +969,32 @@ public class SystemManager implements Serializable,
         editCategory();
 
     }
+    
+    public void createNewPrivilege() {
+        selectedPrivilege = new Privilege();
+
+        getMainTabView().openTab("System Administration");
+
+        editPrivilege();
+
+    }
 
     public void saveSelectedCategory() {
 
         selectedCategory.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void saveSelectedPrivilege() {
+
+        selectedPrivilege.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void editPrivilege() {
+        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
     }
 
     public void editCategory() {
