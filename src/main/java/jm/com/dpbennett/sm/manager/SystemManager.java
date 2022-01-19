@@ -907,7 +907,7 @@ public class SystemManager implements Serializable,
 
     public List<Privilege> getFoundActivePrivileges() {
         if (foundActivePrivileges == null) {
-            //foundActivePrivileges = Privilege.findAllActivePrivileges(getEntityManager());
+            foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager(), "");
         }
         
         return foundActivePrivileges;
@@ -932,8 +932,8 @@ public class SystemManager implements Serializable,
     
     public void doActivePrivilegeSearch() {
 
-        //foundActivePrivileges = 
-        //        Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
+        foundActivePrivileges = 
+                Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
 
     }
 
@@ -973,7 +973,12 @@ public class SystemManager implements Serializable,
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
 
-        getMainTabView().openTab("System Administration");
+        //getMainTabView().openTab("System Administration");
+        selectSystemAdminTab(
+                "centerTabVar", 
+                "Privileges", 
+                0, // tk this or the other int may not be necessary
+                0);
 
         editPrivilege();
 
