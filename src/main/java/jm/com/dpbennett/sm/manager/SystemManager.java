@@ -363,11 +363,7 @@ public class SystemManager implements Serializable,
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
 
-        selectSystemAdminTab(
-                "centerTabVar",
-                "Users",
-                1, // tk this or the other int may not be necessary
-                1);
+        selectSystemAdminTab("centerTabVar", 1);
 
         editUser();
     }
@@ -970,11 +966,7 @@ public class SystemManager implements Serializable,
     public void createNewDocumentType() {
         selectedDocumentType = new DocumentType();
 
-        selectSystemAdminTab(
-                "centerTabVar",
-                "Document Types",
-                3, // tk this or the other int may not be necessary
-                3);
+        selectSystemAdminTab("centerTabVar", 3);
 
         editDocumentType();
 
@@ -983,11 +975,7 @@ public class SystemManager implements Serializable,
     public void createNewCategory() {
         selectedCategory = new Category();
 
-        selectSystemAdminTab(
-                "centerTabVar",
-                "Categories",
-                2, // tk this or the other int may not be necessary
-                2);
+        selectSystemAdminTab("centerTabVar", 2);
 
         editCategory();
 
@@ -996,11 +984,7 @@ public class SystemManager implements Serializable,
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
 
-        selectSystemAdminTab(
-                "centerTabVar",
-                "Privileges",
-                0, // tk this or the other int may not be necessary
-                0);
+        selectSystemAdminTab("centerTabVar", 0);
 
         editPrivilege();
 
@@ -1146,13 +1130,11 @@ public class SystemManager implements Serializable,
      * @param adminTabIndex
      * @param innerTabIndex
      */
-    private void selectSystemAdminTab(String innerTabViewVar, String innerTabName, int adminTabIndex, int innerTabIndex) {
+    private void selectSystemAdminTab(String innerTabViewVar, int innerTabIndex) {
         if (getMainTabView().findTab("System Administration") == null) {
             getMainTabView().openTab("System Administration");
-            PrimeFaces.current().executeScript("PF('centerTabVar').select(" + adminTabIndex + ");");
-            PrimeFacesUtils.addMessage("Select Tab", "Select the " + innerTabName + " tab to begin search", FacesMessage.SEVERITY_INFO);
+            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
-            PrimeFaces.current().executeScript("PF('centerTabVar').select(" + adminTabIndex + ");");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
@@ -1192,11 +1174,7 @@ public class SystemManager implements Serializable,
         selectedLdapContext = new LdapContext();
         selectedLdapContext.setActive(true);
 
-        selectSystemAdminTab(
-                "centerTabVar",
-                "Authentication",
-                5, // tk this or the other int may not be necessary
-                5);
+        selectSystemAdminTab("centerTabVar", 5);
 
         editLdapContext();
     }
@@ -1241,11 +1219,7 @@ public class SystemManager implements Serializable,
 
         selectedSystemOption = new SystemOption();
 
-        selectSystemAdminTab(
-                "centerTabVar",
-                "Options",
-                4, // tk this or the other int may not be necessary
-                4);
+        selectSystemAdminTab("centerTabVar", 4);
 
         editSystemOption();
     }
