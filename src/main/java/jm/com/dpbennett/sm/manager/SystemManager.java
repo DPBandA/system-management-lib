@@ -100,12 +100,21 @@ public class SystemManager implements Serializable,
     private User foundUser;
     private String userSearchText;
     private List<User> foundUsers;
+    private String usersTableId;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+
+    public String getUsersTableId() {
+        return usersTableId;
+    }
+
+    public void setUsersTableId(String usersTableId) {
+        this.usersTableId = usersTableId;
     }
 
     public String getPrivilegeSearchText() {
@@ -123,7 +132,7 @@ public class SystemManager implements Serializable,
     public void setSelectedPrivilege(Privilege selectedPrivilege) {
         this.selectedPrivilege = selectedPrivilege;
     }
-    
+
     public List<Employee> completeActiveEmployee(String query) {
         EntityManager em;
 
@@ -142,15 +151,15 @@ public class SystemManager implements Serializable,
             return new ArrayList<>();
         }
     }
-    
-     public void updatePreferences() {
+
+    public void updatePreferences() {
         getUser().save(getEntityManager());
     }
 
     public void updatePreferedJobTableView(SelectEvent event) {
         getUser().save(getEntityManager());
     }
-    
+
     public Boolean getIsActiveUsersOnly() {
 
         return isActiveUsersOnly;
@@ -353,10 +362,10 @@ public class SystemManager implements Serializable,
 
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
-        
+
         selectSystemAdminTab(
-                "centerTabVar", 
-                "Users", 
+                "centerTabVar",
+                "Users",
                 1, // tk this or the other int may not be necessary
                 1);
 
@@ -859,6 +868,7 @@ public class SystemManager implements Serializable,
         mainTabView = new MainTabView(getUser());
         uiUpdateListeners = new ArrayList<>();
         authenticationListeners = new ArrayList<>();
+        usersTableId = ":appForm:mainTabView:centerTabView:usersTable";
 
         getAuthentication().addSingleAuthenticationListener(this);
     }
@@ -915,14 +925,13 @@ public class SystemManager implements Serializable,
         if (foundActivePrivileges == null) {
             foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager(), "");
         }
-        
+
         return foundActivePrivileges;
     }
 
     public void setFoundActivePrivileges(List<Privilege> foundActivePrivileges) {
         this.foundActivePrivileges = foundActivePrivileges;
-    }   
-    
+    }
 
     public void doDocumentTypeSearch() {
 
@@ -935,11 +944,11 @@ public class SystemManager implements Serializable,
         foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
 
     }
-    
+
     public void doActivePrivilegeSearch() {
 
-        foundActivePrivileges = 
-                Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
+        foundActivePrivileges
+                = Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
 
     }
 
@@ -961,7 +970,11 @@ public class SystemManager implements Serializable,
     public void createNewDocumentType() {
         selectedDocumentType = new DocumentType();
 
-        getMainTabView().openTab("System Administration");
+        selectSystemAdminTab(
+                "centerTabVar",
+                "Document Types",
+                3, // tk this or the other int may not be necessary
+                3);
 
         editDocumentType();
 
@@ -970,18 +983,22 @@ public class SystemManager implements Serializable,
     public void createNewCategory() {
         selectedCategory = new Category();
 
-        getMainTabView().openTab("System Administration");
+        selectSystemAdminTab(
+                "centerTabVar",
+                "Categories",
+                2, // tk this or the other int may not be necessary
+                2);
 
         editCategory();
 
     }
-    
+
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
 
         selectSystemAdminTab(
-                "centerTabVar", 
-                "Privileges", 
+                "centerTabVar",
+                "Privileges",
                 0, // tk this or the other int may not be necessary
                 0);
 
@@ -995,14 +1012,14 @@ public class SystemManager implements Serializable,
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void saveSelectedPrivilege() {
 
         selectedPrivilege.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void editPrivilege() {
         PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
     }
@@ -1175,6 +1192,12 @@ public class SystemManager implements Serializable,
         selectedLdapContext = new LdapContext();
         selectedLdapContext.setActive(true);
 
+        selectSystemAdminTab(
+                "centerTabVar",
+                "Authentication",
+                5, // tk this or the other int may not be necessary
+                5);
+
         editLdapContext();
     }
 
@@ -1217,6 +1240,12 @@ public class SystemManager implements Serializable,
     public void createNewSystemOption() {
 
         selectedSystemOption = new SystemOption();
+
+        selectSystemAdminTab(
+                "centerTabVar",
+                "Options",
+                4, // tk this or the other int may not be necessary
+                4);
 
         editSystemOption();
     }
