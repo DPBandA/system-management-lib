@@ -42,8 +42,6 @@ import org.primefaces.PrimeFaces;
 public class Authentication implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
-    //@PersistenceContext(unitName = "JMTSPU")
-    //private EntityManager em;
     private EntityManagerFactory EMF;
     private User user;
     private String username;
@@ -51,7 +49,7 @@ public class Authentication implements Serializable {
     private String password;
     private Integer loginAttempts;
     private Boolean userLoggedIn;
-    private List<AuthenticationListener> authenticationListeners;
+    final private List<AuthenticationListener> authenticationListeners;
 
     public Authentication() {
         password = "";

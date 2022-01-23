@@ -80,6 +80,7 @@ public class SystemManager implements Serializable,
     private String documentTypeSearchText;
     private String categorySearchText;
     private String privilegeSearchText;
+    private String searchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
@@ -584,6 +585,17 @@ public class SystemManager implements Serializable,
     }
 
     public void doDefaultSearch() {
+          switch (getDashboard().getSelectedTabId()) {
+            case "System Administration":
+                doSearch();
+                break;            
+            default:
+                break;
+        }
+    }
+    
+    public void doSearch() {
+        System.out.println("Doing search...");
     }
 
     private void notifyListenersToCompleteLogin() {
@@ -706,6 +718,8 @@ public class SystemManager implements Serializable,
     private void initDashboard() {
 
         getDashboard().reset(getUser(), false);
+        
+        getDashboard().setSelectedTabId("System Administration");
 
         if (getUser().getModules().getAdminModule()) {
             getDashboard().openTab("System Administration");
@@ -855,6 +869,7 @@ public class SystemManager implements Serializable,
         categorySearchText = "";
         privilegeSearchText = "";
         userSearchText = "";
+        searchText = "";
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
@@ -869,6 +884,14 @@ public class SystemManager implements Serializable,
         getAuthentication().addSingleAuthenticationListener(this);
     }
 
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+    
     public Boolean getIsActiveDocumentTypesOnly() {
         return isActiveDocumentTypesOnly;
     }
@@ -1126,17 +1149,28 @@ public class SystemManager implements Serializable,
      * already opened.
      *
      * @param innerTabViewVar
-     * @param innerTabName
-     * @param adminTabIndex
      * @param innerTabIndex
      */
-    private void selectSystemAdminTab(String innerTabViewVar, int innerTabIndex) {
+    public void selectSystemAdminTab(String innerTabViewVar, int innerTabIndex) {
         if (getMainTabView().findTab("System Administration") == null) {
             getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
+    }
+    
+    public ArrayList getSearchTypes() {
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("General", "General"));
+        searchTypes.add(new SelectItem("My jobs", "My jobs"));
+        searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+        searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
+        searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
+        searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
+       
+        return searchTypes;
     }
 
     public void doSystemOptionSearch() {
