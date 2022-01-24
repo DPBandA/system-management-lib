@@ -585,15 +585,15 @@ public class SystemManager implements Serializable,
     }
 
     public void doDefaultSearch() {
-          switch (getDashboard().getSelectedTabId()) {
+        switch (getDashboard().getSelectedTabId()) {
             case "System Administration":
                 doSearch();
-                break;            
+                break;
             default:
                 break;
         }
     }
-    
+
     public void doSearch() {
         System.out.println("Doing search...");
     }
@@ -696,6 +696,19 @@ public class SystemManager implements Serializable,
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        switch (tabId) {
+            case "Human Resource":
+                setUsersTableId(":appForm:mainTabView:humanResourceTabView:usersTable");
+                PrimeFaces.current().ajax().update(":appForm:mainTabView:humanResourceTabView");
+                break;
+            case "System Administration":
+                setUsersTableId(":appForm:mainTabView:centerTabView:usersTable");
+                PrimeFaces.current().ajax().update(":appForm:mainTabView:humanResourceTabView");
+                break;
+
+        }
     }
 
     public void onDashboardTabChange(TabChangeEvent event) {
@@ -703,7 +716,7 @@ public class SystemManager implements Serializable,
     }
 
     public void updateDashboard(String tabId) {
-        PrimeFaces.current().ajax().update("dashboardForm");
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     private void initMainTabView() {
@@ -718,7 +731,7 @@ public class SystemManager implements Serializable,
     private void initDashboard() {
 
         getDashboard().reset(getUser(), false);
-        
+
         getDashboard().setSelectedTabId("System Administration");
 
         if (getUser().getModules().getAdminModule()) {
@@ -891,7 +904,7 @@ public class SystemManager implements Serializable,
     public void setSearchText(String searchText) {
         this.searchText = searchText;
     }
-    
+
     public Boolean getIsActiveDocumentTypesOnly() {
         return isActiveDocumentTypesOnly;
     }
@@ -1159,7 +1172,7 @@ public class SystemManager implements Serializable,
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
-    
+
     public ArrayList getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
@@ -1169,7 +1182,7 @@ public class SystemManager implements Serializable,
         searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
         searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
         searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
-       
+
         return searchTypes;
     }
 
