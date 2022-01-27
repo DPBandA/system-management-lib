@@ -1169,6 +1169,7 @@ public class SystemManager implements Serializable,
             getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
+            getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
