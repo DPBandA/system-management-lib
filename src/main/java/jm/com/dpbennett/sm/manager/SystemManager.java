@@ -40,6 +40,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
@@ -92,6 +93,7 @@ public class SystemManager implements Serializable,
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
     private Privilege selectedPrivilege;
+    private Modules selectedModule;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
     private List<AuthenticationListener> authenticationListeners;
@@ -132,6 +134,14 @@ public class SystemManager implements Serializable,
 
     public void setSelectedPrivilege(Privilege selectedPrivilege) {
         this.selectedPrivilege = selectedPrivilege;
+    }
+
+    public Modules getSelectedModule() {
+        return selectedModule;
+    }
+
+    public void setSelectedModule(Modules selectedModule) {
+        this.selectedModule = selectedModule;
     }
 
     public List<Employee> completeActiveEmployee(String query) {
@@ -279,7 +289,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editUser() {
-        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 550, 750);
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 700, 750);
     }
 
     public User getSelectedUser() {
@@ -705,7 +715,7 @@ public class SystemManager implements Serializable,
                 break;
             case "System Administration":
                 setUsersTableId(":appForm:mainTabView:centerTabView:usersTable");
-                PrimeFaces.current().ajax().update(":appForm:mainTabView:humanResourceTabView");
+                PrimeFaces.current().ajax().update(":appForm:mainTabView::centerTabView");
                 break;
 
         }
@@ -1025,6 +1035,15 @@ public class SystemManager implements Serializable,
         editPrivilege();
 
     }
+    
+    public void createNewModule() {
+        selectedModule = new Modules();
+
+        selectSystemAdminTab("centerTabVar", 6);
+
+        editModule();
+
+    }
 
     public void saveSelectedCategory() {
 
@@ -1042,6 +1061,10 @@ public class SystemManager implements Serializable,
 
     public void editPrivilege() {
         PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
+    }
+    
+    public void editModule() {
+        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 400, 500);
     }
 
     public void editCategory() {
