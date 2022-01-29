@@ -81,6 +81,7 @@ public class SystemManager implements Serializable,
     private String documentTypeSearchText;
     private String categorySearchText;
     private String privilegeSearchText;
+    private String moduleSearchText;
     private String searchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
@@ -88,6 +89,7 @@ public class SystemManager implements Serializable,
     private List<DocumentType> foundDocumentTypes;
     private List<Category> foundCategories;
     private List<Privilege> foundActivePrivileges;
+    private List<Modules> foundActiveModules;
     private SystemOption selectedSystemOption;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
@@ -706,9 +708,10 @@ public class SystemManager implements Serializable,
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
+        
+        String tabTitle = event.getTab().getTitle();
 
-        switch (tabId) {
+        switch (tabTitle) {
             case "Human Resource":
                 setUsersTableId(":appForm:mainTabView:humanResourceTabView:usersTable");
                 PrimeFaces.current().ajax().update(":appForm:mainTabView:humanResourceTabView");
@@ -891,6 +894,7 @@ public class SystemManager implements Serializable,
         documentTypeSearchText = "";
         categorySearchText = "";
         privilegeSearchText = "";
+        moduleSearchText = "";
         userSearchText = "";
         searchText = "";
         // Active flags
@@ -905,6 +909,14 @@ public class SystemManager implements Serializable,
         usersTableId = ":appForm:mainTabView:centerTabView:usersTable";
 
         getAuthentication().addSingleAuthenticationListener(this);
+    }
+
+    public String getModuleSearchText() {
+        return moduleSearchText;
+    }
+
+    public void setModuleSearchText(String moduleSearchText) {
+        this.moduleSearchText = moduleSearchText;
     }
 
     public String getSearchText() {
@@ -975,6 +987,20 @@ public class SystemManager implements Serializable,
         this.foundActivePrivileges = foundActivePrivileges;
     }
 
+    public List<Modules> getFoundActiveModules() {
+        if (foundActiveModules == null) {
+            foundActiveModules = Modules.findActiveModules(getEntityManager(), "");
+        }
+        
+        return foundActiveModules;
+    }
+
+    public void setFoundActiveModules(List<Modules> foundActiveModules) {
+        this.foundActiveModules = foundActiveModules;
+    }
+    
+    
+
     public void doDocumentTypeSearch() {
 
         foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
@@ -991,6 +1017,13 @@ public class SystemManager implements Serializable,
 
         foundActivePrivileges
                 = Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
+
+    }
+    
+    public void doActiveModuleSearch() {
+
+        foundActiveModules
+                = Modules.findActiveModules(getEntityManager(), getModuleSearchText());
 
     }
 
@@ -1055,6 +1088,13 @@ public class SystemManager implements Serializable,
     public void saveSelectedPrivilege() {
 
         selectedPrivilege.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void saveSelectedModule() {
+
+        selectedModule.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
