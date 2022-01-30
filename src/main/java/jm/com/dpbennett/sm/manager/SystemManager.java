@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -38,6 +37,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
+import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
@@ -58,6 +58,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
+import org.primefaces.model.DualListModel;
 
 /**
  *
@@ -91,6 +92,7 @@ public class SystemManager implements Serializable,
     private List<Privilege> foundActivePrivileges;
     private List<Modules> foundActiveModules;
     private SystemOption selectedSystemOption;
+    private DualListModel<Privilege> privilegeDualList;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
@@ -112,6 +114,14 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+
+    public DualListModel<Privilege> getPrivilegeDualList() {
+        return privilegeDualList;
+    }
+
+    public void setPrivilegeDualList(DualListModel<Privilege> privilegeDualList) {
+        this.privilegeDualList = privilegeDualList;
     }
 
     public String getUsersTableId() {
@@ -607,7 +617,7 @@ public class SystemManager implements Serializable,
     }
 
     public void doSearch() {
-        System.out.println("Doing search...");
+        System.out.println("Doing default search...");
     }
 
     private void notifyListenersToCompleteLogin() {
@@ -708,7 +718,7 @@ public class SystemManager implements Serializable,
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
-        
+
         String tabTitle = event.getTab().getTitle();
 
         switch (tabTitle) {
@@ -991,15 +1001,13 @@ public class SystemManager implements Serializable,
         if (foundActiveModules == null) {
             foundActiveModules = Modules.findActiveModules(getEntityManager(), "");
         }
-        
+
         return foundActiveModules;
     }
 
     public void setFoundActiveModules(List<Modules> foundActiveModules) {
         this.foundActiveModules = foundActiveModules;
     }
-    
-    
 
     public void doDocumentTypeSearch() {
 
@@ -1019,7 +1027,7 @@ public class SystemManager implements Serializable,
                 = Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
 
     }
-    
+
     public void doActiveModuleSearch() {
 
         foundActiveModules
@@ -1068,7 +1076,7 @@ public class SystemManager implements Serializable,
         editPrivilege();
 
     }
-    
+
     public void createNewModule() {
         selectedModule = new Modules();
 
@@ -1091,7 +1099,7 @@ public class SystemManager implements Serializable,
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void saveSelectedModule() {
 
         selectedModule.save(getEntityManager());
@@ -1102,9 +1110,9 @@ public class SystemManager implements Serializable,
     public void editPrivilege() {
         PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
     }
-    
+
     public void editModule() {
-        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 750, 800);
     }
 
     public void editCategory() {
