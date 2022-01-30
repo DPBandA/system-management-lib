@@ -116,6 +116,35 @@ public class SystemManager implements Serializable,
         init();
     }
 
+    public void okPickList() {
+        closeDialog(null);
+    }
+    
+    public void closeDialog(ActionEvent actionEvent) {
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void addModulePrivileges() {
+        List<Privilege> source = Privilege.findActivePrivileges(getEntityManager(), "");
+        List<Privilege> target = selectedModule.getPrivileges();
+
+        source.removeAll(target);
+
+        privilegeDualList = new DualListModel<>(source, target);
+
+        openPrivilegePickListDialog();
+    }
+
+    public void addModulePrivilegesDialogReturn() {
+
+        getSelectedModule().setPrivileges(privilegeDualList.getTarget());
+
+    }
+
+    public void openPrivilegePickListDialog() {
+        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true, 500, 600);
+    }
+
     public DualListModel<Privilege> getPrivilegeDualList() {
         return privilegeDualList;
     }
