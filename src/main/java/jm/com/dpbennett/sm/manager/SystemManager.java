@@ -116,10 +116,15 @@ public class SystemManager implements Serializable,
         init();
     }
 
+    public String getAppShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager(), "appShortcutIconURL");
+    }
+
     public void okPickList() {
         closeDialog(null);
     }
-    
+
     public void closeDialog(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
