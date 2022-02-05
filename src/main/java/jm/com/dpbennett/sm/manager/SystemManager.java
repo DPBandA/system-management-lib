@@ -1,5 +1,5 @@
 /*
-System Management
+System Management (SM)
 Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
