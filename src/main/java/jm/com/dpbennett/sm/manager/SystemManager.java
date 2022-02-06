@@ -149,6 +149,27 @@ public class SystemManager implements Serializable,
         openModulePickListDialog();
     }
     
+    private List<Privilege> getUserActiveModulePrivileges() {
+        List<Privilege> privs = new ArrayList<>();
+        
+        for (Modules mod : getSelectedUser().getActiveModules()) {
+            privs.addAll(mod.getPrivileges());
+        }
+        
+        return privs;
+    }
+    
+    public void addUserPrivileges() {
+        List<Privilege> source = getUserActiveModulePrivileges();
+        List<Privilege> target = selectedUser.getPrivileges();
+
+        source.removeAll(target);
+
+        privilegeDualList = new DualListModel<>(source, target);
+
+        openPrivilegePickListDialog();
+    }
+    
     public void openModulePickListDialog() {
         PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 500, 600);
     }
@@ -173,6 +194,12 @@ public class SystemManager implements Serializable,
     public void addUserModulesDialogReturn() {
 
         getSelectedUser().setActiveModules(moduleDualList.getTarget());
+
+    }
+    
+    public void addUserPrivilegesDialogReturn() {
+
+        getSelectedUser().setPrivileges(privilegeDualList.getTarget());
 
     }
 
