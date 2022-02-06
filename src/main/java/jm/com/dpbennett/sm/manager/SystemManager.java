@@ -93,6 +93,7 @@ public class SystemManager implements Serializable,
     private List<Modules> foundActiveModules;
     private SystemOption selectedSystemOption;
     private DualListModel<Privilege> privilegeDualList;
+    private DualListModel<Modules> moduleDualList;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
@@ -116,6 +117,14 @@ public class SystemManager implements Serializable,
         init();
     }
 
+    public DualListModel<Modules> getModuleDualList() {
+        return moduleDualList;
+    }
+
+    public void setModuleDualList(DualListModel<Modules> moduleDualList) {
+        this.moduleDualList = moduleDualList;
+    }
+
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager(), "appShortcutIconURL");
@@ -127,6 +136,21 @@ public class SystemManager implements Serializable,
 
     public void closeDialog(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void addUserModules() {
+        List<Modules> source = Modules.findActiveModules(getEntityManager(), "");
+        List<Modules> target = selectedUser.getActiveModules();
+
+        source.removeAll(target);
+
+        moduleDualList = new DualListModel<>(source, target);
+
+        openModulePickListDialog();
+    }
+    
+    public void openModulePickListDialog() {
+        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 500, 600);
     }
 
     public void addModulePrivileges() {
@@ -143,6 +167,12 @@ public class SystemManager implements Serializable,
     public void addModulePrivilegesDialogReturn() {
 
         getSelectedModule().setPrivileges(privilegeDualList.getTarget());
+
+    }
+    
+    public void addUserModulesDialogReturn() {
+
+        getSelectedUser().setActiveModules(moduleDualList.getTarget());
 
     }
 
