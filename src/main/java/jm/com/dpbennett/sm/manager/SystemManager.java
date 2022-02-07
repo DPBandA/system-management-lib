@@ -547,15 +547,18 @@ public class SystemManager implements Serializable,
 
     }
 
-    public void closePreferencesDialog2(CloseEvent closeEvent) {
-        closePreferencesDialog1(null);
-    }
-
-    public void closePreferencesDialog1(ActionEvent actionEvent) {
+    public void closePreferencesDialog(ActionEvent actionEvent) {
 
         PrimeFaces.current().ajax().update("appForm");
 
         PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
+    }
+    
+    public void closeUserProfileDialog(ActionEvent actionEvent) {
+
+        PrimeFaces.current().ajax().update("appForm");
+
+        PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
     }
 
     public void updateDashboardTabs(AjaxBehaviorEvent event) {
@@ -772,6 +775,9 @@ public class SystemManager implements Serializable,
     }
 
     public void editPreferences() {
+    }
+    
+    public void viewUserProfile() {
     }
 
     public Boolean renderUserMenu() {
