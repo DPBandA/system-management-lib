@@ -129,6 +129,21 @@ public class SystemManager implements Serializable,
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager(), "appShortcutIconURL");
     }
+    
+    public String getLogoURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager(), "logoURL");
+    }
+    
+    public Integer getLogoURLImageHeight() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager(), "logoURLImageHeight");
+    }
+    
+    public Integer getLogoURLImageWidth() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager(), "logoURLImageWidth");
+    }
 
     public void okPickList() {
         closeDialog(null);
