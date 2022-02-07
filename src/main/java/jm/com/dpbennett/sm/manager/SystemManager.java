@@ -129,17 +129,17 @@ public class SystemManager implements Serializable,
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager(), "appShortcutIconURL");
     }
-    
+
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager(), "logoURL");
     }
-    
+
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
                 getEntityManager(), "logoURLImageHeight");
     }
-    
+
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
                 getEntityManager(), "logoURLImageWidth");
@@ -152,7 +152,7 @@ public class SystemManager implements Serializable,
     public void closeDialog(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void addUserModules() {
         List<Modules> source = Modules.findActiveModules(getEntityManager(), "");
         List<Modules> target = selectedUser.getActiveModules();
@@ -163,17 +163,17 @@ public class SystemManager implements Serializable,
 
         openModulePickListDialog();
     }
-    
+
     private List<Privilege> getUserActiveModulePrivileges() {
         List<Privilege> privs = new ArrayList<>();
-        
+
         for (Modules mod : getSelectedUser().getActiveModules()) {
             privs.addAll(mod.getPrivileges());
         }
-        
+
         return privs;
     }
-    
+
     public void addUserPrivileges() {
         List<Privilege> source = getUserActiveModulePrivileges();
         List<Privilege> target = selectedUser.getPrivileges();
@@ -184,7 +184,7 @@ public class SystemManager implements Serializable,
 
         openPrivilegePickListDialog();
     }
-    
+
     public void openModulePickListDialog() {
         PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 500, 600);
     }
@@ -205,13 +205,13 @@ public class SystemManager implements Serializable,
         getSelectedModule().setPrivileges(privilegeDualList.getTarget());
 
     }
-    
+
     public void addUserModulesDialogReturn() {
 
         getSelectedUser().setActiveModules(moduleDualList.getTarget());
 
     }
-    
+
     public void addUserPrivilegesDialogReturn() {
 
         getSelectedUser().setPrivileges(privilegeDualList.getTarget());
@@ -298,6 +298,7 @@ public class SystemManager implements Serializable,
         this.isActiveUsersOnly = isActiveUsersOnly;
     }
 
+    /*
     public void updateModuleAccess(AjaxBehaviorEvent event) {
         switch (event.getComponent().getId()) {
             case "canAccessComplianceUnit":
@@ -364,7 +365,7 @@ public class SystemManager implements Serializable,
         getSelectedUser().getPrivilege().setIsDirty(true);
         getSelectedUser().getModules().setIsDirty(true);
     }
-
+     */
     public List<User> getFoundUsers() {
         if (foundUsers == null) {
             foundUsers = User.findAllActiveJobManagerUsers(getEntityManager());
@@ -553,7 +554,7 @@ public class SystemManager implements Serializable,
 
         PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
-    
+
     public void closeUserProfileDialog(ActionEvent actionEvent) {
 
         PrimeFaces.current().ajax().update("appForm");
@@ -561,6 +562,7 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
     }
 
+    /*
     public void updateDashboardTabs(AjaxBehaviorEvent event) {
 
         switch (event.getComponent().getId()) {
@@ -653,7 +655,7 @@ public class SystemManager implements Serializable,
         }
 
     }
-
+     */
     public String getDateStr(Date date) {
         if (date != null) {
             return BusinessEntityUtils.getDateInMediumDateFormat(date);
@@ -776,7 +778,7 @@ public class SystemManager implements Serializable,
 
     public void editPreferences() {
     }
-    
+
     public void viewUserProfile() {
     }
 
@@ -858,9 +860,9 @@ public class SystemManager implements Serializable,
 
         getMainTabView().reset(getUser());
 
-        if (getUser().getModules().getAdminModule()) {
-            getMainTabView().openTab("System Administration");
-        }
+        //if (getUser().getModules().getAdminModule()) {
+        getMainTabView().openTab("System Administration");
+        //}
     }
 
     private void initDashboard() {
@@ -869,9 +871,9 @@ public class SystemManager implements Serializable,
 
         getDashboard().setSelectedTabId("System Administration");
 
-        if (getUser().getModules().getAdminModule()) {
+        //if (getUser().getModules().getAdminModule()) {
             getDashboard().openTab("System Administration");
-        }
+        //}
     }
 
     public Dashboard getDashboard() {
@@ -1504,11 +1506,25 @@ public class SystemManager implements Serializable,
     public Date getCurrentDate() {
         return new Date();
     }
+    
+    private void initUserPrivileges() {
+        if (getUser().getPrivilege().getCanBeJMTSAdministrator()) {
+            getUser().getPrivileges().add(
+                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeJMTSAdministrator"));
+        }
+    }
 
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
-
+        
+        // NB: This is done for now to get the privileges from the user Privilege class
+        // that is deprecated.
+        if (getUser().getPrivileges().isEmpty()) {
+            System.out.println("Initializing privileges...");
+            initUserPrivileges();
+        }
+        
         getUser().save(getEntityManager());
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
