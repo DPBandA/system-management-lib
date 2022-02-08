@@ -857,7 +857,7 @@ public class SystemManager implements Serializable,
     public void updateDashboard(String tabId) {
         PrimeFaces.current().ajax().update("appForm");
     }
-
+  
     private void initMainTabView() {
 
         getMainTabView().reset(getUser());

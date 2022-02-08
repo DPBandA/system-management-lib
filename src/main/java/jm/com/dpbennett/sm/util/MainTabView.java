@@ -140,6 +140,11 @@ public class MainTabView implements Serializable {
         addTab(tabId, true);
         select(tabId);
     }
+    
+    public void openTab(String tabId, String src) {
+        addTab(tabId, src, true);
+        select(tabId);
+    }
 
     public void closeTab(String tabId) {
         addTab(tabId, false);
@@ -165,6 +170,33 @@ public class MainTabView implements Serializable {
         } else if (tab == null && render) {
             // TabPanel is to be added so add and render
             tabs.add(new TabPanel(tabId, tabId));
+            update("appForm:mainTabView");
+            select(render);
+        }
+
+    }
+    
+    private void addTab(
+            String tabId,
+            String src,
+            Boolean render) {
+
+        TabPanel tab = findTab(tabId);
+
+        if (tab != null && !render) {
+            // TabPanel is being removed so remove and update the tab view          
+            tabs.remove(tab);
+            update("appForm:mainTabView");           
+                select(render);            
+        } else if (tab != null && render) {
+            // TabPanel already added so just update and select
+            update("appForm:mainTabView");            
+            select(render);
+        } else if (tab == null && !render) {
+            // TabPanel is not be added            
+        } else if (tab == null && render) {
+            // TabPanel is to be added so add and render
+            tabs.add(new TabPanel(tabId, tabId, src));
             update("appForm:mainTabView");
             select(render);
         }
