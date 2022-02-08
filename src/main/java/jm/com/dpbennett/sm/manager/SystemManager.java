@@ -154,7 +154,7 @@ public class SystemManager implements Serializable,
     }
 
     public void addUserModules() {
-        List<Modules> source = Modules.findActiveModules(getEntityManager(), "");
+        List<Modules> source = Modules.findAllActiveModules(getEntityManager());
         List<Modules> target = selectedUser.getActiveModules();
 
         source.removeAll(target);
