@@ -872,7 +872,7 @@ public class SystemManager implements Serializable,
         getDashboard().setSelectedTabId("System Administration");
 
         //if (getUser().getModules().getAdminModule()) {
-            getDashboard().openTab("System Administration");
+        getDashboard().openTab("System Administration");
         //}
     }
 
@@ -1506,7 +1506,34 @@ public class SystemManager implements Serializable,
     public Date getCurrentDate() {
         return new Date();
     }
-    
+
+    private void initUserModules() {
+        if (getUser().getModules().getAdminModule()) {
+            getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "AdminModule"));
+        }
+        if (getUser().getModules().getCertificationModule()) {
+            getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "CertificationModule"));
+        }
+        if (getUser().getModules().getComplianceModule()) {
+            getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "ComplianceModule"));
+        }
+        if (getUser().getModules().getCrmModule()) {
+            getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "CRMModule"));
+        }
+        if (getUser().getModules().getFinancialAdminModule()) {
+            getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "FinancialManagementModule"));
+        }
+        if (getUser().getModules().getFoodsModule()) {
+            getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "FoodsInspectorateModule"));
+        }
+    }
+
     private void initUserPrivileges() {
         if (getUser().getPrivilege().getCanBeJMTSAdministrator()) {
             getUser().getPrivileges().add(
@@ -1517,14 +1544,20 @@ public class SystemManager implements Serializable,
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
-        
+
+        // NB: This is done for now to get the modules from the user active Modules class
+        // that is deprecated.
+        if (getUser().getActiveModules().isEmpty()) {
+            System.out.println("Initializing modules...");
+            initUserModules();
+        }
         // NB: This is done for now to get the privileges from the user Privilege class
         // that is deprecated.
         if (getUser().getPrivileges().isEmpty()) {
             System.out.println("Initializing privileges...");
             initUserPrivileges();
         }
-        
+
         getUser().save(getEntityManager());
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
