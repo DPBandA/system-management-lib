@@ -1328,6 +1328,8 @@ public class SystemManager implements Serializable,
         }
         if (getUser().getModules().getComplianceModule()) {
             getUser().getActiveModules().
+                    add(Modules.findActiveModuleByName(getEntityManager(), "RegulatoryModule"));
+            getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "ComplianceModule"));
         }
         if (getUser().getModules().getCrmModule()) {
