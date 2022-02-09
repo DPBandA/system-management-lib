@@ -298,74 +298,6 @@ public class SystemManager implements Serializable,
         this.isActiveUsersOnly = isActiveUsersOnly;
     }
 
-    /*
-    public void updateModuleAccess(AjaxBehaviorEvent event) {
-        switch (event.getComponent().getId()) {
-            case "canAccessComplianceUnit":
-                getSelectedUser().getModules().setComplianceModule(getSelectedUser().
-                        getPrivilege().getCanAccessComplianceUnit());
-                break;
-            case "canAccessCertificationUnit":
-                getSelectedUser().getModules().setCertificationModule(getSelectedUser().
-                        getPrivilege().getCanAccessCertificationUnit());
-                break;
-            case "canAccessFoodsUnit":
-                getSelectedUser().getModules().setFoodsModule(getSelectedUser().
-                        getPrivilege().getCanAccessFoodsUnit());
-                break;
-            case "canAccessJobManagementUnit":
-                getSelectedUser().getModules().setJobManagementAndTrackingModule(getSelectedUser().
-                        getPrivilege().getCanAccessJobManagementUnit());
-                break;
-            case "canAccessLegalMetrologyUnit":
-                getSelectedUser().getModules().setLegalMetrologyModule(getSelectedUser().
-                        getPrivilege().getCanAccessLegalMetrologyUnit());
-                break;
-            case "canAccessLegalOfficeUnit":
-                getSelectedUser().getModules().setLegalOfficeModule(getSelectedUser().
-                        getPrivilege().getCanAccessLegalOfficeUnit());
-                break;
-            case "canAccessServiceRequestUnit":
-                getSelectedUser().getModules().setServiceRequestModule(getSelectedUser().
-                        getPrivilege().getCanAccessServiceRequestUnit());
-                break;
-            case "canAccessStandardsUnit":
-                getSelectedUser().getModules().setStandardsModule(getSelectedUser().
-                        getPrivilege().getCanAccessStandardsUnit());
-                break;
-            case "canAccessCRMUnit":
-                getSelectedUser().getModules().setCrmModule(getSelectedUser().
-                        getPrivilege().getCanAccessCRMUnit());
-                break;
-            case "canBeFinancialAdministrator":
-                getSelectedUser().getModules().setFinancialAdminModule(getSelectedUser().
-                        getPrivilege().getCanBeFinancialAdministrator());
-                break;
-            case "canAccessHRMUnit":
-                getSelectedUser().getModules().setHrmModule(getSelectedUser().
-                        getPrivilege().getCanAccessHRMUnit());
-                break;
-            case "canBeJMTSAdministrator":
-                getSelectedUser().getModules().setAdminModule(getSelectedUser().
-                        getPrivilege().getCanBeJMTSAdministrator());
-                break;
-            case "canAccessReportUnit":
-                getSelectedUser().getModules().setReportModule(getSelectedUser().
-                        getPrivilege().getCanAccessReportUnit());
-                break;
-            case "canAccessProcurementUnit":
-                getSelectedUser().getModules().setReportModule(getSelectedUser().
-                        getPrivilege().getCanAccessProcurementUnit());
-                break;
-            default:
-                break;
-
-        }
-
-        getSelectedUser().getPrivilege().setIsDirty(true);
-        getSelectedUser().getModules().setIsDirty(true);
-    }
-     */
     public List<User> getFoundUsers() {
         if (foundUsers == null) {
             foundUsers = User.findAllActiveJobManagerUsers(getEntityManager());
@@ -412,7 +344,6 @@ public class SystemManager implements Serializable,
     }
 
     public User getSelectedUser() {
-        // init with current logged on user if null
         if (selectedUser == null) {
             selectedUser = new User();
         }
@@ -504,44 +435,6 @@ public class SystemManager implements Serializable,
     public void handleUserDialogReturn() {
     }
 
-    /*
-    public void updatePrivileges(AjaxBehaviorEvent event) {
-        switch (event.getComponent().getId()) {
-            // Job Privileges
-            case "canEnterJob":
-                selectedUser.getPrivilege().
-                        setCanEnterDepartmentJob(selectedUser.getPrivilege().getCanEnterJob());
-                selectedUser.getPrivilege().
-                        setCanEnterOwnJob(selectedUser.getPrivilege().getCanEnterJob());
-                break;
-            case "canEditJob":
-                selectedUser.getPrivilege().setCanEditDepartmentJob(selectedUser.
-                        getPrivilege().getCanEditJob());
-                selectedUser.getPrivilege().setCanEditOwnJob(selectedUser.getPrivilege().getCanEditJob());
-                break;
-            case "canEnterDepartmentJob":
-            case "canEnterOwnJob":
-            case "canEditDepartmentalJob":
-            case "canEditOwnJob":
-            case "canApproveJobCosting":
-            // Organizational Privileges    
-            case "canAddClient":
-            case "canAddSupplier":
-            case "canDeleteClient":
-            case "canAddEmployee":
-            case "canDeleteEmployee":
-            case "canAddDepartment":
-            case "canDeleteDepartment":
-            case "canBeSuperUser":
-                break;
-            default:
-                break;
-        }
-
-        selectedUser.getPrivilege().setIsDirty(true);
-    }
-    */
-
     public void saveSelectedUser(ActionEvent actionEvent) {
 
         selectedUser.save(getEntityManager());
@@ -564,100 +457,6 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
     }
 
-    /*
-    public void updateDashboardTabs(AjaxBehaviorEvent event) {
-
-        switch (event.getComponent().getId()) {
-            case "jobManagementAndTrackingUnit":
-                getDashboard().addTab("Job Management",
-                        getUser().getModules().getJobManagementAndTrackingModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "financialAdminUnit":
-                getDashboard().addTab("Financial Administration",
-                        getUser().getModules().getFinancialAdminModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "adminUnit":
-                getDashboard().addTab("System Administration",
-                        getUser().getModules().getAdminModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "complianceUnit":
-                getDashboard().addTab("Standards Compliance",
-                        getUser().getModules().getComplianceModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "foodsUnit":
-                getDashboard().addTab("Foods Inspectorate",
-                        getUser().getModules().getFoodsModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "standardsUnit":
-                getDashboard().addTab("Standards",
-                        getUser().getModules().getStandardsModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "certificationUnit":
-                getDashboard().addTab("Certification",
-                        getUser().getModules().getCertificationModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "serviceRequestUnit":
-                getDashboard().addTab("Service Request",
-                        getUser().getModules().getServiceRequestModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "legalOfficeUnit":
-                getDashboard().addTab("Legal Office",
-                        getUser().getModules().getLegalOfficeModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "crmUnit":
-                getDashboard().addTab("Client Management",
-                        getUser().getModules().getCrmModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "legalMetrologyUnit":
-                getDashboard().addTab("Legal Metrology",
-                        getUser().getModules().getLegalMetrologyModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "hrmUnit":
-                getDashboard().addTab("Human Resource",
-                        getUser().getModules().getHrmModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "reportUnit":
-                getDashboard().addTab("Report Management",
-                        getUser().getModules().getReportModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            case "purchaseManagementUnit":
-                getDashboard().addTab("Procurement",
-                        getUser().getModules().getPurchaseManagementModule());
-                getUser().getModules().setIsDirty(true);
-                getUser().save(getEntityManager());
-                break;
-            default:
-                break;
-        }
-
-    }
-     */
     public String getDateStr(Date date) {
         if (date != null) {
             return BusinessEntityUtils.getDateInMediumDateFormat(date);
@@ -797,7 +596,7 @@ public class SystemManager implements Serializable,
 
     public String getApplicationHeader() {
 
-        return "System Management"; // tk make system option
+        return "System Management";
 
     }
 
@@ -857,25 +656,30 @@ public class SystemManager implements Serializable,
     public void updateDashboard(String tabId) {
         PrimeFaces.current().ajax().update("appForm");
     }
-  
+
     private void initMainTabView() {
 
         getMainTabView().reset(getUser());
 
-        //if (getUser().getModules().getAdminModule()) {
-        getMainTabView().openTab("System Administration");
-        //}
+        if (getUser().hasModule("AdminModule")) {
+
+            Modules adminModule = getUser().getActiveModule("AdminModule");
+            
+            getMainTabView().openTab(adminModule.getMainViewTitle());
+        }
     }
 
     private void initDashboard() {
 
         getDashboard().reset(getUser(), false);
 
-        getDashboard().setSelectedTabId("System Administration");
+        if (getUser().hasModule("AdminModule")) {
+            Modules adminModule = getUser().getActiveModule("AdminModule");
 
-        //if (getUser().getModules().getAdminModule()) {
-        getDashboard().openTab("System Administration");
-        //}
+            getDashboard().setSelectedTabId(adminModule.getDashboardTitle());
+
+            getDashboard().openTab(adminModule.getDashboardTitle());
+        }
     }
 
     public Dashboard getDashboard() {
@@ -1510,6 +1314,9 @@ public class SystemManager implements Serializable,
         return new Date();
     }
 
+    /**
+     * NB: May be deprecated in the future when the modules field is removed.
+     */
     private void initUserModules() {
         if (getUser().getModules().getAdminModule()) {
             getUser().getActiveModules().
@@ -1569,6 +1376,9 @@ public class SystemManager implements Serializable,
         }
     }
 
+    /**
+     * NB: May be deprecated in the future when the privilege field is removed.
+     */
     private void initUserPrivileges() {
         if (getUser().getPrivilege().getCanBeJMTSAdministrator()) {
             getUser().getPrivileges().add(
@@ -1577,8 +1387,8 @@ public class SystemManager implements Serializable,
         if (getUser().getPrivilege().getCanBeSuperUser()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "BeSuperUser"));
-        }       
-        if (getUser().getPrivilege().getCanApplyDiscountsToJobCosting	()) {
+        }
+        if (getUser().getPrivilege().getCanApplyDiscountsToJobCosting()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyDiscountsToJobCosting	"));
         }
@@ -1650,7 +1460,7 @@ public class SystemManager implements Serializable,
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EnterOwnJob"));
         }
-        
+
     }
 
     @Override
