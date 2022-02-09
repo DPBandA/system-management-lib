@@ -661,11 +661,11 @@ public class SystemManager implements Serializable,
 
         getMainTabView().reset(getUser());
 
-        if (getUser().hasModule("AdminModule")) {
+        if (getUser().hasModule("SystemAdministrationModule")) {
 
-            Modules adminModule = getUser().getActiveModule("AdminModule");
+            Modules sysAdmin = getUser().getActiveModule("SystemAdministrationModule");
             
-            getMainTabView().openTab(adminModule.getMainViewTitle());
+            getMainTabView().openTab(sysAdmin.getMainViewTitle());
         }
     }
 
@@ -673,12 +673,12 @@ public class SystemManager implements Serializable,
 
         getDashboard().reset(getUser(), false);
 
-        if (getUser().hasModule("AdminModule")) {
-            Modules adminModule = getUser().getActiveModule("AdminModule");
+        if (getUser().hasModule("SystemAdministrationModule")) {
+            Modules sysAdmin = getUser().getActiveModule("SystemAdministrationModule");
 
-            getDashboard().setSelectedTabId(adminModule.getDashboardTitle());
+            getDashboard().setSelectedTabId(sysAdmin.getDashboardTitle());
 
-            getDashboard().openTab(adminModule.getDashboardTitle());
+            getDashboard().openTab(sysAdmin.getDashboardTitle());
         }
     }
 
@@ -1320,7 +1320,7 @@ public class SystemManager implements Serializable,
     private void initUserModules() {
         if (getUser().getModules().getAdminModule()) {
             getUser().getActiveModules().
-                    add(Modules.findActiveModuleByName(getEntityManager(), "AdminModule"));
+                    add(Modules.findActiveModuleByName(getEntityManager(), "SystemAdministrationModule"));
         }
         if (getUser().getModules().getCertificationModule()) {
             getUser().getActiveModules().
