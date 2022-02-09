@@ -424,7 +424,7 @@ public class SystemManager implements Serializable,
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
 
-        selectSystemAdminTab("centerTabVar", 1);
+        selectSystemAdminTab("centerTabVar", 0);
 
         editUser();
     }
@@ -991,7 +991,7 @@ public class SystemManager implements Serializable,
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
 
-        selectSystemAdminTab("centerTabVar", 0);
+        selectSystemAdminTab("centerTabVar", 1);
 
         editPrivilege();
 
