@@ -1318,61 +1318,61 @@ public class SystemManager implements Serializable,
      * NB: May be deprecated in the future when the modules field is removed.
      */
     private void initUserModules() {
-        if (getUser().getModules().getAdminModule()) {
+        if (getUser().getActiveModule().getAdminModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "SystemAdministrationModule"));
         }
-        if (getUser().getModules().getCertificationModule()) {
+        if (getUser().getActiveModule().getCertificationModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "CertificationModule"));
         }
-        if (getUser().getModules().getComplianceModule()) {
+        if (getUser().getActiveModule().getComplianceModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "RegulatoryModule"));
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "ComplianceModule"));
         }
-        if (getUser().getModules().getCrmModule()) {
+        if (getUser().getActiveModule().getCrmModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "CRMModule"));
         }
-        if (getUser().getModules().getFinancialAdminModule()) {
+        if (getUser().getActiveModule().getFinancialAdminModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "FinancialManagementModule"));
         }
-        if (getUser().getModules().getFoodsModule()) {
+        if (getUser().getActiveModule().getFoodsModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "FoodsInspectorateModule"));
         }
-        if (getUser().getModules().getHrmModule()) {
+        if (getUser().getActiveModule().getHrmModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "HRMModule"));
         }
-        if (getUser().getModules().getJobManagementAndTrackingModule()) {
+        if (getUser().getActiveModule().getJobManagementAndTrackingModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "JobManagementAndTrackingModule"));
         }
-        if (getUser().getModules().getLegalMetrologyModule()) {
+        if (getUser().getActiveModule().getLegalMetrologyModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "LegalMetrologyModule"));
         }
-        if (getUser().getModules().getLegalOfficeModule()) {
+        if (getUser().getActiveModule().getLegalOfficeModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "LegalOfficeModule"));
         }
-        if (getUser().getModules().getPurchaseManagementModule()) {
+        if (getUser().getActiveModule().getPurchaseManagementModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "PurchaseManagementModule"));
         }
-        if (getUser().getModules().getReportModule()) {
+        if (getUser().getActiveModule().getReportModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "ReportModule"));
         }
-        if (getUser().getModules().getServiceRequestModule()) {
+        if (getUser().getActiveModule().getServiceRequestModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "ServiceRequestModule"));
         }
-        if (getUser().getModules().getStandardsModule()) {
+        if (getUser().getActiveModule().getStandardsModule()) {
             getUser().getActiveModules().
                     add(Modules.findActiveModuleByName(getEntityManager(), "StandardsManagementModule"));
         }
@@ -1382,83 +1382,83 @@ public class SystemManager implements Serializable,
      * NB: May be deprecated in the future when the privilege field is removed.
      */
     private void initUserPrivileges() {
-        if (getUser().getPrivilege().getCanBeJMTSAdministrator()) {
+        if (getUser().getActivePrivilege().getCanBeJMTSAdministrator()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "BeJMTSAdministrator"));
         }
-        if (getUser().getPrivilege().getCanBeSuperUser()) {
+        if (getUser().getActivePrivilege().getCanBeSuperUser()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "BeSuperUser"));
         }
-        if (getUser().getPrivilege().getCanApplyDiscountsToJobCosting()) {
+        if (getUser().getActivePrivilege().getCanApplyDiscountsToJobCosting()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyDiscountsToJobCosting	"));
         }
-        if (getUser().getPrivilege().getCanApplyTaxesToJobCosting()) {
+        if (getUser().getActivePrivilege().getCanApplyTaxesToJobCosting()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyTaxesToJobCosting"));
         }
-        if (getUser().getPrivilege().getCanApproveJobCosting()) {
+        if (getUser().getActivePrivilege().getCanApproveJobCosting()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "ApproveJobCosting"));
         }
-        if (getUser().getPrivilege().getCanBeFinancialAdministrator()) {
+        if (getUser().getActivePrivilege().getCanBeFinancialAdministrator()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "BeFinancialAdministrator"));
         }
-        if (getUser().getPrivilege().getCanDeleteClient()) {
+        if (getUser().getActivePrivilege().getCanDeleteClient()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteClient"));
         }
-        if (getUser().getPrivilege().getCanDeleteDepartment()) {
+        if (getUser().getActivePrivilege().getCanDeleteDepartment()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteDepartment"));
         }
-        if (getUser().getPrivilege().getCanDeleteEmployee()) {
+        if (getUser().getActivePrivilege().getCanDeleteEmployee()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteEmployee"));
         }
-        if (getUser().getPrivilege().getCanDeleteJob()) {
+        if (getUser().getActivePrivilege().getCanDeleteJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteJob"));
         }
-        if (getUser().getPrivilege().getCanEditDepartmentJob()) {
+        if (getUser().getActivePrivilege().getCanEditDepartmentJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EditDepartmentJob"));
         }
-        if (getUser().getPrivilege().getCanEditDisabledJobField()) {
+        if (getUser().getActivePrivilege().getCanEditDisabledJobField()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EditDisabledJobField"));
         }
-        if (getUser().getPrivilege().getCanAddClient()) {
+        if (getUser().getActivePrivilege().getCanAddClient()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "AddClient"));
         }
-        if (getUser().getPrivilege().getCanAddSupplier()) {
+        if (getUser().getActivePrivilege().getCanAddSupplier()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "AddSupplier"));
         }
-        if (getUser().getPrivilege().getCanEditInvoicingAndPayment()) {
+        if (getUser().getActivePrivilege().getCanEditInvoicingAndPayment()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EditInvoicingAndPayment"));
         }
-        if (getUser().getPrivilege().getCanEditJob()) {
+        if (getUser().getActivePrivilege().getCanEditJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EditJob"));
         }
-        if (getUser().getPrivilege().getCanEditOwnJob()) {
+        if (getUser().getActivePrivilege().getCanEditOwnJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EditOwnJob"));
         }
-        if (getUser().getPrivilege().getCanEnterDepartmentJob()) {
+        if (getUser().getActivePrivilege().getCanEnterDepartmentJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EnterDepartmentJob"));
         }
-        if (getUser().getPrivilege().getCanEnterJob()) {
+        if (getUser().getActivePrivilege().getCanEnterJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EnterJob"));
         }
-        if (getUser().getPrivilege().getCanEnterOwnJob()) {
+        if (getUser().getActivePrivilege().getCanEnterOwnJob()) {
             getUser().getPrivileges().add(
                     Privilege.findActivePrivilegeByName(getEntityManager(), "EnterOwnJob"));
         }
