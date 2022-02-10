@@ -643,7 +643,7 @@ public class SystemManager implements Serializable,
                 break;
             case "System Administration":
                 setUsersTableId(":appForm:mainTabView:centerTabView:usersTable");
-                PrimeFaces.current().ajax().update(":appForm:mainTabView::centerTabView");
+                PrimeFaces.current().ajax().update(":appForm:mainTabView:centerTabView");
                 break;
 
         }
