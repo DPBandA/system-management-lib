@@ -424,8 +424,6 @@ public class SystemManager implements Serializable,
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
 
-        selectSystemAdminTab("centerTabVar", 0);
-
         editUser();
     }
 
@@ -973,16 +971,12 @@ public class SystemManager implements Serializable,
     public void createNewDocumentType() {
         selectedDocumentType = new DocumentType();
 
-        selectSystemAdminTab("centerTabVar", 3);
-
         editDocumentType();
 
     }
 
     public void createNewCategory() {
         selectedCategory = new Category();
-
-        selectSystemAdminTab("centerTabVar", 2);
 
         editCategory();
 
@@ -991,8 +985,6 @@ public class SystemManager implements Serializable,
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
 
-        selectSystemAdminTab("centerTabVar", 1);
-
         editPrivilege();
 
     }
@@ -1000,8 +992,6 @@ public class SystemManager implements Serializable,
     public void createNewModule() {
         selectedModule = new Modules();
         selectedModule.setActive(true);
-
-        selectSystemAdminTab("centerTabVar", 6);
 
         editModule();
 
@@ -1214,8 +1204,6 @@ public class SystemManager implements Serializable,
         selectedLdapContext = new LdapContext();
         selectedLdapContext.setActive(true);
 
-        selectSystemAdminTab("centerTabVar", 5);
-
         editLdapContext();
     }
 
@@ -1258,8 +1246,6 @@ public class SystemManager implements Serializable,
     public void createNewSystemOption() {
 
         selectedSystemOption = new SystemOption();
-
-        selectSystemAdminTab("centerTabVar", 4);
 
         editSystemOption();
     }
