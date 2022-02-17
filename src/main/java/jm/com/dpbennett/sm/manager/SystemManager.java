@@ -82,6 +82,7 @@ public class SystemManager implements Serializable,
     private String privilegeSearchText;
     private String moduleSearchText;
     private String searchText;
+    private String attachmentSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
@@ -89,6 +90,8 @@ public class SystemManager implements Serializable,
     private List<Category> foundCategories;
     private List<Privilege> foundActivePrivileges;
     private List<Modules> foundActiveModules;
+    private List<User> foundUsers;
+    private List<Attachment> foundAttachments;
     private SystemOption selectedSystemOption;
     private DualListModel<Privilege> privilegeDualList;
     private DualListModel<Modules> moduleDualList;
@@ -105,7 +108,6 @@ public class SystemManager implements Serializable,
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
-    private List<User> foundUsers;
     private String usersTableId;
     private Attachment attachment;
 
@@ -114,6 +116,14 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+
+    public String getAttachmentSearchText() {
+        return attachmentSearchText;
+    }
+
+    public void setAttachmentSearchText(String attachmentSearchText) {
+        this.attachmentSearchText = attachmentSearchText;
     }
 
     public Attachment getAttachment() {
@@ -312,6 +322,14 @@ public class SystemManager implements Serializable,
         return foundUsers;
     }
 
+    public List<Attachment> getFoundAttachments() {
+        if (foundAttachments == null) {
+            foundAttachments
+                    = Attachment.findAttachmentsByName(getEntityManager(), "");
+        }
+        return foundAttachments;
+    }
+
     public String getUserSearchText() {
         return userSearchText;
     }
@@ -328,6 +346,10 @@ public class SystemManager implements Serializable,
             foundUsers = User.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
         }
 
+    }
+    
+    public void doAttachmentSearch() {
+        foundAttachments = Attachment.findAttachmentsByName(getEntityManager(), getAttachmentSearchText());
     }
 
     public String getFoundUser() {
@@ -669,7 +691,7 @@ public class SystemManager implements Serializable,
         if (getUser().hasModule("SystemAdministrationModule")) {
 
             Modules sysAdmin = getUser().getActiveModule("SystemAdministrationModule");
-            
+
             getMainTabView().openTab(sysAdmin.getMainViewTitle());
         }
     }
@@ -745,7 +767,7 @@ public class SystemManager implements Serializable,
         return getStringListAsSelectItems(getEntityManager(),
                 "workProgressList");
     }
-    
+
     public List<SelectItem> getAttachmentTypeList() {
 
         return getStringListAsSelectItems(getEntityManager(),
@@ -838,6 +860,7 @@ public class SystemManager implements Serializable,
         moduleSearchText = "";
         userSearchText = "";
         searchText = "";
+        attachmentSearchText= "";
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
@@ -1207,13 +1230,13 @@ public class SystemManager implements Serializable,
     public void editSystemOption() {
         PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 575, 550);
     }
-    
+
     public void createNewAttachment() {
         attachment = new Attachment();
-        
+
         openAttachmentDialog();
     }
-    
+
     public void openAttachmentDialog() {
         PrimeFacesUtils.openDialog(null, "attachmentDialog", true, true, true, 575, 550);
     }
@@ -1256,7 +1279,7 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().dialog().closeDynamic(null);
 
     }
-    
+
     public void okAttachment() {
 
         // tk
