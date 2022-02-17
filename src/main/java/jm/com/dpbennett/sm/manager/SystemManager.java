@@ -24,20 +24,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.auth.Privilege;
+import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
-import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
@@ -53,7 +52,6 @@ import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.CellEditEvent;
-import org.primefaces.event.CloseEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
@@ -109,12 +107,21 @@ public class SystemManager implements Serializable,
     private String userSearchText;
     private List<User> foundUsers;
     private String usersTableId;
+    private Attachment attachment;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+
+    public Attachment getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Attachment attachment) {
+        this.attachment = attachment;
     }
 
     public DualListModel<Modules> getModuleDualList() {
@@ -1195,6 +1202,16 @@ public class SystemManager implements Serializable,
     public void editSystemOption() {
         PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 575, 550);
     }
+    
+    public void createNewAttachment() {
+        attachment = new Attachment();
+        
+        openAttachmentDialog();
+    }
+    
+    public void openAttachmentDialog() {
+        PrimeFacesUtils.openDialog(null, "attachmentDialog", true, true, true, 575, 550);
+    }
 
     public void editLdapContext() {
         PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 350, 550);
@@ -1232,6 +1249,13 @@ public class SystemManager implements Serializable,
         selectedSystemOption.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+    
+    public void okAttachment() {
+
+        // tk
+        System.out.println("Ok attachment to be implemented...");
 
     }
 
