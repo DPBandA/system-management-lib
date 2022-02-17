@@ -745,6 +745,12 @@ public class SystemManager implements Serializable,
         return getStringListAsSelectItems(getEntityManager(),
                 "workProgressList");
     }
+    
+    public List<SelectItem> getAttachmentTypeList() {
+
+        return getStringListAsSelectItems(getEntityManager(),
+                "attachmentTypeList");
+    }
 
     public List<SelectItem> getIdentificationTypeList() {
 
@@ -1158,7 +1164,6 @@ public class SystemManager implements Serializable,
             getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
-            getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
