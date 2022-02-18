@@ -19,10 +19,18 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -57,6 +65,7 @@ import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DualListModel;
+import org.primefaces.model.file.UploadedFile;
 
 /**
  *
@@ -110,12 +119,21 @@ public class SystemManager implements Serializable,
     private String userSearchText;
     private String usersTableId;
     private Attachment attachment;
+    private UploadedFile uploadedFile;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+
+    public UploadedFile getUploadedFile() {
+        return uploadedFile;
+    }
+
+    public void setUploadedFile(UploadedFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
     }
 
     public String getAttachmentSearchText() {
@@ -347,7 +365,7 @@ public class SystemManager implements Serializable,
         }
 
     }
-    
+
     public void doAttachmentSearch() {
         foundAttachments = Attachment.findAttachmentsByName(getEntityManager(), getAttachmentSearchText());
     }
@@ -860,7 +878,7 @@ public class SystemManager implements Serializable,
         moduleSearchText = "";
         userSearchText = "";
         searchText = "";
-        attachmentSearchText= "";
+        attachmentSearchText = "";
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
@@ -1233,7 +1251,9 @@ public class SystemManager implements Serializable,
 
     public void createNewAttachment() {
         attachment = new Attachment();
-
+        String destURL = (String) SystemOption.getOptionValueObject(getEntityManager(),
+                "defaultUploadLocation");
+        attachment.setDestinationURL(destURL);
         openAttachmentDialog();
     }
 
@@ -1281,9 +1301,47 @@ public class SystemManager implements Serializable,
     }
 
     public void okAttachment() {
+        if (getUploadedFile() != null) {
+            uploadAttachment();
+        } else {
+            PrimeFacesUtils.addMessage("No File", "No file was choosen",
+                    FacesMessage.SEVERITY_INFO);
+        }
+    }
 
-        // tk
-        System.out.println("Ok attachment to be implemented...");
+    public void uploadAttachment() {
+
+        try {
+
+            OutputStream outputStream;
+
+            // Source file
+            String sourceURL = getUploadedFile().getFileName();
+            getAttachment().setSourceURL(sourceURL);
+            if (getAttachment().getName().isEmpty()) {
+               getAttachment().setName(sourceURL); 
+            }            
+            // Save file
+            String destinationURL = getAttachment().getDestinationURL()
+                    + getUploadedFile().getFileName();
+            getAttachment().setDestinationURL(destinationURL);
+            File fileToSave = new File(destinationURL);
+            outputStream = new FileOutputStream(fileToSave);
+            outputStream.write(getUploadedFile().getContent());
+            outputStream.close();
+
+            PrimeFacesUtils.addMessage("Succesful", getUploadedFile().getFileName() + " was uploaded.", FacesMessage.SEVERITY_INFO);
+
+            getAttachment().save(getEntityManager());
+
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex);
+            PrimeFacesUtils.addMessage("File Not Found", getUploadedFile().getFileName() + " was NOT found", FacesMessage.SEVERITY_ERROR);
+        } catch (IOException ex) {
+            System.out.println(ex);
+            PrimeFacesUtils.addMessage("Read/Write Error", " A read/write error occured with the file "
+                    + getUploadedFile().getFileName(), FacesMessage.SEVERITY_ERROR);
+        }
 
     }
 
