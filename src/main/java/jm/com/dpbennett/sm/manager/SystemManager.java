@@ -1303,6 +1303,7 @@ public class SystemManager implements Serializable,
     public void okAttachment() {
         if (getUploadedFile() != null) {
             uploadAttachment();
+           
         } else {
             PrimeFacesUtils.addMessage("No File", "No file was choosen",
                     FacesMessage.SEVERITY_INFO);
@@ -1319,13 +1320,11 @@ public class SystemManager implements Serializable,
             String sourceURL = getUploadedFile().getFileName();
             getAttachment().setSourceURL(sourceURL);
             if (getAttachment().getName().isEmpty()) {
-               getAttachment().setName(sourceURL); 
-            }            
+                getAttachment().setName(sourceURL);
+            }
             // Save file
-            String destinationURL = getAttachment().getDestinationURL()
-                    + getUploadedFile().getFileName();
-            getAttachment().setDestinationURL(destinationURL);
-            File fileToSave = new File(destinationURL);
+            // getAttachment().setDestinationURL(destinationURL);
+            File fileToSave = new File(getAttachment().getDestinationURL() + getUploadedFile().getFileName());
             outputStream = new FileOutputStream(fileToSave);
             outputStream.write(getUploadedFile().getContent());
             outputStream.close();
@@ -1333,6 +1332,8 @@ public class SystemManager implements Serializable,
             PrimeFacesUtils.addMessage("Succesful", getUploadedFile().getFileName() + " was uploaded.", FacesMessage.SEVERITY_INFO);
 
             getAttachment().save(getEntityManager());
+            
+            closeDialog(null);
 
         } catch (FileNotFoundException ex) {
             System.out.println(ex);
