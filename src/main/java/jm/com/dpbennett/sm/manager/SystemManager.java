@@ -151,7 +151,7 @@ public class SystemManager implements Serializable,
             case "Options":
             case "Authentication":
             case "Modules":
-            case "Attachments":    
+            case "Attachments":
                 return "false";
             default:
                 return "true";
@@ -642,7 +642,7 @@ public class SystemManager implements Serializable,
                 setAttachmentSearchText(getSearchText());
                 doAttachmentSearch();
                 selectSystemAdminTab("centerTabVar", 7);
-                break;    
+                break;
             default:
                 break;
         }

@@ -130,7 +130,7 @@ public class Utils {
             }
 
             // set the from and to address
-            InternetAddress addressFrom = null;
+            InternetAddress addressFrom;
             if (fromEmployee == null) {
                 addressFrom = new InternetAddress(
                         (String) SystemOption.getOptionValueObject(em, "jobManagerEmailAddress"),
@@ -143,8 +143,8 @@ public class Utils {
             msg.setFrom(addressFrom);
 
             InternetAddress[] addressTo = new InternetAddress[1];
-            if (toEmployee != null) {               
-                    addressTo[0] = new InternetAddress(toEmployee.getInternet().getEmail1());
+            if (toEmployee != null) {
+                addressTo[0] = new InternetAddress(toEmployee.getInternet().getEmail1());
             } else {
                 addressTo[0] = new InternetAddress(
                         (String) SystemOption.getOptionValueObject(em, "administratorEmailAddress"));
@@ -156,9 +156,48 @@ public class Utils {
             msg.setSubject(subject);
             msg.setContent(message, contentType);
             Transport.send(msg);
-            
+
             return new ReturnMessage();
-            
+
+        } catch (UnsupportedEncodingException | MessagingException e) {
+            System.out.println("An error occurred while posting an email: " + e);
+            return new ReturnMessage(false, "An error occurred while posting an email.");
+        }
+
+    }
+
+    public static ReturnMessage postMail(
+            Session mailSession,
+            String from,
+            String to,
+            String subject,
+            String message,
+            String contentType) {
+
+        Message msg;
+
+        try {
+            // use default session if none was provided
+            msg = new MimeMessage(mailSession);
+
+            // set the from and to address
+            InternetAddress addressFrom = new InternetAddress(
+                    from, from);
+            msg.setFrom(addressFrom);
+
+            InternetAddress[] addressTo = new InternetAddress[1];
+
+            addressTo[0] = new InternetAddress(to);
+
+            msg.setRecipients(Message.RecipientType.TO, addressTo);
+
+            // Setting the Subject and Content Type
+            msg.setSubject(subject);
+            msg.setContent(message, contentType);
+            Transport.send(msg);
+
+            return new ReturnMessage();
+
         } catch (UnsupportedEncodingException | MessagingException e) {
             System.out.println("An error occurred while posting an email: " + e);
             return new ReturnMessage(false, "An error occurred while posting an email.");
