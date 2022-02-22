@@ -28,12 +28,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -91,6 +90,7 @@ public class SystemManager implements Serializable,
     private String privilegeSearchText;
     private String moduleSearchText;
     private String searchText;
+    private String searchType;
     private String attachmentSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
@@ -120,12 +120,50 @@ public class SystemManager implements Serializable,
     private String usersTableId;
     private Attachment attachment;
     private UploadedFile uploadedFile;
+    private List<SelectItem> groupedSearchTypes;
+    private DatePeriod dateSearchPeriod;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+
+    public DatePeriod getDateSearchPeriod() {
+        return dateSearchPeriod;
+    }
+
+    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
+        this.dateSearchPeriod = dateSearchPeriod;
+    }
+
+    public List<SelectItem> getGroupedSearchTypes() {
+        return groupedSearchTypes;
+    }
+
+    public String getRenderDateSearchFields() {
+        switch (searchType) {
+            case "Users":
+            case "Privileges":
+            case "Categories":
+            case "Document Types":
+            case "Options":
+            case "Authentication":
+            case "Modules":
+            case "Attachments":    
+                return "false";
+            default:
+                return "true";
+        }
+    }
+
+    public String getSearchType() {
+        return searchType;
+    }
+
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
     }
 
     public UploadedFile getUploadedFile() {
@@ -564,10 +602,47 @@ public class SystemManager implements Serializable,
     }
 
     public void doDefaultSearch() {
-        switch (getDashboard().getSelectedTabId()) {
-            case "System Administration":
-                doSearch();
+        switch (getSearchType()) {
+            case "Users":
+                setUserSearchText(getSearchText());
+                doUserSearch();
+                selectSystemAdminTab("centerTabVar", 0);
                 break;
+            case "Privileges":
+                setPrivilegeSearchText(getSearchText());
+                doActivePrivilegeSearch();
+                selectSystemAdminTab("centerTabVar", 1);
+                break;
+            case "Categories":
+                setCategorySearchText(getSearchText());
+                doCategorySearch();
+                selectSystemAdminTab("centerTabVar", 2);
+                break;
+            case "Document Types":
+                setDocumentTypeSearchText(getSearchText());
+                doDocumentTypeSearch();
+                selectSystemAdminTab("centerTabVar", 3);
+                break;
+            case "Options":
+                setSystemOptionSearchText(getSearchText());
+                doSystemOptionSearch();
+                selectSystemAdminTab("centerTabVar", 4);
+                break;
+            case "Authentication":
+                setLdapSearchText(getSearchText());
+                doLdapContextSearch();
+                selectSystemAdminTab("centerTabVar", 5);
+                break;
+            case "Modules":
+                setModuleSearchText(getSearchText());
+                doActiveModuleSearch();
+                selectSystemAdminTab("centerTabVar", 6);
+                break;
+            case "Attachments":
+                setAttachmentSearchText(getSearchText());
+                doAttachmentSearch();
+                selectSystemAdminTab("centerTabVar", 7);
+                break;    
             default:
                 break;
         }
@@ -725,6 +800,23 @@ public class SystemManager implements Serializable,
 
             getDashboard().openTab(sysAdmin.getDashboardTitle());
         }
+
+        initSearchTypes();
+    }
+
+    private void initSearchTypes() {
+        SelectItemGroup adminGroup = new SelectItemGroup("Administration");
+        adminGroup.setSelectItems(new SelectItem[]{
+            new SelectItem("Users", "Users"),
+            new SelectItem("Privileges", "Privileges"),
+            new SelectItem("Categories", "Categories"),
+            new SelectItem("Document Types", "Document Types"),
+            new SelectItem("Options", "Options"),
+            new SelectItem("Authentication", "Authentication"),
+            new SelectItem("Modules", "Modules"),
+            new SelectItem("Attachments", "Attachments")
+        });
+        groupedSearchTypes.add(adminGroup);
     }
 
     public Dashboard getDashboard() {
@@ -888,9 +980,17 @@ public class SystemManager implements Serializable,
         mainTabView = new MainTabView(getUser());
         uiUpdateListeners = new ArrayList<>();
         authenticationListeners = new ArrayList<>();
+        groupedSearchTypes = new ArrayList<>();
         usersTableId = ":appForm:mainTabView:centerTabView:usersTable";
+        searchType = "Users";
+        dateSearchPeriod = new DatePeriod("This month", "month",
+                "dateAndTimeEntered", null, null, null, false, false, false);
+        dateSearchPeriod.initDatePeriod();
 
         getAuthentication().addSingleAuthenticationListener(this);
+    }
+
+    public void updateDateSearchField() {
     }
 
     public String getModuleSearchText() {
@@ -1303,7 +1403,7 @@ public class SystemManager implements Serializable,
     public void okAttachment() {
         if (getUploadedFile() != null) {
             uploadAttachment();
-           
+
         } else {
             PrimeFacesUtils.addMessage("No File", "No file was choosen",
                     FacesMessage.SEVERITY_INFO);
@@ -1332,7 +1432,7 @@ public class SystemManager implements Serializable,
             PrimeFacesUtils.addMessage("Succesful", getUploadedFile().getFileName() + " was uploaded.", FacesMessage.SEVERITY_INFO);
 
             getAttachment().save(getEntityManager());
-            
+
             closeDialog(null);
 
         } catch (FileNotFoundException ex) {
