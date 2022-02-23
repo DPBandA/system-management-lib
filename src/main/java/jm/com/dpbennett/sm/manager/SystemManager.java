@@ -125,8 +125,6 @@ public class SystemManager implements Serializable,
     private UploadedFile uploadedFile;
     private List<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
-    @Resource(name = "sysAdminMail")
-    private Session mailSession; 
 
     /**
      * Creates a new instance of SystemManager
@@ -510,20 +508,13 @@ public class SystemManager implements Serializable,
     
 
     public void createNewUser() {
-        System.out.println("Mail session: " + mailSession.toString());
-        Utils.postMail(
-                mailSession,                 
-                "desbenn@gmail.com", 
-                "desbenn@gmail.com", 
-                "Testing...", 
-                "Testing", 
-                "text/plain");
-//        EntityManager em = getEntityManager();
-//
-//        selectedUser = new User();
-//        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
-//
-//        editUser();
+        
+        EntityManager em = getEntityManager();
+
+        selectedUser = new User();
+        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+
+        editUser();
     }
 
     public void updateUserPrivilege(ValueChangeEvent event) {
