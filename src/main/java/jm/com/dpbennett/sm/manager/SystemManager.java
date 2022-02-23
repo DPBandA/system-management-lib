@@ -28,13 +28,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.Resource;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
-import javax.mail.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -46,6 +44,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
+import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
@@ -58,7 +57,6 @@ import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
-import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.CellEditEvent;
@@ -125,12 +123,83 @@ public class SystemManager implements Serializable,
     private UploadedFile uploadedFile;
     private List<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
+    private Email selectedEmail;
+    private Boolean isActiveEmailsOnly;
+    private List<Email> foundEmails;
+    private String emailSearchText;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+    
+    // tk make system options
+    public List getEmailTypes() {
+        ArrayList categories = new ArrayList();
+
+        categories.add(new SelectItem("", ""));
+        categories.add(new SelectItem("Template", "Template"));
+        categories.add(new SelectItem("Instance", "Instance"));
+
+        return categories;
+    }
+
+    public String getEmailSearchText() {
+        return emailSearchText;
+    }
+
+    public void setEmailSearchText(String emailSearchText) {
+        this.emailSearchText = emailSearchText;
+    }
+
+    public List<Email> getFoundEmails() {
+         if (foundEmails == null) {
+            foundEmails = Email.findAllActiveEmails(getEntityManager());
+        }
+        
+        return foundEmails;
+    }
+
+    public void setFoundEmails(List<Email> foundEmails) {
+        this.foundEmails = foundEmails;
+    }
+
+    public Email getSelectedEmail() {
+        return selectedEmail;
+    }
+
+    public void setSelectedEmail(Email selectedEmail) {
+        this.selectedEmail = selectedEmail;
+    }
+
+    public void editEmailTemplate() {
+        PrimeFacesUtils.openDialog(null, "emailTemplateDialog", true, true, true, 600, 700);
+    }
+
+    public void saveSelectedEmail() {
+
+        selectedEmail.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void createNewEmailTemplate() {
+
+        selectedEmail = new Email();
+
+        editEmailTemplate();
+    }
+    
+    public void doEmailSearch() {
+
+        if (getIsActiveEmailsOnly()) {
+            foundEmails = Email.findActiveEmails(getEntityManager(), getEmailSearchText());
+        } else {
+            foundEmails = Email.findEmails(getEntityManager(), getEmailSearchText());
+        }
+
     }
 
     public DatePeriod getDateSearchPeriod() {
@@ -209,6 +278,28 @@ public class SystemManager implements Serializable,
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager(), "logoURL");
+    }
+    
+     // tk get these from Category records. see SC for technique.
+    public List getEmailCategories() {
+        ArrayList categories = new ArrayList();
+
+        categories.add(new SelectItem("", ""));
+        categories.add(new SelectItem("Purchase Requisition", "Purchase Requisition"));
+        categories.add(new SelectItem("Job", "Job"));
+
+        return categories;
+    }
+    
+    // tk make system options
+    public List getContentTypes() {
+        ArrayList types = new ArrayList();
+
+        types.add(new SelectItem("text/plain", "text/plain"));
+        types.add(new SelectItem("text/html", "text/html"));
+        types.add(new SelectItem("text/html; charset=utf-8", "text/html; charset=utf-8"));
+
+        return types;
     }
 
     public Integer getLogoURLImageHeight() {
@@ -505,10 +596,9 @@ public class SystemManager implements Serializable,
             return new ArrayList<>();
         }
     }
-    
 
     public void createNewUser() {
-        
+
         EntityManager em = getEntityManager();
 
         selectedUser = new User();
@@ -976,10 +1066,12 @@ public class SystemManager implements Serializable,
         userSearchText = "";
         searchText = "";
         attachmentSearchText = "";
+        emailSearchText = "";
         // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
         isActiveUsersOnly = true;
+        isActiveEmailsOnly = true;
         uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -993,6 +1085,14 @@ public class SystemManager implements Serializable,
         dateSearchPeriod.initDatePeriod();
 
         getAuthentication().addSingleAuthenticationListener(this);
+    }
+
+    public Boolean getIsActiveEmailsOnly() {
+        return isActiveEmailsOnly;
+    }
+
+    public void setIsActiveEmailsOnly(Boolean isActiveEmailsOnly) {
+        this.isActiveEmailsOnly = isActiveEmailsOnly;
     }
 
     public void updateDateSearchField() {
