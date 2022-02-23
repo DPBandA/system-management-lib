@@ -28,11 +28,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Resource;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.mail.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -56,6 +58,7 @@ import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
+import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.CellEditEvent;
@@ -122,6 +125,8 @@ public class SystemManager implements Serializable,
     private UploadedFile uploadedFile;
     private List<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
+    @Resource(name = "sysAdminMail")
+    private Session mailSession; 
 
     /**
      * Creates a new instance of SystemManager
@@ -502,14 +507,23 @@ public class SystemManager implements Serializable,
             return new ArrayList<>();
         }
     }
+    
 
     public void createNewUser() {
-        EntityManager em = getEntityManager();
-
-        selectedUser = new User();
-        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
-
-        editUser();
+        System.out.println("Mail session: " + mailSession.toString());
+        Utils.postMail(
+                mailSession,                 
+                "desbenn@gmail.com", 
+                "desbenn@gmail.com", 
+                "Testing...", 
+                "Testing", 
+                "text/plain");
+//        EntityManager em = getEntityManager();
+//
+//        selectedUser = new User();
+//        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+//
+//        editUser();
     }
 
     public void updateUserPrivilege(ValueChangeEvent event) {
