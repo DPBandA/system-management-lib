@@ -134,7 +134,7 @@ public class SystemManager implements Serializable,
     public SystemManager() {
         init();
     }
-    
+
     // tk make system options
     public List getEmailTypes() {
         ArrayList categories = new ArrayList();
@@ -155,10 +155,10 @@ public class SystemManager implements Serializable,
     }
 
     public List<Email> getFoundEmails() {
-         if (foundEmails == null) {
+        if (foundEmails == null) {
             foundEmails = Email.findAllActiveEmails(getEntityManager());
         }
-        
+
         return foundEmails;
     }
 
@@ -191,7 +191,7 @@ public class SystemManager implements Serializable,
 
         editEmailTemplate();
     }
-    
+
     public void doEmailSearch() {
 
         if (getIsActiveEmailsOnly()) {
@@ -279,8 +279,8 @@ public class SystemManager implements Serializable,
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager(), "logoURL");
     }
-    
-     // tk get these from Category records. see SC for technique.
+
+    // tk get these from Category records. see SC for technique.
     public List getEmailCategories() {
         ArrayList categories = new ArrayList();
 
@@ -290,7 +290,7 @@ public class SystemManager implements Serializable,
 
         return categories;
     }
-    
+
     // tk make system options
     public List getContentTypes() {
         ArrayList types = new ArrayList();
@@ -1027,6 +1027,16 @@ public class SystemManager implements Serializable,
         valueTypes.add(new SelectItem("List<String>", "List<String>"));
 
         return valueTypes;
+    }
+
+    public List<SelectItem> getJobTableViews() {
+        ArrayList views = new ArrayList();
+
+        views.add(new SelectItem("Jobs", "Jobs"));
+        views.add(new SelectItem("Job Costings", "Job Costings"));
+        views.add(new SelectItem("Cashier View", "Cashier View"));
+
+        return views;
     }
 
     // tk make system option
