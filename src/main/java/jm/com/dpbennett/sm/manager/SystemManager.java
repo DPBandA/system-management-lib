@@ -57,6 +57,7 @@ import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.CellEditEvent;
@@ -449,10 +450,6 @@ public class SystemManager implements Serializable,
     }
 
     public void updatePreferences() {
-        getUser().save(getEntityManager());
-    }
-
-    public void updatePreferedJobTableView(SelectEvent event) {
         getUser().save(getEntityManager());
     }
 
@@ -1014,6 +1011,20 @@ public class SystemManager implements Serializable,
 
         return list;
     }
+    
+    public static List<SelectItem> getStringListAsSelectItemsWithCaps(EntityManager em,
+            String systemOption) {
+
+        ArrayList list = new ArrayList();
+
+        List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
+
+        for (String name : stringList) {
+            list.add(new SelectItem(name, StringUtils.capitalize(name)));
+        }
+
+        return list;
+    }
 
     // tk make system option
     public List getValueTypes() {
@@ -1037,6 +1048,11 @@ public class SystemManager implements Serializable,
         views.add(new SelectItem("Cashier View", "Cashier View"));
 
         return views;
+    }
+    
+    public List<SelectItem> getPFThemes() {
+       
+        return getStringListAsSelectItemsWithCaps(getEntityManager(), "PFThemes");
     }
 
     // tk make system option
