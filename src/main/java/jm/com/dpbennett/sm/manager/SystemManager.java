@@ -176,7 +176,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editEmailTemplate() {
-        PrimeFacesUtils.openDialog(null, "emailTemplateDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true, 600, 700);
     }
 
     public void saveSelectedEmail() {
@@ -1489,7 +1489,7 @@ public class SystemManager implements Serializable,
     }
 
     public void openAttachmentDialog() {
-        PrimeFacesUtils.openDialog(null, "attachmentDialog", true, true, true, 575, 550);
+        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true, 575, 550);
     }
 
     public void editLdapContext() {
