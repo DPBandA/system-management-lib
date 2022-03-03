@@ -450,7 +450,15 @@ public class SystemManager implements Serializable,
     }
 
     public void updatePreferences() {
-        getUser().save(getEntityManager());
+       updateUserPreferences(getUser());
+    }
+    
+    public void updateSelectedUserPreferences() {
+       updateUserPreferences(getSelectedUser());
+    }
+    
+    public void updateUserPreferences(User user) {
+        user.save(getEntityManager());
     }
 
     public Boolean getIsActiveUsersOnly() {
