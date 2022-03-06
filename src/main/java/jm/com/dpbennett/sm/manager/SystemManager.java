@@ -77,7 +77,7 @@ public class SystemManager implements Serializable,
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
-    @PersistenceUnit(unitName = "AccPacPU")
+    @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
     private MainTabView mainTabView;
     private int activeTabIndex;

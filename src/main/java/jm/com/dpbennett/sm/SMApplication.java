@@ -41,12 +41,6 @@ public class SMApplication implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF1;
-    //@PersistenceContext(unitName = "JMTSPU")
-    //private EntityManager em;
-    //@PersistenceUnit(unitName = "AccPacPU")
-    //private EntityManagerFactory EMF2;
-    //@PersistenceContext(unitName = "AccPacPU")
-    //private EntityManager em2;
     private final Map<String, String> themes = new TreeMap<>();
 
     public SMApplication() {

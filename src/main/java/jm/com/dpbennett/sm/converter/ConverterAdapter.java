@@ -40,7 +40,7 @@ public class ConverterAdapter implements Converter {
 
     public ConverterAdapter() {
         emf = Persistence.createEntityManagerFactory("JMTSPU");
-        emf2 = Persistence.createEntityManagerFactory("AccPacPU");
+        emf2 = Persistence.createEntityManagerFactory("FINPU");
         em = emf.createEntityManager();
         em2 = emf2.createEntityManager();
     }
