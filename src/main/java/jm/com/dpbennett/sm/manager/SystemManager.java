@@ -77,6 +77,8 @@ public class SystemManager implements Serializable,
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
+    @PersistenceUnit(unitName = "AccPacPU")
+    private EntityManagerFactory EMF2;
     private MainTabView mainTabView;
     private int activeTabIndex;
     private int activeNavigationTabIndex;
@@ -450,13 +452,13 @@ public class SystemManager implements Serializable,
     }
 
     public void updatePreferences() {
-       updateUserPreferences(getUser());
+        updateUserPreferences(getUser());
     }
-    
+
     public void updateSelectedUserPreferences() {
-       updateUserPreferences(getSelectedUser());
+        updateUserPreferences(getSelectedUser());
     }
-    
+
     public void updateUserPreferences(User user) {
         user.save(getEntityManager());
     }
@@ -1019,7 +1021,7 @@ public class SystemManager implements Serializable,
 
         return list;
     }
-    
+
     public static List<SelectItem> getStringListAsSelectItemsWithCaps(EntityManager em,
             String systemOption) {
 
@@ -1057,9 +1059,9 @@ public class SystemManager implements Serializable,
 
         return views;
     }
-    
+
     public List<SelectItem> getPFThemes() {
-       
+
         return getStringListAsSelectItemsWithCaps(getEntityManager(), "PFThemes");
     }
 
@@ -1644,6 +1646,10 @@ public class SystemManager implements Serializable,
 
     public EntityManager getEntityManager() {
         return EMF.createEntityManager();
+    }
+    
+    public EntityManager getEntityManager2() {
+        return EMF2.createEntityManager();
     }
 
     public Date getCurrentDate() {
