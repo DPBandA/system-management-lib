@@ -1249,7 +1249,7 @@ public class SystemManager implements Serializable,
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 275, 400);
+        PrimeFacesUtils.openDialog(null, url, true, true, true, 300, 400);
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
@@ -1503,7 +1503,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 350, 550);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 375, 550);
     }
 
     public void createNewLdapContext() {
