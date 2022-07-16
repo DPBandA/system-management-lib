@@ -20,7 +20,7 @@
         <skipTests>true</skipTests>
     </properties>
     <description>The System Management Library for the System Management web application.</description>
-    <name>SM Lib, v2</name>
+    <name>SM Lib</name>
     
     <build>
         <plugins>
