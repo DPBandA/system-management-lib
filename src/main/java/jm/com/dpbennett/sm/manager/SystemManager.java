@@ -48,6 +48,7 @@ import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
@@ -91,6 +92,7 @@ public class SystemManager implements Serializable,
     private String ldapSearchText;
     private String documentTypeSearchText;
     private String categorySearchText;
+    private String notificationSearchText;
     private String privilegeSearchText;
     private String moduleSearchText;
     private String searchText;
@@ -101,6 +103,7 @@ public class SystemManager implements Serializable,
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
     private List<Category> foundCategories;
+    private List<Notification> foundNotifications;
     private List<Privilege> foundActivePrivileges;
     private List<Modules> foundActiveModules;
     private List<User> foundUsers;
@@ -112,6 +115,7 @@ public class SystemManager implements Serializable,
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
     private Privilege selectedPrivilege;
+    private Notification selectedNotification;
     private Modules selectedModule;
     private Authentication authentication;
     private List<UIUpdateListener> uiUpdateListeners;
@@ -136,6 +140,26 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+
+    public List<Notification> getFoundNotifications() {
+        if (foundNotifications == null) {
+            foundNotifications = Notification.findAllActiveNotifications(getEntityManager());
+        }
+
+        return foundNotifications;
+    }
+
+    public void setFoundNotifications(List<Notification> foundNotifications) {
+        this.foundNotifications = foundNotifications;
+    }
+
+    public Notification getSelectedNotification() {
+        return selectedNotification;
+    }
+
+    public void setSelectedNotification(Notification selectedNotification) {
+        this.selectedNotification = selectedNotification;
     }
 
     // tk make system options
@@ -1097,6 +1121,7 @@ public class SystemManager implements Serializable,
         ldapSearchText = "";
         documentTypeSearchText = "";
         categorySearchText = "";
+        notificationSearchText = "";
         privilegeSearchText = "";
         moduleSearchText = "";
         userSearchText = "";
@@ -1234,6 +1259,12 @@ public class SystemManager implements Serializable,
 
     }
 
+    public void doNotificationSearch() {
+
+        //foundNotifications = Notification.findAllActiveNotifications(getEntityManager());
+        // foundNotifications = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
+    }
+
     public void doActivePrivilegeSearch() {
 
         foundActivePrivileges
@@ -1277,10 +1308,10 @@ public class SystemManager implements Serializable,
 
     }
 
-    public void createNewPrivilege() {
-        selectedPrivilege = new Privilege();
+    public void createNewNotification() {
+        selectedNotification = new Notification();
 
-        editPrivilege();
+        editNotification();
 
     }
 
@@ -1295,6 +1326,13 @@ public class SystemManager implements Serializable,
     public void saveSelectedCategory() {
 
         selectedCategory.save(getEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void saveSelectedNotification() {
+
+        selectedNotification.save(getEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -1315,6 +1353,10 @@ public class SystemManager implements Serializable,
 
     public void editPrivilege() {
         PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
+    }
+
+    public void editNotification() {
+        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true, 0, 500);
     }
 
     public void editModule() {
@@ -1647,7 +1689,7 @@ public class SystemManager implements Serializable,
     public EntityManager getEntityManager() {
         return EMF.createEntityManager();
     }
-    
+
     public EntityManager getEntityManager2() {
         return EMF2.createEntityManager();
     }
@@ -1872,6 +1914,14 @@ public class SystemManager implements Serializable,
 
     public void setCategorySearchText(String categorySearchText) {
         this.categorySearchText = categorySearchText;
+    }
+
+    public String getNotificationSearchText() {
+        return notificationSearchText;
+    }
+
+    public void setNotificationSearchText(String notificationSearchText) {
+        this.notificationSearchText = notificationSearchText;
     }
 
 }
