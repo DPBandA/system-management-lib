@@ -1261,8 +1261,7 @@ public class SystemManager implements Serializable,
 
     public void doNotificationSearch() {
 
-        //foundNotifications = Notification.findAllActiveNotifications(getEntityManager());
-        // foundNotifications = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
+        foundNotifications = Notification.findNotificationsByName(getEntityManager(), getNotificationSearchText());
     }
 
     public void doActivePrivilegeSearch() {
