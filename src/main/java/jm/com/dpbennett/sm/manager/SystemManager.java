@@ -1371,6 +1371,23 @@ public class SystemManager implements Serializable,
         // tk
         System.out.println("Deleting notification...");
     }
+    
+    public List<Notification> getActiveNotifications() {
+        return Notification.findActiveNotificationsByOwnerId(getEntityManager(), 
+                getUser().getId());
+    }
+    
+    public void setActiveNotifications(List<Notification> notifications) {
+        
+    }
+    
+    public int getNumberOfActiveNotifications() {
+        return getActiveNotifications().size();
+    }
+    
+    public boolean getHasActiveNotifications() {
+        return (!getActiveNotifications().isEmpty());
+    }
 
     public void editModule() {
         PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 750, 900);
