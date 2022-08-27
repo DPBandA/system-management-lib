@@ -1383,13 +1383,14 @@ public class SystemManager implements Serializable,
         this.notifications = notifications;
     }
     
-
-//    public void setActiveNotifications(List<Notification> notifications) {
-//    }
-
-    public void onNotificationSelect(SelectEvent<Notification> event) {
-        // tk find by name and owner id to get the object. Impl ActiveOwnerNotificationConverter
-        System.out.println("Selected notification: " + event.getObject());
+    public void onNotificationSelect(SelectEvent event) {
+        
+        Notification n = Notification.findActiveNotificationByNameAndOwnerId(
+                getEntityManager(), 
+                (String)event.getObject(),
+                getUser().getId(),
+                false);
+        System.out.println("Selected notification owner id: " + n.getOwnerId());
     }
 
     public int getNumberOfActiveNotifications() {
