@@ -19,19 +19,13 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
-import static com.oracle.jrockit.jfr.ContentType.Timestamp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -140,6 +134,7 @@ public class SystemManager implements Serializable,
     private Boolean isActiveEmailsOnly;
     private List<Email> foundEmails;
     private String emailSearchText;
+    private List<Notification> notifications;
 
     /**
      * Creates a new instance of SystemManager
@@ -1316,7 +1311,7 @@ public class SystemManager implements Serializable,
     public void createNewNotification() {
         selectedNotification = new Notification();
         selectedNotification.setOwnerId(getUser().getId());
-        
+
         selectedNotification.setIssueTime(new Date());
 
         editNotification();
@@ -1366,25 +1361,40 @@ public class SystemManager implements Serializable,
     public void editNotification() {
         PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true, 0, 500);
     }
-    
+
     public void deleteNotification() {
         // tk
         System.out.println("Deleting notification...");
     }
-    
+
     public List<Notification> getActiveNotifications() {
-        return Notification.findActiveNotificationsByOwnerId(getEntityManager(), 
+        return Notification.findActiveNotificationsByOwnerId(
+                getEntityManager(),
                 getUser().getId());
     }
-    
-    public void setActiveNotifications(List<Notification> notifications) {
+
+    public List<Notification> getNotifications() {
+        notifications = getActiveNotifications();
         
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
     
+
+//    public void setActiveNotifications(List<Notification> notifications) {
+//    }
+
+    public void onNotificationSelect(SelectEvent<Notification> event) {
+        System.out.println("Selected notification: " + event.getObject().getName());
+    }
+
     public int getNumberOfActiveNotifications() {
         return getActiveNotifications().size();
     }
-    
+
     public boolean getHasActiveNotifications() {
         return (!getActiveNotifications().isEmpty());
     }
