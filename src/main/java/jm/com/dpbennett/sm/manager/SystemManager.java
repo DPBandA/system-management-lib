@@ -1388,6 +1388,7 @@ public class SystemManager implements Serializable,
 //    }
 
     public void onNotificationSelect(SelectEvent<Notification> event) {
+        // tk find by name and owner id to get the object. Impl ActiveOwnerNotificationConverter
         System.out.println("Selected notification: " + event.getObject().getName());
     }
 
