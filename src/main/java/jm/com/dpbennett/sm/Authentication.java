@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+System Management (SM)
+Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -42,8 +42,6 @@ import org.primefaces.PrimeFaces;
 public class Authentication implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
-    //@PersistenceContext(unitName = "JMTSPU")
-    //private EntityManager em;
     private EntityManagerFactory EMF;
     private User user;
     private String username;
@@ -51,7 +49,7 @@ public class Authentication implements Serializable {
     private String password;
     private Integer loginAttempts;
     private Boolean userLoggedIn;
-    private List<AuthenticationListener> authenticationListeners;
+    final private List<AuthenticationListener> authenticationListeners;
 
     public Authentication() {
         password = "";

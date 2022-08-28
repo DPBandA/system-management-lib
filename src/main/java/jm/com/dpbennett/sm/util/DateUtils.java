@@ -20,7 +20,6 @@ public class DateUtils {
         ArrayList dateSearchFields = new ArrayList();
 
         dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
-        dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
         dateSearchFields.add(new SelectItem("dateSubmitted", "Date submitted"));
         dateSearchFields.add(new SelectItem("dateCostingApproved", "Date costing approved"));
         dateSearchFields.add(new SelectItem("dateCostingInvoiced", "Date job invoiced"));

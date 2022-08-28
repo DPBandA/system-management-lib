@@ -21,46 +21,26 @@ package jm.com.dpbennett.sm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import jm.com.dpbennett.business.entity.BusinessEntity;
+import javax.faces.convert.FacesConverter;
+import jm.com.dpbennett.business.entity.hrm.Employee;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author desbenn
  */
-public class ConverterAdapter implements Converter {
-
-    private final EntityManagerFactory emf;
-    private final EntityManagerFactory emf2;
-    private final EntityManager em;
-    private final EntityManager em2;
-
-    public ConverterAdapter() {
-        emf = Persistence.createEntityManagerFactory("JMTSPU");
-        emf2 = Persistence.createEntityManagerFactory("FINPU");
-        em = emf.createEntityManager();
-        em2 = emf2.createEntityManager();
-    }
-
-    public EntityManager getEntityManager() {
-        return em;
-    }
+@FacesConverter("activeEmployeeConverter")
+public class ActiveEmployeeConverter extends ConverterAdapter {
     
-    public EntityManager getEntityManager2() {
-        return em2;
-    }
-
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        return null;
-    }
+                
+        Employee employee = Employee.findActiveEmployeeByName(getEntityManager(), value);
 
-    @Override
-    public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((BusinessEntity) value).getName();
-    }
+        if (value == null) {
+            employee = new Employee("--", "--");
+        }
 
+        return employee;
+    }    
 }

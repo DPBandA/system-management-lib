@@ -20,7 +20,7 @@
         <skipTests>true</skipTests>
     </properties>
     <description>The System Management Library for the System Management web application.</description>
-    <name>SM Lib, v2</name>
+    <name>SM Lib</name>
     
     <build>
         <plugins>
@@ -37,9 +37,14 @@
     
     <dependencies>   
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>[8.0.16,)</version>            
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>business-entity-library</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <type>jar</type>
         </dependency>   
         <dependency>

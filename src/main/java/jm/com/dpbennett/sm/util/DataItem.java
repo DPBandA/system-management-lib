@@ -19,13 +19,10 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.util;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  *
  * @author dbennett
  */
-@XmlRootElement
 public class DataItem extends SortableSelectItem {
 
     public DataItem() {

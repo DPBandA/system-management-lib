@@ -1,6 +1,6 @@
 /*
-Job Management & Tracking System (JMTS) 
-Copyright (C) 2019  D P Bennett & Associates Limited
+System Management (SM)
+Copyright (C) 2021  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -41,12 +41,6 @@ public class SMApplication implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF1;
-    //@PersistenceContext(unitName = "JMTSPU")
-    //private EntityManager em;
-    //@PersistenceUnit(unitName = "AccPacPU")
-    //private EntityManagerFactory EMF2;
-    //@PersistenceContext(unitName = "AccPacPU")
-    //private EntityManager em2;
     private final Map<String, String> themes = new TreeMap<>();
 
     public SMApplication() {
