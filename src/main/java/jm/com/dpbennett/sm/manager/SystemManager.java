@@ -801,6 +801,10 @@ public class SystemManager implements Serializable,
         if (getUser().getId() != null) {
             getUser().save(getEntityManager());
         }
+        
+        // tk update notification badge
+        System.out.println("updating not. badge...");
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     public void updateAllForms() {
