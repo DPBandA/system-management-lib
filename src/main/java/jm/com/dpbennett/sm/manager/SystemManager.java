@@ -801,9 +801,7 @@ public class SystemManager implements Serializable,
         if (getUser().getId() != null) {
             getUser().save(getEntityManager());
         }
-        
-        // tk update notification badge
-        System.out.println("updating not. badge...");
+
         PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
@@ -1368,18 +1366,31 @@ public class SystemManager implements Serializable,
 
     public void deleteNotification() {
         // tk
-        System.out.println("Deleting notification...");
+        System.out.println("Deleting notification...: " + getSelectedNotification().getId());
+        EntityManager em = getEntityManager();
+
+        // Delete notification
+        em.getTransaction().begin();
+        Notification n = em.find(Notification.class, getSelectedNotification().getId());
+        System.out.println("Deleting found notification...: " + n.getId());
+        em.remove(n);
+        em.getTransaction().commit();
+        em.close();
+        
+        doNotificationSearch();
+        PrimeFaces.current().ajax().update("appForm:mainTabView", "appForm:notificationBadge");
+
     }
 
     public List<Notification> getNotificationsByOwnerId() {
         List<Notification> myNotifications = Notification.findNotificationsByOwnerId(
                 getEntityManager(),
                 getUser().getId());
-        
+
         if (myNotifications.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         int subListIndex = 5; // tk make 5 system option.
         int myNotificationsNum = myNotifications.size();
 
@@ -1427,12 +1438,12 @@ public class SystemManager implements Serializable,
                 getEntityManager(),
                 getUser().getId());
 
-       return myActiveNotifications;
+        return myActiveNotifications;
 
     }
 
     public int getSizeOfActiveNotifications() {
-       
+
         return getActiveNotifications().size();
     }
 
