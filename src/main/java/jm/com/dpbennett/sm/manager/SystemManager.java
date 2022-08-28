@@ -1367,33 +1367,68 @@ public class SystemManager implements Serializable,
         System.out.println("Deleting notification...");
     }
 
-    public List<Notification> getActiveNotifications() {
-        return Notification.findActiveNotificationsByOwnerId(
+    public List<Notification> getNotificationsByOwnerId() {
+        List<Notification> myNotifications = Notification.findNotificationsByOwnerId(
                 getEntityManager(),
                 getUser().getId());
+        
+        if (myNotifications.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        int subListIndex = 5; // tk make 5 system option.
+        int myNotificationsNum = myNotifications.size();
+
+        if (subListIndex > myNotificationsNum) {
+            subListIndex = myNotificationsNum;
+        }
+
+        return myNotifications.subList(0, subListIndex);
     }
 
     public List<Notification> getNotifications() {
-        notifications = getActiveNotifications();
-        
+        notifications = getNotificationsByOwnerId();
+
         return notifications;
     }
 
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
     }
-    
+
     public void onNotificationSelect(SelectEvent event) {
-        
-        Notification n = Notification.findActiveNotificationByNameAndOwnerId(
-                getEntityManager(), 
-                (String)event.getObject(),
+
+        EntityManager em = getEntityManager();
+
+        Notification n = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
                 getUser().getId(),
                 false);
-        System.out.println("Selected notification owner id: " + n.getOwnerId());
+
+        // Handle the notification, set it inactive and save.
+        System.out.println("Selected notification owner id: " + n.getName() + ": " + n.getOwnerId());
+        n.setActive(false);
+        n.save(em);
+
     }
 
-    public int getNumberOfActiveNotifications() {
+    /**
+     * Get active notifications based on a sub-list.
+     *
+     * @return
+     */
+    public List<Notification> getActiveNotifications() {
+        List<Notification> myActiveNotifications = Notification.findActiveNotificationsByOwnerId(
+                getEntityManager(),
+                getUser().getId());
+
+       return myActiveNotifications;
+
+    }
+
+    public int getSizeOfActiveNotifications() {
+       
         return getActiveNotifications().size();
     }
 
