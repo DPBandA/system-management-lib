@@ -46,6 +46,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
+import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
@@ -1403,6 +1404,14 @@ public class SystemManager implements Serializable,
 
     public List<Notification> getNotifications() {
         notifications = getNotificationsByOwnerId();
+        
+        if (notifications.isEmpty()) {
+            Notification notification = new Notification();
+            notification.setActive(false);
+            notification.setType("None");
+            notification.setName("<< You have no notifications >>");
+            notifications.add(notification);
+        }
 
         return notifications;
     }
@@ -1410,21 +1419,36 @@ public class SystemManager implements Serializable,
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
     }
+    
+    private void handleSelectedNotification(Notification notification) {
+
+        switch (notification.getType()) {
+            case "UserNotificationDialog":
+                // tk open the userNotificationDialog here.
+                break;
+            default:                
+                System.out.println("Unkown type");
+        }
+
+    }
 
     public void onNotificationSelect(SelectEvent event) {
 
-        EntityManager em = getEntityManager();
+         EntityManager em = getEntityManager();
 
-        Notification n = Notification.findNotificationByNameAndOwnerId(
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
                 (String) event.getObject(),
                 getUser().getId(),
                 false);
 
-        // Handle the notification, set it inactive and save.
-        System.out.println("Selected notification owner id: " + n.getName() + ": " + n.getOwnerId());
-        n.setActive(false);
-        n.save(em);
+       if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
 
     }
 
