@@ -30,12 +30,12 @@ import jm.com.dpbennett.business.entity.sm.Notification;
  *
  * @author desbenn
  */
-@FacesConverter("activeNotificationConverter")
-public class ActiveNotificationConverter extends ConverterAdapter {
+@FacesConverter("notificationConverter")
+public class notificationConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
       
-       Notification notification = Notification.findActiveNotificationByName(getEntityManager(), submittedValue, false);
+       Notification notification = Notification.findNotificationByName(getEntityManager(), submittedValue, false);
 
         if (notification == null) {
             notification = new Notification(submittedValue);
