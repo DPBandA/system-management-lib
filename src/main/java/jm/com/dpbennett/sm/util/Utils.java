@@ -7,11 +7,11 @@ package jm.com.dpbennett.sm.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import javax.faces.model.SelectItem;
-import jm.com.dpbennett.business.entity.hrm.User;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -28,9 +28,6 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
  * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
  */
 public class Utils {
-
-    private static ArrayList countries;
-
     /**
      * Gets 10 years starting with the current year. To be verified!
      *
@@ -91,14 +88,14 @@ public class Utils {
                             Utils.postMail(null, null, null, subject, message,
                                     "text/plain", em);
                         } catch (Exception e) {
-                            System.out.println("Error sending error mail: " + e);
+                            System.out.println("Error sending error mail!");
                         }
                     }
 
                 }.start();
             }
         } catch (Exception ex) {
-            System.out.println(ex);
+            System.out.println("Error sending error mail!");
         }
     }
 
@@ -112,6 +109,8 @@ public class Utils {
             EntityManager em) {
 
         boolean debug = false;
+        InternetAddress addressFrom;
+        InternetAddress[] addressTo = null;
         Message msg;
 
         try {
@@ -130,7 +129,7 @@ public class Utils {
             }
 
             // set the from and to address
-            InternetAddress addressFrom;
+            
             if (fromEmployee == null) {
                 addressFrom = new InternetAddress(
                         (String) SystemOption.getOptionValueObject(em, "jobManagerEmailAddress"),
@@ -142,7 +141,7 @@ public class Utils {
             }
             msg.setFrom(addressFrom);
 
-            InternetAddress[] addressTo = new InternetAddress[1];
+            addressTo = new InternetAddress[1];
             if (toEmployee != null) {
                 addressTo[0] = new InternetAddress(toEmployee.getInternet().getEmail1());
             } else {
@@ -160,7 +159,7 @@ public class Utils {
             return new ReturnMessage();
 
         } catch (UnsupportedEncodingException | MessagingException e) {
-            System.out.println("An error occurred while posting an email: " + e);
+            System.out.println("An error occurred while posting an email to: " + Arrays.toString(addressTo));
             return new ReturnMessage(false, "An error occurred while posting an email.");
         }
 
@@ -175,17 +174,19 @@ public class Utils {
             String contentType) {
 
         Message msg;
+        InternetAddress addressFrom;
+        InternetAddress[] addressTo = null;
 
         try {
             // use default session if none was provided
             msg = new MimeMessage(mailSession);
 
             // set the from and to address
-            InternetAddress addressFrom = new InternetAddress(
+            addressFrom = new InternetAddress(
                     from, from);
             msg.setFrom(addressFrom);
 
-            InternetAddress[] addressTo = new InternetAddress[1];
+            addressTo = new InternetAddress[1];
 
             addressTo[0] = new InternetAddress(to);
 
@@ -199,7 +200,7 @@ public class Utils {
             return new ReturnMessage();
 
         } catch (UnsupportedEncodingException | MessagingException e) {
-            System.out.println("An error occurred while posting an email: " + e);
+            System.out.println("An error occurred while posting an email to : " + Arrays.toString(addressTo));
             return new ReturnMessage(false, "An error occurred while posting an email.");
         }
 
