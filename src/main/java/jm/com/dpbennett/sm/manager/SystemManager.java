@@ -46,7 +46,6 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
-import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
@@ -142,6 +141,12 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+    
+    public void createNewPrivilege() {
+        selectedPrivilege = new Privilege();
+        
+        editPrivilege();
     }
 
     public List<Notification> getFoundNotifications() {
