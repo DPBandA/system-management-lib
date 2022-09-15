@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2021  D P Bennett & Associates Limited
+Copyright (C) 2022  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -1485,7 +1485,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 300, 400);
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 350, 400);
     }
 
     public void editDocumentType() {
