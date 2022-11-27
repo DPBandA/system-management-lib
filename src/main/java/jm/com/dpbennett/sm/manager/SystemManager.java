@@ -1666,7 +1666,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 375, 550);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 550, 750);
     }
 
     public void createNewLdapContext() {

@@ -26,7 +26,6 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
-import jm.com.dpbennett.business.entity.sm.SystemOption;
 
 /**
  *
@@ -52,7 +51,7 @@ public class SecurityEntityTest {
                     username + 
                     usernameSuffix 
                     + distinguishedNameString; // tk should be distinguishedName in database not domainName?
-            String securityCredentials = "?dbennettpwd!";
+            String securityCredentials = "dbennettpwd";
             String providerUrl = "ldap://dpbennett.com.jm:389";
             Hashtable env = new Hashtable();
 
