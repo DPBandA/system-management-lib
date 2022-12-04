@@ -1886,89 +1886,89 @@ public class SystemManager implements Serializable,
     /**
      * NB: May be deprecated in the future when the privilege field is removed.
      */
-    private void initUserPrivileges() {
-        if (getUser().getActivePrivilege().getCanBeJMTSAdministrator()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeJMTSAdministrator"));
-        }
-        if (getUser().getActivePrivilege().getCanBeSuperUser()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeSuperUser"));
-        }
-        if (getUser().getActivePrivilege().getCanApplyDiscountsToJobCosting()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyDiscountsToJobCosting	"));
-        }
-        if (getUser().getActivePrivilege().getCanApplyTaxesToJobCosting()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyTaxesToJobCosting"));
-        }
-        if (getUser().getActivePrivilege().getCanApproveJobCosting()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApproveJobCosting"));
-        }
-        if (getUser().getActivePrivilege().getCanBeFinancialAdministrator()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeFinancialAdministrator"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteClient()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteClient"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteDepartment()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteDepartment"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteEmployee()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteEmployee"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEditDepartmentJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDepartmentJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEditDisabledJobField()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDisabledJobField"));
-        }
-        if (getUser().getActivePrivilege().getCanAddClient()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddClient"));
-        }
-        if (getUser().getActivePrivilege().getCanAddSupplier()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddSupplier"));
-        }
-        if (getUser().getActivePrivilege().getCanEditInvoicingAndPayment()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditInvoicingAndPayment"));
-        }
-        if (getUser().getActivePrivilege().getCanEditJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEditOwnJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditOwnJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEnterDepartmentJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterDepartmentJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEnterJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEnterOwnJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterOwnJob"));
-        }
-
-    }
+//    private void initUserPrivileges() {
+//        if (getUser().getActivePrivilege().getCanBeJMTSAdministrator()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeJMTSAdministrator"));
+//        }
+//        if (getUser().getActivePrivilege().getCanBeSuperUser()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeSuperUser"));
+//        }
+//        if (getUser().getActivePrivilege().getCanApplyDiscountsToJobCosting()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyDiscountsToJobCosting	"));
+//        }
+//        if (getUser().getActivePrivilege().getCanApplyTaxesToJobCosting()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyTaxesToJobCosting"));
+//        }
+//        if (getUser().getActivePrivilege().getCanApproveJobCosting()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApproveJobCosting"));
+//        }
+//        if (getUser().getActivePrivilege().getCanBeFinancialAdministrator()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeFinancialAdministrator"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteClient()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteClient"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteDepartment()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteDepartment"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteEmployee()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteEmployee"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditDepartmentJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDepartmentJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditDisabledJobField()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDisabledJobField"));
+//        }
+//        if (getUser().getActivePrivilege().getCanAddClient()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddClient"));
+//        }
+//        if (getUser().getActivePrivilege().getCanAddSupplier()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddSupplier"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditInvoicingAndPayment()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditInvoicingAndPayment"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditOwnJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditOwnJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEnterDepartmentJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterDepartmentJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEnterJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEnterOwnJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterOwnJob"));
+//        }
+//
+//    }
 
     @Override
     public void completeLogin() {
@@ -1981,9 +1981,9 @@ public class SystemManager implements Serializable,
         }
         // NB: This is done for now to get the privileges from the user Privilege class
         // that is deprecated.
-        if (getUser().getPrivileges().isEmpty()) {
-            initUserPrivileges();
-        }
+//        if (getUser().getPrivileges().isEmpty()) {
+//            initUserPrivileges();
+//        }
 
         getUser().save(getEntityManager());
 
