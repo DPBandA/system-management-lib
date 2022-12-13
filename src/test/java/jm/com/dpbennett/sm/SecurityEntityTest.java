@@ -51,7 +51,7 @@ public class SecurityEntityTest {
                     username + 
                     usernameSuffix 
                     + distinguishedNameString; // tk should be distinguishedName in database not domainName?
-            String securityCredentials = "dbennettpwd";
+            String securityCredentials = "";
             String providerUrl = "ldap://dpbennett.com.jm:389";
             Hashtable env = new Hashtable();
 

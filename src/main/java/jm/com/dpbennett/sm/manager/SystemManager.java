@@ -143,6 +143,10 @@ public class SystemManager implements Serializable,
         init();
     }
     
+    public boolean getShowUserProfileSecurityTab() {
+        return SystemOption.getBoolean(getEntityManager(), "showUserProfileSecurityTab");
+    }
+    
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
         
@@ -671,6 +675,24 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().ajax().update("appForm");
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
+    }
+    
+    public void saveUserSecurityProfile(ActionEvent actionEvent) {
+        if (getUser().getNewPassword().equals(getUser().getConfirmedNewPassword())) {
+            // tk update LDAP here. See how to do it in YT video.
+            
+            PrimeFacesUtils.addMessage(
+                    "Secuity Profile Saved", 
+                    "Secuity Profile Saved",
+                    FacesMessage.SEVERITY_INFO);
+        }
+        else {
+            PrimeFacesUtils.addMessage("Secuity Profile NOT Saved", 
+                    "Secuity Profile NOT Saved",
+                    FacesMessage.SEVERITY_ERROR);
+        }
+
+        
     }
 
     public String getDateStr(Date date) {
