@@ -142,14 +142,18 @@ public class SystemManager implements Serializable,
     public SystemManager() {
         init();
     }
-    
+
+    public boolean getEnableUpdateLDAPUser() {
+        return SystemOption.getBoolean(getEntityManager(), "updateLDAPUser");
+    }
+
     public boolean getShowUserProfileSecurityTab() {
         return SystemOption.getBoolean(getEntityManager(), "showUserProfileSecurityTab");
     }
-    
+
     public void createNewPrivilege() {
         selectedPrivilege = new Privilege();
-        
+
         editPrivilege();
     }
 
@@ -659,8 +663,37 @@ public class SystemManager implements Serializable,
 
         selectedUser.save(getEntityManager());
 
-        PrimeFaces.current().dialog().closeDynamic(null);
+        if (updateLDAPUser()) {
 
+            PrimeFaces.current().dialog().closeDynamic(null);
+        } else {
+
+            PrimeFacesUtils.addMessage(
+                    "User Detail NOT Saved",
+                    "The user detail was NOT saved!",
+                    FacesMessage.SEVERITY_ERROR);
+
+        }
+
+    }
+
+    public boolean updateLDAPUser() {
+        EntityManager em = getEntityManager();
+        LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
+        
+        if (!LdapContext.updateUser(context, selectedUser)) {
+            // NB: It is assumed that the LDAP user does not exist so we will
+            // try to add it here.
+            
+            // Set temporary password to the username for the user to
+            // satisfy the requirements of LDAP.
+            // tk The format of the default password is to be made a system option.
+            selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
+            
+            return LdapContext.addUser(em, context, selectedUser);
+        }
+
+        return true;
     }
 
     public void closePreferencesDialog(ActionEvent actionEvent) {
@@ -676,23 +709,62 @@ public class SystemManager implements Serializable,
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
     }
-    
+
     public void saveUserSecurityProfile(ActionEvent actionEvent) {
-        if (getUser().getNewPassword().equals(getUser().getConfirmedNewPassword())) {
-            // tk update LDAP here. See how to do it in YT video.
-            
+        if (getUser().getNewPassword().trim().isEmpty()
+                && getUser().getConfirmedNewPassword().trim().isEmpty()) {
+
             PrimeFacesUtils.addMessage(
-                    "Secuity Profile Saved", 
-                    "Secuity Profile Saved",
-                    FacesMessage.SEVERITY_INFO);
-        }
-        else {
-            PrimeFacesUtils.addMessage("Secuity Profile NOT Saved", 
-                    "Secuity Profile NOT Saved",
+                    "No New Password",
+                    "A new password was not entered",
                     FacesMessage.SEVERITY_ERROR);
+
+            return;
         }
 
-        
+        if (!getUser().getNewPassword().trim().
+                equals(getUser().getConfirmedNewPassword().trim())) {
+
+            PrimeFacesUtils.addMessage(
+                    "No Match",
+                    "Passwords do NOT match",
+                    FacesMessage.SEVERITY_ERROR);
+
+            return;
+        }
+
+        if (getUser().getNewPassword().trim().
+                equals(getUser().getConfirmedNewPassword().trim())) {
+
+            EntityManager em = getEntityManager();
+
+            LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
+
+            if (ldap != null) {
+                if (LdapContext.updateUserPassword(
+                        em,
+                        ldap,
+                        getUser().getUsername(),
+                        getUser().getNewPassword().trim())) {
+
+                    PrimeFacesUtils.addMessage(
+                            "Password Changed",
+                            "Your password was changed",
+                            FacesMessage.SEVERITY_INFO);
+                } else {
+                    PrimeFacesUtils.addMessage(
+                            "Password NOT Changed",
+                            "Your password was NOT changed!",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            } else {
+                PrimeFacesUtils.addMessage(
+                        "Password NOT Changed",
+                        "The authentication server could not be accessed. Your password was NOT changed!",
+                        FacesMessage.SEVERITY_ERROR);
+            }
+        }
+
     }
 
     public String getDateStr(Date date) {
@@ -1404,7 +1476,7 @@ public class SystemManager implements Serializable,
         em.remove(n);
         em.getTransaction().commit();
         em.close();
-        
+
         doNotificationSearch();
         PrimeFaces.current().ajax().update("appForm:mainTabView", "appForm:notificationBadge");
 
@@ -1431,7 +1503,7 @@ public class SystemManager implements Serializable,
 
     public List<Notification> getNotifications() {
         notifications = getNotificationsByOwnerId();
-        
+
         if (notifications.isEmpty()) {
             Notification notification = new Notification();
             notification.setActive(false);
@@ -1446,14 +1518,14 @@ public class SystemManager implements Serializable,
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
     }
-    
+
     private void handleSelectedNotification(Notification notification) {
 
         switch (notification.getType()) {
             case "UserNotificationDialog":
                 // tk open the userNotificationDialog here.
                 break;
-            default:                
+            default:
                 System.out.println("Unkown type");
         }
 
@@ -1461,7 +1533,7 @@ public class SystemManager implements Serializable,
 
     public void onNotificationSelect(SelectEvent event) {
 
-         EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -1469,7 +1541,7 @@ public class SystemManager implements Serializable,
                 getUser().getId(),
                 false);
 
-       if (notification != null) {
+        if (notification != null) {
 
             handleSelectedNotification(notification);
 
@@ -1991,7 +2063,6 @@ public class SystemManager implements Serializable,
 //        }
 //
 //    }
-
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
