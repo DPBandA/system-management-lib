@@ -28,6 +28,7 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
  * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
  */
 public class Utils {
+
     /**
      * Gets 10 years starting with the current year. To be verified!
      *
@@ -74,6 +75,8 @@ public class Utils {
 
         return searchTypes;
     }
+
+    /*
 
     public static void sendErrorEmail(final String subject,
             final String message,
@@ -206,4 +209,5 @@ public class Utils {
 
     }
 
+     */
 }

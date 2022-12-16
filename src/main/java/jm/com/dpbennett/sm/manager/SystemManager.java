@@ -680,16 +680,16 @@ public class SystemManager implements Serializable,
     public boolean updateLDAPUser() {
         EntityManager em = getEntityManager();
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
-        
+
         if (!LdapContext.updateUser(context, selectedUser)) {
             // NB: It is assumed that the LDAP user does not exist so we will
             // try to add it here.
-            
+
             // Set temporary password to the username for the user to
             // satisfy the requirements of LDAP.
             // tk The format of the default password is to be made a system option.
             selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
-            
+
             return LdapContext.addUser(em, context, selectedUser);
         }
 
@@ -1483,15 +1483,18 @@ public class SystemManager implements Serializable,
     }
 
     public List<Notification> getNotificationsByOwnerId() {
+        EntityManager em = getEntityManager();
+
         List<Notification> myNotifications = Notification.findNotificationsByOwnerId(
-                getEntityManager(),
+                em,
                 getUser().getId());
 
         if (myNotifications.isEmpty()) {
             return new ArrayList<>();
         }
 
-        int subListIndex = 5; // tk make 5 system option.
+        int subListIndex = SystemOption.getInteger(em, "maxNotificationsToDisplay"); 
+        
         int myNotificationsNum = myNotifications.size();
 
         if (subListIndex > myNotificationsNum) {

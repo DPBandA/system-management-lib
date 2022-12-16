@@ -33,6 +33,7 @@ import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.Security;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
@@ -256,7 +257,7 @@ public class Authentication implements Serializable {
                 // Send email to system administrator alert if activated
                 if ((Boolean) SystemOption.getOptionValueObject(getEntityManager(),
                         "developerEmailAlertActivated")) {
-                    Utils.postMail(null, null, null,
+                    MailUtils.postMail(null, null, null,
                             "Failed user login",
                             "Username: " + username + "\nDate/Time: " + new Date(),
                             "text/plain",
