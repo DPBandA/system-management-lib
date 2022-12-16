@@ -26,7 +26,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.auth.Privilege;
 import jm.com.dpbennett.business.entity.hrm.User;
-import jm.com.dpbennett.business.entity.sc.MarketProduct;
+import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import org.junit.Test;
 
 /**

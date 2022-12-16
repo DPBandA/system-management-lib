@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2021  D P Bennett & Associates Limited
+Copyright (C) 2022  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -141,6 +141,20 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+
+    public boolean getEnableUpdateLDAPUser() {
+        return SystemOption.getBoolean(getEntityManager(), "updateLDAPUser");
+    }
+
+    public boolean getShowUserProfileSecurityTab() {
+        return SystemOption.getBoolean(getEntityManager(), "showUserProfileSecurityTab");
+    }
+
+    public void createNewPrivilege() {
+        selectedPrivilege = new Privilege();
+
+        editPrivilege();
     }
 
     public List<Notification> getFoundNotifications() {
@@ -649,8 +663,37 @@ public class SystemManager implements Serializable,
 
         selectedUser.save(getEntityManager());
 
-        PrimeFaces.current().dialog().closeDynamic(null);
+        if (updateLDAPUser()) {
 
+            PrimeFaces.current().dialog().closeDynamic(null);
+        } else {
+
+            PrimeFacesUtils.addMessage(
+                    "User Detail NOT Saved",
+                    "The user detail was NOT saved!",
+                    FacesMessage.SEVERITY_ERROR);
+
+        }
+
+    }
+
+    public boolean updateLDAPUser() {
+        EntityManager em = getEntityManager();
+        LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
+
+        if (!LdapContext.updateUser(context, selectedUser)) {
+            // NB: It is assumed that the LDAP user does not exist so we will
+            // try to add it here.
+
+            // Set temporary password to the username for the user to
+            // satisfy the requirements of LDAP.
+            // tk The format of the default password is to be made a system option.
+            selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
+
+            return LdapContext.addUser(em, context, selectedUser);
+        }
+
+        return true;
     }
 
     public void closePreferencesDialog(ActionEvent actionEvent) {
@@ -665,6 +708,63 @@ public class SystemManager implements Serializable,
         PrimeFaces.current().ajax().update("appForm");
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
+    }
+
+    public void saveUserSecurityProfile(ActionEvent actionEvent) {
+        if (getUser().getNewPassword().trim().isEmpty()
+                && getUser().getConfirmedNewPassword().trim().isEmpty()) {
+
+            PrimeFacesUtils.addMessage(
+                    "No New Password",
+                    "A new password was not entered",
+                    FacesMessage.SEVERITY_ERROR);
+
+            return;
+        }
+
+        if (!getUser().getNewPassword().trim().
+                equals(getUser().getConfirmedNewPassword().trim())) {
+
+            PrimeFacesUtils.addMessage(
+                    "No Match",
+                    "Passwords do NOT match",
+                    FacesMessage.SEVERITY_ERROR);
+
+            return;
+        }
+
+        if (getUser().getNewPassword().trim().
+                equals(getUser().getConfirmedNewPassword().trim())) {
+
+            EntityManager em = getEntityManager();
+
+            LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
+
+            if (ldap != null) {
+                if (LdapContext.updateUserPassword(
+                        em,
+                        ldap,
+                        getUser().getUsername(),
+                        getUser().getNewPassword().trim())) {
+
+                    PrimeFacesUtils.addMessage(
+                            "Password Changed",
+                            "Your password was changed",
+                            FacesMessage.SEVERITY_INFO);
+                } else {
+                    PrimeFacesUtils.addMessage(
+                            "Password NOT Changed",
+                            "Your password was NOT changed!",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            } else {
+                PrimeFacesUtils.addMessage(
+                        "Password NOT Changed",
+                        "The authentication server could not be accessed. Your password was NOT changed!",
+                        FacesMessage.SEVERITY_ERROR);
+            }
+        }
+
     }
 
     public String getDateStr(Date date) {
@@ -1376,22 +1476,25 @@ public class SystemManager implements Serializable,
         em.remove(n);
         em.getTransaction().commit();
         em.close();
-        
+
         doNotificationSearch();
         PrimeFaces.current().ajax().update("appForm:mainTabView", "appForm:notificationBadge");
 
     }
 
     public List<Notification> getNotificationsByOwnerId() {
+        EntityManager em = getEntityManager();
+
         List<Notification> myNotifications = Notification.findNotificationsByOwnerId(
-                getEntityManager(),
+                em,
                 getUser().getId());
 
         if (myNotifications.isEmpty()) {
             return new ArrayList<>();
         }
 
-        int subListIndex = 5; // tk make 5 system option.
+        int subListIndex = SystemOption.getInteger(em, "maxNotificationsToDisplay"); 
+        
         int myNotificationsNum = myNotifications.size();
 
         if (subListIndex > myNotificationsNum) {
@@ -1404,6 +1507,14 @@ public class SystemManager implements Serializable,
     public List<Notification> getNotifications() {
         notifications = getNotificationsByOwnerId();
 
+        if (notifications.isEmpty()) {
+            Notification notification = new Notification();
+            notification.setActive(false);
+            notification.setType("None");
+            notification.setName("<< You have no notifications >>");
+            notifications.add(notification);
+        }
+
         return notifications;
     }
 
@@ -1411,20 +1522,35 @@ public class SystemManager implements Serializable,
         this.notifications = notifications;
     }
 
+    private void handleSelectedNotification(Notification notification) {
+
+        switch (notification.getType()) {
+            case "UserNotificationDialog":
+                // tk open the userNotificationDialog here.
+                break;
+            default:
+                System.out.println("Unkown type");
+        }
+
+    }
+
     public void onNotificationSelect(SelectEvent event) {
 
         EntityManager em = getEntityManager();
 
-        Notification n = Notification.findNotificationByNameAndOwnerId(
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
                 (String) event.getObject(),
                 getUser().getId(),
                 false);
 
-        // Handle the notification, set it inactive and save.
-        System.out.println("Selected notification owner id: " + n.getName() + ": " + n.getOwnerId());
-        n.setActive(false);
-        n.save(em);
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
 
     }
 
@@ -1456,7 +1582,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "categoryDialog", true, true, true, 300, 400);
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 350, 400);
     }
 
     public void editDocumentType() {
@@ -1637,7 +1763,7 @@ public class SystemManager implements Serializable,
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 375, 550);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 550, 750);
     }
 
     public void createNewLdapContext() {
@@ -1857,90 +1983,89 @@ public class SystemManager implements Serializable,
     /**
      * NB: May be deprecated in the future when the privilege field is removed.
      */
-    private void initUserPrivileges() {
-        if (getUser().getActivePrivilege().getCanBeJMTSAdministrator()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeJMTSAdministrator"));
-        }
-        if (getUser().getActivePrivilege().getCanBeSuperUser()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeSuperUser"));
-        }
-        if (getUser().getActivePrivilege().getCanApplyDiscountsToJobCosting()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyDiscountsToJobCosting	"));
-        }
-        if (getUser().getActivePrivilege().getCanApplyTaxesToJobCosting()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyTaxesToJobCosting"));
-        }
-        if (getUser().getActivePrivilege().getCanApproveJobCosting()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApproveJobCosting"));
-        }
-        if (getUser().getActivePrivilege().getCanBeFinancialAdministrator()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeFinancialAdministrator"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteClient()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteClient"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteDepartment()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteDepartment"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteEmployee()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteEmployee"));
-        }
-        if (getUser().getActivePrivilege().getCanDeleteJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEditDepartmentJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDepartmentJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEditDisabledJobField()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDisabledJobField"));
-        }
-        if (getUser().getActivePrivilege().getCanAddClient()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddClient"));
-        }
-        if (getUser().getActivePrivilege().getCanAddSupplier()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddSupplier"));
-        }
-        if (getUser().getActivePrivilege().getCanEditInvoicingAndPayment()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditInvoicingAndPayment"));
-        }
-        if (getUser().getActivePrivilege().getCanEditJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEditOwnJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditOwnJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEnterDepartmentJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterDepartmentJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEnterJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterJob"));
-        }
-        if (getUser().getActivePrivilege().getCanEnterOwnJob()) {
-            getUser().getPrivileges().add(
-                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterOwnJob"));
-        }
-
-    }
-
+//    private void initUserPrivileges() {
+//        if (getUser().getActivePrivilege().getCanBeJMTSAdministrator()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeJMTSAdministrator"));
+//        }
+//        if (getUser().getActivePrivilege().getCanBeSuperUser()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeSuperUser"));
+//        }
+//        if (getUser().getActivePrivilege().getCanApplyDiscountsToJobCosting()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyDiscountsToJobCosting	"));
+//        }
+//        if (getUser().getActivePrivilege().getCanApplyTaxesToJobCosting()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApplyTaxesToJobCosting"));
+//        }
+//        if (getUser().getActivePrivilege().getCanApproveJobCosting()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "ApproveJobCosting"));
+//        }
+//        if (getUser().getActivePrivilege().getCanBeFinancialAdministrator()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "BeFinancialAdministrator"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteClient()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteClient"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteDepartment()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteDepartment"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteEmployee()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteEmployee"));
+//        }
+//        if (getUser().getActivePrivilege().getCanDeleteJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "DeleteJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditDepartmentJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDepartmentJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditDisabledJobField()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditDisabledJobField"));
+//        }
+//        if (getUser().getActivePrivilege().getCanAddClient()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddClient"));
+//        }
+//        if (getUser().getActivePrivilege().getCanAddSupplier()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "AddSupplier"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditInvoicingAndPayment()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditInvoicingAndPayment"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEditOwnJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EditOwnJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEnterDepartmentJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterDepartmentJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEnterJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterJob"));
+//        }
+//        if (getUser().getActivePrivilege().getCanEnterOwnJob()) {
+//            getUser().getPrivileges().add(
+//                    Privilege.findActivePrivilegeByName(getEntityManager(), "EnterOwnJob"));
+//        }
+//
+//    }
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
@@ -1952,9 +2077,9 @@ public class SystemManager implements Serializable,
         }
         // NB: This is done for now to get the privileges from the user Privilege class
         // that is deprecated.
-        if (getUser().getPrivileges().isEmpty()) {
-            initUserPrivileges();
-        }
+//        if (getUser().getPrivileges().isEmpty()) {
+//            initUserPrivileges();
+//        }
 
         getUser().save(getEntityManager());
 

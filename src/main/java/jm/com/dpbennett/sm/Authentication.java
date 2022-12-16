@@ -31,7 +31,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.hrm.User;
+import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.business.entity.util.Security;
 import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 
@@ -174,7 +177,8 @@ public class Authentication implements Serializable {
         this.user = user;
     }
 
-    public static Boolean checkForLDAPUser(EntityManager em, String username, javax.naming.ldap.LdapContext ctx) {
+    public static Boolean checkForLDAPUser(EntityManager em, String username,
+            javax.naming.ldap.LdapContext ctx) {
 
         try {
             SearchControls constraints = new SearchControls();
@@ -198,7 +202,7 @@ public class Authentication implements Serializable {
         return Boolean.TRUE;
     }
 
-    public Boolean validateUser(EntityManager em, String username, String password) {
+    public Boolean validateUser(EntityManager em) {
         Boolean userValidated = false;
         InitialLdapContext ctx;
 
@@ -206,13 +210,21 @@ public class Authentication implements Serializable {
             List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
 
             for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
-                ctx = ldapContext.getInitialLDAPContext(username, password);
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
 
-                if (ctx != null) {
-                    if (checkForLDAPUser(em, username, ctx)) {
-                        // user exists in LDAP                    
-                        userValidated = true;
-                        break;
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -225,7 +237,7 @@ public class Authentication implements Serializable {
 
             } else {
                 System.out.println("User NOT validated!");
-
+                
                 return false;
             }
 
@@ -245,7 +257,7 @@ public class Authentication implements Serializable {
                 // Send email to system administrator alert if activated
                 if ((Boolean) SystemOption.getOptionValueObject(getEntityManager(),
                         "developerEmailAlertActivated")) {
-                    Utils.postMail(null, null, null,
+                    MailUtils.postMail(null, null, null,
                             "Failed user login",
                             "Username: " + username + "\nDate/Time: " + new Date(),
                             "text/plain",
@@ -287,7 +299,7 @@ public class Authentication implements Serializable {
                     notifyLoginListeners();
 
                     //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-                } else if (validateUser(em, username, password)) {
+                } else if (validateUser(em)) {
                     logonMessage = "Please provide your login details below:";
                     username = "";
                     password = "";
@@ -297,16 +309,19 @@ public class Authentication implements Serializable {
 
                     //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else {
+                    setUserLoggedIn(false);
                     checkLoginAttemps();
                     logonMessage = "Please enter a valid username and password.";
                 }
             } else {
+                setUserLoggedIn(false);
                 logonMessage = "Please enter a registered username.";
                 username = "";
                 password = "";
             }
 
         } catch (Exception e) {
+            setUserLoggedIn(false);
             System.out.println(e);
             logonMessage = "Login error occurred! Please try again or contact the System Administrator";
         }
