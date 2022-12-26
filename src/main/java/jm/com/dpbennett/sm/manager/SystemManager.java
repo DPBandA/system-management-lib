@@ -58,6 +58,7 @@ import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
+import jm.com.dpbennett.sm.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.tabview.Tab;
@@ -141,6 +142,15 @@ public class SystemManager implements Serializable,
      */
     public SystemManager() {
         init();
+    }
+
+    public List getContactTypes() {
+
+        return getStringListAsSelectItems(getEntityManager(), "personalContactTypes");
+    }
+
+    public List getPersonalTitles() {
+        return Utils.getPersonalTitles();
     }
 
     public boolean getEnableUpdateLDAPUser() {
@@ -1493,8 +1503,8 @@ public class SystemManager implements Serializable,
             return new ArrayList<>();
         }
 
-        int subListIndex = SystemOption.getInteger(em, "maxNotificationsToDisplay"); 
-        
+        int subListIndex = SystemOption.getInteger(em, "maxNotificationsToDisplay");
+
         int myNotificationsNum = myNotifications.size();
 
         if (subListIndex > myNotificationsNum) {
@@ -1916,7 +1926,6 @@ public class SystemManager implements Serializable,
         return new Date();
     }
 
-   
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
