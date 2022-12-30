@@ -1392,7 +1392,7 @@ public class SystemManager implements Serializable,
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 300, 400);
+        PrimeFacesUtils.openDialog(null, url, true, true, true, 500, 600);
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
