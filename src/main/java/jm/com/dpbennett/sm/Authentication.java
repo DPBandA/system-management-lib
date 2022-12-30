@@ -34,8 +34,6 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.MailUtils;
-import jm.com.dpbennett.business.entity.util.Security;
-import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.PrimeFaces;
 
 /**
