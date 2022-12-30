@@ -78,7 +78,10 @@ public class Authentication implements Serializable {
         loginAttempts = 0;
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
+        String theme = user.getPFThemeName();
         user = new User();
+        user.setPFThemeName(theme);
+        
         PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
