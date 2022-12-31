@@ -671,7 +671,14 @@ public class SystemManager implements Serializable,
 
     public void saveSelectedUser(ActionEvent actionEvent) {
 
-        selectedUser.save(getEntityManager());
+        if (!selectedUser.saveUnique(getEntityManager()).isSuccess()) {
+            PrimeFacesUtils.addMessage(
+                    "User Exists",
+                    "The user already exists!",
+                    FacesMessage.SEVERITY_ERROR);
+            
+            return;
+        }
 
         if (updateLDAPUser()) {
 
