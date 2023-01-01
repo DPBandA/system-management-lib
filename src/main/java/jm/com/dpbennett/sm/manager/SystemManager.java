@@ -51,7 +51,6 @@ import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
-//import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
@@ -74,7 +73,7 @@ import org.primefaces.model.file.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public class SystemManager implements Manager, Serializable /*,AuthenticationListener*/ {
+public class SystemManager implements Manager, Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -118,10 +117,7 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
     private Notification selectedNotification;
     private Modules selectedModule;
     private Authentication authentication;
-    //private List<UIUpdateListener> uiUpdateListeners;
-    //private List<AuthenticationListener> authenticationListeners;
     private Dashboard dashboard;
-    // User related
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
@@ -184,17 +180,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
 
     public void setSelectedNotification(Notification selectedNotification) {
         this.selectedNotification = selectedNotification;
-    }
-
-    // tk make system options
-    public List getEmailTypes() {
-        ArrayList categories = new ArrayList();
-
-        categories.add(new SelectItem("", ""));
-        categories.add(new SelectItem("Template", "Template"));
-        categories.add(new SelectItem("Instance", "Instance"));
-
-        return categories;
     }
 
     public String getEmailSearchText() {
@@ -331,26 +316,10 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
                 getEntityManager(), "logoURL");
     }
 
-    // tk get these from Category records. see SC for technique.
-    public List getEmailCategories() {
-        ArrayList categories = new ArrayList();
-
-        categories.add(new SelectItem("", ""));
-        categories.add(new SelectItem("Purchase Requisition", "Purchase Requisition"));
-        categories.add(new SelectItem("Job", "Job"));
-
-        return categories;
-    }
-
-    // tk make system options
     public List getContentTypes() {
-        ArrayList types = new ArrayList();
 
-        types.add(new SelectItem("text/plain", "text/plain"));
-        types.add(new SelectItem("text/html", "text/html"));
-        types.add(new SelectItem("text/html; charset=utf-8", "text/html; charset=utf-8"));
-
-        return types;
+        return getStringListAsSelectItems(getEntityManager(),
+                "contentTypeList");
     }
 
     public Integer getLogoURLImageHeight() {
@@ -698,11 +667,7 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
-            // NB: It is assumed that the LDAP user does not exist so we will
-            // try to add it here.
-
-            // Set temporary password to the username for the user to
-            // satisfy the requirements of LDAP.
+           
             // tk The format of the default password is to be made a system option.
             selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
 
@@ -895,17 +860,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         System.out.println("Doing default search...");
     }
 
-//    private void notifyListenersToCompleteLogin() {
-//        for (AuthenticationListener authenticationListener : authenticationListeners) {
-//            authenticationListener.completeLogin();
-//        }
-//    }
-//
-//    private void notifyListenersToCompleteLogout() {
-//        for (AuthenticationListener authenticationListener : authenticationListeners) {
-//            authenticationListener.completeLogout();
-//        }
-//    }
     public void handleKeepAlive() {
         getUser().setPollTime(new Date());
 
@@ -928,7 +882,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         getUser().logActivity("Logged out", getEntityManager());
         reset();
         completeLogout();
-//        getAuthentication().notifyLogoutListeners();
         getAuthentication().reset();
     }
 
@@ -1064,6 +1017,8 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
 
     private void initSearchTypes() {
 
+        groupedSearchTypes.clear();
+
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
@@ -1192,7 +1147,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         return list;
     }
 
-    // tk make system option
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
 
@@ -1221,25 +1175,10 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         return getStringListAsSelectItemsWithCaps(getEntityManager(), "PFThemes");
     }
 
-    // tk make system option
-    public List getSystemOptionCategories() {
-        ArrayList categories = new ArrayList();
+    public List<SelectItem> getSystemOptionCategories() {
 
-        categories.add(new SelectItem("System", "System"));
-        categories.add(new SelectItem("Authentication", "Authentication"));
-        categories.add(new SelectItem("Database", "Database"));
-        categories.add(new SelectItem("Compliance", "Compliance"));
-        categories.add(new SelectItem("Document", "Document"));
-        categories.add(new SelectItem("Finance", "Finance"));
-        categories.add(new SelectItem("General", "General"));
-        categories.add(new SelectItem("GUI", "GUI"));
-        categories.add(new SelectItem("Job", "Job"));
-        categories.add(new SelectItem("Legal", "Legal"));
-        categories.add(new SelectItem("Metrology", "Metrology"));
-        categories.add(new SelectItem("Notification", "Notification"));
-        categories.add(new SelectItem("Report", "Report"));
-
-        return categories;
+        return getStringListAsSelectItems(getEntityManager(),
+                "systemOptionCategoryList");
     }
 
     private void init() {
@@ -1260,16 +1199,12 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         searchText = "";
         attachmentSearchText = "";
         emailSearchText = "";
-        // Active flags
         isActiveLdapsOnly = true;
         isActiveDocumentTypesOnly = true;
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
-        //uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
-        //uiUpdateListeners = new ArrayList<>();
-        //authenticationListeners = new ArrayList<>();
         groupedSearchTypes = new ArrayList<>();
         usersTableId = ":appForm:mainTabView:centerTabView:usersTable";
         searchType = "Users";
@@ -1277,7 +1212,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
                 "dateAndTimeEntered", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
 
-        //getAuthentication().addSingleAuthenticationListener(this);
     }
 
     public Boolean getIsActiveEmailsOnly() {
@@ -1494,17 +1428,10 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
     }
 
     public void deleteNotification() {
-        // tk
-        System.out.println("Deleting notification...: " + getSelectedNotification().getId());
+
         EntityManager em = getEntityManager();
 
-        // Delete notification
-        em.getTransaction().begin();
-        Notification n = em.find(Notification.class, getSelectedNotification().getId());
-        System.out.println("Deleting found notification...: " + n.getId());
-        em.remove(n);
-        em.getTransaction().commit();
-        em.close();
+        getSelectedNotification().delete(em);
 
         doNotificationSearch();
         PrimeFaces.current().ajax().update("appForm:mainTabView", "appForm:notificationBadge");
@@ -1555,7 +1482,7 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
 
         switch (notification.getType()) {
             case "UserNotificationDialog":
-                // tk open the userNotificationDialog here.
+
                 break;
             default:
                 System.out.println("Unkown type");
@@ -1652,7 +1579,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         dashboard.setRender(false);
         mainTabView.removeAllTabs();
         mainTabView.setRender(false);
-        //uiUpdateListeners = new ArrayList<>();
 
         updateAllForms();
 
@@ -1846,14 +1772,12 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
 
             OutputStream outputStream;
 
-            // Source file
             String sourceURL = getUploadedFile().getFileName();
             getAttachment().setSourceURL(sourceURL);
             if (getAttachment().getName().isEmpty()) {
                 getAttachment().setName(sourceURL);
             }
-            // Save file
-            // getAttachment().setDestinationURL(destinationURL);
+
             File fileToSave = new File(getAttachment().getDestinationURL() + getUploadedFile().getFileName());
             outputStream = new FileOutputStream(fileToSave);
             outputStream.write(getUploadedFile().getContent());
@@ -1945,7 +1869,6 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         return new Date();
     }
 
-    //@Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
 
@@ -1957,32 +1880,14 @@ public class SystemManager implements Manager, Serializable /*,AuthenticationLis
         initMainTabView();
         updateAllForms();
 
-        //notifyListenersToCompleteLogin();
     }
 
-    //@Override
     public void completeLogout() {
 
-        //notifyListenersToCompleteLogout();
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
     }
 
-//    public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
-//
-//        uiUpdateListeners.add(uiUpdateListener);
-//    }
-//
-//    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
-//        authenticationListeners.remove(authenticationListener);
-//
-//        authenticationListeners.add(authenticationListener);
-//    }
-//
-//    public interface UIUpdateListener {
-//
-//        public void completeUIUpdate();
-//    }
     public Category getSelectedCategory() {
         return selectedCategory;
     }
