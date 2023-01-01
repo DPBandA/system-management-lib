@@ -51,7 +51,7 @@ import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
-import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
+//import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
@@ -74,8 +74,7 @@ import org.primefaces.model.file.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public class SystemManager implements Serializable,
-        AuthenticationListener {
+public class SystemManager implements Manager, Serializable /*,AuthenticationListener*/ {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -119,8 +118,8 @@ public class SystemManager implements Serializable,
     private Notification selectedNotification;
     private Modules selectedModule;
     private Authentication authentication;
-    private List<UIUpdateListener> uiUpdateListeners;
-    private List<AuthenticationListener> authenticationListeners;
+    //private List<UIUpdateListener> uiUpdateListeners;
+    //private List<AuthenticationListener> authenticationListeners;
     private Dashboard dashboard;
     // User related
     private User selectedUser;
@@ -676,7 +675,7 @@ public class SystemManager implements Serializable,
                     "User Exists",
                     "The user already exists!",
                     FacesMessage.SEVERITY_ERROR);
-            
+
             return;
         }
 
@@ -896,18 +895,17 @@ public class SystemManager implements Serializable,
         System.out.println("Doing default search...");
     }
 
-    private void notifyListenersToCompleteLogin() {
-        for (AuthenticationListener authenticationListener : authenticationListeners) {
-            authenticationListener.completeLogin();
-        }
-    }
-
-    private void notifyListenersToCompleteLogout() {
-        for (AuthenticationListener authenticationListener : authenticationListeners) {
-            authenticationListener.completeLogout();
-        }
-    }
-
+//    private void notifyListenersToCompleteLogin() {
+//        for (AuthenticationListener authenticationListener : authenticationListeners) {
+//            authenticationListener.completeLogin();
+//        }
+//    }
+//
+//    private void notifyListenersToCompleteLogout() {
+//        for (AuthenticationListener authenticationListener : authenticationListeners) {
+//            authenticationListener.completeLogout();
+//        }
+//    }
     public void handleKeepAlive() {
         getUser().setPollTime(new Date());
 
@@ -929,7 +927,8 @@ public class SystemManager implements Serializable,
     public void logout() {
         getUser().logActivity("Logged out", getEntityManager());
         reset();
-        getAuthentication().notifyLogoutListeners();
+        completeLogout();
+//        getAuthentication().notifyLogoutListeners();
         getAuthentication().reset();
     }
 
@@ -1027,11 +1026,9 @@ public class SystemManager implements Serializable,
 
         getMainTabView().reset(getUser());
 
-        if (getUser().hasModule("SystemAdministrationModule")) {
-
-            Modules sysAdmin = getUser().getActiveModule("SystemAdministrationModule");
-
-            getMainTabView().openTab(sysAdmin.getMainViewTitle());
+        getMainTabView().reset(getUser());
+        for (Modules activeModule : getUser().getActiveModules()) {
+            getMainTabView().openTab(activeModule.getMainViewTitle());
         }
     }
 
@@ -1039,20 +1036,19 @@ public class SystemManager implements Serializable,
 
         getDashboard().reset(getUser(), false);
 
-        if (getUser().hasModule("SystemAdministrationModule")) {
-            Modules sysAdmin = getUser().getActiveModule("SystemAdministrationModule");
-
-            getDashboard().setSelectedTabId(sysAdmin.getDashboardTitle());
-
-            getDashboard().openTab(sysAdmin.getDashboardTitle());
+        for (Modules activeModule : getUser().getActiveModules()) {
+            getDashboard().setSelectedTabId(activeModule.getDashboardTitle());
+            getDashboard().openTab(activeModule.getDashboardTitle());
         }
 
         initSearchTypes();
     }
 
-    private void initSearchTypes() {
-        SelectItemGroup adminGroup = new SelectItemGroup("Administration");
-        adminGroup.setSelectItems(new SelectItem[]{
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        SelectItemGroup group = new SelectItemGroup("Administration");
+
+        group.setSelectItems(new SelectItem[]{
             new SelectItem("Users", "Users"),
             new SelectItem("Privileges", "Privileges"),
             new SelectItem("Categories", "Categories"),
@@ -1062,7 +1058,18 @@ public class SystemManager implements Serializable,
             new SelectItem("Modules", "Modules"),
             new SelectItem("Attachments", "Attachments")
         });
-        groupedSearchTypes.add(adminGroup);
+
+        return group;
+    }
+
+    private void initSearchTypes() {
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                groupedSearchTypes.add(manager.getSearchTypesGroup());
+            }
+        }
     }
 
     public Dashboard getDashboard() {
@@ -1084,6 +1091,11 @@ public class SystemManager implements Serializable,
         }
 
         return authentication;
+    }
+
+    public Manager getManager(String name) {
+
+        return BeanUtils.findBean(name);
     }
 
     public ArrayList<String> completeCountry(String query) {
@@ -1253,11 +1265,11 @@ public class SystemManager implements Serializable,
         isActiveDocumentTypesOnly = true;
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
-        uiUpdateListeners = new ArrayList<>();
+        //uiUpdateListeners = new ArrayList<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
-        uiUpdateListeners = new ArrayList<>();
-        authenticationListeners = new ArrayList<>();
+        //uiUpdateListeners = new ArrayList<>();
+        //authenticationListeners = new ArrayList<>();
         groupedSearchTypes = new ArrayList<>();
         usersTableId = ":appForm:mainTabView:centerTabView:usersTable";
         searchType = "Users";
@@ -1265,7 +1277,7 @@ public class SystemManager implements Serializable,
                 "dateAndTimeEntered", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
 
-        getAuthentication().addSingleAuthenticationListener(this);
+        //getAuthentication().addSingleAuthenticationListener(this);
     }
 
     public Boolean getIsActiveEmailsOnly() {
@@ -1640,7 +1652,7 @@ public class SystemManager implements Serializable,
         dashboard.setRender(false);
         mainTabView.removeAllTabs();
         mainTabView.setRender(false);
-        uiUpdateListeners = new ArrayList<>();
+        //uiUpdateListeners = new ArrayList<>();
 
         updateAllForms();
 
@@ -1933,7 +1945,7 @@ public class SystemManager implements Serializable,
         return new Date();
     }
 
-    @Override
+    //@Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager());
 
@@ -1945,34 +1957,32 @@ public class SystemManager implements Serializable,
         initMainTabView();
         updateAllForms();
 
-        notifyListenersToCompleteLogin();
+        //notifyListenersToCompleteLogin();
     }
 
-    @Override
+    //@Override
     public void completeLogout() {
 
-        notifyListenersToCompleteLogout();
-
+        //notifyListenersToCompleteLogout();
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
     }
 
-    public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
-
-        uiUpdateListeners.add(uiUpdateListener);
-    }
-
-    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
-        authenticationListeners.remove(authenticationListener);
-
-        authenticationListeners.add(authenticationListener);
-    }
-
-    public interface UIUpdateListener {
-
-        public void completeUIUpdate();
-    }
-
+//    public void addUIUpdateListener(SystemManager.UIUpdateListener uiUpdateListener) {
+//
+//        uiUpdateListeners.add(uiUpdateListener);
+//    }
+//
+//    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
+//        authenticationListeners.remove(authenticationListener);
+//
+//        authenticationListeners.add(authenticationListener);
+//    }
+//
+//    public interface UIUpdateListener {
+//
+//        public void completeUIUpdate();
+//    }
     public Category getSelectedCategory() {
         return selectedCategory;
     }
