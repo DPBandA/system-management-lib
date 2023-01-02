@@ -27,7 +27,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -121,7 +123,6 @@ public class SystemManager implements Manager, Serializable {
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
-    private String usersTableId;
     private Attachment attachment;
     private UploadedFile uploadedFile;
     private List<SelectItem> groupedSearchTypes;
@@ -131,12 +132,43 @@ public class SystemManager implements Manager, Serializable {
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
+    // tk
+    private Modules module;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+
+    public Long getModule(Long id) {
+        EntityManager em = getEntityManager();
+
+        module = em.find(Modules.class, id);
+        if (module != null) {
+            return module.getId();
+        }
+
+        return -1L;
+    }
+
+    public String getMainViewTitle() {
+//        Map<String, String> map = new HashMap<>();
+//        map.put("oo", "Amit");
+//        map.put("hh", "Vijay");
+//        map.put("ii", "Rahul");
+//        //Elements can traverse in any order  
+//        for (Map.Entry m : map.entrySet()) {
+//            System.out.println(m.getKey() + " " + m.getValue());
+//        }
+        // tk
+        if (module != null) {
+            return module.getMainViewTitle();
+
+        } else {
+            return "";
+        }
     }
 
     public List getContactTypes() {
@@ -417,14 +449,6 @@ public class SystemManager implements Manager, Serializable {
         this.privilegeDualList = privilegeDualList;
     }
 
-    public String getUsersTableId() {
-        return usersTableId;
-    }
-
-    public void setUsersTableId(String usersTableId) {
-        this.usersTableId = usersTableId;
-    }
-
     public String getPrivilegeSearchText() {
         return privilegeSearchText;
     }
@@ -667,7 +691,7 @@ public class SystemManager implements Manager, Serializable {
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
-           
+
             // tk The format of the default password is to be made a system option.
             selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
 
@@ -956,12 +980,10 @@ public class SystemManager implements Manager, Serializable {
 
         switch (tabTitle) {
             case "Human Resource":
-                setUsersTableId(":appForm:mainTabView:humanResourceTabView:usersTable");
-                PrimeFaces.current().ajax().update(":appForm:mainTabView:humanResourceTabView");
+
                 break;
             case "System Administration":
-                setUsersTableId(":appForm:mainTabView:centerTabView:usersTable");
-                PrimeFaces.current().ajax().update(":appForm:mainTabView:centerTabView");
+
                 break;
 
         }
@@ -1206,7 +1228,6 @@ public class SystemManager implements Manager, Serializable {
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
         groupedSearchTypes = new ArrayList<>();
-        usersTableId = ":appForm:mainTabView:centerTabView:usersTable";
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false);
