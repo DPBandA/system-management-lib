@@ -4,6 +4,7 @@
  */
 package jm.com.dpbennett.sm.manager;
 
+import java.util.List;
 import javax.faces.model.SelectItemGroup;
 
 /**
@@ -13,4 +14,7 @@ import javax.faces.model.SelectItemGroup;
 public interface Manager {
 
     public SelectItemGroup getSearchTypesGroup();
+
+    public List getDateSearchFields();
+
 }

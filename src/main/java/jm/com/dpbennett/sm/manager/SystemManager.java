@@ -127,13 +127,13 @@ public class SystemManager implements Manager, Serializable {
     private UploadedFile uploadedFile;
     private List<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
+    private ArrayList dateSearchFields;
+    private ArrayList allDateSearchFields;
     private Email selectedEmail;
     private Boolean isActiveEmailsOnly;
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
-    // tk
-    private Modules module;
 
     /**
      * Creates a new instance of SystemManager
@@ -142,18 +142,7 @@ public class SystemManager implements Manager, Serializable {
         init();
     }
 
-    public Long getModule(Long id) {
-        EntityManager em = getEntityManager();
-
-        module = em.find(Modules.class, id);
-        if (module != null) {
-            return module.getId();
-        }
-
-        return -1L;
-    }
-
-    public String getMainViewTitle() {
+    //public String getMainViewTitle() {
 //        Map<String, String> map = new HashMap<>();
 //        map.put("oo", "Amit");
 //        map.put("hh", "Vijay");
@@ -161,16 +150,9 @@ public class SystemManager implements Manager, Serializable {
 //        //Elements can traverse in any order  
 //        for (Map.Entry m : map.entrySet()) {
 //            System.out.println(m.getKey() + " " + m.getValue());
-//        }
-        // tk
-        if (module != null) {
-            return module.getMainViewTitle();
-
-        } else {
-            return "";
-        }
-    }
-
+//        }       
+    //        return "";
+    //}
     public List getContactTypes() {
 
         return getStringListAsSelectItems(getEntityManager(), "personalContactTypes");
@@ -280,22 +262,6 @@ public class SystemManager implements Manager, Serializable {
 
     public List<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
-    }
-
-    public String getRenderDateSearchFields() {
-        switch (searchType) {
-            case "Users":
-            case "Privileges":
-            case "Categories":
-            case "Document Types":
-            case "Options":
-            case "Authentication":
-            case "Modules":
-            case "Attachments":
-                return "false";
-            default:
-                return "true";
-        }
     }
 
     public String getSearchType() {
@@ -1003,20 +969,12 @@ public class SystemManager implements Manager, Serializable {
 
         getMainTabView().reset(getUser());
         for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getMainViewTitle());
+            getMainTabView().openTab(activeModule.getDashboardTitle());
         }
     }
 
     private void initDashboard() {
-
-        getDashboard().reset(getUser(), false);
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            getDashboard().setSelectedTabId(activeModule.getDashboardTitle());
-            getDashboard().openTab(activeModule.getDashboardTitle());
-        }
-
-        initSearchTypes();
+        initSearchPanel();
     }
 
     @Override
@@ -1037,6 +995,11 @@ public class SystemManager implements Manager, Serializable {
         return group;
     }
 
+    private void initSearchPanel() {
+        initSearchTypes();
+        initDateSearchFields();
+    }
+
     private void initSearchTypes() {
 
         groupedSearchTypes.clear();
@@ -1045,6 +1008,17 @@ public class SystemManager implements Manager, Serializable {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
                 groupedSearchTypes.add(manager.getSearchTypesGroup());
+            }
+        }
+    }
+
+    private void initDateSearchFields() {
+        allDateSearchFields.clear();
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                allDateSearchFields.addAll(manager.getDateSearchFields());
             }
         }
     }
@@ -1103,8 +1077,18 @@ public class SystemManager implements Manager, Serializable {
         return datePeriods;
     }
 
+    @Override
     public List getDateSearchFields() {
-        return DateUtils.getDateSearchFields("All");
+        dateSearchFields = new ArrayList();
+
+        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+        return dateSearchFields;
+    }
+
+    public List getAllDateSearchFields() {
+        return allDateSearchFields;
     }
 
     public List<SelectItem> getWorkProgressList() {
@@ -1228,6 +1212,8 @@ public class SystemManager implements Manager, Serializable {
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
         groupedSearchTypes = new ArrayList<>();
+        dateSearchFields = new ArrayList();
+        allDateSearchFields = new ArrayList();
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false);
