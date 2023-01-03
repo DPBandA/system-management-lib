@@ -1188,36 +1188,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     private void init() {
-        activeTabIndex = 0;
-        activeNavigationTabIndex = 0;
-        activeTabForm = "";
-        foundLdapContexts = null;
-        foundSystemOptions = null;
-        foundLdapContexts = null;
-        systemOptionSearchText = "";
-        ldapSearchText = "";
-        documentTypeSearchText = "";
-        categorySearchText = "";
-        notificationSearchText = "";
-        privilegeSearchText = "";
-        moduleSearchText = "";
-        userSearchText = "";
-        searchText = "";
-        attachmentSearchText = "";
-        emailSearchText = "";
-        isActiveLdapsOnly = true;
-        isActiveDocumentTypesOnly = true;
-        isActiveUsersOnly = true;
-        isActiveEmailsOnly = true;
-        dashboard = new Dashboard(getUser());
-        mainTabView = new MainTabView(getUser());
-        groupedSearchTypes = new ArrayList<>();
-        dateSearchFields = new ArrayList();
-        allDateSearchFields = new ArrayList();
-        searchType = "Users";
-        dateSearchPeriod = new DatePeriod("This month", "month",
-                "dateAndTimeEntered", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
+        
+        reset();
 
     }
 
@@ -1580,7 +1552,38 @@ public class SystemManager implements Manager, Serializable {
         this.ldapSearchText = ldapSearchText;
     }
 
+    @Override
     public void reset() {
+        activeTabIndex = 0;
+        activeNavigationTabIndex = 0;
+        activeTabForm = "";
+        foundLdapContexts = null;
+        foundSystemOptions = null;
+        foundLdapContexts = null;
+        systemOptionSearchText = "";
+        ldapSearchText = "";
+        documentTypeSearchText = "";
+        categorySearchText = "";
+        notificationSearchText = "";
+        privilegeSearchText = "";
+        moduleSearchText = "";
+        userSearchText = "";
+        searchText = "";
+        attachmentSearchText = "";
+        emailSearchText = "";
+        isActiveLdapsOnly = true;
+        isActiveDocumentTypesOnly = true;
+        isActiveUsersOnly = true;
+        isActiveEmailsOnly = true;
+        dashboard = new Dashboard(getUser());
+        mainTabView = new MainTabView(getUser());
+        groupedSearchTypes = new ArrayList<>();
+        dateSearchFields = new ArrayList();
+        allDateSearchFields = new ArrayList();
+        searchType = "Users";
+        dateSearchPeriod = new DatePeriod("This month", "month",
+                "dateAndTimeEntered", null, null, null, false, false, false);
+        dateSearchPeriod.initDatePeriod();
         getAuthentication().reset();
         dashboard.removeAllTabs();
         dashboard.setRender(false);
@@ -1588,7 +1591,6 @@ public class SystemManager implements Manager, Serializable {
         mainTabView.setRender(false);
 
         updateAllForms();
-
     }
 
     public SystemOption getSelectedSystemOption() {

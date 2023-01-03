@@ -16,5 +16,7 @@ public interface Manager {
     public SelectItemGroup getSearchTypesGroup();
 
     public List getDateSearchFields();
+    
+    public void reset();
 
 }
