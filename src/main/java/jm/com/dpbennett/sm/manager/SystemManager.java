@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -55,7 +55,6 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
-import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
@@ -127,13 +126,13 @@ public class SystemManager implements Manager, Serializable {
     private UploadedFile uploadedFile;
     private List<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
-    private ArrayList dateSearchFields;
-    private ArrayList allDateSearchFields;
+    private ArrayList<SelectItem> allDateSearchFields;
     private Email selectedEmail;
     private Boolean isActiveEmailsOnly;
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
+    private Map<String, List<SelectItem>> searchTypeToDateFieldMap;
 
     /**
      * Creates a new instance of SystemManager
@@ -142,20 +141,19 @@ public class SystemManager implements Manager, Serializable {
         init();
     }
 
-    //public String getMainViewTitle() {
-//        Map<String, String> map = new HashMap<>();
-//        map.put("oo", "Amit");
-//        map.put("hh", "Vijay");
-//        map.put("ii", "Rahul");
-//        //Elements can traverse in any order  
-//        for (Map.Entry m : map.entrySet()) {
-//            System.out.println(m.getKey() + " " + m.getValue());
-//        }       
-    //        return "";
-    //}
+    @Override
+    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
+        return searchTypeToDateFieldMap;
+    }
+
+    @Override
+    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
+        this.searchTypeToDateFieldMap = searchTypeToDateFieldMap;
+    }
+
     public List getContactTypes() {
 
-        return getStringListAsSelectItems(getEntityManager(), "personalContactTypes");
+        return getStringListAsSelectItems(getEntityManager1(), "personalContactTypes");
     }
 
     public List getPersonalTitles() {
@@ -163,11 +161,11 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public boolean getEnableUpdateLDAPUser() {
-        return SystemOption.getBoolean(getEntityManager(), "updateLDAPUser");
+        return SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser");
     }
 
     public boolean getShowUserProfileSecurityTab() {
-        return SystemOption.getBoolean(getEntityManager(), "showUserProfileSecurityTab");
+        return SystemOption.getBoolean(getEntityManager1(), "showUserProfileSecurityTab");
     }
 
     public void createNewPrivilege() {
@@ -178,7 +176,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<Notification> getFoundNotifications() {
         if (foundNotifications == null) {
-            foundNotifications = Notification.findAllActiveNotifications(getEntityManager());
+            foundNotifications = Notification.findAllActiveNotifications(getEntityManager1());
         }
 
         return foundNotifications;
@@ -206,7 +204,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<Email> getFoundEmails() {
         if (foundEmails == null) {
-            foundEmails = Email.findAllActiveEmails(getEntityManager());
+            foundEmails = Email.findAllActiveEmails(getEntityManager1());
         }
 
         return foundEmails;
@@ -230,7 +228,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void saveSelectedEmail() {
 
-        selectedEmail.save(getEntityManager());
+        selectedEmail.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -245,29 +243,34 @@ public class SystemManager implements Manager, Serializable {
     public void doEmailSearch() {
 
         if (getIsActiveEmailsOnly()) {
-            foundEmails = Email.findActiveEmails(getEntityManager(), getEmailSearchText());
+            foundEmails = Email.findActiveEmails(getEntityManager1(), getEmailSearchText());
         } else {
-            foundEmails = Email.findEmails(getEntityManager(), getEmailSearchText());
+            foundEmails = Email.findEmails(getEntityManager1(), getEmailSearchText());
         }
 
     }
 
+    @Override
     public DatePeriod getDateSearchPeriod() {
         return dateSearchPeriod;
     }
 
+    @Override
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
         this.dateSearchPeriod = dateSearchPeriod;
     }
 
+    @Override
     public List<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
     }
 
+    @Override
     public String getSearchType() {
         return searchType;
     }
 
+    @Override
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
@@ -306,28 +309,28 @@ public class SystemManager implements Manager, Serializable {
 
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager(), "appShortcutIconURL");
+                getEntityManager1(), "appShortcutIconURL");
     }
 
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager(), "logoURL");
+                getEntityManager1(), "logoURL");
     }
 
     public List getContentTypes() {
 
-        return getStringListAsSelectItems(getEntityManager(),
+        return getStringListAsSelectItems(getEntityManager1(),
                 "contentTypeList");
     }
 
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager(), "logoURLImageHeight");
+                getEntityManager1(), "logoURLImageHeight");
     }
 
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager(), "logoURLImageWidth");
+                getEntityManager1(), "logoURLImageWidth");
     }
 
     public void okPickList() {
@@ -339,7 +342,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void addUserModules() {
-        List<Modules> source = Modules.findAllActiveModules(getEntityManager());
+        List<Modules> source = Modules.findAllActiveModules(getEntityManager1());
         List<Modules> target = selectedUser.getActiveModules();
 
         source.removeAll(target);
@@ -375,7 +378,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void addModulePrivileges() {
-        List<Privilege> source = Privilege.findActivePrivileges(getEntityManager(), "");
+        List<Privilege> source = Privilege.findActivePrivileges(getEntityManager1(), "");
         List<Privilege> target = selectedModule.getPrivileges();
 
         source.removeAll(target);
@@ -444,7 +447,7 @@ public class SystemManager implements Manager, Serializable {
 
         try {
 
-            em = getEntityManager();
+            em = getEntityManager1();
             List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
 
             if (employees != null) {
@@ -467,7 +470,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void updateUserPreferences(User user) {
-        user.save(getEntityManager());
+        user.save(getEntityManager1());
     }
 
     public Boolean getIsActiveUsersOnly() {
@@ -481,7 +484,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<User> getFoundUsers() {
         if (foundUsers == null) {
-            foundUsers = User.findAllActiveJobManagerUsers(getEntityManager());
+            foundUsers = User.findAllActiveJobManagerUsers(getEntityManager1());
         }
         return foundUsers;
     }
@@ -489,7 +492,7 @@ public class SystemManager implements Manager, Serializable {
     public List<Attachment> getFoundAttachments() {
         if (foundAttachments == null) {
             foundAttachments
-                    = Attachment.findAttachmentsByName(getEntityManager(), "");
+                    = Attachment.findAttachmentsByName(getEntityManager1(), "");
         }
         return foundAttachments;
     }
@@ -505,15 +508,15 @@ public class SystemManager implements Manager, Serializable {
     public void doUserSearch() {
 
         if (getIsActiveUsersOnly()) {
-            foundUsers = User.findActiveJobManagerUsersByName(getEntityManager(), getUserSearchText());
+            foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(), getUserSearchText());
         } else {
-            foundUsers = User.findJobManagerUsersByName(getEntityManager(), getUserSearchText());
+            foundUsers = User.findJobManagerUsersByName(getEntityManager1(), getUserSearchText());
         }
 
     }
 
     public void doAttachmentSearch() {
-        foundAttachments = Attachment.findAttachmentsByName(getEntityManager(), getAttachmentSearchText());
+        foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(), getAttachmentSearchText());
     }
 
     public String getFoundUser() {
@@ -555,15 +558,15 @@ public class SystemManager implements Manager, Serializable {
     public void updateSelectedUserEmployee() {
         if (selectedUser.getEmployee() != null) {
             if (selectedUser.getEmployee().getId() != null) {
-                selectedUser.setEmployee(Employee.findEmployeeById(getEntityManager(), selectedUser.getEmployee().getId()));
+                selectedUser.setEmployee(Employee.findEmployeeById(getEntityManager1(), selectedUser.getEmployee().getId()));
             } else {
-                Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
+                Employee employee = Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true);
                 if (selectedUser.getEmployee() != null) {
                     selectedUser.setEmployee(employee);
                 }
             }
         } else {
-            Employee employee = Employee.findDefaultEmployee(getEntityManager(), "--", "--", true);
+            Employee employee = Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true);
             if (selectedUser.getEmployee() != null) {
                 selectedUser.setEmployee(employee);
             }
@@ -572,7 +575,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void updateSelectedUser() {
 
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
 
         if (selectedUser.getId() != null) {
             selectedUser = User.findJobManagerUserById(em, selectedUser.getId());
@@ -581,7 +584,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void updateFoundUser(SelectEvent event) {
 
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
 
         User u = User.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
         if (u != null) {
@@ -593,7 +596,7 @@ public class SystemManager implements Manager, Serializable {
     public List<String> completeUser(String query) {
 
         try {
-            List<User> users = User.findJobManagerUsersByUsername(getEntityManager(), query);
+            List<User> users = User.findJobManagerUsersByUsername(getEntityManager1(), query);
             List<String> suggestions = new ArrayList<>();
             if (users != null) {
                 if (!users.isEmpty()) {
@@ -613,7 +616,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void createNewUser() {
 
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
 
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
@@ -629,7 +632,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void saveSelectedUser(ActionEvent actionEvent) {
 
-        if (!selectedUser.saveUnique(getEntityManager()).isSuccess()) {
+        if (!selectedUser.saveUnique(getEntityManager1()).isSuccess()) {
             PrimeFacesUtils.addMessage(
                     "User Exists",
                     "The user already exists!",
@@ -653,7 +656,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public boolean updateLDAPUser() {
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
@@ -707,7 +710,7 @@ public class SystemManager implements Manager, Serializable {
         if (getUser().getNewPassword().trim().
                 equals(getUser().getConfirmedNewPassword().trim())) {
 
-            EntityManager em = getEntityManager();
+            EntityManager em = getEntityManager1();
 
             LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
@@ -754,7 +757,7 @@ public class SystemManager implements Manager, Serializable {
         try {
             if (newValue != null && !newValue.equals(oldValue)) {
                 if (!newValue.toString().trim().equals("")) {
-                    EntityManager em = getEntityManager();
+                    EntityManager em = getEntityManager1();
 
                     em.getTransaction().begin();
                     SystemOption option = getFoundFinancialSystemOptions().get(index);
@@ -770,7 +773,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<SystemOption> getFoundFinancialSystemOptions() {
         if (foundFinancialSystemOptions == null) {
-            foundFinancialSystemOptions = SystemOption.findAllFinancialSystemOptions(getEntityManager());
+            foundFinancialSystemOptions = SystemOption.findAllFinancialSystemOptions(getEntityManager1());
         }
         return foundFinancialSystemOptions;
     }
@@ -781,7 +784,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void doFinancialSystemOptionSearch() {
 
-        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager(), getSystemOptionSearchText());
+        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), getSystemOptionSearchText());
 
         if (foundFinancialSystemOptions == null) {
             foundFinancialSystemOptions = new ArrayList<>();
@@ -799,6 +802,7 @@ public class SystemManager implements Manager, Serializable {
         PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 600, 600);
     }
 
+    @Override
     public void doDefaultSearch() {
         switch (getSearchType()) {
             case "Users":
@@ -846,19 +850,21 @@ public class SystemManager implements Manager, Serializable {
         }
     }
 
+    @Override
     public void doSearch() {
-        System.out.println("Doing default search...");
+        doDefaultSearch();
     }
 
+    @Override
     public void handleKeepAlive() {
         getUser().setPollTime(new Date());
 
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
         if (getUser().getId() != null) {
-            getUser().save(getEntityManager());
+            getUser().save(getEntityManager1());
         }
 
         PrimeFaces.current().ajax().update(":appForm:notificationBadge");
@@ -868,8 +874,9 @@ public class SystemManager implements Manager, Serializable {
         PrimeFaces.current().ajax().update("appForm");
     }
 
+    @Override
     public void logout() {
-        getUser().logActivity("Logged out", getEntityManager());
+        getUser().logActivity("Logged out", getEntityManager1());
         reset();
         completeLogout();
         getAuthentication().reset();
@@ -877,12 +884,12 @@ public class SystemManager implements Manager, Serializable {
 
     public String getSupportURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager(), "supportURL");
+                getEntityManager1(), "supportURL");
     }
 
     public Boolean getShowSupportURL() {
         return (Boolean) SystemOption.getOptionValueObject(
-                getEntityManager(), "showSupportURL");
+                getEntityManager1(), "showSupportURL");
     }
 
     public void editPreferences() {
@@ -902,6 +909,7 @@ public class SystemManager implements Manager, Serializable {
         }
     }
 
+    @Override
     public String getApplicationHeader() {
 
         return "System Management";
@@ -910,9 +918,10 @@ public class SystemManager implements Manager, Serializable {
 
     public Boolean getIsDebugMode() {
         return (Boolean) SystemOption.getOptionValueObject(
-                getEntityManager(), "debugMode");
+                getEntityManager1(), "debugMode");
     }
 
+    @Override
     public String getApplicationSubheader() {
         String subHeader;
 
@@ -920,7 +929,7 @@ public class SystemManager implements Manager, Serializable {
             subHeader = "Testing & Training Version";
         } else {
             subHeader = (String) SystemOption.getOptionValueObject(
-                    getEntityManager(), "applicationSubheader");
+                    getEntityManager1(), "applicationSubheader");
 
             if (subHeader != null) {
                 if (subHeader.trim().equals("None")) {
@@ -981,26 +990,21 @@ public class SystemManager implements Manager, Serializable {
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Administration");
 
-        group.setSelectItems(new SelectItem[]{
-            new SelectItem("Users", "Users"),
-            new SelectItem("Privileges", "Privileges"),
-            new SelectItem("Categories", "Categories"),
-            new SelectItem("Document Types", "Document Types"),
-            new SelectItem("Options", "Options"),
-            new SelectItem("Authentication", "Authentication"),
-            new SelectItem("Modules", "Modules"),
-            new SelectItem("Attachments", "Attachments")
-        });
+        group.setSelectItems(getSearchTypes());
 
         return group;
     }
 
-    private void initSearchPanel() {
-        initSearchTypes();
+    @Override
+    public void initSearchPanel() {
+
         initDateSearchFields();
+        initSearchTypes();
+
     }
 
-    private void initSearchTypes() {
+    @Override
+    public void initSearchTypes() {
 
         groupedSearchTypes.clear();
 
@@ -1012,15 +1016,24 @@ public class SystemManager implements Manager, Serializable {
         }
     }
 
-    private void initDateSearchFields() {
-        allDateSearchFields.clear();
+    @Override
+    public void initDateSearchFields() {
+        searchTypeToDateFieldMap = new HashMap<>();
+        ArrayList<SelectItem> defaultDateSearchFields = new ArrayList<>();
 
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                allDateSearchFields.addAll(manager.getDateSearchFields());
-            }
-        }
+        defaultDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+        defaultDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+        searchTypeToDateFieldMap.put(getSearchTypes()[0].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[1].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[2].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[3].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[4].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[5].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[6].getLabel(), defaultDateSearchFields);
+        searchTypeToDateFieldMap.put(getSearchTypes()[7].getLabel(), defaultDateSearchFields);
+
+        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
     }
 
     public Dashboard getDashboard() {
@@ -1036,6 +1049,7 @@ public class SystemManager implements Manager, Serializable {
      *
      * @return
      */
+    @Override
     public Authentication getAuthentication() {
         if (authentication == null) {
             authentication = BeanUtils.findBean("authentication");
@@ -1044,6 +1058,7 @@ public class SystemManager implements Manager, Serializable {
         return authentication;
     }
 
+    @Override
     public Manager getManager(String name) {
 
         return BeanUtils.findBean(name);
@@ -1053,7 +1068,7 @@ public class SystemManager implements Manager, Serializable {
         EntityManager em;
 
         try {
-            em = getEntityManager();
+            em = getEntityManager1();
 
             ArrayList<Country> countries = new ArrayList<>(Country.findCountriesByName(em, query));
             ArrayList<String> countriesList = (ArrayList<String>) (ArrayList<?>) countries;
@@ -1067,7 +1082,8 @@ public class SystemManager implements Manager, Serializable {
         }
     }
 
-    public List<SelectItem> getDatePeriods() {
+    @Override
+    public ArrayList<SelectItem> getDatePeriods() {
         ArrayList<SelectItem> datePeriods = new ArrayList<>();
 
         for (String name : DatePeriod.getDatePeriodNames()) {
@@ -1078,51 +1094,42 @@ public class SystemManager implements Manager, Serializable {
     }
 
     @Override
-    public List getDateSearchFields() {
-        dateSearchFields = new ArrayList();
-
-        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-
-        return dateSearchFields;
-    }
-
-    public List getAllDateSearchFields() {
+    public ArrayList<SelectItem> getAllDateSearchFields() {
         return allDateSearchFields;
     }
 
     public List<SelectItem> getWorkProgressList() {
 
-        return getStringListAsSelectItems(getEntityManager(),
+        return getStringListAsSelectItems(getEntityManager1(),
                 "workProgressList");
     }
 
     public List<SelectItem> getAttachmentTypeList() {
 
-        return getStringListAsSelectItems(getEntityManager(),
+        return getStringListAsSelectItems(getEntityManager1(),
                 "attachmentTypeList");
     }
 
     public List<SelectItem> getIdentificationTypeList() {
 
-        return getStringListAsSelectItems(getEntityManager(),
+        return getStringListAsSelectItems(getEntityManager1(),
                 "identificationTypeList");
     }
 
     public List<SelectItem> getServiceLocationList() {
 
-        return getStringListAsSelectItems(getEntityManager(),
+        return getStringListAsSelectItems(getEntityManager1(),
                 "serviceLocationList");
     }
 
     public List<SelectItem> getJamaicaParishes() {
 
-        return getStringListAsSelectItems(getEntityManager(), "jamaicaParishes");
+        return getStringListAsSelectItems(getEntityManager1(), "jamaicaParishes");
     }
 
     public List<SelectItem> getTypesOfBusinessList() {
 
-        return getStringListAsSelectItems(getEntityManager(), "typesOfBusinessList ");
+        return getStringListAsSelectItems(getEntityManager1(), "typesOfBusinessList ");
     }
 
     public static List<SelectItem> getStringListAsSelectItems(EntityManager em,
@@ -1166,31 +1173,21 @@ public class SystemManager implements Manager, Serializable {
         return valueTypes;
     }
 
-    public List<SelectItem> getJobTableViews() {
-        ArrayList views = new ArrayList();
-
-        views.add(new SelectItem("Jobs", "Jobs"));
-        views.add(new SelectItem("Job Costings", "Job Costings"));
-        views.add(new SelectItem("Cashier View", "Cashier View"));
-
-        return views;
-    }
-
     public List<SelectItem> getPFThemes() {
 
-        return getStringListAsSelectItemsWithCaps(getEntityManager(), "PFThemes");
+        return getStringListAsSelectItemsWithCaps(getEntityManager1(), "PFThemes");
     }
 
     public List<SelectItem> getSystemOptionCategories() {
 
-        return getStringListAsSelectItems(getEntityManager(),
+        return getStringListAsSelectItems(getEntityManager1(),
                 "systemOptionCategoryList");
     }
 
-    private void init() {
-        
-        reset();
+    @Override
+    public final void init() {
 
+        reset();
     }
 
     public Boolean getIsActiveEmailsOnly() {
@@ -1201,7 +1198,15 @@ public class SystemManager implements Manager, Serializable {
         this.isActiveEmailsOnly = isActiveEmailsOnly;
     }
 
+    @Override
     public void updateDateSearchField() {
+    }
+
+    @Override
+    public void updateSearchType() {
+        
+        allDateSearchFields.clear();
+        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
     }
 
     public String getModuleSearchText() {
@@ -1212,10 +1217,12 @@ public class SystemManager implements Manager, Serializable {
         this.moduleSearchText = moduleSearchText;
     }
 
+    @Override
     public String getSearchText() {
         return searchText;
     }
 
+    @Override
     public void setSearchText(String searchText) {
         this.searchText = searchText;
     }
@@ -1246,7 +1253,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<DocumentType> getFoundDocumentTypes() {
         if (foundDocumentTypes == null) {
-            foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager());
+            foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager1());
         }
 
         return foundDocumentTypes;
@@ -1258,7 +1265,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<Category> getFoundCategories() {
         if (foundCategories == null) {
-            foundCategories = Category.findAllCategories(getEntityManager());
+            foundCategories = Category.findAllCategories(getEntityManager1());
         }
 
         return foundCategories;
@@ -1270,7 +1277,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<Privilege> getFoundActivePrivileges() {
         if (foundActivePrivileges == null) {
-            foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager(), "");
+            foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(), "");
         }
 
         return foundActivePrivileges;
@@ -1282,7 +1289,7 @@ public class SystemManager implements Manager, Serializable {
 
     public List<Modules> getFoundActiveModules() {
         if (foundActiveModules == null) {
-            foundActiveModules = Modules.findActiveModules(getEntityManager(), "");
+            foundActiveModules = Modules.findActiveModules(getEntityManager1(), "");
         }
 
         return foundActiveModules;
@@ -1294,32 +1301,32 @@ public class SystemManager implements Manager, Serializable {
 
     public void doDocumentTypeSearch() {
 
-        foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager(), getDocumentTypeSearchText());
+        foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(), getDocumentTypeSearchText());
 
     }
 
     public void doCategorySearch() {
 
-        foundCategories = Category.findCategoriesByName(getEntityManager(), getCategorySearchText());
+        foundCategories = Category.findCategoriesByName(getEntityManager1(), getCategorySearchText());
 
     }
 
     public void doNotificationSearch() {
 
-        foundNotifications = Notification.findNotificationsByName(getEntityManager(), getNotificationSearchText());
+        foundNotifications = Notification.findNotificationsByName(getEntityManager1(), getNotificationSearchText());
     }
 
     public void doActivePrivilegeSearch() {
 
         foundActivePrivileges
-                = Privilege.findActivePrivileges(getEntityManager(), getPrivilegeSearchText());
+                = Privilege.findActivePrivileges(getEntityManager1(), getPrivilegeSearchText());
 
     }
 
     public void doActiveModuleSearch() {
 
         foundActiveModules
-                = Modules.findActiveModules(getEntityManager(), getModuleSearchText());
+                = Modules.findActiveModules(getEntityManager1(), getModuleSearchText());
 
     }
 
@@ -1333,7 +1340,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void saveSelectedDocumentType() {
 
-        selectedDocumentType.save(getEntityManager());
+        selectedDocumentType.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -1372,28 +1379,28 @@ public class SystemManager implements Manager, Serializable {
 
     public void saveSelectedCategory() {
 
-        selectedCategory.save(getEntityManager());
+        selectedCategory.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
     public void saveSelectedNotification() {
 
-        selectedNotification.save(getEntityManager());
+        selectedNotification.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
     public void saveSelectedPrivilege() {
 
-        selectedPrivilege.save(getEntityManager());
+        selectedPrivilege.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
     public void saveSelectedModule() {
 
-        selectedModule.save(getEntityManager());
+        selectedModule.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -1408,7 +1415,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void deleteNotification() {
 
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
 
         getSelectedNotification().delete(em);
 
@@ -1418,7 +1425,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public List<Notification> getNotificationsByOwnerId() {
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
 
         List<Notification> myNotifications = Notification.findNotificationsByOwnerId(
                 em,
@@ -1471,7 +1478,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void onNotificationSelect(SelectEvent event) {
 
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -1496,7 +1503,7 @@ public class SystemManager implements Manager, Serializable {
      */
     public List<Notification> getActiveNotifications() {
         List<Notification> myActiveNotifications = Notification.findActiveNotificationsByOwnerId(
-                getEntityManager(),
+                getEntityManager1(),
                 getUser().getId());
 
         return myActiveNotifications;
@@ -1525,7 +1532,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public List<DocumentType> getDocumentTypes() {
-        return DocumentType.findAllDocumentTypes(getEntityManager());
+        return DocumentType.findAllDocumentTypes(getEntityManager1());
     }
 
     public Boolean getIsActiveLdapsOnly() {
@@ -1578,12 +1585,11 @@ public class SystemManager implements Manager, Serializable {
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
         groupedSearchTypes = new ArrayList<>();
-        dateSearchFields = new ArrayList();
         allDateSearchFields = new ArrayList();
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
-                "dateAndTimeEntered", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
+                "dateEntered", null, null, null, false, false, false);
+        searchTypeToDateFieldMap = new HashMap<>();
         getAuthentication().reset();
         dashboard.removeAllTabs();
         dashboard.setRender(false);
@@ -1612,7 +1618,7 @@ public class SystemManager implements Manager, Serializable {
         try {
             if (newValue != null && !newValue.equals(oldValue)) {
                 if (!newValue.toString().trim().equals("")) {
-                    EntityManager em = getEntityManager();
+                    EntityManager em = getEntityManager1();
 
                     em.getTransaction().begin();
                     SystemOption option = getFoundSystemOptions().get(index);
@@ -1628,20 +1634,20 @@ public class SystemManager implements Manager, Serializable {
 
     public void onLDAPCellEdit(CellEditEvent event) {
 
-        getFoundLdapContexts().get(event.getRowIndex()).save(getEntityManager());
+        getFoundLdapContexts().get(event.getRowIndex()).save(getEntityManager1());
 
     }
 
     public List<LdapContext> getFoundLdapContexts() {
         if (foundLdapContexts == null) {
-            foundLdapContexts = LdapContext.findAllActiveLdapContexts(getEntityManager());
+            foundLdapContexts = LdapContext.findAllActiveLdapContexts(getEntityManager1());
         }
         return foundLdapContexts;
     }
 
     public List<SystemOption> getFoundSystemOptions() {
         if (foundSystemOptions == null) {
-            foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager());
+            foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager1());
         }
         return foundSystemOptions;
     }
@@ -1674,22 +1680,24 @@ public class SystemManager implements Manager, Serializable {
         }
     }
 
-    public ArrayList getSearchTypes() {
-        ArrayList searchTypes = new ArrayList();
+    @Override
+    public SelectItem[] getSearchTypes() {
 
-        searchTypes.add(new SelectItem("General", "General"));
-        searchTypes.add(new SelectItem("My jobs", "My jobs"));
-        searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
-        searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
-        searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
-        searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
-
-        return searchTypes;
+        return new SelectItem[]{
+            new SelectItem("Users", "Users"),
+            new SelectItem("Privileges", "Privileges"),
+            new SelectItem("Categories", "Categories"),
+            new SelectItem("Document Types", "Document Types"),
+            new SelectItem("Options", "Options"),
+            new SelectItem("Authentication", "Authentication"),
+            new SelectItem("Modules", "Modules"),
+            new SelectItem("Attachments", "Attachments")
+        };
     }
 
     public void doSystemOptionSearch() {
 
-        foundSystemOptions = SystemOption.findSystemOptions(getEntityManager(), getSystemOptionSearchText());
+        foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(), getSystemOptionSearchText());
 
         if (foundSystemOptions == null) {
             foundSystemOptions = new ArrayList<>();
@@ -1699,9 +1707,9 @@ public class SystemManager implements Manager, Serializable {
 
     public void doLdapContextSearch() {
         if (getIsActiveLdapsOnly()) {
-            foundLdapContexts = LdapContext.findActiveLdapContexts(getEntityManager(), getLdapSearchText());
+            foundLdapContexts = LdapContext.findActiveLdapContexts(getEntityManager1(), getLdapSearchText());
         } else {
-            foundLdapContexts = LdapContext.findLdapContexts(getEntityManager(), getLdapSearchText());
+            foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(), getLdapSearchText());
         }
 
     }
@@ -1716,7 +1724,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void createNewAttachment() {
         attachment = new Attachment();
-        String destURL = (String) SystemOption.getOptionValueObject(getEntityManager(),
+        String destURL = (String) SystemOption.getOptionValueObject(getEntityManager1(),
                 "defaultUploadLocation");
         attachment.setDestinationURL(destURL);
         openAttachmentDialog();
@@ -1759,7 +1767,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void saveSelectedSystemOption() {
 
-        selectedSystemOption.save(getEntityManager());
+        selectedSystemOption.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
 
@@ -1794,7 +1802,7 @@ public class SystemManager implements Manager, Serializable {
 
             PrimeFacesUtils.addMessage("Succesful", getUploadedFile().getFileName() + " was uploaded.", FacesMessage.SEVERITY_INFO);
 
-            getAttachment().save(getEntityManager());
+            getAttachment().save(getEntityManager1());
 
             closeDialog(null);
 
@@ -1811,7 +1819,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void saveSelectedLdapContext() {
 
-        selectedLdapContext.save(getEntityManager());
+        selectedLdapContext.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
 
@@ -1833,7 +1841,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public List<SystemOption> getAllSystemOptions() {
-        foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager());
+        foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager1());
 
         return foundSystemOptions;
     }
@@ -1858,6 +1866,7 @@ public class SystemManager implements Manager, Serializable {
         return "";
     }
 
+    @Override
     public User getUser() {
         return getAuthentication().getUser();
     }
@@ -1866,10 +1875,12 @@ public class SystemManager implements Manager, Serializable {
         return mainTabView;
     }
 
-    public EntityManager getEntityManager() {
+    @Override
+    public EntityManager getEntityManager1() {
         return EMF.createEntityManager();
     }
 
+    @Override
     public EntityManager getEntityManager2() {
         return EMF2.createEntityManager();
     }
@@ -1878,10 +1889,11 @@ public class SystemManager implements Manager, Serializable {
         return new Date();
     }
 
+    @Override
     public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager());
+        getUser().logActivity("Logged in", getEntityManager1());
 
-        getUser().save(getEntityManager());
+        getUser().save(getEntityManager1());
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
@@ -1891,6 +1903,7 @@ public class SystemManager implements Manager, Serializable {
 
     }
 
+    @Override
     public void completeLogout() {
 
         getDashboard().removeAllTabs();
@@ -1919,6 +1932,17 @@ public class SystemManager implements Manager, Serializable {
 
     public void setNotificationSearchText(String notificationSearchText) {
         this.notificationSearchText = notificationSearchText;
+    }
+
+    // tk move to JobManager
+    public List<SelectItem> getJobTableViews() {
+        ArrayList views = new ArrayList();
+
+        views.add(new SelectItem("Jobs", "Jobs"));
+        views.add(new SelectItem("Job Costings", "Job Costings"));
+        views.add(new SelectItem("Cashier View", "Cashier View"));
+
+        return views;
     }
 
 }
