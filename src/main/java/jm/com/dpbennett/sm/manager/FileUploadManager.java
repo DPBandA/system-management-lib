@@ -52,7 +52,7 @@ public class FileUploadManager {
     }
     
     public EntityManager getEntityManager() {
-        return getSystemManager().getEntityManager();
+        return getSystemManager().getEntityManager1();
     }
 
     public UploadedFile getUploadedFile() {

@@ -34,6 +34,8 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.sm.manager.SystemManager;
+import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -50,7 +52,7 @@ public class Authentication implements Serializable {
     private String password;
     private Integer loginAttempts;
     private Boolean userLoggedIn;
-    final private List<AuthenticationListener> authenticationListeners;
+    //final private List<AuthenticationListener> authenticationListeners;
 
     public Authentication() {
         password = "";
@@ -59,7 +61,7 @@ public class Authentication implements Serializable {
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
         user = new User();
-        authenticationListeners = new ArrayList<>();
+        //authenticationListeners = new ArrayList<>();
     }
 
     public Authentication(User user) {
@@ -69,7 +71,7 @@ public class Authentication implements Serializable {
         userLoggedIn = false;
         logonMessage = "Please provide your login details below:";
         this.user = user;
-        authenticationListeners = new ArrayList<>();
+        //authenticationListeners = new ArrayList<>();
     }
 
     public void reset() {
@@ -81,26 +83,28 @@ public class Authentication implements Serializable {
         String theme = user.getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
-        
+
         PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
-    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
-        authenticationListeners.remove(authenticationListener);
-
-        authenticationListeners.add(authenticationListener);
-    }
-
-    private void notifyLoginListeners() {
-        for (AuthenticationListener loginListener : authenticationListeners) {
-            loginListener.completeLogin();
-        }
-    }
-
-    public void notifyLogoutListeners() {
-        for (AuthenticationListener loginListener : authenticationListeners) {
-            loginListener.completeLogout();
-        }
+//    public void addSingleAuthenticationListener(AuthenticationListener authenticationListener) {
+//        authenticationListeners.remove(authenticationListener);
+//
+//        authenticationListeners.add(authenticationListener);
+//    }
+//    private void notifyLoginListeners() {
+//        for (AuthenticationListener loginListener : authenticationListeners) {
+//            loginListener.completeLogin();
+//        }
+//    }
+//
+//    public void notifyLogoutListeners() {
+//        for (AuthenticationListener loginListener : authenticationListeners) {
+//            loginListener.completeLogout();
+//        }
+//    }
+    public SystemManager getSystemManager() {
+        return BeanUtils.findBean("systemManager");
     }
 
     public Integer getLoginAttempts() {
@@ -238,7 +242,7 @@ public class Authentication implements Serializable {
 
             } else {
                 System.out.println("User NOT validated!");
-                
+
                 return false;
             }
 
@@ -297,7 +301,8 @@ public class Authentication implements Serializable {
                     password = "";
                     setUserLoggedIn(true);
 
-                    notifyLoginListeners();
+                    //notifyLoginListeners();
+                    getSystemManager().completeLogin();
 
                     //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else if (validateUser(em)) {
@@ -306,7 +311,8 @@ public class Authentication implements Serializable {
                     password = "";
                     setUserLoggedIn(true);
 
-                    notifyLoginListeners();
+                    //notifyLoginListeners();
+                    getSystemManager().completeLogin();
 
                     //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else {
@@ -337,10 +343,10 @@ public class Authentication implements Serializable {
         this.logonMessage = logonMessage;
     }
 
-    public interface AuthenticationListener {
-
-        public void completeLogin();
-
-        public void completeLogout();
-    }
+//    public interface AuthenticationListener {
+//
+//        public void completeLogin();
+//
+//        public void completeLogout();
+//    }
 }
