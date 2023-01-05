@@ -34,7 +34,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.MailUtils;
-import jm.com.dpbennett.sm.manager.SystemManager;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.PrimeFaces;
 
@@ -103,9 +103,9 @@ public class Authentication implements Serializable {
 //            loginListener.completeLogout();
 //        }
 //    }
-    public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
-    }
+//    public SystemManager getSystemManager() {
+//        return BeanUtils.findBean("systemManager");
+//    }
 
     public Integer getLoginAttempts() {
         return loginAttempts;
@@ -282,6 +282,66 @@ public class Authentication implements Serializable {
     public void login() {
         login(getEntityManager());
     }
+    
+    public Manager getManager(String name) {
+        return BeanUtils.findBean(name);
+    }
+    
+    public void login(String manager) {
+        login(getEntityManager(), manager);
+    }
+     
+    public void login(EntityManager em, String manager) {
+
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    //notifyLoginListeners();
+                    getManager(manager).completeLogin();
+
+                    //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    //notifyLoginListeners();
+                    getManager(manager).completeLogin();
+
+                    //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
+
+    } 
 
     public void login(EntityManager em) {
 
@@ -302,7 +362,7 @@ public class Authentication implements Serializable {
                     setUserLoggedIn(true);
 
                     //notifyLoginListeners();
-                    getSystemManager().completeLogin();
+                    getManager("systemManager").completeLogin();
 
                     //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else if (validateUser(em)) {
@@ -312,7 +372,7 @@ public class Authentication implements Serializable {
                     setUserLoggedIn(true);
 
                     //notifyLoginListeners();
-                    getSystemManager().completeLogin();
+                    getManager("systemManager").completeLogin();
 
                     //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else {

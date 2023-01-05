@@ -307,11 +307,13 @@ public class SystemManager implements Manager, Serializable {
         this.moduleDualList = moduleDualList;
     }
 
+    @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
     }
 
+    @Override
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "logoURL");
@@ -323,11 +325,13 @@ public class SystemManager implements Manager, Serializable {
                 "contentTypeList");
     }
 
+    @Override
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
                 getEntityManager1(), "logoURLImageHeight");
     }
 
+    @Override
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
                 getEntityManager1(), "logoURLImageWidth");
@@ -870,6 +874,7 @@ public class SystemManager implements Manager, Serializable {
         PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
+    @Override
     public void updateAllForms() {
         PrimeFaces.current().ajax().update("appForm");
     }
@@ -898,6 +903,7 @@ public class SystemManager implements Manager, Serializable {
     public void viewUserProfile() {
     }
 
+    @Override
     public Boolean renderUserMenu() {
         return getUser().getId() != null;
     }
@@ -943,12 +949,14 @@ public class SystemManager implements Manager, Serializable {
         return subHeader;
     }
 
+    @Override
     public void onMainViewTabClose(TabCloseEvent event) {
         String tabId = ((TabPanel) event.getData()).getId();
 
         mainTabView.closeTab(tabId);
     }
 
+    @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
         String tabTitle = event.getTab().getTitle();
@@ -972,7 +980,8 @@ public class SystemManager implements Manager, Serializable {
         PrimeFaces.current().ajax().update("appForm");
     }
 
-    private void initMainTabView() {
+    @Override
+    public void initMainTabView() {
 
         getMainTabView().reset(getUser());
 
@@ -982,7 +991,8 @@ public class SystemManager implements Manager, Serializable {
         }
     }
 
-    private void initDashboard() {
+    @Override
+    public void initDashboard() {
         initSearchPanel();
     }
 
@@ -1476,6 +1486,7 @@ public class SystemManager implements Manager, Serializable {
 
     }
 
+    @Override
     public void onNotificationSelect(SelectEvent event) {
 
         EntityManager em = getEntityManager1();
