@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2020  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,31 +17,45 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.hrm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.fm.AccountingCode;
+import jm.com.dpbennett.business.entity.hrm.Contact;
+import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author Desmond Bennett
+ * @author desbenn
  */
-@FacesConverter("accountingCodeConverter")
-public class AccountingCodeConverter extends ConverterAdapter {
+@FacesConverter("manufacturerContactConverter")
+public class ManufacturerContactConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        Contact contact;
 
-        AccountingCode accountingCode = AccountingCode.findByName(getEntityManager(), value);
+        try {
+            Manufacturer currentManufacturer = (Manufacturer) component.getAttributes().get("currentManufacturer");
 
-        if (accountingCode == null) {
-            accountingCode = new AccountingCode(value);
+            if (currentManufacturer != null) {
+                contact = Contact.findContact(getEntityManager(), value, currentManufacturer.getContacts());
+                if (contact == null) {
+                  
+                    contact = new Contact(value);
+                }
+            } else {
+                       
+                contact = new Contact(value);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+            contact = new Contact(value);
         }
 
-        return accountingCode;
+        return contact;
     }
-
 }

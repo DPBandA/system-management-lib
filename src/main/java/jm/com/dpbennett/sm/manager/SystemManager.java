@@ -67,6 +67,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
@@ -540,6 +541,18 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editUser() {
+        // tk
+//        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+//        .resizable(true)
+//        .draggable(true)
+//        .modal(true)
+//        .responsive(true)
+//        .contentHeight("600")
+//        .contentWidth("auto")
+//        .build();
+//    PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
+        
+        
         PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 700, 900);
     }
 

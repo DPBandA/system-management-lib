@@ -17,31 +17,31 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.hrm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
+import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author desbenn
  */
-@FacesConverter("accPacCustomerConverter")
-public class AccPacCustomerConverter extends ConverterAdapter {
+@FacesConverter("businessConverter")
+public class BusinessConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        AccPacCustomer accPacCustomer = AccPacCustomer.findByName(getEntityManager2(), value);
+        Business business = Business.findBusinessByName(getEntityManager(), value);
 
-        if (accPacCustomer == null) {
-            accPacCustomer = new AccPacCustomer(value);
+        if (business == null) {
+            business = new Business(value);
         }
 
-        return accPacCustomer;
+        return business;
     }
 
 }

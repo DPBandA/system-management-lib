@@ -279,9 +279,9 @@ public class Authentication implements Serializable {
         password = "";
     }
 
-    public void login() {
-        login(getEntityManager());
-    }
+//    public void login() {
+//        login(getEntityManager());
+//    }
     
     public Manager getManager(String name) {
         return BeanUtils.findBean(name);
