@@ -13,6 +13,9 @@ import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.sm.Authentication;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
+import org.primefaces.event.TabCloseEvent;
 
 /**
  *
@@ -73,7 +76,7 @@ public interface Manager {
     public void setSearchText(String searchText);
 
     public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap();
-    
+
     public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap);
 
     public User getUser();
@@ -85,5 +88,27 @@ public interface Manager {
     public void completeLogin();
 
     public void completeLogout();
+
+    public void initDashboard();
+
+    public void initMainTabView();
+
+    public void updateAllForms();
+
+    public void onMainViewTabClose(TabCloseEvent event);
+
+    public void onMainViewTabChange(TabChangeEvent event);
+    
+    public String getAppShortcutIconURL();
+    
+    public Boolean renderUserMenu();
+    
+    public String getLogoURL();
+    
+    public Integer getLogoURLImageHeight();
+    
+    public Integer getLogoURLImageWidth();
+    
+    public void onNotificationSelect(SelectEvent event);
 
 }
