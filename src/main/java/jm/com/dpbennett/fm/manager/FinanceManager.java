@@ -22,9 +22,7 @@ package jm.com.dpbennett.fm.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -1575,6 +1573,11 @@ public class FinanceManager implements Serializable, Manager {
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
                 getEntityManager1(), "logoURLImageWidth");
+    }
+
+    @Override
+    public List<SelectItem> getDateSearchFields(String searchType) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }
