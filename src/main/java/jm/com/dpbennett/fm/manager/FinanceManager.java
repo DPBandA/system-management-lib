@@ -1412,25 +1412,43 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void initSearchPanel() {
 
-        initDateSearchFields();
         initSearchTypes();
+        initDateSearchFields();
     }
 
     @Override
     public void initDateSearchFields() {
-        // tk
-        // searchTypeToDateFieldMap should be built using all the search
-        // types from all the modules and not just this one
-        searchTypeToDateFieldMap = new HashMap<>();
-        ArrayList<SelectItem> suppliersDateSearchFields = new ArrayList<>(); // tk should be in PM.
-       
-        suppliersDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        suppliersDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        ArrayList<SelectItem> supplierDateSearchFields = new ArrayList<>();
+        ArrayList<SelectItem> prDateSearchFields = new ArrayList<>();
 
-        searchTypeToDateFieldMap.put(getSearchTypes()[0].getLabel(), suppliersDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[1].getLabel(), suppliersDateSearchFields);
+        // Supplier
+        supplierDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+        supplierDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        // Purchase requisition
+        prDateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
+        prDateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
+        prDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        prDateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
+        prDateSearchFields.add(new SelectItem("dateRequired", "Date required"));
+        prDateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
+        prDateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
+        prDateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
+        prDateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
+        prDateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
+        prDateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
 
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
+        allDateSearchFields.clear();
+
+        switch (getSearchType()) {
+            case "Suppliers":
+                allDateSearchFields.addAll(supplierDateSearchFields);
+                break;
+            case "Purchase requisitions":
+                allDateSearchFields.addAll(prDateSearchFields);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -1465,8 +1483,8 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public void updateSearchType() {
-        allDateSearchFields.clear();
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
+
+        initDateSearchFields();
     }
 
     @Override

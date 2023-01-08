@@ -541,18 +541,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editUser() {
-        // tk
-//        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-//        .resizable(true)
-//        .draggable(true)
-//        .modal(true)
-//        .responsive(true)
-//        .contentHeight("600")
-//        .contentWidth("auto")
-//        .build();
-//    PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
-        
-        
+
         PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 700, 900);
     }
 
@@ -1021,9 +1010,8 @@ public class SystemManager implements Manager, Serializable {
     @Override
     public void initSearchPanel() {
 
-        initDateSearchFields();
         initSearchTypes();
-
+        initDateSearchFields();
     }
 
     @Override
@@ -1041,22 +1029,43 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void initDateSearchFields() {
-        searchTypeToDateFieldMap = new HashMap<>();
+
         ArrayList<SelectItem> defaultDateSearchFields = new ArrayList<>();
 
         defaultDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
         defaultDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
-        searchTypeToDateFieldMap.put(getSearchTypes()[0].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[1].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[2].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[3].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[4].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[5].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[6].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[7].getLabel(), defaultDateSearchFields);
+        allDateSearchFields.clear();
 
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
+        switch (getSearchType()) {
+            case "Users":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Privileges":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Categories":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Document Types":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Options":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Authentication":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Modules":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            case "Attachments":
+                allDateSearchFields.addAll(defaultDateSearchFields);
+                break;
+            default:
+                break;
+        }
+
     }
 
     public Dashboard getDashboard() {
@@ -1227,9 +1236,8 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void updateSearchType() {
-        
-        allDateSearchFields.clear();
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
+
+        initDateSearchFields();
     }
 
     public String getModuleSearchText() {
