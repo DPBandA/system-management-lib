@@ -114,7 +114,6 @@ public class FinanceManager implements Serializable, Manager {
     private List<SelectItem> groupedSearchTypes;
     private List<MarketProduct> foundMarketProducts;
     private Boolean isActiveMarketProductsOnly;
-    private Map<String, List<SelectItem>> searchTypeToDateFieldMap;
     private ArrayList<SelectItem> allDateSearchFields;
     private Authentication authentication;
     private Dashboard dashboard;
@@ -658,12 +657,14 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public List<SelectItem> getSearchTypes() {
 
-        return new SelectItem[]{ // tk should be in PM module
-            new SelectItem("Purchase requisitions", "Purchase requisitions"),
-            new SelectItem("Suppliers", "Suppliers")
-        };
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Purchase requisitions", "Purchase requisitions"));
+        searchTypes.add(new SelectItem("Suppliers", "Suppliers"));
+
+        return searchTypes;
 
     }
 
@@ -1263,7 +1264,6 @@ public class FinanceManager implements Serializable, Manager {
         dateSearchPeriod.initDatePeriod();
         groupedSearchTypes = new ArrayList<>();
         allDateSearchFields = new ArrayList();
-        searchTypeToDateFieldMap = new HashMap<>();
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
         getAuthentication().reset();
@@ -1362,7 +1362,7 @@ public class FinanceManager implements Serializable, Manager {
 
         SelectItemGroup group = new SelectItemGroup("Finance");
 
-        group.setSelectItems(getSearchTypes());
+        group.setSelectItems((SelectItem[])getSearchTypes().toArray());
 
         return group;
 
@@ -1485,16 +1485,6 @@ public class FinanceManager implements Serializable, Manager {
     public void updateSearchType() {
 
         initDateSearchFields();
-    }
-
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        return searchTypeToDateFieldMap;
-    }
-
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
-        this.searchTypeToDateFieldMap = searchTypeToDateFieldMap;
     }
 
     @Override

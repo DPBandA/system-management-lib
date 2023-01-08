@@ -27,9 +27,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -67,7 +65,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
@@ -133,23 +130,12 @@ public class SystemManager implements Manager, Serializable {
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
-    private Map<String, List<SelectItem>> searchTypeToDateFieldMap;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
-    }
-
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        return searchTypeToDateFieldMap;
-    }
-
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
-        this.searchTypeToDateFieldMap = searchTypeToDateFieldMap;
     }
 
     public List getContactTypes() {
@@ -1002,7 +988,7 @@ public class SystemManager implements Manager, Serializable {
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Administration");
 
-        group.setSelectItems(getSearchTypes());
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
     }
@@ -1026,41 +1012,67 @@ public class SystemManager implements Manager, Serializable {
             }
         }
     }
+    
+    @Override
+    public List<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+       switch (getSearchType()) {
+            case "Users":
+                return dateSearchFields;                
+            case "Privileges":
+                return dateSearchFields;
+            case "Categories":
+                return dateSearchFields;
+            case "Document Types":
+                return dateSearchFields;
+            case "Options":
+                return dateSearchFields;
+            case "Authentication":
+               return dateSearchFields;
+            case "Modules":
+                return dateSearchFields;
+            case "Attachments":
+                return dateSearchFields;
+            default:
+                break;
+        }
+        
+        return dateSearchFields;
+    }
 
     @Override
     public void initDateSearchFields() {
-
-        ArrayList<SelectItem> defaultDateSearchFields = new ArrayList<>();
-
-        defaultDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        defaultDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
         allDateSearchFields.clear();
 
         switch (getSearchType()) {
             case "Users":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Privileges":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Categories":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Document Types":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Options":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+               allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Authentication":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Modules":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             case "Attachments":
-                allDateSearchFields.addAll(defaultDateSearchFields);
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             default:
                 break;
@@ -1236,8 +1248,12 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void updateSearchType() {
-
-        initDateSearchFields();
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.initDateSearchFields();
+            }
+        }        
     }
 
     public String getModuleSearchText() {
@@ -1621,12 +1637,11 @@ public class SystemManager implements Manager, Serializable {
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false);
-        searchTypeToDateFieldMap = new HashMap<>();
-        getAuthentication().reset();
-        dashboard.removeAllTabs();
-        dashboard.setRender(false);
-        mainTabView.removeAllTabs();
-        mainTabView.setRender(false);
+//        getAuthentication().reset();
+//        dashboard.removeAllTabs();
+//        dashboard.setRender(false);
+//        mainTabView.removeAllTabs();
+//        mainTabView.setRender(false);
 
         updateAllForms();
     }
@@ -1713,18 +1728,20 @@ public class SystemManager implements Manager, Serializable {
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public List<SelectItem> getSearchTypes() {
 
-        return new SelectItem[]{
-            new SelectItem("Users", "Users"),
-            new SelectItem("Privileges", "Privileges"),
-            new SelectItem("Categories", "Categories"),
-            new SelectItem("Document Types", "Document Types"),
-            new SelectItem("Options", "Options"),
-            new SelectItem("Authentication", "Authentication"),
-            new SelectItem("Modules", "Modules"),
-            new SelectItem("Attachments", "Attachments")
-        };
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Users", "Users"));
+        searchTypes.add(new SelectItem("Privileges", "Privileges"));
+        searchTypes.add(new SelectItem("Categories", "Categories"));
+        searchTypes.add(new SelectItem("Document Types", "Document Types"));
+        searchTypes.add(new SelectItem("Options", "Options"));
+        searchTypes.add(new SelectItem("Authentication", "Authentication"));
+        searchTypes.add(new SelectItem("Modules", "Modules"));
+        searchTypes.add(new SelectItem("Attachments", "Attachments"));
+
+        return searchTypes;
     }
 
     public void doSystemOptionSearch() {

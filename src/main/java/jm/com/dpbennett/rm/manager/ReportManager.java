@@ -2370,7 +2370,7 @@ public class ReportManager implements Serializable, Manager {
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public List<SelectItem> getSearchTypes() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -2451,16 +2451,6 @@ public class ReportManager implements Serializable, Manager {
 
     @Override
     public void setSearchText(String searchText) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

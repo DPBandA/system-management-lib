@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -756,7 +756,7 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public List<SelectItem> getSearchTypes() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -817,16 +817,6 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
 
     @Override
     public void updateDateSearchField() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

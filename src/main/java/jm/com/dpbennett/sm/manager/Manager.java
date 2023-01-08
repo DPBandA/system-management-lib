@@ -6,7 +6,6 @@ package jm.com.dpbennett.sm.manager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
@@ -35,8 +34,10 @@ public interface Manager {
 
     public void setSearchType(String searchType);
 
-    public SelectItem[] getSearchTypes();
-
+    public List<SelectItem> getSearchTypes();
+    
+    public List<SelectItem> getDateSearchFields(String searchType);
+    
     public DatePeriod getDateSearchPeriod();
 
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod);
@@ -74,10 +75,6 @@ public interface Manager {
     public String getSearchText();
 
     public void setSearchText(String searchText);
-
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap();
-
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap);
 
     public User getUser();
 
