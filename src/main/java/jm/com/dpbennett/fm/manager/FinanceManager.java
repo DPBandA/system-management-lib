@@ -623,33 +623,6 @@ public class FinanceManager implements Serializable, Manager {
         getMainTabView().openTab("Financial Administration");
     }
 
-//    public ArrayList getDateSearchFields() {
-//        ArrayList dateSearchFields = new ArrayList();
-//
-//        switch (searchType) {
-//            case "Suppliers": // tk to be system option
-//                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-//                break;
-//            case "Purchase requisitions": // tk to be system option
-//                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-//                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-//                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-//                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-//                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-//                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-//                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-//                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-//                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-//                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        return dateSearchFields;
-//    }
     @Override
     public void updateDateSearchField() {
     }
@@ -1360,7 +1333,7 @@ public class FinanceManager implements Serializable, Manager {
 
         SelectItemGroup group = new SelectItemGroup("Finance");
 
-        group.setSelectItems((SelectItem[])getSearchTypes().toArray());
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
 
@@ -1482,7 +1455,12 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void updateSearchType() {
 
-        initDateSearchFields();
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.initDateSearchFields();
+            }
+        }
     }
 
     @Override
@@ -1577,7 +1555,35 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public List<SelectItem> getDateSearchFields(String searchType) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Users":
+                return dateSearchFields;
+            case "Privileges":
+                return dateSearchFields;
+            case "Categories":
+                return dateSearchFields;
+            case "Document Types":
+                return dateSearchFields;
+            case "Options":
+                return dateSearchFields;
+            case "Authentication":
+                return dateSearchFields;
+            case "Modules":
+                return dateSearchFields;
+            case "Attachments":
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
 }
