@@ -5,6 +5,7 @@
 package jm.com.dpbennett.sm.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -35,16 +36,21 @@ public interface Manager {
     public void setSearchType(String searchType);
 
     public List<SelectItem> getSearchTypes();
-    
+
     public List<SelectItem> getDateSearchFields(String searchType);
-    
+
     public DatePeriod getDateSearchPeriod();
 
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod);
 
     public void doSearch();
 
-    public void doDefaultSearch();
+    public void doDefaultSearch(
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate);
 
     public void handleKeepAlive();
 
@@ -95,17 +101,17 @@ public interface Manager {
     public void onMainViewTabClose(TabCloseEvent event);
 
     public void onMainViewTabChange(TabChangeEvent event);
-    
+
     public String getAppShortcutIconURL();
-    
+
     public Boolean renderUserMenu();
-    
+
     public String getLogoURL();
-    
+
     public Integer getLogoURLImageHeight();
-    
+
     public Integer getLogoURLImageWidth();
-    
+
     public void onNotificationSelect(SelectEvent event);
 
 }

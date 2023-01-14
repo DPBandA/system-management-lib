@@ -1,6 +1,6 @@
 /*
 Inventory Management
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -605,16 +605,7 @@ public class InventoryManager implements Serializable {
     }
 
     public void doSearch() {
-
-        switch (searchType) {
-            case "Inventory":
-                doInventorySearch(dateSearchPeriod, searchType, searchText);
-                openInventoryTab();
-                break;
-            default:
-                break;
-        }
-
+        doDefaultSearch();
     }
 
     public void updateDateSearchField() {
@@ -856,7 +847,7 @@ public class InventoryManager implements Serializable {
                     employee.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
-                            replace("{inventoryId}", prId), 
+                            replace("{inventoryId}", prId),
                     email.getContent("/correspondences/").
                             replace("{title}",
                                     employee.getTitle()).
@@ -1193,7 +1184,20 @@ public class InventoryManager implements Serializable {
     }
 
     public void doDefaultSearch() {
-        doSearch();
+        //  etInventoryManager().doInventorySearch(dateSearchPeriod, searchType, searchText);
+        //  getInventoryManager().openInventoryTab();
+        //            case "Inventory requisitions":
+        //                getInventoryManager().doInventoryRequisitionSearch(dateSearchPeriod, searchType, searchText);
+        //                getInventoryManager().openInventoryRequisitionTab();
+        //                break;
+        switch (searchType) {
+            case "Inventory":
+                doInventorySearch(dateSearchPeriod, searchType, searchText);
+                openInventoryTab();
+                break;
+            default:
+                break;
+        }
     }
 
 }

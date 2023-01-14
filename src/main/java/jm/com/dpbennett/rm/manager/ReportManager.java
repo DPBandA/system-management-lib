@@ -2307,7 +2307,11 @@ public class ReportManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch() {
+    public void doDefaultSearch( String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
             case "Report Management":
 

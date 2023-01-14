@@ -795,7 +795,12 @@ public class SystemManager implements Manager, Serializable {
     }
     
     @Override
-    public void doDefaultSearch() {
+    public void doDefaultSearch( String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+        
         switch (getSearchType()) {
             case "Users":
                 setUserSearchText(getSearchText());
@@ -844,7 +849,12 @@ public class SystemManager implements Manager, Serializable {
     
     @Override
     public void doSearch() {
-        doDefaultSearch();
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
     }
     
     @Override
@@ -1250,6 +1260,9 @@ public class SystemManager implements Manager, Serializable {
     
     @Override
     public void updateSearchType() {
+        
+        //allDateSearchFields.clear();
+        
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {

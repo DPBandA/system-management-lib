@@ -128,6 +128,22 @@ public class FinanceManager implements Serializable, Manager {
         return dashboard;
     }
 
+    /**
+     * Select an financial administration tab based on whether or not the tab is
+     * already opened.
+     *
+     * @param innerTabViewVar
+     * @param innerTabIndex
+     */
+    public void selectFinancialAdminTab(String innerTabViewVar, int innerTabIndex) {
+        if (getMainTabView().findTab("Financial Administration") == null) {
+            getMainTabView().openTab("Financial Administration");
+            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
+        } else {
+            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
+        }
+    }
+
     public List<MarketProduct> completeActiveMarketProduct(String query) {
         try {
             return MarketProduct.findActiveMarketProductsByName(
@@ -602,23 +618,6 @@ public class FinanceManager implements Serializable, Manager {
         this.selectedDiscount = selectedDiscount;
     }
 
-//    public String getRenderDateSearchFields() {
-//        switch (searchType) {
-//            case "Suppliers":
-//            case "Inventory":
-//            case "Users":
-//            case "Privileges":
-//            case "Categories":
-//            case "Document Types":
-//            case "Options":
-//            case "Authentication":
-//            case "Modules":
-//            case "Attachments":
-//                return "false";
-//            default:
-//                return "true";
-//        }
-//    }
     public void openFinancialAdministration() {
         getMainTabView().openTab("Financial Administration");
     }
@@ -632,8 +631,18 @@ public class FinanceManager implements Serializable, Manager {
 
         ArrayList searchTypes = new ArrayList();
 
-        searchTypes.add(new SelectItem("Purchase requisitions", "Purchase requisitions"));
-        searchTypes.add(new SelectItem("Suppliers", "Suppliers"));
+        // tk make system option
+        searchTypes.add(new SelectItem("Accounting Codes", "Accounting Codes"));
+        searchTypes.add(new SelectItem("Currencies", "Currencies"));
+        searchTypes.add(new SelectItem("Discounts", "Discounts"));
+        searchTypes.add(new SelectItem("Taxes", "Taxes"));
+        searchTypes.add(new SelectItem("Classifications", "Classifications"));
+        searchTypes.add(new SelectItem("Sectors", "Sectors"));
+        searchTypes.add(new SelectItem("Job Categories", "Job Categories"));
+        searchTypes.add(new SelectItem("Job Subcategories", "Job Subcategories"));
+        searchTypes.add(new SelectItem("Services", "Services"));
+        searchTypes.add(new SelectItem("Procurement", "Procurement"));
+        searchTypes.add(new SelectItem("Miscellaneous", "Miscellaneous"));
 
         return searchTypes;
 
@@ -856,13 +865,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doAccountingCodeSearch() {
 
-        if (getIsActiveAccountingCodesOnly()) {
-            foundAccountingCodes = AccountingCode.findActiveAccountingCodes(getEntityManager1(),
-                    getAccountingCodeSearchText());
-        } else {
-            foundAccountingCodes = AccountingCode.findAccountingCodes(getEntityManager1(),
-                    getAccountingCodeSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Accounting Codes",
+                getAccountingCodeSearchText(),
+                null,
+                null);
 
     }
 
@@ -879,18 +887,24 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void doCurrencySearch() {
-        foundCurrencies = Currency.findAllByName(getEntityManager1(), getCurrencySearchText());
+
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Currencies",
+                getCurrencySearchText(),
+                null,
+                null);
+
     }
 
     public void doDiscountSearch() {
 
-        if (getIsActiveDiscountsOnly()) {
-            foundDiscounts = Discount.findActiveDiscountsByNameAndDescription(getEntityManager1(),
-                    getDiscountSearchText());
-        } else {
-            foundDiscounts = Discount.findDiscountsByNameAndDescription(getEntityManager1(),
-                    getDiscountSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+               "Discounts",
+                getDiscountSearchText(),
+                null,
+                null);
     }
 
     public void createNewAccountingCode() {
@@ -940,7 +954,19 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void doSearch() {
 
-        doDefaultSearch();
+        for (Modules activeModule : getUser().getActiveModules()) {
+
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.doDefaultSearch(
+                        getDateSearchPeriod().getDateField(),
+                        getSearchType(),
+                        getSearchText(),
+                        getDateSearchPeriod().getStartDate(),
+                        getDateSearchPeriod().getEndDate());
+            }
+
+        }
 
     }
 
@@ -1220,6 +1246,7 @@ public class FinanceManager implements Serializable, Manager {
     public void reset() {
         longProcessProgress = 0;
         accountingCodeSearchText = "";
+        searchText = "";
         taxSearchText = "";
         currencySearchText = "";
         discountSearchText = "";
@@ -1229,7 +1256,7 @@ public class FinanceManager implements Serializable, Manager {
         jobSubcategorySearchText = "";
         serviceSearchText = "";
         marketProductSearchText = "";
-        searchType = "Suppliers"; // tk make have to change
+        searchType = "Accounting Codes"; // tk make have to change or make system option
         dateSearchPeriod = new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
@@ -1291,23 +1318,38 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch() {
+    public void doDefaultSearch(
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+
         switch (searchType) {
-            case "Inventory":
-                getInventoryManager().doInventorySearch(dateSearchPeriod, searchType, searchText);
-                getInventoryManager().openInventoryTab();
+            case "Accounting Codes":
+                if (getIsActiveAccountingCodesOnly()) {
+                    foundAccountingCodes = AccountingCode.findActiveAccountingCodes(
+                            getEntityManager1(),
+                            searchText);
+                } else {
+                    foundAccountingCodes = AccountingCode.findAccountingCodes(getEntityManager1(),
+                            searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 0);
                 break;
-            case "Inventory requisitions":
-                getInventoryManager().doInventoryRequisitionSearch(dateSearchPeriod, searchType, searchText);
-                getInventoryManager().openInventoryRequisitionTab();
+            case "Currencies":
+                foundCurrencies = Currency.findAllByName(getEntityManager1(), searchText);
+                selectFinancialAdminTab("financialAdminTabVar", 1);
                 break;
-            case "Purchase requisitions":
-                getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-                getPurchasingManager().openPurchaseReqsTab();
-                break;
-            case "Suppliers":
-                getPurchasingManager().doSupplierSearch(searchText);
-                getPurchasingManager().openSuppliersTab();
+            case "Discounts":
+                if (getIsActiveDiscountsOnly()) {
+                    foundDiscounts = Discount.findActiveDiscountsByNameAndDescription(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundDiscounts = Discount.findDiscountsByNameAndDescription(getEntityManager1(),
+                            searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 2);
                 break;
             default:
                 break;
@@ -1389,33 +1431,41 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public void initDateSearchFields() {
-        ArrayList<SelectItem> supplierDateSearchFields = new ArrayList<>();
-        ArrayList<SelectItem> prDateSearchFields = new ArrayList<>();
-
-        // Supplier
-        supplierDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        supplierDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-        // Purchase requisition
-        prDateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-        prDateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-        prDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-        prDateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-        prDateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-        prDateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-        prDateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-        prDateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-        prDateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-        prDateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-        prDateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-
         allDateSearchFields.clear();
 
         switch (getSearchType()) {
-            case "Suppliers":
-                allDateSearchFields.addAll(supplierDateSearchFields);
+            case "Accounting Codes":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
-            case "Purchase requisitions":
-                allDateSearchFields.addAll(prDateSearchFields);
+            case "Currencies":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Discounts":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Taxes":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Classifications":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Sectors":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Job Categories":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Job Subcategories":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Services":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Procurement":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
+                break;
+            case "Miscellaneous":
+                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
                 break;
             default:
                 break;
@@ -1455,6 +1505,8 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void updateSearchType() {
 
+        allDateSearchFields.clear();
+
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
@@ -1487,7 +1539,7 @@ public class FinanceManager implements Serializable, Manager {
         getMainTabView().reset(getUser());
 
         for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getDashboardTitle()/*"Financial Administration"*/);
+            getMainTabView().openTab(activeModule.getDashboardTitle());
         }
     }
 
@@ -1559,25 +1611,31 @@ public class FinanceManager implements Serializable, Manager {
 
         dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
         dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-        
+
         setSearchType(searchType);
 
         switch (searchType) {
-            case "Users":
+            case "Accounting Codes":
                 return dateSearchFields;
-            case "Privileges":
+            case "Currencies":
                 return dateSearchFields;
-            case "Categories":
+            case "Discounts":
                 return dateSearchFields;
-            case "Document Types":
+            case "Taxes":
                 return dateSearchFields;
-            case "Options":
+            case "Classifications":
                 return dateSearchFields;
-            case "Authentication":
+            case "Sectors":
                 return dateSearchFields;
-            case "Modules":
+            case "Job Categories":
                 return dateSearchFields;
-            case "Attachments":
+            case "Job Subcategories":
+                return dateSearchFields;
+            case "Services":
+                return dateSearchFields;
+            case "Procurement":
+                return dateSearchFields;
+            case "Miscellaneous":
                 return dateSearchFields;
             default:
                 break;

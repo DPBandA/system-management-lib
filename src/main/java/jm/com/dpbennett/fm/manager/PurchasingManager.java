@@ -799,18 +799,7 @@ public class PurchasingManager implements Serializable {
 
     public void doSearch() {
 
-        switch (searchType) {
-            case "Purchase requisitions":
-                doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-                openPurchaseReqsTab();
-                break;
-            case "Suppliers":
-                doSupplierSearch(searchText);
-                openSuppliersTab();
-                break;
-            default:
-                break;
-        }
+       doDefaultSearch();
 
     }
 
@@ -2884,7 +2873,27 @@ public class PurchasingManager implements Serializable {
     }
 
     public void doDefaultSearch() {
-        doSearch();
+        //            case "Purchase requisitions":
+        //                getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+        //                getPurchasingManager().openPurchaseReqsTab();
+        //                break;
+        //            case "Suppliers":
+        //                getPurchasingManager().doSupplierSearch(searchText);
+        //                getPurchasingManager().openSuppliersTab();
+        //                break;
+        
+         switch (searchType) {
+            case "Purchase requisitions":
+                doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+                openPurchaseReqsTab();
+                break;
+            case "Suppliers":
+                doSupplierSearch(searchText);
+                openSuppliersTab();
+                break;
+            default:
+                break;
+        }
     }
 
 }

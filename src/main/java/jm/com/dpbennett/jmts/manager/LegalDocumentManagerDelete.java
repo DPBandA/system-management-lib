@@ -710,8 +710,12 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch() {
-        doSearch();
+    public void doDefaultSearch( String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+        //doSearch();
     }
 
     @Override

@@ -2051,7 +2051,12 @@ public class JobManager implements
                 maxResults, false);
     }
 
-    public void doDefaultSearch() {
+    @Override
+    public void doDefaultSearch( String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
 
         // getDashboard().getSelectedTabId()
         switch (getSearchType()) {
