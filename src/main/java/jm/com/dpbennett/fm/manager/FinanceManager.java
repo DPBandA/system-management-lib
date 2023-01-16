@@ -39,6 +39,7 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.fm.Sector;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
@@ -48,6 +49,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
@@ -116,12 +118,83 @@ public class FinanceManager implements Serializable, Manager {
     private Authentication authentication;
     private Dashboard dashboard;
     private MainTabView mainTabView;
+    private List<ProcurementMethod> foundProcurementMethods;
+    private ProcurementMethod selectedProcurementMethod;
+    private String procurementMethodSearchText;
 
     /**
      * Creates a new instance of FinanceManager.
      */
     public FinanceManager() {
         init();
+    }
+
+    public List<SelectItem> getProcurementMethods() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "procurementMethods");
+    }
+
+    public String getProcurementMethodSearchText() {
+        return procurementMethodSearchText;
+    }
+
+    public void setProcurementMethodSearchText(String procurementMethodSearchText) {
+        this.procurementMethodSearchText = procurementMethodSearchText;
+    }
+
+    public void saveSelectedProcurementMethod() {
+
+        selectedProcurementMethod.save(getEntityManager1());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+
+    public List<ProcurementMethod> getFoundProcurementMethods() {
+        if (foundProcurementMethods == null) {
+            foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
+        }
+        return foundProcurementMethods;
+    }
+
+    public void setFoundProcurementMethods(List<ProcurementMethod> foundProcurementMethods) {
+        this.foundProcurementMethods = foundProcurementMethods;
+    }
+
+    public ProcurementMethod getSelectedProcurementMethod() {
+        return selectedProcurementMethod;
+    }
+
+    public void setSelectedProcurementMethod(ProcurementMethod selectedProcurementMethod) {
+        this.selectedProcurementMethod = selectedProcurementMethod;
+    }
+
+    public void editProcurementMethod() {
+        PrimeFacesUtils.openDialog(null, "procurementMethodDialog", true, true, true, 0, 800);
+    }
+
+    public void createNewProcurementMethod() {
+
+        selectedProcurementMethod = new ProcurementMethod();
+
+        editProcurementMethod();
+    }
+
+    public void doProcurementMethodSearch() {
+
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Procurement",
+                getProcurementMethodSearchText(),
+                null,
+                null);
+
+    }
+
+    public void onProcurementMethodCellEdit(CellEditEvent event) {
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
+                getFoundProcurementMethods().get(event.getRowIndex()));
     }
 
     public Dashboard getDashboard() {
@@ -410,11 +483,13 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void doServiceSearch() {
-        if (getIsActiveServicesOnly()) {
-            foundServices = Service.findAllActiveByName(getEntityManager1(), getServiceSearchText());
-        } else {
-            foundServices = Service.findAllByName(getEntityManager1(), getServiceSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Services",
+                getServiceSearchText(),
+                null,
+                null);
+
     }
 
     public void saveSelectedService() {
@@ -509,11 +584,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doClassificationSearch() {
 
-        if (getIsActiveClassificationsOnly()) {
-            foundClassifications = Classification.findActiveClassificationsByName(getEntityManager1(), getClassificationSearchText());
-        } else {
-            foundClassifications = Classification.findClassificationsByName(getEntityManager1(), getClassificationSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Classifications",
+                getClassificationSearchText(),
+                null,
+                null);
 
     }
 
@@ -876,13 +952,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doTaxSearch() {
 
-        if (getIsActiveTaxesOnly()) {
-            foundTaxes = Tax.findActiveTaxesByNameAndDescription(getEntityManager1(),
-                    getTaxSearchText());
-        } else {
-            foundTaxes = Tax.findTaxesByNameAndDescription(getEntityManager1(),
-                    getTaxSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Taxes",
+                getTaxSearchText(),
+                null,
+                null);
 
     }
 
@@ -901,7 +976,7 @@ public class FinanceManager implements Serializable, Manager {
 
         doDefaultSearch(
                 getDateSearchPeriod().getDateField(),
-               "Discounts",
+                "Discounts",
                 getDiscountSearchText(),
                 null,
                 null);
@@ -1025,11 +1100,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doJobCategorySearch() {
 
-        if (getIsActiveJobCategoriesOnly()) {
-            foundJobCategories = JobCategory.findActiveJobCategoriesByName(getEntityManager1(), getJobCategorySearchText());
-        } else {
-            foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), getJobCategorySearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Job Categories",
+                getJobCategorySearchText(),
+                null,
+                null);
 
     }
 
@@ -1085,11 +1161,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doJobSubcategorySearch() {
 
-        if (getIsActiveJobSubcategoriesOnly()) {
-            foundJobSubcategories = JobSubCategory.findActiveJobSubcategoriesByName(getEntityManager1(), getJobSubcategorySearchText());
-        } else {
-            foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), getJobSubcategorySearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Job Subcategories",
+                getJobSubcategorySearchText(),
+                null,
+                null);
 
     }
 
@@ -1148,11 +1225,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doSectorSearch() {
 
-        if (getIsActiveSectorsOnly()) {
-            foundSectors = Sector.findActiveSectorsByName(getEntityManager1(), getSectorSearchText());
-        } else {
-            foundSectors = Sector.findSectorsByName(getEntityManager1(), getSectorSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Sectors",
+                getSectorSearchText(),
+                null,
+                null);
 
     }
 
@@ -1245,6 +1323,7 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void reset() {
         longProcessProgress = 0;
+        procurementMethodSearchText = "";
         accountingCodeSearchText = "";
         searchText = "";
         taxSearchText = "";
@@ -1350,6 +1429,65 @@ public class FinanceManager implements Serializable, Manager {
                             searchText);
                 }
                 selectFinancialAdminTab("financialAdminTabVar", 2);
+                break;
+            case "Taxes":
+                if (getIsActiveTaxesOnly()) {
+                    foundTaxes = Tax.findActiveTaxesByNameAndDescription(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundTaxes = Tax.findTaxesByNameAndDescription(getEntityManager1(),
+                            searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 3);
+                break;
+            case "Classifications":
+                if (getIsActiveClassificationsOnly()) {
+                    foundClassifications = Classification.findActiveClassificationsByName(getEntityManager1(), searchText);
+                } else {
+                    foundClassifications = Classification.findClassificationsByName(getEntityManager1(), searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 4);
+                break;
+            case "Sectors":
+                if (getIsActiveSectorsOnly()) {
+                    foundSectors = Sector.findActiveSectorsByName(getEntityManager1(), searchText);
+                } else {
+                    foundSectors = Sector.findSectorsByName(getEntityManager1(), searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 5);
+                break;
+            case "Job Categories":
+                if (getIsActiveJobCategoriesOnly()) {
+                    foundJobCategories = JobCategory.findActiveJobCategoriesByName(getEntityManager1(), searchText);
+                } else {
+                    foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 6);
+                break;
+            case "Job Subcategories":
+                if (getIsActiveJobSubcategoriesOnly()) {
+                    foundJobSubcategories = JobSubCategory.findActiveJobSubcategoriesByName(getEntityManager1(), searchText);
+                } else {
+                    foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 7);
+                break;
+            case "Services":
+                if (getIsActiveServicesOnly()) {
+                    foundServices = Service.findAllActiveByName(getEntityManager1(), searchText);
+                } else {
+                    foundServices = Service.findAllByName(getEntityManager1(), searchText);
+                }
+                selectFinancialAdminTab("financialAdminTabVar", 8);
+                break;
+            case "Procurement":
+                foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
+                        searchText);
+                selectFinancialAdminTab("financialAdminTabVar", 9);
+                break;
+            case "Miscellaneous":
+                getSystemManager().doFinancialSystemOptionSearch(searchText);
+                selectFinancialAdminTab("financialAdminTabVar", 10);
                 break;
             default:
                 break;

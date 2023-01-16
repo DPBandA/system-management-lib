@@ -776,7 +776,19 @@ public class SystemManager implements Manager, Serializable {
     
     public void doFinancialSystemOptionSearch() {
         
-        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), getSystemOptionSearchText());
+        doFinancialSystemOptionSearch(getSystemOptionSearchText());
+        
+//        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), getSystemOptionSearchText());
+//        
+//        if (foundFinancialSystemOptions == null) {
+//            foundFinancialSystemOptions = new ArrayList<>();
+//        }
+        
+    }
+    
+    public void doFinancialSystemOptionSearch(String searchText) {
+        
+        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), searchText);
         
         if (foundFinancialSystemOptions == null) {
             foundFinancialSystemOptions = new ArrayList<>();

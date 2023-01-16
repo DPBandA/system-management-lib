@@ -70,12 +70,9 @@ import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Division;
-import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
-//import jm.com.dpbennett.hrm.validator.AddressValidator;
-//import jm.com.dpbennett.hrm.validator.ContactValidator;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -83,7 +80,6 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -103,7 +99,6 @@ public class PurchasingManager implements Serializable {
     private Boolean edit;
     private String searchText;
     private String purchaseReqSearchText;
-    private String procurementMethodSearchText;
     private List<PurchaseRequisition> foundPurchaseReqs;
     private String searchType;
     private DatePeriod dateSearchPeriod;
@@ -117,12 +112,9 @@ public class PurchasingManager implements Serializable {
     private String supplierSearchText;
     private Boolean isActiveSuppliersOnly;
     private List<Supplier> foundSuppliers;
-    private List<ProcurementMethod> foundProcurementMethods;
     private Attachment selectedAttachment;
     private UploadedFile uploadedFile;
     private List<CashPayment> cashPayments;
-    private ProcurementMethod selectedProcurementMethod;
-    //private EntityManager entityManager;
 
     /**
      * Creates a new instance of PurchasingManager
@@ -139,51 +131,7 @@ public class PurchasingManager implements Serializable {
 
         updateCostComponent(event.getObject());
         updatePurchaseReq(null);
-    }
-
-    public void saveSelectedProcurementMethod() {
-
-        selectedProcurementMethod.save(getEntityManager1());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-
-    }
-
-    public List<ProcurementMethod> getFoundProcurementMethods() {
-        if (foundProcurementMethods == null) {
-            foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
-        }
-        return foundProcurementMethods;
-    }
-
-    public void setFoundProcurementMethods(List<ProcurementMethod> foundProcurementMethods) {
-        this.foundProcurementMethods = foundProcurementMethods;
-    }
-
-    public ProcurementMethod getSelectedProcurementMethod() {
-        return selectedProcurementMethod;
-    }
-
-    public void setSelectedProcurementMethod(ProcurementMethod selectedProcurementMethod) {
-        this.selectedProcurementMethod = selectedProcurementMethod;
-    }
-
-    public void createNewProcurementMethod() {
-
-        selectedProcurementMethod = new ProcurementMethod();
-
-        editProcurementMethod();
-    }
-
-    public void doProcurementMethodSearch() {
-        foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
-                procurementMethodSearchText);
-    }
-
-    public void onProcurementMethodCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
-                getFoundProcurementMethods().get(event.getRowIndex()));
-    }
+    }        
 
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
 
@@ -1488,10 +1436,6 @@ public class PurchasingManager implements Serializable {
         PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false, 500, 625);
     }
 
-    public void editProcurementMethod() {
-        PrimeFacesUtils.openDialog(null, "procurementMethodDialog", true, true, true, 0, 800);
-    }
-
     public void openRequestApprovalEmailDialog() {
         EntityManager em = getEntityManager1();
         Email email = Email.findActiveEmailByName(em, "pr-email-template"); //"pr-gen-email-template");
@@ -2469,16 +2413,7 @@ public class PurchasingManager implements Serializable {
         supplierSearchText = "";
         searchText = "";
         purchaseReqSearchText = "";
-        procurementMethodSearchText = "";
 
-    }
-
-    public String getProcurementMethodSearchText() {
-        return procurementMethodSearchText;
-    }
-
-    public void setProcurementMethodSearchText(String procurementMethodSearchText) {
-        this.procurementMethodSearchText = procurementMethodSearchText;
     }
 
     public EntityManager getEntityManager1() {
@@ -2864,12 +2799,6 @@ public class PurchasingManager implements Serializable {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "prPriorityCodes");
-    }
-
-    public List<SelectItem> getProcurementMethods() {
-
-        return getStringListAsSelectItems(getEntityManager1(),
-                "procurementMethods");
     }
 
     public void doDefaultSearch() {
