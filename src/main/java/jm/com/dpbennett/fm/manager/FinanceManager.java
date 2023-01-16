@@ -128,6 +128,18 @@ public class FinanceManager implements Serializable, Manager {
     public FinanceManager() {
         init();
     }
+    
+    public Integer getDialogHeight() {
+        return 400;
+    }
+    
+    public Integer getDialogWidth() {
+        return 500;
+    }
+    
+    public String getScrollPanelHeight() {
+        return "350px";
+    }
 
     public List<SelectItem> getProcurementMethods() {
 
@@ -171,7 +183,8 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editProcurementMethod() {
-        PrimeFacesUtils.openDialog(null, "procurementMethodDialog", true, true, true, 0, 800);
+        PrimeFacesUtils.openDialog(null, "procurementMethodDialog", 
+                true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void createNewProcurementMethod() {
@@ -238,7 +251,8 @@ public class FinanceManager implements Serializable, Manager {
         getSystemManager().setSelectedCategory(new Category());
         getSystemManager().getSelectedCategory().setType("Product");
 
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void cancelMarketProductEdit() {
@@ -348,7 +362,8 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void openMarketProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true, 650, 800);
+        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void openMarketProductBrowser() {
@@ -507,7 +522,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editService() {
-        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, 0, 600);
+        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<Classification> getClassifications() {
@@ -527,7 +542,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editClassification() {
-        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void onClassificationCellEdit(CellEditEvent event) {
@@ -797,19 +812,20 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editAccountingCode() {
-        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editTax() {
-        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, 600, 500);
+        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editCurrency() {
-        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true, 400, 450);
+        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editDiscount() {
-        PrimeFacesUtils.openDialog(null, "discountDialog", true, true, true, 600, 500);
+        PrimeFacesUtils.openDialog(null, "discountDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void onAccountingCodeCellEdit(CellEditEvent event) {
@@ -1128,7 +1144,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editJobCategory() {
-        PrimeFacesUtils.openDialog(null, "jobCategoryDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "jobCategoryDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<JobSubCategory> getFoundJobSubcategories() {
@@ -1189,7 +1205,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editJobSubcategory() {
-        PrimeFacesUtils.openDialog(null, "jobSubcategoryDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "jobSubcategoryDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public String getSectorSearchText() {
@@ -1253,7 +1269,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editSector() {
-        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, 400, 600);
+        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<Tax> completeTax(String query) {
