@@ -138,6 +138,18 @@ public class SystemManager implements Manager, Serializable {
         init();
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
+    public String getScrollPanelHeight() {
+        return "350px";
+    }
+
     public List getContactTypes() {
 
         return getStringListAsSelectItems(getEntityManager1(), "personalContactTypes");
@@ -210,7 +222,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editEmailTemplate() {
-        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void saveSelectedEmail() {
@@ -365,7 +378,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openModulePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addModulePrivileges() {
@@ -398,7 +412,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openPrivilegePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true, 
+               getDialogHeight(), getDialogWidth());
     }
 
     public DualListModel<Privilege> getPrivilegeDualList() {
@@ -498,16 +513,23 @@ public class SystemManager implements Manager, Serializable {
 
     public void doUserSearch() {
 
-        if (getIsActiveUsersOnly()) {
-            foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(), getUserSearchText());
-        } else {
-            foundUsers = User.findJobManagerUsersByName(getEntityManager1(), getUserSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Users",
+                getUserSearchText(),
+                null,
+                null);
 
     }
 
     public void doAttachmentSearch() {
-        foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(), getAttachmentSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Attachments",
+                getAttachmentSearchText(),
+                null,
+                null);
+
     }
 
     public String getFoundUser() {
@@ -528,7 +550,8 @@ public class SystemManager implements Manager, Serializable {
 
     public void editUser() {
 
-        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 700, 900);
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public User getSelectedUser() {
@@ -802,7 +825,8 @@ public class SystemManager implements Manager, Serializable {
 
         getMainTabView().openTab("Financial Administration");
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 600, 600);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     @Override
@@ -814,43 +838,53 @@ public class SystemManager implements Manager, Serializable {
 
         switch (searchType) {
             case "Users":
-                setUserSearchText(getSearchText());
-                doUserSearch();
+                if (getIsActiveUsersOnly()) {
+                    foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
+                            searchText);
+                }
                 selectSystemAdminTab("centerTabVar", 0);
                 break;
             case "Privileges":
-                setPrivilegeSearchText(getSearchText());
-                doActivePrivilegeSearch();
+                foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
+                        searchText);
                 selectSystemAdminTab("centerTabVar", 1);
                 break;
             case "Categories":
-                setCategorySearchText(getSearchText());
-                doCategorySearch();
+                foundCategories = Category.findCategoriesByName(getEntityManager1(),
+                        searchText);
                 selectSystemAdminTab("centerTabVar", 2);
                 break;
             case "Document Types":
-                setDocumentTypeSearchText(getSearchText());
-                doDocumentTypeSearch();
+                foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
+                        searchText);
                 selectSystemAdminTab("centerTabVar", 3);
                 break;
             case "Options":
-                setSystemOptionSearchText(getSearchText());
-                doSystemOptionSearch();
+                foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
+                        searchText);
                 selectSystemAdminTab("centerTabVar", 4);
                 break;
             case "Authentication":
-                setLdapSearchText(getSearchText());
-                doLdapContextSearch();
+                if (getIsActiveLdapsOnly()) {
+                    foundLdapContexts = LdapContext.findActiveLdapContexts(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(),
+                            searchText);
+                }
                 selectSystemAdminTab("centerTabVar", 5);
                 break;
             case "Modules":
-                setModuleSearchText(getSearchText());
-                doActiveModuleSearch();
+                foundActiveModules = Modules.findActiveModules(getEntityManager1(),
+                        searchText);
                 selectSystemAdminTab("centerTabVar", 6);
                 break;
             case "Attachments":
-                setAttachmentSearchText(getSearchText());
-                doAttachmentSearch();
+                foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
+                        searchText);
                 selectSystemAdminTab("centerTabVar", 7);
                 break;
             default:
@@ -860,12 +894,20 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void doSearch() {
-        doDefaultSearch(
-                getDateSearchPeriod().getDateField(),
-                getSearchType(),
-                getSearchText(),
-                getDateSearchPeriod().getStartDate(),
-                getDateSearchPeriod().getEndDate());
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.doDefaultSearch(
+                        getDateSearchPeriod().getDateField(),
+                        getSearchType(),
+                        getSearchText(),
+                        getDateSearchPeriod().getStartDate(),
+                        getDateSearchPeriod().getEndDate());
+            }
+
+        }
     }
 
     @Override
@@ -1236,7 +1278,6 @@ public class SystemManager implements Manager, Serializable {
     @Override
     public void updateSearchType() {
 
-        //allDateSearchFields.clear();
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
@@ -1337,14 +1378,23 @@ public class SystemManager implements Manager, Serializable {
 
     public void doDocumentTypeSearch() {
 
-        foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(), getDocumentTypeSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Document Types",
+                getDocumentTypeSearchText(),
+                null,
+                null);
 
     }
 
     public void doCategorySearch() {
 
-        foundCategories = Category.findCategoriesByName(getEntityManager1(), getCategorySearchText());
-
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Categories",
+                getCategorySearchText(),
+                null,
+                null);
     }
 
     public void doNotificationSearch() {
@@ -1354,20 +1404,29 @@ public class SystemManager implements Manager, Serializable {
 
     public void doActivePrivilegeSearch() {
 
-        foundActivePrivileges
-                = Privilege.findActivePrivileges(getEntityManager1(), getPrivilegeSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Privileges",
+                getPrivilegeSearchText(),
+                null,
+                null);
 
     }
 
     public void doActiveModuleSearch() {
 
-        foundActiveModules
-                = Modules.findActiveModules(getEntityManager1(), getModuleSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Modules",
+                getModuleSearchText(),
+                null,
+                null);
 
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, url, true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
@@ -1442,11 +1501,13 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editPrivilege() {
-        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editNotification() {
-        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true, 0, 500);
+        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void deleteNotification() {
@@ -1557,11 +1618,13 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editModule() {
-        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 750, 900);
+        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 350, 400);
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editDocumentType() {
@@ -1712,6 +1775,7 @@ public class SystemManager implements Manager, Serializable {
             getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
+            getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
@@ -1735,20 +1799,23 @@ public class SystemManager implements Manager, Serializable {
 
     public void doSystemOptionSearch() {
 
-        foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(), getSystemOptionSearchText());
-
-        if (foundSystemOptions == null) {
-            foundSystemOptions = new ArrayList<>();
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Options",
+                getSystemOptionSearchText(),
+                null,
+                null);
 
     }
 
     public void doLdapContextSearch() {
-        if (getIsActiveLdapsOnly()) {
-            foundLdapContexts = LdapContext.findActiveLdapContexts(getEntityManager1(), getLdapSearchText());
-        } else {
-            foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(), getLdapSearchText());
-        }
+
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Authentication",
+                getLdapSearchText(),
+                null,
+                null);
 
     }
 
@@ -1757,7 +1824,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editSystemOption() {
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 575, 550);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 
+               getDialogHeight(), getDialogWidth());
     }
 
     public void createNewAttachment() {
@@ -1769,11 +1837,13 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openAttachmentDialog() {
-        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true, 575, 550);
+        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 550, 750);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewLdapContext() {

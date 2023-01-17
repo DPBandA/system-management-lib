@@ -117,7 +117,7 @@ public class FinanceManager implements Serializable, Manager {
     private ArrayList<SelectItem> allDateSearchFields;
     private Authentication authentication;
     private Dashboard dashboard;
-    private MainTabView mainTabView;
+    //private MainTabView mainTabView;
     private List<ProcurementMethod> foundProcurementMethods;
     private ProcurementMethod selectedProcurementMethod;
     private String procurementMethodSearchText;
@@ -226,6 +226,7 @@ public class FinanceManager implements Serializable, Manager {
             getMainTabView().openTab("Financial Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
+            getMainTabView().openTab("Financial Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
@@ -1066,7 +1067,7 @@ public class FinanceManager implements Serializable, Manager {
 
     public MainTabView getMainTabView() {
 
-        return mainTabView;
+        return getSystemManager().getMainTabView();
     }
 
     public Boolean getEdit() {
@@ -1357,7 +1358,7 @@ public class FinanceManager implements Serializable, Manager {
         groupedSearchTypes = new ArrayList<>();
         allDateSearchFields = new ArrayList();
         dashboard = new Dashboard(getUser());
-        mainTabView = new MainTabView(getUser());
+        //mainTabView = new MainTabView(getUser());
         getAuthentication().reset();
         isActiveDiscountsOnly = true;
         isActiveTaxesOnly = true;
@@ -1666,7 +1667,7 @@ public class FinanceManager implements Serializable, Manager {
     public void onMainViewTabClose(TabCloseEvent event) {
         String tabId = ((TabPanel) event.getData()).getId();
 
-        mainTabView.closeTab(tabId);
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
