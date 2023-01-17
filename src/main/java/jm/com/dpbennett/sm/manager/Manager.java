@@ -29,15 +29,15 @@ public interface Manager {
 
     public SelectItemGroup getSearchTypesGroup();
 
-    public List<SelectItem> getGroupedSearchTypes();
+    public ArrayList<SelectItem> getGroupedSearchTypes();
 
     public String getSearchType();
 
     public void setSearchType(String searchType);
 
-    public List<SelectItem> getSearchTypes();
+    public ArrayList<SelectItem> getSearchTypes();
 
-    public List<SelectItem> getDateSearchFields(String searchType);
+    public ArrayList<SelectItem> getDateSearchFields(String searchType);
 
     public DatePeriod getDateSearchPeriod();
 
@@ -63,8 +63,6 @@ public interface Manager {
     public void initSearchPanel();
 
     public void initSearchTypes();
-
-    public void initDateSearchFields();
 
     public Authentication getAuthentication();
 

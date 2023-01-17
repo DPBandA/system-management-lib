@@ -111,7 +111,7 @@ public class FinanceManager implements Serializable, Manager {
     private Boolean isActiveJobSubcategoriesOnly;
     private Boolean isActiveSectorsOnly;
     private Boolean isActiveServicesOnly;
-    private List<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> groupedSearchTypes;
     private List<MarketProduct> foundMarketProducts;
     private Boolean isActiveMarketProductsOnly;
     private ArrayList<SelectItem> allDateSearchFields;
@@ -128,15 +128,15 @@ public class FinanceManager implements Serializable, Manager {
     public FinanceManager() {
         init();
     }
-    
+
     public Integer getDialogHeight() {
         return 400;
     }
-    
+
     public Integer getDialogWidth() {
         return 500;
     }
-    
+
     public String getScrollPanelHeight() {
         return "350px";
     }
@@ -183,8 +183,8 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editProcurementMethod() {
-        PrimeFacesUtils.openDialog(null, "procurementMethodDialog", 
-                true, true, true, getDialogHeight(), getDialogWidth());
+        PrimeFacesUtils.openDialog(null, "procurementMethodDialog",
+                true, true, true, getDialogHeight(), 700);
     }
 
     public void createNewProcurementMethod() {
@@ -251,7 +251,7 @@ public class FinanceManager implements Serializable, Manager {
         getSystemManager().setSelectedCategory(new Category());
         getSystemManager().getSelectedCategory().setType("Product");
 
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -362,7 +362,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void openMarketProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -380,7 +380,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public List<SelectItem> getGroupedSearchTypes() {
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
     }
 
@@ -718,11 +718,10 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public List<SelectItem> getSearchTypes() {
+    public ArrayList<SelectItem> getSearchTypes() {
 
         ArrayList searchTypes = new ArrayList();
 
-        // tk make system option
         searchTypes.add(new SelectItem("Accounting Codes", "Accounting Codes"));
         searchTypes.add(new SelectItem("Currencies", "Currencies"));
         searchTypes.add(new SelectItem("Discounts", "Discounts"));
@@ -812,7 +811,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editAccountingCode() {
-        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -1580,50 +1579,12 @@ public class FinanceManager implements Serializable, Manager {
     public void initSearchPanel() {
 
         initSearchTypes();
-        initDateSearchFields();
+        updateSearchType();
     }
 
     @Override
-    public void initDateSearchFields() {
-        allDateSearchFields.clear();
-
-        switch (getSearchType()) {
-            case "Accounting Codes":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Currencies":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Discounts":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Taxes":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Classifications":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Sectors":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Job Categories":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Job Subcategories":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Services":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Procurement":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            case "Miscellaneous":
-                allDateSearchFields.addAll(getDateSearchFields(getSearchType()));
-                break;
-            default:
-                break;
-        }
+    public ArrayList<SelectItem> getAllDateSearchFields() {
+        return allDateSearchFields;
     }
 
     @Override
@@ -1652,19 +1613,12 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
-
-    @Override
     public void updateSearchType() {
-
-        allDateSearchFields.clear();
 
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
-                manager.initDateSearchFields();
+                allDateSearchFields = manager.getDateSearchFields(searchType);
             }
         }
     }
@@ -1760,7 +1714,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public List<SelectItem> getDateSearchFields(String searchType) {
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
         dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));

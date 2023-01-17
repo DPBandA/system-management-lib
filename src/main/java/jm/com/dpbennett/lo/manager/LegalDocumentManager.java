@@ -720,12 +720,12 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     @Override
-    public List<SelectItem> getGroupedSearchTypes() {
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public List<SelectItem> getSearchTypes() {
+    public ArrayList<SelectItem> getSearchTypes() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -751,11 +751,6 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void initSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void initDateSearchFields() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -845,7 +840,7 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     @Override
-    public List<SelectItem> getDateSearchFields(String searchType) {
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

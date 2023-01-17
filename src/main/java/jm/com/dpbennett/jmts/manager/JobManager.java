@@ -113,7 +113,7 @@ public class JobManager implements
     private Boolean showJobEntry;
     private List<Job> jobSearchResultList;
     private DatePeriod dateSearchPeriod;
-    private List<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> groupedSearchTypes;
     private String searchType;
     private String searchText;
     private Job[] selectedJobs;
@@ -969,7 +969,7 @@ public class JobManager implements
 //        }
 //    }
 
-    public List<SelectItem> getGroupedSearchTypes() {
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
     }
 
@@ -2694,7 +2694,7 @@ public class JobManager implements
     }
 
     @Override
-    public List<SelectItem> getSearchTypes() {
+    public ArrayList<SelectItem> getSearchTypes() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -2715,11 +2715,6 @@ public class JobManager implements
 
     @Override
     public void initSearchPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void initDateSearchFields() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -2789,7 +2784,7 @@ public class JobManager implements
     }
 
     @Override
-    public List<SelectItem> getDateSearchFields(String searchType) {
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
