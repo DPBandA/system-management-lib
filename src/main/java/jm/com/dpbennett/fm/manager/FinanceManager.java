@@ -235,7 +235,6 @@ public class FinanceManager implements Serializable, Manager {
             getMainTabView().openTab("Financial Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
-            getMainTabView().openTab("Financial Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
@@ -1782,6 +1781,7 @@ public class FinanceManager implements Serializable, Manager {
         this.loginAttempts = loginAttempts;
     }
 
+    @Override
     public Boolean getUserLoggedIn() {
         return userLoggedIn;
     }
@@ -1922,7 +1922,7 @@ public class FinanceManager implements Serializable, Manager {
 
         ++loginAttempts;
         if (loginAttempts == 2) {
-            //PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+            
             try {
                 // Send email to system administrator alert if activated
                 if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
@@ -1944,6 +1944,7 @@ public class FinanceManager implements Serializable, Manager {
         password = "";
     }
 
+    @Override
     public void login(EntityManager em) {
 
         setUserLoggedIn(false);

@@ -33,6 +33,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -50,6 +54,7 @@ import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
@@ -131,6 +136,11 @@ public class SystemManager implements Manager, Serializable {
     private String emailSearchText;
     private List<Notification> notifications;
     private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
 
     /**
      * Creates a new instance of SystemManager
@@ -223,7 +233,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editEmailTemplate() {
-        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -379,7 +389,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openModulePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -413,8 +423,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openPrivilegePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true, 
-               getDialogHeight(), getDialogWidth());
+        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public DualListModel<Privilege> getPrivilegeDualList() {
@@ -551,7 +561,7 @@ public class SystemManager implements Manager, Serializable {
 
     public void editUser() {
 
-        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -826,7 +836,7 @@ public class SystemManager implements Manager, Serializable {
 
         getMainTabView().openTab("Financial Administration");
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -1492,12 +1502,12 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editPrivilege() {
-        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editNotification() {
-        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -1609,12 +1619,12 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editModule() {
-        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -1766,7 +1776,6 @@ public class SystemManager implements Manager, Serializable {
             getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         } else {
-            getMainTabView().openTab("System Administration");
             PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
     }
@@ -1815,8 +1824,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editSystemOption() {
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 
-               getDialogHeight(), getDialogWidth());
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewAttachment() {
@@ -1828,12 +1837,12 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openAttachmentDialog() {
-        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -2049,87 +2058,229 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        login(getEntityManager1());
     }
 
     @Override
     public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return loginAttempts;
     }
 
     @Override
     public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.loginAttempts = loginAttempts;
     }
 
     @Override
     public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return userLoggedIn;
     }
 
     @Override
     public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.userLoggedIn = userLoggedIn;
     }
 
     @Override
     public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return password;
     }
 
     @Override
     public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.password = password;
     }
 
     @Override
     public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return username;
     }
 
     @Override
     public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.username = username;
     }
 
     @Override
     public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (user == null) {
+            return new User();
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User userFound = em.find(User.class, user.getId());
+                    if (userFound != null) {
+                        em.refresh(userFound);
+                        user = userFound;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
     }
 
     @Override
     public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.user = user;
     }
 
     @Override
     public Boolean checkForLDAPUser(EntityManager em, String username, javax.naming.ldap.LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            SearchControls constraints = new SearchControls();
+            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            String[] attrIDs = {"displayName"};
+
+            constraints.setReturningAttributes(attrIDs);
+
+            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+
+            if (!answer.hasMore()) { // Assuming only one match
+                // LDAP user not found!
+                return Boolean.FALSE;
+            }
+        } catch (NamingException ex) {
+            System.out.println(ex);
+            return Boolean.FALSE;
+        }
+
+        return Boolean.TRUE;
     }
 
     @Override
     public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Boolean userValidated = false;
+        InitialLdapContext ctx;
+
+        try {
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
+
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // get the user if one exists
+            if (userValidated) {
+                System.out.println("User validated.");
+
+                return true;
+
+            } else {
+                System.out.println("User NOT validated!");
+
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Problem connecting to directory: " + e);
+        }
+
+        return false;
     }
 
     @Override
     public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ++loginAttempts;
+        if (loginAttempts == 2) {
+
+            try {
+                // Send email to system administrator alert if activated
+                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        "developerEmailAlertActivated")) {
+                    MailUtils.postMail(null, null, null,
+                            "Failed user login",
+                            "Username: " + username + "\nDate/Time: " + new Date(),
+                            "text/plain",
+                            getEntityManager1());
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        } else if (loginAttempts > 2) {// tk # attempts to be made option
+            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+        }
+
+        username = "";
+        password = "";
     }
 
     @Override
     public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
     }
 
     @Override
     public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return logonMessage;
     }
 
     @Override
     public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.logonMessage = logonMessage;
     }
 
 }
