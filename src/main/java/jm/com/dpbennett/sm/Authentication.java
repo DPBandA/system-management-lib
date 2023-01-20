@@ -20,7 +20,6 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sm;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.naming.NamingEnumeration;
@@ -34,6 +33,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.PrimeFaces;
@@ -279,10 +279,6 @@ public class Authentication implements Serializable {
         password = "";
     }
 
-//    public void login() {
-//        login(getEntityManager());
-//    }
-    
     public Manager getManager(String name) {
         return BeanUtils.findBean(name);
     }
@@ -342,6 +338,59 @@ public class Authentication implements Serializable {
         }
 
     } 
+    
+    // tk
+    public void login(EntityManager em, FinanceManager financeManager) {
+
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    //notifyLoginListeners();
+                    financeManager.completeLogin();
+
+                    //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    //notifyLoginListeners();
+                    financeManager.completeLogin();
+
+                    //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
+
+    }
 
     public void login(EntityManager em) {
 

@@ -58,13 +58,46 @@ public interface Manager {
 
     public String getApplicationSubheader();
 
+    public void login();
+
     public void logout();
+
+    public Integer getLoginAttempts();
+
+    public void setLoginAttempts(Integer loginAttempts);
+
+    public Boolean getUserLoggedIn();
+
+    public void setUserLoggedIn(Boolean userLoggedIn);
+
+    public String getPassword();
+
+    public void setPassword(String password);
+
+    public String getUsername();
+
+    public void setUsername(String username);
+
+    public User getUser(EntityManager em);
+
+    public void setUser(User user);
+
+    public Boolean checkForLDAPUser(EntityManager em, String username,
+            javax.naming.ldap.LdapContext ctx);
+
+    public Boolean validateUser(EntityManager em);
+
+    public void checkLoginAttemps();
+    
+    public void login(EntityManager em);
+    
+    public String getLogonMessage();
+    
+    public void setLogonMessage(String logonMessage);
 
     public void initSearchPanel();
 
     public void initSearchTypes();
-
-    public Authentication getAuthentication();
 
     public Manager getManager(String name);
 
