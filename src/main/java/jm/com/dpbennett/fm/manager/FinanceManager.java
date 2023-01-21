@@ -52,7 +52,6 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -1631,6 +1630,10 @@ public class FinanceManager implements Serializable, Manager {
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
+                for (SelectItem dateSearchField : manager.getDateSearchFields(searchType)) {
+                 System.out.println("get date flds..: "+ dateSearchField.getLabel());   
+                }
+                 // tk
                 allDateSearchFields = manager.getDateSearchFields(searchType);
             }
         }
@@ -1769,8 +1772,8 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void login() {
         login(getEntityManager1());
-    }    
-    
+    }
+
     @Override
     public Integer getLoginAttempts() {
         return loginAttempts;
@@ -1922,7 +1925,7 @@ public class FinanceManager implements Serializable, Manager {
 
         ++loginAttempts;
         if (loginAttempts == 2) {
-            
+
             try {
                 // Send email to system administrator alert if activated
                 if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),

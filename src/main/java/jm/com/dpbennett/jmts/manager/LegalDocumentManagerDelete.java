@@ -46,7 +46,6 @@ import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -78,6 +77,12 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
     private LegalDocument selectedDocument;
     private LegalDocument currentDocument;
     private DocumentReport documentReport;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
 
     public LegalDocumentManagerDelete() {
         init();
@@ -179,7 +184,7 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
 
     @Override
     public void init() {
-        reset();        
+        reset();
     }
 
     public void openReportsTab() {
@@ -251,7 +256,7 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
 
         editClient();
     }
-    
+
     public void editClient() {
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 600, 700);
     }
@@ -346,11 +351,11 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
 
         editClassification();
     }
-    
+
     public void editClassification() {
-        
+
         PrimeFacesUtils.openDialog(null, "/finance/classificationDialog", true, true, true, 500, 600);
-        
+
     }
 
     public void createNewDocumentType(ActionEvent actionEvent) {
@@ -451,7 +456,10 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
 
     @Override
     public User getUser() {
-        return getSystemManager().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        return user;
     }
 
     public LegalDocument createNewLegalDocument(EntityManager em,
@@ -711,7 +719,7 @@ public final class LegalDocumentManagerDelete implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch( String dateSearchField,
+    public void doDefaultSearch(String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,

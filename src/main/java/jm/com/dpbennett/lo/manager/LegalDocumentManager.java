@@ -41,7 +41,6 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.lo.LegalDocument;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;

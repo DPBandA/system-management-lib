@@ -6,13 +6,11 @@ package jm.com.dpbennett.sm.manager;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.sm.Authentication;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;

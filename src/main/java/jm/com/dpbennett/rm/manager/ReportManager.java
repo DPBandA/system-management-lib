@@ -60,7 +60,6 @@ import jm.com.dpbennett.business.entity.sc.ComplianceSurvey;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
