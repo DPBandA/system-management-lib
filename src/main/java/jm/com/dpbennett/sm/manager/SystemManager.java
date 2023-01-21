@@ -120,7 +120,6 @@ public class SystemManager implements Manager, Serializable {
     private Privilege selectedPrivilege;
     private Notification selectedNotification;
     private Modules selectedModule;
-    private Authentication authentication;
     private Dashboard dashboard;
     private User selectedUser;
     private User foundUser;
@@ -1690,11 +1689,6 @@ public class SystemManager implements Manager, Serializable {
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false);
-//        getAuthentication().reset();
-//        dashboard.removeAllTabs();
-//        dashboard.setRender(false);
-//        mainTabView.removeAllTabs();
-//        mainTabView.setRender(false);
 
         updateAllForms();
     }

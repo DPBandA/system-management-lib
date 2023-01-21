@@ -53,7 +53,6 @@ import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -98,6 +97,18 @@ public class InventoryManager implements Serializable, Manager {
      */
     public InventoryManager() {
         init();
+    }    
+    
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
+    public String getScrollPanelHeight() {
+        return "350px";
     }
 
     public InventoryDisbursement getSelectedInventoryDisbursement() {
@@ -402,7 +413,8 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void openInventoryProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog", true, true, true, true, 650, 800);
+        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog", 
+                true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void openInventoryProductBrowser() {
@@ -1066,12 +1078,14 @@ public class InventoryManager implements Serializable, Manager {
 
     public void editSelectedInventory() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryDialog", true, true, true, true, 700, 1050);
+        PrimeFacesUtils.openDialog(null, "inventoryDialog", 
+                true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editSelectedInventoryRequisition() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog", true, true, true, true, 700, 1050);
+        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog", 
+                true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<Inventory> getFoundInventories() {
