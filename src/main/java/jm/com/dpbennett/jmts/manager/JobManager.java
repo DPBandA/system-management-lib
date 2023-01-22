@@ -2099,7 +2099,7 @@ public class JobManager implements
                 getMainTabView().openTab("Document Browser");
                 break;
             case "Purchase requisitions":
-                getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+                //getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
                 getMainTabView().openTab("Purchase Requisitions");
                 break;
             case "Suppliers":

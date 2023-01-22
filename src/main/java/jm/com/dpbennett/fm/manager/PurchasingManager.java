@@ -153,7 +153,7 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog", 
+        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog",
                 true, true, true, getDialogHeight(), getDialogWidth());
     }
 
@@ -702,7 +702,7 @@ public class PurchasingManager implements Serializable, Manager {
 
         getSelectedSupplier().setIsNameAndIdEditable(getUser().can("AddSupplier"));
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -1447,7 +1447,7 @@ public class PurchasingManager implements Serializable, Manager {
     }
 
     public void editPurchReqGeneralEmail() {
-        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false, 
+        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -2290,7 +2290,7 @@ public class PurchasingManager implements Serializable, Manager {
 
         } else {
             if (!getPurchaseReqSearchText().isEmpty()) {
-                doPurchaseReqSearch();
+                //doPurchaseReqSearch();
             }
         }
     }
@@ -2303,13 +2303,13 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void editSelectedPurchaseReq() {
 
-        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true, 
+        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
         if (foundPurchaseReqs == null) {
-            doPurchaseReqSearch();
+            //doPurchaseReqSearch();
         }
         return foundPurchaseReqs;
     }
@@ -2318,34 +2318,34 @@ public class PurchasingManager implements Serializable, Manager {
         this.foundPurchaseReqs = foundPurchaseReqs;
     }
 
-    public void doPurchaseReqSearch() {
+//    public void doPurchaseReqSearch() {
+//
+//        EntityManager em = getEntityManager1();
+//
+//        if (!purchaseReqSearchText.isEmpty()) {
+//            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
+//                    dateSearchPeriod.getDateField(), searchType, purchaseReqSearchText.trim(),
+//                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
+//                    searchDepartmentId);
+//        } else {
+//            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
+//                    dateSearchPeriod.getDateField(), searchType, "",
+//                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
+//                    searchDepartmentId);
+//        }
+//    }
 
-        EntityManager em = getEntityManager1();
-
-        if (!purchaseReqSearchText.isEmpty()) {
-            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
-                    dateSearchPeriod.getDateField(), searchType, purchaseReqSearchText.trim(),
-                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-                    searchDepartmentId);
-        } else {
-            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
-                    dateSearchPeriod.getDateField(), searchType, "",
-                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-                    searchDepartmentId);
-        }
-    }
-
-    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
-            String searchType, String searchText, Long searchDepartmentId) {
-
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.purchaseReqSearchText = searchText;
-        this.searchDepartmentId = searchDepartmentId;
-
-        doPurchaseReqSearch();
-
-    }
+//    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
+//            String searchType, String searchText, Long searchDepartmentId) {
+//
+//        this.dateSearchPeriod = dateSearchPeriod;
+//        this.searchType = searchType;
+//        this.purchaseReqSearchText = searchText;
+//        this.searchDepartmentId = searchDepartmentId;
+//
+//        doPurchaseReqSearch();
+//
+//    }
 
     public String getPurchaseReqSearchText() {
         return purchaseReqSearchText;
@@ -2425,7 +2425,7 @@ public class PurchasingManager implements Serializable, Manager {
         dateSearchPeriod = new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
-        foundPurchaseReqs = null;
+        foundPurchaseReqs = new ArrayList<>();
         toEmployees = new ArrayList<>();
         supplierSearchText = "";
         searchText = "";
@@ -2581,7 +2581,7 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void addAttachment() {
 
-        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -2828,18 +2828,29 @@ public class PurchasingManager implements Serializable, Manager {
             String searchText,
             Date startDate,
             Date endDate) {
-        //            case "Purchase requisitions":
-        //                getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-        //                getPurchasingManager().openPurchaseReqsTab();
-        //                break;
-        //            case "Suppliers":
-        //                getPurchasingManager().doSupplierSearch(searchText);
-        //                getPurchasingManager().openSuppliersTab();
-        //                break;
 
         switch (searchType) {
             case "Purchase requisitions":
-                doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+                //doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+                //if (!searchText.isEmpty()) {
+                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+                            getEntityManager1(),
+                            dateSearchField, 
+                            searchType, 
+                            searchText,
+                            startDate, 
+                            endDate,
+                            searchDepartmentId);
+//                } else {
+//                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+//                            getEntityManager1(),
+//                            dateSearchPeriod.getDateField(), 
+//                            searchType, 
+//                            "",
+//                            dateSearchPeriod.getStartDate(), 
+//                            dateSearchPeriod.getEndDate(),
+//                            searchDepartmentId);
+//                }
                 openPurchaseReqsTab();
                 break;
             case "Suppliers":
