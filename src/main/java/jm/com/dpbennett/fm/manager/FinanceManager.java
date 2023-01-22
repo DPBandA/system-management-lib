@@ -661,10 +661,6 @@ public class FinanceManager implements Serializable, Manager {
         return BeanUtils.findBean("inventoryManager");
     }
 
-    public FinanceManager getFinanceManager() {
-        return BeanUtils.findBean("financeManager");
-    }
-
     public List<AccountingCode> completeAccountingCode(String query) {
         EntityManager em;
 
@@ -1630,11 +1626,12 @@ public class FinanceManager implements Serializable, Manager {
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
-                for (SelectItem dateSearchField : manager.getDateSearchFields(searchType)) {
-                 System.out.println("get date flds..: "+ dateSearchField.getLabel());   
+                ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                if (!dateFields.isEmpty()) {
+                    allDateSearchFields = dateFields;
+
+                    return;
                 }
-                 // tk
-                allDateSearchFields = manager.getDateSearchFields(searchType);
             }
         }
     }
@@ -1733,33 +1730,52 @@ public class FinanceManager implements Serializable, Manager {
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
-        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-
         setSearchType(searchType);
 
         switch (searchType) {
             case "Accounting Codes":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Currencies":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Discounts":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Taxes":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Classifications":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Sectors":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Job Categories":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Job Subcategories":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Services":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Procurement":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             case "Miscellaneous":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
             default:
                 break;

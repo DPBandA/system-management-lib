@@ -1088,27 +1088,48 @@ public class SystemManager implements Manager, Serializable {
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
-        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-
         setSearchType(searchType);
 
         switch (searchType) {
             case "Users":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Privileges":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Categories":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Document Types":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Options":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Authentication":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Modules":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             case "Attachments":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             default:
                 break;

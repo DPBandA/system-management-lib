@@ -121,7 +121,6 @@ public class PurchasingManager implements Serializable, Manager {
     private UploadedFile uploadedFile;
     private List<CashPayment> cashPayments;
     private ArrayList<SelectItem> groupedSearchTypes;
-    private User user;
 
     /**
      * Creates a new instance of PurchasingManager
@@ -154,7 +153,8 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog", true, true, true, 175, 375);
+        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog", 
+                true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void deleteCashPayment() {
@@ -525,33 +525,6 @@ public class PurchasingManager implements Serializable, Manager {
         }
     }
 
-//    public ArrayList getDateSearchFields() {
-//        ArrayList dateSearchFields = new ArrayList();
-//
-//        switch (searchType) {
-//            case "Suppliers":
-//                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-//                break;
-//            case "Purchase requisitions":
-//                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-//                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-//                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-//                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-//                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-//                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-//                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-//                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-//                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-//                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        return dateSearchFields;
-//    }
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
@@ -729,7 +702,8 @@ public class PurchasingManager implements Serializable, Manager {
 
         getSelectedSupplier().setIsNameAndIdEditable(getUser().can("AddSupplier"));
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public Boolean getIsActiveSuppliersOnly() {
@@ -1473,7 +1447,8 @@ public class PurchasingManager implements Serializable, Manager {
     }
 
     public void editPurchReqGeneralEmail() {
-        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false, 500, 625);
+        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void openRequestApprovalEmailDialog() {
@@ -2328,7 +2303,8 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void editSelectedPurchaseReq() {
 
-        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true, 700, 1050);
+        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
@@ -2462,12 +2438,19 @@ public class PurchasingManager implements Serializable, Manager {
         return getSystemManager().getEntityManager1();
     }
 
+    public FinanceManager getFinanceManager() {
+        return BeanUtils.findBean("financeManager");
+    }
+
+    public List<SelectItem> getProcurementMethods() {
+
+        return getFinanceManager().getProcurementMethods();
+    }
+
     @Override
     public User getUser() {
-        if (user == null) {
-            user = new User();
-        }
-        return user;
+
+        return getFinanceManager().getUser();
     }
 
     public void onCostComponentSelect(SelectEvent event) {
@@ -2598,7 +2581,8 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void addAttachment() {
 
-        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true, 450, 700);
+        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void approveSelectedPurchaseRequisition(ActionEvent event) {
@@ -2884,6 +2868,8 @@ public class PurchasingManager implements Serializable, Manager {
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList dateSearchFields = new ArrayList();
+
+        setSearchType(searchType);
 
         switch (searchType) {
             case "Suppliers":

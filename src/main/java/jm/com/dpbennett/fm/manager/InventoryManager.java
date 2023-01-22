@@ -90,21 +90,20 @@ public class InventoryManager implements Serializable, Manager {
     private Boolean isActiveInventoryProductsOnly;
     private ArrayList<SelectItem> groupedSearchTypes;
     private ArrayList<SelectItem> allDateSearchFields;
-    private User user;
 
     /**
      * Creates a new instance of InventoryManager
      */
     public InventoryManager() {
         init();
-    }    
-    
+    }
+
     public Integer getDialogHeight() {
         return 400;
     }
 
     public Integer getDialogWidth() {
-        return 500;
+        return 600;
     }
 
     public String getScrollPanelHeight() {
@@ -413,7 +412,7 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void openInventoryProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog", 
+        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog",
                 true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
@@ -618,20 +617,6 @@ public class InventoryManager implements Serializable, Manager {
             default:
                 return "true";
         }
-    }
-
-    public ArrayList getDateSearchFields() {
-        ArrayList dateSearchFields = new ArrayList();
-
-        switch (searchType) {
-            case "Inventory":
-                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                break;
-            default:
-                break;
-        }
-
-        return dateSearchFields;
     }
 
     @Override
@@ -1078,13 +1063,13 @@ public class InventoryManager implements Serializable, Manager {
 
     public void editSelectedInventory() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryDialog", 
+        PrimeFacesUtils.openDialog(null, "inventoryDialog",
                 true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editSelectedInventoryRequisition() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog", 
+        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog",
                 true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
@@ -1218,13 +1203,11 @@ public class InventoryManager implements Serializable, Manager {
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
     }
-
+    
     @Override
     public User getUser() {
-         if (user == null) {
-            user = new User();
-        }
-        return user;
+        
+      return getFinanceManager().getUser();
     }
 
     @Override
@@ -1260,13 +1243,13 @@ public class InventoryManager implements Serializable, Manager {
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
-        dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-
         setSearchType(searchType);
 
         switch (searchType) {
             case "Inventory":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
                 return dateSearchFields;
             default:
                 break;
