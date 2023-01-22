@@ -854,27 +854,57 @@ public class SystemManager implements Manager, Serializable {
                     foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
                             searchText);
                 }
-                selectSystemAdminTab("centerTabVar", 0);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 0);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 0);
+                }
                 break;
             case "Privileges":
                 foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
                         searchText);
-                selectSystemAdminTab("centerTabVar", 1);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 1);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 1);
+                }
                 break;
             case "Categories":
                 foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
-                selectSystemAdminTab("centerTabVar", 2);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 2);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 2);
+                }
                 break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
-                selectSystemAdminTab("centerTabVar", 3);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 3);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 3);
+                }
                 break;
             case "Options":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
-                selectSystemAdminTab("centerTabVar", 4);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 4);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 4);
+                }
                 break;
             case "Authentication":
                 if (getIsActiveLdapsOnly()) {
@@ -884,17 +914,35 @@ public class SystemManager implements Manager, Serializable {
                     foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(),
                             searchText);
                 }
-                selectSystemAdminTab("centerTabVar", 5);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 5);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 5);
+                }
                 break;
             case "Modules":
                 foundActiveModules = Modules.findActiveModules(getEntityManager1(),
                         searchText);
-                selectSystemAdminTab("centerTabVar", 6);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 6);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 6);
+                }
                 break;
             case "Attachments":
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText);
-                selectSystemAdminTab("centerTabVar", 7);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 7);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 7);
+                }
                 break;
             default:
                 break;
@@ -1782,16 +1830,20 @@ public class SystemManager implements Manager, Serializable {
      * Select an system administration tab based on whether or not the tab is
      * already opened.
      *
+     * @param openTab
      * @param innerTabViewVar
      * @param innerTabIndex
      */
-    public void selectSystemAdminTab(String innerTabViewVar, int innerTabIndex) {
-        if (getMainTabView().findTab("System Administration") == null) {
+    public void selectSystemAdminTab(
+            Boolean openTab,
+            String innerTabViewVar,
+            int innerTabIndex) {
+
+        if (openTab) {
             getMainTabView().openTab("System Administration");
-            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
-        } else {
-            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
+        PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
+
     }
 
     @Override
