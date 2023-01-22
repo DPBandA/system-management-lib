@@ -128,7 +128,7 @@ public class PurchasingManager implements Serializable, Manager {
     public PurchasingManager() {
         init();
     }
-
+    
     public Integer getDialogHeight() {
         return 400;
     }
