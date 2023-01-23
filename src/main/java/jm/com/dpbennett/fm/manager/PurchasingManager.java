@@ -134,7 +134,7 @@ public class PurchasingManager implements Serializable, Manager {
     }
 
     public Integer getDialogWidth() {
-        return 600;
+        return 700;
     }
 
     public String getScrollPanelHeight() {

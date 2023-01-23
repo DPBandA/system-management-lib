@@ -28,6 +28,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
+import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Business;
@@ -43,7 +45,10 @@ import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.business.entity.hrm.User;
+import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.validator.AddressValidator;
 import jm.com.dpbennett.sm.validator.ContactValidator;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -54,16 +59,19 @@ import jm.com.dpbennett.sm.util.Utils;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
+import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DualListModel;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class HumanResourceManager implements Serializable {
+public class HumanResourceManager implements Serializable, Manager {
 
     private String dateSearchField;
-    private String dateSearchPeriod;
+    private DatePeriod dateSearchPeriod;
     private String searchType;
     private Boolean startSearchDateDisabled;
     private Boolean endSearchDateDisabled;
@@ -114,7 +122,8 @@ public class HumanResourceManager implements Serializable {
         init();
     }
 
-    private void init() {
+    @Override
+    public final void init() {
         reset();
         
     }
@@ -334,6 +343,7 @@ public class HumanResourceManager implements Serializable {
         this.selectedEmployeePosition = selectedEmployeePosition;
     }
 
+    @Override
     public String getApplicationHeader() {
         return "Human Resource Management";
     }
@@ -419,10 +429,11 @@ public class HumanResourceManager implements Serializable {
         this.selectedBusiness = selectedBusiness;
     }
 
+    @Override
     public void reset() {
         searchType = "General";
         dateSearchField = "dateReceived";
-        dateSearchPeriod = "thisMonth";
+        //dateSearchPeriod = "thisMonth";
         searchTextVisible = true;
         searchText = "";
         employeeSearchText = "";
@@ -869,11 +880,13 @@ public class HumanResourceManager implements Serializable {
         this.dateSearchField = dateSearchField;
     }
 
-    public String getDateSearchPeriod() {
+    @Override
+    public DatePeriod getDateSearchPeriod() {
         return dateSearchPeriod;
     }
 
-    public void setDateSearchPeriod(String dateSearchPeriod) {
+    @Override
+    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
         this.dateSearchPeriod = dateSearchPeriod;
     }
 
@@ -893,10 +906,12 @@ public class HumanResourceManager implements Serializable {
         this.endSearchDateDisabled = endSearchDateDisabled;
     }
 
+    @Override
     public String getSearchText() {
         return searchText;
     }
 
+    @Override
     public void setSearchText(String searchText) {
         this.searchText = searchText;
     }
@@ -945,6 +960,7 @@ public class HumanResourceManager implements Serializable {
         return foundEmployees;
     }
 
+    @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
     }
@@ -959,7 +975,8 @@ public class HumanResourceManager implements Serializable {
         }
     }
 
-    private void initDashboard() {
+    @Override
+    public void initDashboard() {
 
         if (getSystemManager().getUser().hasModule("HRMModule")) {
             getSystemManager().getDashboard().openTab(getSystemManager().getUser().
@@ -968,7 +985,8 @@ public class HumanResourceManager implements Serializable {
 
     }
 
-    private void initMainTabView() {
+    @Override
+    public void initMainTabView() {
 
         if (getSystemManager().getUser().hasModule("HRMModule")) {
             getSystemManager().getMainTabView().openTab(getSystemManager().getUser().
@@ -1269,6 +1287,226 @@ public class HumanResourceManager implements Serializable {
 
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getSearchTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void doSearch() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void doDefaultSearch(String dateSearchField, String searchType, String searchText, Date startDate, Date endDate) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void handleKeepAlive() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getApplicationSubheader() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void logout() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getPassword() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setPassword(String password) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getUsername() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUsername(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public User getUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUser(User user) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getLogonMessage() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void initSearchPanel() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void initSearchTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Manager getManager(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDatePeriods() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getAllDateSearchFields() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void updateSearchType() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void updateDateSearchField() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public User getUser() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public EntityManager getEntityManager2() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void updateAllForms() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void onMainViewTabClose(TabCloseEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getAppShortcutIconURL() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean renderUserMenu() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getLogoURL() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLogoURLImageHeight() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLogoURLImageWidth() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void onNotificationSelect(SelectEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }
