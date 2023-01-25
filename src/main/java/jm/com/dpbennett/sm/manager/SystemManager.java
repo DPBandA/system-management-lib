@@ -1757,8 +1757,16 @@ public class SystemManager implements Manager, Serializable {
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false);
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
 
-        updateAllForms();
+        PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -2293,6 +2301,7 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void login(EntityManager em) {
+
         setUserLoggedIn(false);
 
         try {
@@ -2337,6 +2346,7 @@ public class SystemManager implements Manager, Serializable {
             System.out.println(e);
             logonMessage = "Login error occurred! Please try again or contact the System Administrator";
         }
+
     }
 
     @Override
