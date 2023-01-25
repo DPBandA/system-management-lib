@@ -22,12 +22,14 @@ package jm.com.dpbennett.fm.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.AccountingCode;
 import jm.com.dpbennett.business.entity.fm.Classification;
@@ -41,15 +43,18 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.fm.Sector;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
+import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
@@ -111,14 +116,19 @@ public class FinanceManager implements Serializable, Manager {
     private Boolean isActiveJobSubcategoriesOnly;
     private Boolean isActiveSectorsOnly;
     private Boolean isActiveServicesOnly;
-    private List<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> groupedSearchTypes;
     private List<MarketProduct> foundMarketProducts;
     private Boolean isActiveMarketProductsOnly;
-    private Map<String, List<SelectItem>> searchTypeToDateFieldMap;
     private ArrayList<SelectItem> allDateSearchFields;
-    private Authentication authentication;
-    private Dashboard dashboard;
-    private MainTabView mainTabView;
+    private List<ProcurementMethod> foundProcurementMethods;
+    private ProcurementMethod selectedProcurementMethod;
+    private String procurementMethodSearchText;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
 
     /**
      * Creates a new instance of FinanceManager.
@@ -127,8 +137,109 @@ public class FinanceManager implements Serializable, Manager {
         init();
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
+    public String getScrollPanelHeight() {
+        return "350px";
+    }
+
+    public List<SelectItem> getProcurementMethods() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "procurementMethods");
+    }
+
+    public String getProcurementMethodSearchText() {
+        return procurementMethodSearchText;
+    }
+
+    public void setProcurementMethodSearchText(String procurementMethodSearchText) {
+        this.procurementMethodSearchText = procurementMethodSearchText;
+    }
+
+    public void saveSelectedProcurementMethod() {
+
+        selectedProcurementMethod.save(getEntityManager1());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+
+    public List<ProcurementMethod> getFoundProcurementMethods() {
+        if (foundProcurementMethods == null) {
+            foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
+        }
+        return foundProcurementMethods;
+    }
+
+    public void setFoundProcurementMethods(List<ProcurementMethod> foundProcurementMethods) {
+        this.foundProcurementMethods = foundProcurementMethods;
+    }
+
+    public ProcurementMethod getSelectedProcurementMethod() {
+        return selectedProcurementMethod;
+    }
+
+    public void setSelectedProcurementMethod(ProcurementMethod selectedProcurementMethod) {
+        this.selectedProcurementMethod = selectedProcurementMethod;
+    }
+
+    public void editProcurementMethod() {
+        PrimeFacesUtils.openDialog(null, "procurementMethodDialog",
+                true, true, true, getDialogHeight(), 700);
+    }
+
+    public void createNewProcurementMethod() {
+
+        selectedProcurementMethod = new ProcurementMethod();
+
+        editProcurementMethod();
+    }
+
+    public void doProcurementMethodSearch() {
+
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Procurement",
+                getProcurementMethodSearchText(),
+                null,
+                null);
+
+    }
+
+    public void onProcurementMethodCellEdit(CellEditEvent event) {
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
+                getFoundProcurementMethods().get(event.getRowIndex()));
+    }
+
     public Dashboard getDashboard() {
-        return dashboard;
+        return getSystemManager().getDashboard();
+    }
+
+    /**
+     * Select an financial administration tab based on whether or not the tab is
+     * already opened.
+     *
+     * @param openTab
+     * @param innerTabViewVar
+     * @param innerTabIndex
+     */
+    public void selectFinancialAdminTab(
+            Boolean openTab,
+            String innerTabViewVar,
+            int innerTabIndex) {
+
+        if (openTab) {
+            getMainTabView().openTab("Financial Administration");
+        }
+        PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
+
     }
 
     public List<MarketProduct> completeActiveMarketProduct(String query) {
@@ -152,7 +263,8 @@ public class FinanceManager implements Serializable, Manager {
         getSystemManager().setSelectedCategory(new Category());
         getSystemManager().getSelectedCategory().setType("Product");
 
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void cancelMarketProductEdit() {
@@ -262,7 +374,8 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void openMarketProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true, 650, 800);
+        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void openMarketProductBrowser() {
@@ -279,7 +392,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public List<SelectItem> getGroupedSearchTypes() {
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
     }
 
@@ -397,11 +510,13 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void doServiceSearch() {
-        if (getIsActiveServicesOnly()) {
-            foundServices = Service.findAllActiveByName(getEntityManager1(), getServiceSearchText());
-        } else {
-            foundServices = Service.findAllByName(getEntityManager1(), getServiceSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Services",
+                getServiceSearchText(),
+                null,
+                null);
+
     }
 
     public void saveSelectedService() {
@@ -419,7 +534,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editService() {
-        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, 0, 600);
+        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<Classification> getClassifications() {
@@ -439,7 +554,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editClassification() {
-        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void onClassificationCellEdit(CellEditEvent event) {
@@ -496,11 +611,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doClassificationSearch() {
 
-        if (getIsActiveClassificationsOnly()) {
-            foundClassifications = Classification.findActiveClassificationsByName(getEntityManager1(), getClassificationSearchText());
-        } else {
-            foundClassifications = Classification.findClassificationsByName(getEntityManager1(), getClassificationSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Classifications",
+                getClassificationSearchText(),
+                null,
+                null);
 
     }
 
@@ -605,65 +721,32 @@ public class FinanceManager implements Serializable, Manager {
         this.selectedDiscount = selectedDiscount;
     }
 
-//    public String getRenderDateSearchFields() {
-//        switch (searchType) {
-//            case "Suppliers":
-//            case "Inventory":
-//            case "Users":
-//            case "Privileges":
-//            case "Categories":
-//            case "Document Types":
-//            case "Options":
-//            case "Authentication":
-//            case "Modules":
-//            case "Attachments":
-//                return "false";
-//            default:
-//                return "true";
-//        }
-//    }
     public void openFinancialAdministration() {
         getMainTabView().openTab("Financial Administration");
     }
 
-//    public ArrayList getDateSearchFields() {
-//        ArrayList dateSearchFields = new ArrayList();
-//
-//        switch (searchType) {
-//            case "Suppliers": // tk to be system option
-//                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-//                break;
-//            case "Purchase requisitions": // tk to be system option
-//                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-//                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-//                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-//                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-//                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-//                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-//                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-//                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-//                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-//                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        return dateSearchFields;
-//    }
     @Override
     public void updateDateSearchField() {
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public ArrayList<SelectItem> getSearchTypes() {
 
-        return new SelectItem[]{ // tk should be in PM module
-            new SelectItem("Purchase requisitions", "Purchase requisitions"),
-            new SelectItem("Suppliers", "Suppliers")
-        };
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Accounting Codes", "Accounting Codes"));
+        searchTypes.add(new SelectItem("Currencies", "Currencies"));
+        searchTypes.add(new SelectItem("Discounts", "Discounts"));
+        searchTypes.add(new SelectItem("Taxes", "Taxes"));
+        searchTypes.add(new SelectItem("Classifications", "Classifications"));
+        searchTypes.add(new SelectItem("Sectors", "Sectors"));
+        searchTypes.add(new SelectItem("Job Categories", "Job Categories"));
+        searchTypes.add(new SelectItem("Job Subcategories", "Job Subcategories"));
+        searchTypes.add(new SelectItem("Services", "Services"));
+        searchTypes.add(new SelectItem("Procurement", "Procurement"));
+        searchTypes.add(new SelectItem("Miscellaneous", "Miscellaneous"));
+
+        return searchTypes;
 
     }
 
@@ -740,19 +823,20 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editAccountingCode() {
-        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editTax() {
-        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, 600, 500);
+        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editCurrency() {
-        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true, 400, 450);
+        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editDiscount() {
-        PrimeFacesUtils.openDialog(null, "discountDialog", true, true, true, 600, 500);
+        PrimeFacesUtils.openDialog(null, "discountDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void onAccountingCodeCellEdit(CellEditEvent event) {
@@ -884,41 +968,45 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doAccountingCodeSearch() {
 
-        if (getIsActiveAccountingCodesOnly()) {
-            foundAccountingCodes = AccountingCode.findActiveAccountingCodes(getEntityManager1(),
-                    getAccountingCodeSearchText());
-        } else {
-            foundAccountingCodes = AccountingCode.findAccountingCodes(getEntityManager1(),
-                    getAccountingCodeSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Accounting Codes",
+                getAccountingCodeSearchText(),
+                null,
+                null);
 
     }
 
     public void doTaxSearch() {
 
-        if (getIsActiveTaxesOnly()) {
-            foundTaxes = Tax.findActiveTaxesByNameAndDescription(getEntityManager1(),
-                    getTaxSearchText());
-        } else {
-            foundTaxes = Tax.findTaxesByNameAndDescription(getEntityManager1(),
-                    getTaxSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Taxes",
+                getTaxSearchText(),
+                null,
+                null);
 
     }
 
     public void doCurrencySearch() {
-        foundCurrencies = Currency.findAllByName(getEntityManager1(), getCurrencySearchText());
+
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Currencies",
+                getCurrencySearchText(),
+                null,
+                null);
+
     }
 
     public void doDiscountSearch() {
 
-        if (getIsActiveDiscountsOnly()) {
-            foundDiscounts = Discount.findActiveDiscountsByNameAndDescription(getEntityManager1(),
-                    getDiscountSearchText());
-        } else {
-            foundDiscounts = Discount.findDiscountsByNameAndDescription(getEntityManager1(),
-                    getDiscountSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Discounts",
+                getDiscountSearchText(),
+                null,
+                null);
     }
 
     public void createNewAccountingCode() {
@@ -968,7 +1056,19 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void doSearch() {
 
-        doDefaultSearch();
+        for (Modules activeModule : getUser().getActiveModules()) {
+
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.doDefaultSearch(
+                        getDateSearchPeriod().getDateField(),
+                        getSearchType(),
+                        getSearchText(),
+                        getDateSearchPeriod().getStartDate(),
+                        getDateSearchPeriod().getEndDate());
+            }
+
+        }
 
     }
 
@@ -978,7 +1078,7 @@ public class FinanceManager implements Serializable, Manager {
 
     public MainTabView getMainTabView() {
 
-        return mainTabView;
+        return getSystemManager().getMainTabView();
     }
 
     public Boolean getEdit() {
@@ -1027,11 +1127,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doJobCategorySearch() {
 
-        if (getIsActiveJobCategoriesOnly()) {
-            foundJobCategories = JobCategory.findActiveJobCategoriesByName(getEntityManager1(), getJobCategorySearchText());
-        } else {
-            foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), getJobCategorySearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Job Categories",
+                getJobCategorySearchText(),
+                null,
+                null);
 
     }
 
@@ -1054,7 +1155,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editJobCategory() {
-        PrimeFacesUtils.openDialog(null, "jobCategoryDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "jobCategoryDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<JobSubCategory> getFoundJobSubcategories() {
@@ -1087,11 +1188,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doJobSubcategorySearch() {
 
-        if (getIsActiveJobSubcategoriesOnly()) {
-            foundJobSubcategories = JobSubCategory.findActiveJobSubcategoriesByName(getEntityManager1(), getJobSubcategorySearchText());
-        } else {
-            foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), getJobSubcategorySearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Job Subcategories",
+                getJobSubcategorySearchText(),
+                null,
+                null);
 
     }
 
@@ -1114,7 +1216,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editJobSubcategory() {
-        PrimeFacesUtils.openDialog(null, "jobSubcategoryDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "jobSubcategoryDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public String getSectorSearchText() {
@@ -1150,11 +1252,12 @@ public class FinanceManager implements Serializable, Manager {
 
     public void doSectorSearch() {
 
-        if (getIsActiveSectorsOnly()) {
-            foundSectors = Sector.findActiveSectorsByName(getEntityManager1(), getSectorSearchText());
-        } else {
-            foundSectors = Sector.findSectorsByName(getEntityManager1(), getSectorSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Sectors",
+                getSectorSearchText(),
+                null,
+                null);
 
     }
 
@@ -1177,7 +1280,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     public void editSector() {
-        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, 400, 600);
+        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<Tax> completeTax(String query) {
@@ -1247,7 +1350,9 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void reset() {
         longProcessProgress = 0;
+        procurementMethodSearchText = "";
         accountingCodeSearchText = "";
+        searchText = "";
         taxSearchText = "";
         currencySearchText = "";
         discountSearchText = "";
@@ -1257,16 +1362,12 @@ public class FinanceManager implements Serializable, Manager {
         jobSubcategorySearchText = "";
         serviceSearchText = "";
         marketProductSearchText = "";
-        searchType = "Suppliers"; // tk make have to change
+        searchType = "Accounting Codes"; // tk make have to change or make system option
         dateSearchPeriod = new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
         groupedSearchTypes = new ArrayList<>();
         allDateSearchFields = new ArrayList();
-        searchTypeToDateFieldMap = new HashMap<>();
-        dashboard = new Dashboard(getUser());
-        mainTabView = new MainTabView(getUser());
-        getAuthentication().reset();
         isActiveDiscountsOnly = true;
         isActiveTaxesOnly = true;
         isActiveCurrenciesOnly = true;
@@ -1277,6 +1378,16 @@ public class FinanceManager implements Serializable, Manager {
         isActiveServicesOnly = true;
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
+
+        PrimeFaces.current().executeScript("PF('loginDialog').show();");
 
     }
 
@@ -1287,7 +1398,10 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public User getUser() {
-        return getAuthentication().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        return user;
     }
 
     // tk not used so to be deleted
@@ -1320,23 +1434,152 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch() {
+    public void doDefaultSearch(
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+
         switch (searchType) {
-            case "Inventory":
-                getInventoryManager().doInventorySearch(dateSearchPeriod, searchType, searchText);
-                getInventoryManager().openInventoryTab();
+            case "Accounting Codes":
+                if (getIsActiveAccountingCodesOnly()) {
+                    foundAccountingCodes = AccountingCode.findActiveAccountingCodes(
+                            getEntityManager1(),
+                            searchText);
+                } else {
+                    foundAccountingCodes = AccountingCode.findAccountingCodes(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 0);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 0);
+                }
                 break;
-            case "Inventory requisitions":
-                getInventoryManager().doInventoryRequisitionSearch(dateSearchPeriod, searchType, searchText);
-                getInventoryManager().openInventoryRequisitionTab();
+            case "Currencies":
+                foundCurrencies = Currency.findAllByName(getEntityManager1(), searchText);
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 1);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 1);
+                }
                 break;
-            case "Purchase requisitions":
-                getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-                getPurchasingManager().openPurchaseReqsTab();
+            case "Discounts":
+                if (getIsActiveDiscountsOnly()) {
+                    foundDiscounts = Discount.findActiveDiscountsByNameAndDescription(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundDiscounts = Discount.findDiscountsByNameAndDescription(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 2);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 2);
+                }
                 break;
-            case "Suppliers":
-                getPurchasingManager().doSupplierSearch(searchText);
-                getPurchasingManager().openSuppliersTab();
+            case "Taxes":
+                if (getIsActiveTaxesOnly()) {
+                    foundTaxes = Tax.findActiveTaxesByNameAndDescription(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundTaxes = Tax.findTaxesByNameAndDescription(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 3);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 3);
+                }
+                break;
+            case "Classifications":
+                if (getIsActiveClassificationsOnly()) {
+                    foundClassifications = Classification.findActiveClassificationsByName(getEntityManager1(), searchText);
+                } else {
+                    foundClassifications = Classification.findClassificationsByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 4);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 4);
+                }
+                break;
+            case "Sectors":
+                if (getIsActiveSectorsOnly()) {
+                    foundSectors = Sector.findActiveSectorsByName(getEntityManager1(), searchText);
+                } else {
+                    foundSectors = Sector.findSectorsByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 5);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 5);
+                }
+                break;
+            case "Job Categories":
+                if (getIsActiveJobCategoriesOnly()) {
+                    foundJobCategories = JobCategory.findActiveJobCategoriesByName(getEntityManager1(), searchText);
+                } else {
+                    foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 6);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 6);
+                }
+                break;
+            case "Job Subcategories":
+                if (getIsActiveJobSubcategoriesOnly()) {
+                    foundJobSubcategories = JobSubCategory.findActiveJobSubcategoriesByName(getEntityManager1(), searchText);
+                } else {
+                    foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 7);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 7);
+                }
+                break;
+            case "Services":
+                if (getIsActiveServicesOnly()) {
+                    foundServices = Service.findAllActiveByName(getEntityManager1(), searchText);
+                } else {
+                    foundServices = Service.findAllByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 8);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 8);
+                }
+                break;
+            case "Procurement":
+                foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
+                        searchText);
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 9);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 9);
+                }
+                break;
+            case "Miscellaneous":
+                getSystemManager().doFinancialSystemOptionSearch(searchText);
+
+                if (startDate == null) {
+                    selectFinancialAdminTab(false, "financialAdminTabVar", 10);
+                } else {
+                    selectFinancialAdminTab(true, "financialAdminTabVar", 10);
+                }
                 break;
             default:
                 break;
@@ -1360,9 +1603,9 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public SelectItemGroup getSearchTypesGroup() {
 
-        SelectItemGroup group = new SelectItemGroup("Finance");
+        SelectItemGroup group = new SelectItemGroup("Financial Administration");
 
-        group.setSelectItems(getSearchTypes());
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
 
@@ -1406,40 +1649,18 @@ public class FinanceManager implements Serializable, Manager {
         getUser().logActivity("Logged out", getEntityManager1());
         reset();
         completeLogout();
-        getAuthentication().reset();
     }
 
     @Override
     public void initSearchPanel() {
 
-        initDateSearchFields();
         initSearchTypes();
+        updateSearchType();
     }
 
     @Override
-    public void initDateSearchFields() {
-        // tk
-        // searchTypeToDateFieldMap should be built using all the search
-        // types from all the modules and not just this one
-        searchTypeToDateFieldMap = new HashMap<>();
-        ArrayList<SelectItem> suppliersDateSearchFields = new ArrayList<>(); // tk should be in PM.
-       
-        suppliersDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        suppliersDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-
-        searchTypeToDateFieldMap.put(getSearchTypes()[0].getLabel(), suppliersDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[1].getLabel(), suppliersDateSearchFields);
-
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
-    }
-
-    @Override
-    public Authentication getAuthentication() {
-        if (authentication == null) {
-            authentication = BeanUtils.findBean("authentication");
-        }
-
-        return authentication;
+    public ArrayList<SelectItem> getAllDateSearchFields() {
+        return allDateSearchFields;
     }
 
     @Override
@@ -1459,24 +1680,19 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
-
-    @Override
     public void updateSearchType() {
-        allDateSearchFields.clear();
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
-    }
 
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        return searchTypeToDateFieldMap;
-    }
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                if (!dateFields.isEmpty()) {
+                    allDateSearchFields = dateFields;
 
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
-        this.searchTypeToDateFieldMap = searchTypeToDateFieldMap;
+                    return;
+                }
+            }
+        }
     }
 
     @Override
@@ -1503,7 +1719,7 @@ public class FinanceManager implements Serializable, Manager {
         getMainTabView().reset(getUser());
 
         for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getDashboardTitle()/*"Financial Administration"*/);
+            getMainTabView().openTab(activeModule.getDashboardTitle());
         }
     }
 
@@ -1522,7 +1738,7 @@ public class FinanceManager implements Serializable, Manager {
     public void onMainViewTabClose(TabCloseEvent event) {
         String tabId = ((TabPanel) event.getData()).getId();
 
-        mainTabView.closeTab(tabId);
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
@@ -1567,6 +1783,303 @@ public class FinanceManager implements Serializable, Manager {
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
                 getEntityManager1(), "logoURLImageWidth");
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Accounting Codes":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Currencies":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Discounts":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Taxes":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Classifications":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Sectors":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Job Categories":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Job Subcategories":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Services":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Procurement":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Miscellaneous":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
+    }
+
+    // tk auth methods
+    @Override
+    public void login() {
+        login(getEntityManager1());
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        this.loginAttempts = loginAttempts;
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        return userLoggedIn;
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Get user as currently stored in the database
+     *
+     * @param em
+     * @return
+     */
+    @Override
+    public User getUser(EntityManager em) {
+        if (user == null) {
+            return new User();
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User foundUser = em.find(User.class, user.getId());
+                    if (foundUser != null) {
+                        em.refresh(foundUser);
+                        user = foundUser;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
+    }
+
+    @Override
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username,
+            javax.naming.ldap.LdapContext ctx) {
+
+        try {
+            SearchControls constraints = new SearchControls();
+            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            String[] attrIDs = {"displayName"};
+
+            constraints.setReturningAttributes(attrIDs);
+
+            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+
+            if (!answer.hasMore()) { // Assuming only one match
+                // LDAP user not found!
+                return Boolean.FALSE;
+            }
+        } catch (NamingException ex) {
+            System.out.println(ex);
+            return Boolean.FALSE;
+        }
+
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+        Boolean userValidated = false;
+        InitialLdapContext ctx;
+
+        try {
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
+
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // get the user if one exists
+            if (userValidated) {
+                System.out.println("User validated.");
+
+                return true;
+
+            } else {
+                System.out.println("User NOT validated!");
+
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Problem connecting to directory: " + e);
+        }
+
+        return false;
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+
+        ++loginAttempts;
+        if (loginAttempts == 2) {
+
+            try {
+                // Send email to system administrator alert if activated
+                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        "developerEmailAlertActivated")) {
+                    MailUtils.postMail(null, null, null,
+                            "Failed user login",
+                            "Username: " + username + "\nDate/Time: " + new Date(),
+                            "text/plain",
+                            getEntityManager1());
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        } else if (loginAttempts > 2) {// tk # attempts to be made option
+            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+        }
+
+        username = "";
+        password = "";
+    }
+
+    @Override
+    public void login(EntityManager em) {
+
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
+
+    }
+
+    @Override
+    public String getLogonMessage() {
+        return logonMessage;
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
+        this.logonMessage = logonMessage;
     }
 
 }

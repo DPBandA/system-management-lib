@@ -27,14 +27,16 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -52,7 +54,7 @@ import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
@@ -67,7 +69,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
-import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
@@ -118,14 +119,13 @@ public class SystemManager implements Manager, Serializable {
     private Privilege selectedPrivilege;
     private Notification selectedNotification;
     private Modules selectedModule;
-    private Authentication authentication;
     private Dashboard dashboard;
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
     private Attachment attachment;
     private UploadedFile uploadedFile;
-    private List<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
     private ArrayList<SelectItem> allDateSearchFields;
     private Email selectedEmail;
@@ -133,7 +133,12 @@ public class SystemManager implements Manager, Serializable {
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
-    private Map<String, List<SelectItem>> searchTypeToDateFieldMap;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
 
     /**
      * Creates a new instance of SystemManager
@@ -142,14 +147,16 @@ public class SystemManager implements Manager, Serializable {
         init();
     }
 
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        return searchTypeToDateFieldMap;
+    public Integer getDialogHeight() {
+        return 400;
     }
 
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
-        this.searchTypeToDateFieldMap = searchTypeToDateFieldMap;
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
+    public String getScrollPanelHeight() {
+        return "350px";
     }
 
     public List getContactTypes() {
@@ -224,7 +231,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editEmailTemplate() {
-        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void saveSelectedEmail() {
@@ -262,7 +270,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     @Override
-    public List<SelectItem> getGroupedSearchTypes() {
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
     }
 
@@ -379,7 +387,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openModulePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addModulePrivileges() {
@@ -412,7 +421,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openPrivilegePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public DualListModel<Privilege> getPrivilegeDualList() {
@@ -512,16 +522,23 @@ public class SystemManager implements Manager, Serializable {
 
     public void doUserSearch() {
 
-        if (getIsActiveUsersOnly()) {
-            foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(), getUserSearchText());
-        } else {
-            foundUsers = User.findJobManagerUsersByName(getEntityManager1(), getUserSearchText());
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Users",
+                getUserSearchText(),
+                null,
+                null);
 
     }
 
     public void doAttachmentSearch() {
-        foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(), getAttachmentSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Attachments",
+                getAttachmentSearchText(),
+                null,
+                null);
+
     }
 
     public String getFoundUser() {
@@ -541,19 +558,9 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editUser() {
-        // tk
-//        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-//        .resizable(true)
-//        .draggable(true)
-//        .modal(true)
-//        .responsive(true)
-//        .contentHeight("600")
-//        .contentWidth("auto")
-//        .build();
-//    PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
-        
-        
-        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true, 700, 900);
+
+        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public User getSelectedUser() {
@@ -801,7 +808,18 @@ public class SystemManager implements Manager, Serializable {
 
     public void doFinancialSystemOptionSearch() {
 
-        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), getSystemOptionSearchText());
+        doFinancialSystemOptionSearch(getSystemOptionSearchText());
+
+//        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), getSystemOptionSearchText());
+//        
+//        if (foundFinancialSystemOptions == null) {
+//            foundFinancialSystemOptions = new ArrayList<>();
+//        }
+    }
+
+    public void doFinancialSystemOptionSearch(String searchText) {
+
+        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), searchText);
 
         if (foundFinancialSystemOptions == null) {
             foundFinancialSystemOptions = new ArrayList<>();
@@ -816,51 +834,115 @@ public class SystemManager implements Manager, Serializable {
 
         getMainTabView().openTab("Financial Administration");
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 600, 600);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     @Override
-    public void doDefaultSearch() {
-        switch (getSearchType()) {
+    public void doDefaultSearch(String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+
+        switch (searchType) {
             case "Users":
-                setUserSearchText(getSearchText());
-                doUserSearch();
-                selectSystemAdminTab("centerTabVar", 0);
+                if (getIsActiveUsersOnly()) {
+                    foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
+                            searchText);
+                }
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 0);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 0);
+                }
                 break;
             case "Privileges":
-                setPrivilegeSearchText(getSearchText());
-                doActivePrivilegeSearch();
-                selectSystemAdminTab("centerTabVar", 1);
+                foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
+                        searchText);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 1);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 1);
+                }
                 break;
             case "Categories":
-                setCategorySearchText(getSearchText());
-                doCategorySearch();
-                selectSystemAdminTab("centerTabVar", 2);
+                foundCategories = Category.findCategoriesByName(getEntityManager1(),
+                        searchText);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 2);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 2);
+                }
                 break;
             case "Document Types":
-                setDocumentTypeSearchText(getSearchText());
-                doDocumentTypeSearch();
-                selectSystemAdminTab("centerTabVar", 3);
+                foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
+                        searchText);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 3);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 3);
+                }
                 break;
             case "Options":
-                setSystemOptionSearchText(getSearchText());
-                doSystemOptionSearch();
-                selectSystemAdminTab("centerTabVar", 4);
+                foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
+                        searchText);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 4);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 4);
+                }
                 break;
             case "Authentication":
-                setLdapSearchText(getSearchText());
-                doLdapContextSearch();
-                selectSystemAdminTab("centerTabVar", 5);
+                if (getIsActiveLdapsOnly()) {
+                    foundLdapContexts = LdapContext.findActiveLdapContexts(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(),
+                            searchText);
+                }
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 5);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 5);
+                }
                 break;
             case "Modules":
-                setModuleSearchText(getSearchText());
-                doActiveModuleSearch();
-                selectSystemAdminTab("centerTabVar", 6);
+                foundActiveModules = Modules.findActiveModules(getEntityManager1(),
+                        searchText);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 6);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 6);
+                }
                 break;
             case "Attachments":
-                setAttachmentSearchText(getSearchText());
-                doAttachmentSearch();
-                selectSystemAdminTab("centerTabVar", 7);
+                foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
+                        searchText);
+                
+                if (startDate == null) {
+                    selectSystemAdminTab(false, "centerTabVar", 7);
+                }
+                else {
+                    selectSystemAdminTab(true, "centerTabVar", 7);
+                }
                 break;
             default:
                 break;
@@ -869,7 +951,20 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void doSearch() {
-        doDefaultSearch();
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.doDefaultSearch(
+                        getDateSearchPeriod().getDateField(),
+                        getSearchType(),
+                        getSearchText(),
+                        getDateSearchPeriod().getStartDate(),
+                        getDateSearchPeriod().getEndDate());
+            }
+
+        }
     }
 
     @Override
@@ -897,7 +992,6 @@ public class SystemManager implements Manager, Serializable {
         getUser().logActivity("Logged out", getEntityManager1());
         reset();
         completeLogout();
-        getAuthentication().reset();
     }
 
     public String getSupportURL() {
@@ -1013,7 +1107,7 @@ public class SystemManager implements Manager, Serializable {
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Administration");
 
-        group.setSelectItems(getSearchTypes());
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
     }
@@ -1021,9 +1115,8 @@ public class SystemManager implements Manager, Serializable {
     @Override
     public void initSearchPanel() {
 
-        initDateSearchFields();
         initSearchTypes();
-
+        updateSearchType();
     }
 
     @Override
@@ -1040,23 +1133,57 @@ public class SystemManager implements Manager, Serializable {
     }
 
     @Override
-    public void initDateSearchFields() {
-        searchTypeToDateFieldMap = new HashMap<>();
-        ArrayList<SelectItem> defaultDateSearchFields = new ArrayList<>();
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
-        defaultDateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-        defaultDateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        setSearchType(searchType);
 
-        searchTypeToDateFieldMap.put(getSearchTypes()[0].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[1].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[2].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[3].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[4].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[5].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[6].getLabel(), defaultDateSearchFields);
-        searchTypeToDateFieldMap.put(getSearchTypes()[7].getLabel(), defaultDateSearchFields);
+        switch (searchType) {
+            case "Users":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
+                return dateSearchFields;
+            case "Privileges":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Categories":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Document Types":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Options":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Authentication":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Modules":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Attachments":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
     public Dashboard getDashboard() {
@@ -1072,15 +1199,6 @@ public class SystemManager implements Manager, Serializable {
      *
      * @return
      */
-    @Override
-    public Authentication getAuthentication() {
-        if (authentication == null) {
-            authentication = BeanUtils.findBean("authentication");
-        }
-
-        return authentication;
-    }
-
     @Override
     public Manager getManager(String name) {
 
@@ -1227,9 +1345,13 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void updateSearchType() {
-        
-        allDateSearchFields.clear();
-        allDateSearchFields.addAll(searchTypeToDateFieldMap.get(getSearchType()));
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                allDateSearchFields = manager.getDateSearchFields(searchType);
+            }
+        }
     }
 
     public String getModuleSearchText() {
@@ -1324,14 +1446,23 @@ public class SystemManager implements Manager, Serializable {
 
     public void doDocumentTypeSearch() {
 
-        foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(), getDocumentTypeSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Document Types",
+                getDocumentTypeSearchText(),
+                null,
+                null);
 
     }
 
     public void doCategorySearch() {
 
-        foundCategories = Category.findCategoriesByName(getEntityManager1(), getCategorySearchText());
-
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Categories",
+                getCategorySearchText(),
+                null,
+                null);
     }
 
     public void doNotificationSearch() {
@@ -1341,20 +1472,29 @@ public class SystemManager implements Manager, Serializable {
 
     public void doActivePrivilegeSearch() {
 
-        foundActivePrivileges
-                = Privilege.findActivePrivileges(getEntityManager1(), getPrivilegeSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Privileges",
+                getPrivilegeSearchText(),
+                null,
+                null);
 
     }
 
     public void doActiveModuleSearch() {
 
-        foundActiveModules
-                = Modules.findActiveModules(getEntityManager1(), getModuleSearchText());
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Modules",
+                getModuleSearchText(),
+                null,
+                null);
 
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, url, true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
@@ -1429,11 +1569,13 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editPrivilege() {
-        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true, 400, 500);
+        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editNotification() {
-        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true, 0, 500);
+        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void deleteNotification() {
@@ -1544,11 +1686,13 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editModule() {
-        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true, 750, 900);
+        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 350, 400);
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editDocumentType() {
@@ -1613,14 +1757,16 @@ public class SystemManager implements Manager, Serializable {
         searchType = "Users";
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false);
-        searchTypeToDateFieldMap = new HashMap<>();
-        getAuthentication().reset();
-        dashboard.removeAllTabs();
-        dashboard.setRender(false);
-        mainTabView.removeAllTabs();
-        mainTabView.setRender(false);
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
 
-        updateAllForms();
+        PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -1692,49 +1838,58 @@ public class SystemManager implements Manager, Serializable {
      * Select an system administration tab based on whether or not the tab is
      * already opened.
      *
+     * @param openTab
      * @param innerTabViewVar
      * @param innerTabIndex
      */
-    public void selectSystemAdminTab(String innerTabViewVar, int innerTabIndex) {
-        if (getMainTabView().findTab("System Administration") == null) {
+    public void selectSystemAdminTab(
+            Boolean openTab,
+            String innerTabViewVar,
+            int innerTabIndex) {
+
+        if (openTab) {
             getMainTabView().openTab("System Administration");
-            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
-        } else {
-            PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
         }
+        PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
+
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public ArrayList<SelectItem> getSearchTypes() {
 
-        return new SelectItem[]{
-            new SelectItem("Users", "Users"),
-            new SelectItem("Privileges", "Privileges"),
-            new SelectItem("Categories", "Categories"),
-            new SelectItem("Document Types", "Document Types"),
-            new SelectItem("Options", "Options"),
-            new SelectItem("Authentication", "Authentication"),
-            new SelectItem("Modules", "Modules"),
-            new SelectItem("Attachments", "Attachments")
-        };
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Users", "Users"));
+        searchTypes.add(new SelectItem("Privileges", "Privileges"));
+        searchTypes.add(new SelectItem("Categories", "Categories"));
+        searchTypes.add(new SelectItem("Document Types", "Document Types"));
+        searchTypes.add(new SelectItem("Options", "Options"));
+        searchTypes.add(new SelectItem("Authentication", "Authentication"));
+        searchTypes.add(new SelectItem("Modules", "Modules"));
+        searchTypes.add(new SelectItem("Attachments", "Attachments"));
+
+        return searchTypes;
     }
 
     public void doSystemOptionSearch() {
 
-        foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(), getSystemOptionSearchText());
-
-        if (foundSystemOptions == null) {
-            foundSystemOptions = new ArrayList<>();
-        }
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Options",
+                getSystemOptionSearchText(),
+                null,
+                null);
 
     }
 
     public void doLdapContextSearch() {
-        if (getIsActiveLdapsOnly()) {
-            foundLdapContexts = LdapContext.findActiveLdapContexts(getEntityManager1(), getLdapSearchText());
-        } else {
-            foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(), getLdapSearchText());
-        }
+
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Authentication",
+                getLdapSearchText(),
+                null,
+                null);
 
     }
 
@@ -1743,7 +1898,8 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void editSystemOption() {
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true, 575, 550);
+        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewAttachment() {
@@ -1755,11 +1911,13 @@ public class SystemManager implements Manager, Serializable {
     }
 
     public void openAttachmentDialog() {
-        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true, 575, 550);
+        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true, 550, 750);
+        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewLdapContext() {
@@ -1892,7 +2050,10 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public User getUser() {
-        return getAuthentication().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        return user;
     }
 
     public MainTabView getMainTabView() {
@@ -1967,6 +2128,235 @@ public class SystemManager implements Manager, Serializable {
         views.add(new SelectItem("Cashier View", "Cashier View"));
 
         return views;
+    }
+
+    @Override
+    public void login() {
+        login(getEntityManager1());
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        this.loginAttempts = loginAttempts;
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        return userLoggedIn;
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public User getUser(EntityManager em) {
+        if (user == null) {
+            return new User();
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User userFound = em.find(User.class, user.getId());
+                    if (userFound != null) {
+                        em.refresh(userFound);
+                        user = userFound;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
+    }
+
+    @Override
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username, javax.naming.ldap.LdapContext ctx) {
+        try {
+            SearchControls constraints = new SearchControls();
+            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            String[] attrIDs = {"displayName"};
+
+            constraints.setReturningAttributes(attrIDs);
+
+            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+
+            if (!answer.hasMore()) { // Assuming only one match
+                // LDAP user not found!
+                return Boolean.FALSE;
+            }
+        } catch (NamingException ex) {
+            System.out.println(ex);
+            return Boolean.FALSE;
+        }
+
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+        Boolean userValidated = false;
+        InitialLdapContext ctx;
+
+        try {
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
+
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // get the user if one exists
+            if (userValidated) {
+                System.out.println("User validated.");
+
+                return true;
+
+            } else {
+                System.out.println("User NOT validated!");
+
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Problem connecting to directory: " + e);
+        }
+
+        return false;
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+        ++loginAttempts;
+        if (loginAttempts == 2) {
+
+            try {
+                // Send email to system administrator alert if activated
+                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        "developerEmailAlertActivated")) {
+                    MailUtils.postMail(null, null, null,
+                            "Failed user login",
+                            "Username: " + username + "\nDate/Time: " + new Date(),
+                            "text/plain",
+                            getEntityManager1());
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        } else if (loginAttempts > 2) {// tk # attempts to be made option
+            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+        }
+
+        username = "";
+        password = "";
+    }
+
+    @Override
+    public void login(EntityManager em) {
+
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
+
+    }
+
+    @Override
+    public String getLogonMessage() {
+        return logonMessage;
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
+        this.logonMessage = logonMessage;
     }
 
 }

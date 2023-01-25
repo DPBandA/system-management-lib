@@ -128,6 +128,7 @@ public class ComplianceManager implements Serializable {
     private Boolean edit;
     private Job currentJob;
     private String dialogActionEventId;
+    private User user;
 
     /**
      * Creates a new instance of ComplianceManager.
@@ -3525,7 +3526,10 @@ public class ComplianceManager implements Serializable {
     }
 
     public User getUser() {
-        return getSystemManager().getAuthentication().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        return user;
     }
 
     private void initMainTabView() {

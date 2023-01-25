@@ -17,31 +17,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.fm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.fm.Discount;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("taxConverter")
-public class TaxConverter extends ConverterAdapter {
+@FacesConverter("discountConverter")
+public class DiscountConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Tax tax = Tax.findByName(getEntityManager(), value);
+        Discount discount = Discount.findByName(getEntityManager(), value);
 
-        if (tax == null) {
-            tax = new Tax(value);
+        if (discount == null) {
+            discount = new Discount(value);
         }
 
-        return tax;
+        return discount;
     }
 
 }

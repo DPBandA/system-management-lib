@@ -65,27 +65,28 @@ import org.primefaces.PrimeFaces;
 import java.util.Calendar;
 import java.util.Objects;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItemGroup;
+import javax.naming.ldap.LdapContext;
 import jm.com.dpbennett.business.entity.fm.CashPayment;
 import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Division;
-import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
-//import jm.com.dpbennett.hrm.validator.AddressValidator;
-//import jm.com.dpbennett.hrm.validator.ContactValidator;
-import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.Utils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.event.TabChangeEvent;
+import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.file.UploadedFile;
 
@@ -93,7 +94,7 @@ import org.primefaces.model.file.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public class PurchasingManager implements Serializable {
+public class PurchasingManager implements Serializable, Manager {
 
     private CostComponent selectedCostComponent;
     private CashPayment selectedCashPayment;
@@ -103,7 +104,6 @@ public class PurchasingManager implements Serializable {
     private Boolean edit;
     private String searchText;
     private String purchaseReqSearchText;
-    private String procurementMethodSearchText;
     private List<PurchaseRequisition> foundPurchaseReqs;
     private String searchType;
     private DatePeriod dateSearchPeriod;
@@ -117,18 +117,28 @@ public class PurchasingManager implements Serializable {
     private String supplierSearchText;
     private Boolean isActiveSuppliersOnly;
     private List<Supplier> foundSuppliers;
-    private List<ProcurementMethod> foundProcurementMethods;
     private Attachment selectedAttachment;
     private UploadedFile uploadedFile;
     private List<CashPayment> cashPayments;
-    private ProcurementMethod selectedProcurementMethod;
-    //private EntityManager entityManager;
+    private ArrayList<SelectItem> groupedSearchTypes;
 
     /**
      * Creates a new instance of PurchasingManager
      */
     public PurchasingManager() {
         init();
+    }
+    
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 700;
+    }
+
+    public String getScrollPanelHeight() {
+        return "350px";
     }
 
     public void onCostComponentRowCancel(RowEditEvent<CostComponent> event) {
@@ -141,53 +151,10 @@ public class PurchasingManager implements Serializable {
         updatePurchaseReq(null);
     }
 
-    public void saveSelectedProcurementMethod() {
-
-        selectedProcurementMethod.save(getEntityManager1());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-
-    }
-
-    public List<ProcurementMethod> getFoundProcurementMethods() {
-        if (foundProcurementMethods == null) {
-            foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
-        }
-        return foundProcurementMethods;
-    }
-
-    public void setFoundProcurementMethods(List<ProcurementMethod> foundProcurementMethods) {
-        this.foundProcurementMethods = foundProcurementMethods;
-    }
-
-    public ProcurementMethod getSelectedProcurementMethod() {
-        return selectedProcurementMethod;
-    }
-
-    public void setSelectedProcurementMethod(ProcurementMethod selectedProcurementMethod) {
-        this.selectedProcurementMethod = selectedProcurementMethod;
-    }
-
-    public void createNewProcurementMethod() {
-
-        selectedProcurementMethod = new ProcurementMethod();
-
-        editProcurementMethod();
-    }
-
-    public void doProcurementMethodSearch() {
-        foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
-                procurementMethodSearchText);
-    }
-
-    public void onProcurementMethodCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
-                getFoundProcurementMethods().get(event.getRowIndex()));
-    }
-
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog", true, true, true, 175, 375);
+        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog",
+                true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void deleteCashPayment() {
@@ -301,17 +268,20 @@ public class PurchasingManager implements Serializable {
         }
     }
 
+    @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
     }
 
+    @Override
     public String getApplicationHeader() {
 
         return "Procure";
 
     }
 
+    @Override
     public String getApplicationSubheader() {
         String subHeader = "";
 
@@ -392,6 +362,7 @@ public class PurchasingManager implements Serializable {
      *
      * @return
      */
+    @Override
     public String getSearchText() {
         return searchText;
     }
@@ -401,6 +372,7 @@ public class PurchasingManager implements Serializable {
      *
      * @param searchText
      */
+    @Override
     public void setSearchText(String searchText) {
         this.searchText = searchText;
     }
@@ -553,35 +525,8 @@ public class PurchasingManager implements Serializable {
         }
     }
 
-    public ArrayList getDateSearchFields() {
-        ArrayList dateSearchFields = new ArrayList();
-
-        switch (searchType) {
-            case "Suppliers":
-                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                break;
-            case "Purchase requisitions":
-                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-                break;
-            default:
-                break;
-        }
-
-        return dateSearchFields;
-    }
-
-    public ArrayList getSearchTypes() {
+    @Override
+    public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
         searchTypes.add(new SelectItem("Purchase requisitions", "Purchase requisitions"));
@@ -757,7 +702,8 @@ public class PurchasingManager implements Serializable {
 
         getSelectedSupplier().setIsNameAndIdEditable(getUser().can("AddSupplier"));
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public Boolean getIsActiveSuppliersOnly() {
@@ -797,19 +743,21 @@ public class PurchasingManager implements Serializable {
 
     }
 
+    @Override
     public void doSearch() {
 
-        switch (searchType) {
-            case "Purchase requisitions":
-                doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-                openPurchaseReqsTab();
-                break;
-            case "Suppliers":
-                doSupplierSearch(searchText);
-                openSuppliersTab();
-                break;
-            default:
-                break;
+        for (Modules activeModule : getUser().getActiveModules()) {
+
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.doDefaultSearch(
+                        getDateSearchPeriod().getDateField(),
+                        getSearchType(),
+                        getSearchText(),
+                        getDateSearchPeriod().getStartDate(),
+                        getDateSearchPeriod().getEndDate());
+            }
+
         }
 
     }
@@ -902,14 +850,17 @@ public class PurchasingManager implements Serializable {
         this.toEmployees = toEmployees;
     }
 
+    @Override
     public void updateDateSearchField() {
         //doSearch();
     }
 
+    @Override
     public DatePeriod getDateSearchPeriod() {
         return dateSearchPeriod;
     }
 
+    @Override
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
         this.dateSearchPeriod = dateSearchPeriod;
     }
@@ -1496,11 +1447,8 @@ public class PurchasingManager implements Serializable {
     }
 
     public void editPurchReqGeneralEmail() {
-        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false, 500, 625);
-    }
-
-    public void editProcurementMethod() {
-        PrimeFacesUtils.openDialog(null, "procurementMethodDialog", true, true, true, 0, 800);
+        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void openRequestApprovalEmailDialog() {
@@ -1547,7 +1495,7 @@ public class PurchasingManager implements Serializable {
 
         try {
             EntityManager em = getEntityManager1();
-            
+
             for (Employee toEmployee : getToEmployees()) {
 
                 // tk display growl if successful
@@ -1558,14 +1506,13 @@ public class PurchasingManager implements Serializable {
                         getPurchaseReqEmailContent(),
                         "text/html",
                         em).isSuccess()) {
-                    
+
                     closeDialog();
-                    
-                }
-                else {
-                     PrimeFacesUtils.addMessage("Error Sending Email",
-                        "An error occurred while sending email.",
-                        FacesMessage.SEVERITY_ERROR);
+
+                } else {
+                    PrimeFacesUtils.addMessage("Error Sending Email",
+                            "An error occurred while sending email.",
+                            FacesMessage.SEVERITY_ERROR);
                 }
             }
         } catch (Exception e) {
@@ -2343,7 +2290,7 @@ public class PurchasingManager implements Serializable {
 
         } else {
             if (!getPurchaseReqSearchText().isEmpty()) {
-                doPurchaseReqSearch();
+                //doPurchaseReqSearch();
             }
         }
     }
@@ -2356,12 +2303,13 @@ public class PurchasingManager implements Serializable {
 
     public void editSelectedPurchaseReq() {
 
-        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true, 700, 1050);
+        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
         if (foundPurchaseReqs == null) {
-            doPurchaseReqSearch();
+            //doPurchaseReqSearch();
         }
         return foundPurchaseReqs;
     }
@@ -2370,34 +2318,34 @@ public class PurchasingManager implements Serializable {
         this.foundPurchaseReqs = foundPurchaseReqs;
     }
 
-    public void doPurchaseReqSearch() {
+//    public void doPurchaseReqSearch() {
+//
+//        EntityManager em = getEntityManager1();
+//
+//        if (!purchaseReqSearchText.isEmpty()) {
+//            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
+//                    dateSearchPeriod.getDateField(), searchType, purchaseReqSearchText.trim(),
+//                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
+//                    searchDepartmentId);
+//        } else {
+//            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
+//                    dateSearchPeriod.getDateField(), searchType, "",
+//                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
+//                    searchDepartmentId);
+//        }
+//    }
 
-        EntityManager em = getEntityManager1();
-
-        if (!purchaseReqSearchText.isEmpty()) {
-            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
-                    dateSearchPeriod.getDateField(), searchType, purchaseReqSearchText.trim(),
-                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-                    searchDepartmentId);
-        } else {
-            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
-                    dateSearchPeriod.getDateField(), searchType, "",
-                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-                    searchDepartmentId);
-        }
-    }
-
-    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
-            String searchType, String searchText, Long searchDepartmentId) {
-
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.purchaseReqSearchText = searchText;
-        this.searchDepartmentId = searchDepartmentId;
-
-        doPurchaseReqSearch();
-
-    }
+//    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
+//            String searchType, String searchText, Long searchDepartmentId) {
+//
+//        this.dateSearchPeriod = dateSearchPeriod;
+//        this.searchType = searchType;
+//        this.purchaseReqSearchText = searchText;
+//        this.searchDepartmentId = searchDepartmentId;
+//
+//        doPurchaseReqSearch();
+//
+//    }
 
     public String getPurchaseReqSearchText() {
         return purchaseReqSearchText;
@@ -2465,49 +2413,44 @@ public class PurchasingManager implements Serializable {
         this.edit = edit;
     }
 
-    private void init() {
+    @Override
+    public final void init() {
         reset();
     }
 
+    @Override
     public void reset() {
         selectedCostComponent = null;
         searchType = "Purchase requisitions";
         dateSearchPeriod = new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
-        foundPurchaseReqs = null;
+        foundPurchaseReqs = new ArrayList<>();
         toEmployees = new ArrayList<>();
         supplierSearchText = "";
         searchText = "";
         purchaseReqSearchText = "";
-        procurementMethodSearchText = "";
 
     }
 
-    public String getProcurementMethodSearchText() {
-        return procurementMethodSearchText;
-    }
-
-    public void setProcurementMethodSearchText(String procurementMethodSearchText) {
-        this.procurementMethodSearchText = procurementMethodSearchText;
-    }
-
+    @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
     }
 
-    /**
-     * Gets the SessionScoped bean that deals with user authentication.
-     *
-     * @return
-     */
-    public Authentication getAuthentication() {
-
-        return BeanUtils.findBean("authentication");
+    public FinanceManager getFinanceManager() {
+        return BeanUtils.findBean("financeManager");
     }
 
+    public List<SelectItem> getProcurementMethods() {
+
+        return getFinanceManager().getProcurementMethods();
+    }
+
+    @Override
     public User getUser() {
-        return getAuthentication().getUser();
+
+        return getFinanceManager().getUser();
     }
 
     public void onCostComponentSelect(SelectEvent event) {
@@ -2638,7 +2581,8 @@ public class PurchasingManager implements Serializable {
 
     public void addAttachment() {
 
-        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true, 450, 700);
+        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void approveSelectedPurchaseRequisition(ActionEvent event) {
@@ -2877,14 +2821,275 @@ public class PurchasingManager implements Serializable {
                 "prPriorityCodes");
     }
 
-    public List<SelectItem> getProcurementMethods() {
+    @Override
+    public void doDefaultSearch(
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
 
-        return getStringListAsSelectItems(getEntityManager1(),
-                "procurementMethods");
+        switch (searchType) {
+            case "Purchase requisitions":
+                //doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+                //if (!searchText.isEmpty()) {
+                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+                            getEntityManager1(),
+                            dateSearchField, 
+                            searchType, 
+                            searchText,
+                            startDate, 
+                            endDate,
+                            searchDepartmentId);
+//                } else {
+//                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+//                            getEntityManager1(),
+//                            dateSearchPeriod.getDateField(), 
+//                            searchType, 
+//                            "",
+//                            dateSearchPeriod.getStartDate(), 
+//                            dateSearchPeriod.getEndDate(),
+//                            searchDepartmentId);
+//                }
+                openPurchaseReqsTab();
+                break;
+            case "Suppliers":
+                doSupplierSearch(searchText);
+                openSuppliersTab();
+                break;
+            default:
+                break;
+        }
     }
 
-    public void doDefaultSearch() {
-        doSearch();
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        SelectItemGroup group = new SelectItemGroup("Procurement");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        return groupedSearchTypes;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList dateSearchFields = new ArrayList();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Suppliers":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                break;
+            case "Purchase requisitions":
+                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
+                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
+                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
+                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
+                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
+                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
+                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
+                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
+                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
+                break;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
+    }
+
+    @Override
+    public void handleKeepAlive() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void logout() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getPassword() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setPassword(String password) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getUsername() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUsername(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public User getUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUser(User user) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getLogonMessage() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void initSearchPanel() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void initSearchTypes() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Manager getManager(String name) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDatePeriods() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getAllDateSearchFields() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void updateSearchType() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void completeLogin() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void completeLogout() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void initDashboard() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void initMainTabView() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void updateAllForms() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void onMainViewTabClose(TabCloseEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean renderUserMenu() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getLogoURL() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLogoURLImageHeight() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLogoURLImageWidth() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void onNotificationSelect(SelectEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

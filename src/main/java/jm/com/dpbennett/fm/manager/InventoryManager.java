@@ -1,6 +1,6 @@
 /*
 Inventory Management
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,6 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.fm.manager;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,29 +40,37 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import org.primefaces.PrimeFaces;
 import java.util.Objects;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItemGroup;
+import javax.naming.ldap.LdapContext;
 import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.business.entity.fm.InventoryDisbursement;
 import jm.com.dpbennett.business.entity.fm.InventoryRequisition;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
-import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.Utils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
+import org.primefaces.event.TabCloseEvent;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class InventoryManager implements Serializable {
+public class InventoryManager implements Serializable, Manager {
 
     private Inventory selectedInventory;
     private InventoryRequisition selectedInventoryRequisition;
@@ -81,12 +88,26 @@ public class InventoryManager implements Serializable {
     private String searchType;
     private DatePeriod dateSearchPeriod;
     private Boolean isActiveInventoryProductsOnly;
+    private ArrayList<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> allDateSearchFields;
 
     /**
      * Creates a new instance of InventoryManager
      */
     public InventoryManager() {
         init();
+    }
+
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 600;
+    }
+
+    public String getScrollPanelHeight() {
+        return "350px";
     }
 
     public InventoryDisbursement getSelectedInventoryDisbursement() {
@@ -391,7 +412,8 @@ public class InventoryManager implements Serializable {
     }
 
     public void openInventoryProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog", true, true, true, true, 650, 800);
+        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog",
+                true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void openInventoryProductBrowser() {
@@ -534,14 +556,27 @@ public class InventoryManager implements Serializable {
         this.selectedInventoryRequisitions = selectedInventoryRequisitions;
     }
 
+    @Override
     public String getApplicationHeader() {
 
         return "Inventory Manager";
 
     }
 
+    @Override
     public String getApplicationSubheader() {
-        String subHeader = "";
+        String subHeader;
+
+        subHeader = (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "applicationSubheader");
+
+        if (subHeader != null) {
+            if (subHeader.trim().equals("None")) {
+                return getUser().getEmployee().getDepartment().getName();
+            }
+        } else {
+            subHeader = "";
+        }
 
         return subHeader;
     }
@@ -560,6 +595,7 @@ public class InventoryManager implements Serializable {
      *
      * @return
      */
+    @Override
     public String getSearchText() {
         return searchText;
     }
@@ -569,6 +605,7 @@ public class InventoryManager implements Serializable {
      *
      * @param searchText
      */
+    @Override
     public void setSearchText(String searchText) {
         this.searchText = searchText;
     }
@@ -582,21 +619,8 @@ public class InventoryManager implements Serializable {
         }
     }
 
-    public ArrayList getDateSearchFields() {
-        ArrayList dateSearchFields = new ArrayList();
-
-        switch (searchType) {
-            case "Inventory":
-                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                break;
-            default:
-                break;
-        }
-
-        return dateSearchFields;
-    }
-
-    public ArrayList getSearchTypes() {
+    @Override
+    public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
         searchTypes.add(new SelectItem("Inventory", "Inventory"));
@@ -604,27 +628,33 @@ public class InventoryManager implements Serializable {
         return searchTypes;
     }
 
+    @Override
     public void doSearch() {
+        for (Modules activeModule : getUser().getActiveModules()) {
 
-        switch (searchType) {
-            case "Inventory":
-                doInventorySearch(dateSearchPeriod, searchType, searchText);
-                openInventoryTab();
-                break;
-            default:
-                break;
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                manager.doDefaultSearch(
+                        getDateSearchPeriod().getDateField(),
+                        getSearchType(),
+                        getSearchText(),
+                        getDateSearchPeriod().getStartDate(),
+                        getDateSearchPeriod().getEndDate());
+            }
+
         }
-
     }
 
+    @Override
     public void updateDateSearchField() {
-        //doSearch();
     }
 
+    @Override
     public DatePeriod getDateSearchPeriod() {
         return dateSearchPeriod;
     }
 
+    @Override
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
         this.dateSearchPeriod = dateSearchPeriod;
     }
@@ -720,7 +750,7 @@ public class InventoryManager implements Serializable {
                 PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
                 inventory.setEditStatus(" ");
 
-                processInventoryActions(inventory, getUser());
+                processInventoryActions(inventory);
             } else {
                 PrimeFacesUtils.addMessage(returnMessage.getHeader(),
                         returnMessage.getMessage(),
@@ -763,7 +793,7 @@ public class InventoryManager implements Serializable {
                 PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
                 inventoryRequisition.setEditStatus(" ");
 
-                processInventoryRequisitionActions(inventoryRequisition, getUser());
+                processInventoryRequisitionActions(inventoryRequisition);
             } else {
                 PrimeFacesUtils.addMessage(returnMessage.getHeader(),
                         returnMessage.getMessage(),
@@ -856,7 +886,7 @@ public class InventoryManager implements Serializable {
                     employee.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
-                            replace("{inventoryId}", prId), 
+                            replace("{inventoryId}", prId),
                     email.getContent("/correspondences/").
                             replace("{title}",
                                     employee.getTitle()).
@@ -875,7 +905,7 @@ public class InventoryManager implements Serializable {
         }
     }
 
-    private synchronized void processInventoryActions(Inventory inventory, User user) {
+    private synchronized void processInventoryActions(Inventory inventory) {
 
         EntityManager em = getEntityManager1();
 
@@ -926,16 +956,14 @@ public class InventoryManager implements Serializable {
     }
 
     private synchronized void processInventoryRequisitionActions(
-            InventoryRequisition inventoryRequisition, User user) {
-
-        EntityManager em = getEntityManager1();
+            InventoryRequisition inventoryRequisition) {
 
         if (inventoryRequisition.getId() != null) {
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        doProcessInventoryRequisitionActions(em, inventoryRequisition);
+                        doProcessInventoryRequisitionActions(inventoryRequisition);
                     } catch (Exception e) {
                         System.out.println("Error processing PR actions: " + e);
                     }
@@ -945,7 +973,7 @@ public class InventoryManager implements Serializable {
         }
     }
 
-    private synchronized void doProcessInventoryRequisitionActions(EntityManager em,
+    private synchronized void doProcessInventoryRequisitionActions(
             InventoryRequisition inventoryRequisition) {
 
         for (BusinessEntity.Action action : inventoryRequisition.getActions()) {
@@ -1035,12 +1063,14 @@ public class InventoryManager implements Serializable {
 
     public void editSelectedInventory() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryDialog", true, true, true, true, 700, 1050);
+        PrimeFacesUtils.openDialog(null, "inventoryDialog",
+                true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public void editSelectedInventoryRequisition() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog", true, true, true, true, 700, 1050);
+        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog",
+                true, true, true, true, getDialogHeight(), getDialogWidth());
     }
 
     public List<Inventory> getFoundInventories() {
@@ -1072,7 +1102,10 @@ public class InventoryManager implements Serializable {
         foundInventories = Inventory.find(em, searchText, 0);
     }
 
-    public void doInventorySearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
+    public void doInventorySearch(
+            DatePeriod dateSearchPeriod,
+            String searchType,
+            String searchText) {
 
         this.dateSearchPeriod = dateSearchPeriod;
         this.searchType = searchType;
@@ -1148,10 +1181,12 @@ public class InventoryManager implements Serializable {
         this.edit = edit;
     }
 
-    private void init() {
+    @Override
+    public final void init() {
         reset();
     }
 
+    @Override
     public void reset() {
         searchType = "Inventory";
         dateSearchPeriod = new DatePeriod("This year", "year",
@@ -1160,40 +1195,383 @@ public class InventoryManager implements Serializable {
         searchText = "";
         inventoryProductSearchText = "";
         isActiveInventoryProductsOnly = true;
+        groupedSearchTypes = new ArrayList<>();
+        allDateSearchFields = new ArrayList();
     }
 
+    @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
     }
-
-    /**
-     * Gets the SessionScoped bean that deals with user authentication.
-     *
-     * @return
-     */
-    public Authentication getAuthentication() {
-
-        return BeanUtils.findBean("authentication");
-    }
-
+    
+    @Override
     public User getUser() {
-        return getAuthentication().getUser();
+        
+      return getFinanceManager().getUser();
     }
 
+    @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
     }
 
+    @Override
     public String getSearchType() {
         return searchType;
     }
 
+    @Override
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
 
-    public void doDefaultSearch() {
-        doSearch();
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        SelectItemGroup group = new SelectItemGroup("Inventory");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        return groupedSearchTypes;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Inventory":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
+    }
+
+    @Override
+    public void doDefaultSearch(
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+        //  etInventoryManager().doInventorySearch(dateSearchPeriod, searchType, searchText);
+        //  getInventoryManager().openInventoryTab();
+        //            case "Inventory requisitions":
+        //                getInventoryManager().doInventoryRequisitionSearch(dateSearchPeriod, searchType, searchText);
+        //                getInventoryManager().openInventoryRequisitionTab();
+        //                break;
+        switch (searchType) {
+            case "Inventory":
+                doInventorySearch(dateSearchPeriod, searchType, searchText);
+                openInventoryTab();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void handleKeepAlive() {
+        getUser().setPollTime(new Date());
+
+        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+    }
+
+    @Override
+    public void logout() {
+        getUser().logActivity("Logged out", getEntityManager1());
+        reset();
+        completeLogout();
+    }
+
+    @Override
+    public void initSearchPanel() {
+        initSearchTypes();
+        updateSearchType();
+    }
+
+    @Override
+    public void initSearchTypes() {
+        groupedSearchTypes.clear();
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                groupedSearchTypes.add(manager.getSearchTypesGroup());
+            }
+        }
+    }
+
+    @Override
+    public Manager getManager(String name) {
+        return BeanUtils.findBean(name);
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDatePeriods() {
+        ArrayList<SelectItem> datePeriods = new ArrayList<>();
+
+        for (String name : DatePeriod.getDatePeriodNames()) {
+            datePeriods.add(new SelectItem(name, name));
+        }
+
+        return datePeriods;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getAllDateSearchFields() {
+        return allDateSearchFields;
+    }
+
+    @Override
+    public void updateSearchType() {
+        for (Modules activeModule : getUser().getActiveModules()) {
+            Manager manager = getManager(activeModule.getName());
+            if (manager != null) {
+                allDateSearchFields = manager.getDateSearchFields(searchType);
+            }
+        }
+    }
+
+    @Override
+    public void completeLogin() {
+        getUser().logActivity("Logged in", getEntityManager1());
+
+        getUser().save(getEntityManager1());
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initDashboard();
+        initMainTabView();
+        updateAllForms();
+    }
+
+    @Override
+    public void completeLogout() {
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+    }
+
+    public Dashboard getDashboard() {
+        return getSystemManager().getDashboard();
+    }
+
+    @Override
+    public void initDashboard() {
+        initSearchPanel();
+    }
+
+    @Override
+    public void initMainTabView() {
+        getMainTabView().reset(getUser());
+
+        for (Modules activeModule : getUser().getActiveModules()) {
+            getMainTabView().openTab(activeModule.getDashboardTitle());
+        }
+    }
+
+    @Override
+    public void updateAllForms() {
+        PrimeFaces.current().ajax().update("appForm");
+    }
+
+    @Override
+    public void onMainViewTabClose(TabCloseEvent event) {
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        getMainTabView().closeTab(tabId);
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+        String tabTitle = event.getTab().getTitle();
+
+        switch (tabTitle) {
+            case "Inventory":
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public String getAppShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
+    }
+
+    @Override
+    public Boolean renderUserMenu() {
+        return getUser().getId() != null;
+    }
+
+    @Override
+    public String getLogoURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
+    }
+
+    @Override
+    public Integer getLogoURLImageHeight() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
+    }
+
+    @Override
+    public Integer getLogoURLImageWidth() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
+    }
+
+    @Override
+    public void onNotificationSelect(SelectEvent event) {
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
+    }
+
+    private void handleSelectedNotification(Notification notification) {
+
+        switch (notification.getType()) {
+            case "PRSearch": // tk
+                PurchaseRequisition pr = null;
+                EntityManager em = getEntityManager1();
+
+                try {
+                    pr = em.find(PurchaseRequisition.class,
+                            Long.parseLong(notification.getMessage()));
+                } catch (NumberFormatException e) {
+                    System.out.println("PR not found");
+                }
+
+                if (pr != null) {
+                    getPurchasingManager().getFoundPurchaseReqs().clear();
+                    getPurchasingManager().getFoundPurchaseReqs().add(pr);
+                    getPurchasingManager().openPurchaseReqsTab();
+                }
+
+                break;
+
+            default:
+                System.out.println("Unkown type");
+        }
+
+    }
+
+    @Override
+    public void login() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getPassword() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setPassword(String password) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getUsername() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUsername(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public User getUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUser(User user) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getLogonMessage() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

@@ -5,14 +5,12 @@
 package jm.com.dpbennett.sm.manager;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.sm.Authentication;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
@@ -29,13 +27,15 @@ public interface Manager {
 
     public SelectItemGroup getSearchTypesGroup();
 
-    public List<SelectItem> getGroupedSearchTypes();
+    public ArrayList<SelectItem> getGroupedSearchTypes();
 
     public String getSearchType();
 
     public void setSearchType(String searchType);
 
-    public SelectItem[] getSearchTypes();
+    public ArrayList<SelectItem> getSearchTypes();
+
+    public ArrayList<SelectItem> getDateSearchFields(String searchType);
 
     public DatePeriod getDateSearchPeriod();
 
@@ -43,7 +43,12 @@ public interface Manager {
 
     public void doSearch();
 
-    public void doDefaultSearch();
+    public void doDefaultSearch(
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate);
 
     public void handleKeepAlive();
 
@@ -51,15 +56,46 @@ public interface Manager {
 
     public String getApplicationSubheader();
 
+    public void login();
+
     public void logout();
+
+    public Integer getLoginAttempts();
+
+    public void setLoginAttempts(Integer loginAttempts);
+
+    public Boolean getUserLoggedIn();
+
+    public void setUserLoggedIn(Boolean userLoggedIn);
+
+    public String getPassword();
+
+    public void setPassword(String password);
+
+    public String getUsername();
+
+    public void setUsername(String username);
+
+    public User getUser(EntityManager em);
+
+    public void setUser(User user);
+
+    public Boolean checkForLDAPUser(EntityManager em, String username,
+            javax.naming.ldap.LdapContext ctx);
+
+    public Boolean validateUser(EntityManager em);
+
+    public void checkLoginAttemps();
+    
+    public void login(EntityManager em);
+    
+    public String getLogonMessage();
+    
+    public void setLogonMessage(String logonMessage);
 
     public void initSearchPanel();
 
     public void initSearchTypes();
-
-    public void initDateSearchFields();
-
-    public Authentication getAuthentication();
 
     public Manager getManager(String name);
 
@@ -74,10 +110,6 @@ public interface Manager {
     public String getSearchText();
 
     public void setSearchText(String searchText);
-
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap();
-
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap);
 
     public User getUser();
 
@@ -98,17 +130,17 @@ public interface Manager {
     public void onMainViewTabClose(TabCloseEvent event);
 
     public void onMainViewTabChange(TabChangeEvent event);
-    
+
     public String getAppShortcutIconURL();
-    
+
     public Boolean renderUserMenu();
-    
+
     public String getLogoURL();
-    
+
     public Integer getLogoURLImageHeight();
-    
+
     public Integer getLogoURLImageWidth();
-    
+
     public void onNotificationSelect(SelectEvent event);
 
 }

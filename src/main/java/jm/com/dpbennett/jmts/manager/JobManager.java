@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import javax.faces.application.FacesMessage;
@@ -42,6 +41,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -82,7 +82,6 @@ import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
 import jm.com.dpbennett.rm.manager.ReportManager;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import org.primefaces.PrimeFaces;
@@ -113,12 +112,13 @@ public class JobManager implements
     private Boolean showJobEntry;
     private List<Job> jobSearchResultList;
     private DatePeriod dateSearchPeriod;
-    private List<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> groupedSearchTypes;
     private String searchType;
     private String searchText;
     private Job[] selectedJobs;
     private AccPacCustomer accPacCustomer;
     private StatusNote selectedStatusNote;
+    private User user;
 
     /**
      * Creates a new instance of JobManager
@@ -127,6 +127,7 @@ public class JobManager implements
         init();
     }
 
+    @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
@@ -767,7 +768,7 @@ public class JobManager implements
      *
      */
     @Override
-    public void init() {
+    public final void init() {
         reset();
 
         //getSystemManager().addSingleAuthenticationListener(this);
@@ -968,8 +969,7 @@ public class JobManager implements
 //            System.out.println("An error occured while resetting managers: " + e);
 //        }
 //    }
-
-    public List<SelectItem> getGroupedSearchTypes() {
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
         return groupedSearchTypes;
     }
 
@@ -994,12 +994,17 @@ public class JobManager implements
         return getSystemManager().getMainTabView();
     }
 
+    @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
     }
 
+    @Override
     public User getUser() {
-        return getSystemManager().getAuthentication().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        return user;
     }
 
     /**
@@ -1008,8 +1013,26 @@ public class JobManager implements
      * @param em
      * @return
      */
+    @Override
     public User getUser(EntityManager em) {
-        return getSystemManager().getAuthentication().getUser(em);
+        if (user == null) {
+            return new User();
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User foundUser = em.find(User.class, user.getId());
+                    if (foundUser != null) {
+                        em.refresh(foundUser);
+                        user = foundUser;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
     }
 
     public Dashboard getDashboard() {
@@ -2051,7 +2074,12 @@ public class JobManager implements
                 maxResults, false);
     }
 
-    public void doDefaultSearch() {
+    @Override
+    public void doDefaultSearch(String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
 
         // getDashboard().getSelectedTabId()
         switch (getSearchType()) {
@@ -2071,7 +2099,7 @@ public class JobManager implements
                 getMainTabView().openTab("Document Browser");
                 break;
             case "Purchase requisitions":
-                getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
+                //getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
                 getMainTabView().openTab("Purchase Requisitions");
                 break;
             case "Suppliers":
@@ -2672,7 +2700,7 @@ public class JobManager implements
     public void completeLogout() {
         reset();
     }
-    
+
 //    public List<SelectItem> getJobTableViews() {
 //        ArrayList views = new ArrayList();
 //
@@ -2682,14 +2710,13 @@ public class JobManager implements
 //
 //        return views;
 //    }
-
     @Override
     public SelectItemGroup getSearchTypesGroup() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public SelectItem[] getSearchTypes() {
+    public ArrayList<SelectItem> getSearchTypes() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -2714,16 +2741,6 @@ public class JobManager implements
     }
 
     @Override
-    public void initDateSearchFields() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Authentication getAuthentication() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
     public Manager getManager(String name) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -2740,16 +2757,6 @@ public class JobManager implements
 
     @Override
     public void updateSearchType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Map<String, List<SelectItem>> getSearchTypeToDateFieldMap() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setSearchTypeToDateFieldMap(Map<String, List<SelectItem>> searchTypeToDateFieldMap) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -2790,6 +2797,91 @@ public class JobManager implements
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getPassword() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setPassword(String password) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getUsername() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUsername(String username) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setUser(User user) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void login(EntityManager em) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getLogonMessage() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
