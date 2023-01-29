@@ -136,7 +136,7 @@ public class FinanceManager implements Serializable, Manager {
     public FinanceManager() {
         init();
     }
-
+    
     public Integer getDialogHeight() {
         return 400;
     }
@@ -1700,6 +1700,8 @@ public class FinanceManager implements Serializable, Manager {
         getUser().logActivity("Logged in", getEntityManager1());
 
         getUser().save(getEntityManager1());
+        
+        getSystemManager().setUser(getUser());
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
@@ -1732,6 +1734,8 @@ public class FinanceManager implements Serializable, Manager {
     public void completeLogout() {
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
+        
+        getSystemManager().setUser(getUser());
     }
 
     @Override
