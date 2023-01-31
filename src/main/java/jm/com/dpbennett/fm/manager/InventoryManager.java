@@ -185,6 +185,10 @@ public class InventoryManager implements Serializable, Manager {
     public void editCostComponent(ActionEvent event) {
         setEdit(true);
     }
+    
+    public void editDisbursement(ActionEvent event) {
+        setEdit(true);
+    }
 
     public void updateCostType() {
         //updateCostType(selectedCostComponent);
