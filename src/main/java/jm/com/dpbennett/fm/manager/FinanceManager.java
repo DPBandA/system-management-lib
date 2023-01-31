@@ -1371,7 +1371,7 @@ public class FinanceManager implements Serializable, Manager {
         jobSubcategorySearchText = "";
         serviceSearchText = "";
         marketProductSearchText = "";
-        searchType = "";
+        searchType = "Accounting Codes";
         moduleNames = new String[]{
             "systemManager",
             "financeManager",
@@ -1616,9 +1616,7 @@ public class FinanceManager implements Serializable, Manager {
                     Manager manager = getManager(module.getName());
                     if (manager != null) {
                         groupedSearchTypes.add(manager.getSearchTypesGroup());
-                        if (!groupedSearchTypes.isEmpty()) {
-                            searchType = groupedSearchTypes.get(0).getLabel();
-                        }
+                        searchType = manager.getSearchType();
                     }
                 }
             }
