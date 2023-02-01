@@ -190,6 +190,39 @@ public class InventoryManager implements Serializable, Manager {
         setEdit(true);
     }
 
+    public void deleteDisbursement() {
+        deleteDisbursementByProductName(selectedInventoryDisbursement.
+                getInventory().getProduct().getCommonName());
+    }
+
+    public void deleteSelectedDisbursement() {
+        deleteDisbursementByProductName(selectedInventoryDisbursement.
+                getInventory().getProduct().getCommonName());
+    }
+
+    public void deleteDisbursementByProductName(String productName) {
+
+        List<InventoryDisbursement> disbusements = getSelectedInventoryRequisition().getAllSortedInventoryDisbursements();
+        int index = 0;
+        for (InventoryDisbursement disbursement : disbusements) {
+            if (disbursement.getInventory().getProduct().getCommonName().equals(productName)) {
+                disbusements.remove(index);
+                updateInventoryRequisition(null);
+
+                break;
+            }
+            ++index;
+        }
+    }
+
+    public void updateSelectedDisbursement() {
+        updateDisbursement(getSelectedInventoryDisbursement());
+    }
+
+    public void cancelDisbursementEdit() {
+        selectedInventoryDisbursement.setIsDirty(false);
+    }
+
     public void okDisbursement() {
         if (selectedInventoryDisbursement.getId() == null && !getEdit()) {
             getSelectedInventoryRequisition().getInventoryDisbursements().add(selectedInventoryDisbursement);
@@ -201,13 +234,13 @@ public class InventoryManager implements Serializable, Manager {
 
         PrimeFaces.current().executeScript("PF('inventoryDisbursementDialog').hide();");
     }
-    
-     public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
-        
+
+    public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
+
         inventoryDisbursement.update();
 
         inventoryDisbursement.setIsDirty(true);
-        
+
     }
 
     public void updateCostType() {
@@ -1058,7 +1091,7 @@ public class InventoryManager implements Serializable, Manager {
     public void editSelectedInventoryRequisition() {
 
         PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth());
+                true, true, true, true, getDialogHeight(), getDialogWidth() + 200);
     }
 
     public List<Inventory> getFoundInventories() {
