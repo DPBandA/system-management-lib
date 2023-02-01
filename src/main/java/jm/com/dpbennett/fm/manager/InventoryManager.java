@@ -434,7 +434,7 @@ public class InventoryManager implements Serializable, Manager {
 
     public void openInventoryProductDialog() {
         PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth());
+                true, true, true, true, getDialogHeight(), getDialogWidth() + 20);
     }
 
     public void openInventoryProductBrowser() {
