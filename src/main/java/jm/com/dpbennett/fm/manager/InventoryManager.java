@@ -185,9 +185,29 @@ public class InventoryManager implements Serializable, Manager {
     public void editCostComponent(ActionEvent event) {
         setEdit(true);
     }
-    
+
     public void editDisbursement(ActionEvent event) {
         setEdit(true);
+    }
+
+    public void okDisbursement() {
+        if (selectedInventoryDisbursement.getId() == null && !getEdit()) {
+            getSelectedInventoryRequisition().getInventoryDisbursements().add(selectedInventoryDisbursement);
+        }
+        setEdit(false);
+
+        updateDisbursement(selectedInventoryDisbursement);
+        updateInventoryRequisition(null);
+
+        PrimeFaces.current().executeScript("PF('inventoryDisbursementDialog').hide();");
+    }
+    
+     public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
+        
+        inventoryDisbursement.update();
+
+        inventoryDisbursement.setIsDirty(true);
+        
     }
 
     public void updateCostType() {
@@ -195,38 +215,6 @@ public class InventoryManager implements Serializable, Manager {
         selectedCostComponent.update();
     }
 
-//    public void updateCostType(CostComponent costComponent) {
-//
-//        switch (costComponent.getType()) {
-//            case "Fixed":
-//                costComponent.setIsFixedCost(true);
-//                costComponent.setIsHeading(false);
-//                costComponent.setHours(0.0);
-//                costComponent.setHoursOrQuantity(0.0);
-//                costComponent.setRate(0.0);
-//                break;
-//            case "Heading":
-//                costComponent.setIsFixedCost(false);
-//                costComponent.setIsHeading(true);
-//                costComponent.setHours(0.0);
-//                costComponent.setHoursOrQuantity(0.0);
-//                costComponent.setRate(0.0);
-//                costComponent.setCost(0.0);
-//                costComponent.setUnit("");
-//                break;
-//            case "Variable":
-//                costComponent.setIsFixedCost(false);
-//                costComponent.setIsHeading(false);
-//                break;
-//            default:
-//                costComponent.setIsFixedCost(false);
-//                costComponent.setIsHeading(false);
-//                break;
-//        }
-//
-//        // Recalculate cost if necessary
-//        costComponent.getCost();
-//    }
     public void updateCostComponent(CostComponent costComponent) {
 
         costComponent.update();
@@ -268,18 +256,14 @@ public class InventoryManager implements Serializable, Manager {
         updateInventory(null);
     }
 
+    public void onDisbursementRowCancel(RowEditEvent<InventoryDisbursement> event) {
+        event.getObject().setIsDirty(false);
+    }
+
     public void onDisbursementRowEdit(RowEditEvent<InventoryDisbursement> event) {
 
         updateDisbursement(event.getObject());
         updateInventoryRequisition(null);
-    }
-
-    public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
-
-        inventoryDisbursement.update();
-
-        inventoryDisbursement.setIsDirty(true);
-
     }
 
     public void addNewCostComponent() {
@@ -1207,11 +1191,11 @@ public class InventoryManager implements Serializable, Manager {
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
     }
-    
+
     @Override
     public User getUser() {
-        
-      return getFinanceManager().getUser();
+
+        return getFinanceManager().getUser();
     }
 
     @Override
