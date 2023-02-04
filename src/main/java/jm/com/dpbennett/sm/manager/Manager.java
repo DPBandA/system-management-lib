@@ -42,6 +42,8 @@ public interface Manager {
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod);
 
     public void doSearch();
+    
+    public void doDefaultCommand();
 
     public void doDefaultSearch(
             String dateSearchField,

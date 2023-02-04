@@ -130,12 +130,29 @@ public class FinanceManager implements Serializable, Manager {
     private String password;
     private Integer loginAttempts;
     private Boolean userLoggedIn;
+    private String defaultCommandTarget;
 
     /**
      * Creates a new instance of FinanceManager.
      */
     public FinanceManager() {
         init();
+    }
+
+    public void updateSearch() {
+        setDefaultCommandTarget("doSearch");
+    }
+    
+    public void onRowSelect() {
+        setDefaultCommandTarget("@this");
+    }
+
+    public String getDefaultCommandTarget() {
+        return defaultCommandTarget;
+    }
+
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        this.defaultCommandTarget = defaultCommandTarget;
     }
 
     public Integer getDialogHeight() {
@@ -1358,6 +1375,7 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public void reset() {
+        defaultCommandTarget = "@this";
         longProcessProgress = 0;
         procurementMethodSearchText = "";
         accountingCodeSearchText = "";
@@ -1781,22 +1799,16 @@ public class FinanceManager implements Serializable, Manager {
     public void onMainViewTabClose(TabCloseEvent event) {
         String tabId = ((TabPanel) event.getData()).getId();
 
+        setDefaultCommandTarget("@this");
+
         getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-        String tabTitle = event.getTab().getTitle();
 
-        switch (tabTitle) {
-            case "Human Resource":
+        setDefaultCommandTarget("@this");
 
-                break;
-            case "System Administration":
-
-                break;
-
-        }
     }
 
     @Override
@@ -1942,10 +1954,12 @@ public class FinanceManager implements Serializable, Manager {
     public User getUser(EntityManager em) {
         if (user == null) {
             return new User();
+
         } else {
             try {
                 if (user.getId() != null) {
-                    User foundUser = em.find(User.class, user.getId());
+                    User foundUser = em.find(User.class,
+                            user.getId());
                     if (foundUser != null) {
                         em.refresh(foundUser);
                         user = foundUser;
@@ -2123,6 +2137,17 @@ public class FinanceManager implements Serializable, Manager {
     @Override
     public void setLogonMessage(String logonMessage) {
         this.logonMessage = logonMessage;
+    }
+
+    @Override
+    public void doDefaultCommand() {
+        switch (defaultCommandTarget) {
+            case "doSearch":
+                doSearch();
+                break;
+            default:                
+                break;
+        }
     }
 
 }

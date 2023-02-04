@@ -55,6 +55,7 @@ import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
@@ -96,6 +97,16 @@ public class InventoryManager implements Serializable, Manager {
      */
     public InventoryManager() {
         init();
+    }
+    
+    public void onRowSelect() {
+       getFinanceManager().setDefaultCommandTarget("@this");
+    }
+    
+    public List<SelectItem> getProductTypes() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "productTypes");
     }
 
     public Integer getDialogHeight() {
@@ -244,7 +255,7 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void updateCostType() {
-        //updateCostType(selectedCostComponent);
+
         selectedCostComponent.update();
     }
 
@@ -283,10 +294,22 @@ public class InventoryManager implements Serializable, Manager {
         event.getObject().setIsDirty(false);
     }
 
+    public void onInventoryProductRowCancel(RowEditEvent<MarketProduct> event) {
+        event.getObject().setIsDirty(false);
+    }
+
     public void onCostComponentRowEdit(RowEditEvent<CostComponent> event) {
 
         updateCostComponent(event.getObject());
         updateInventory(null);
+    }
+
+    public void onInventoryProductRowEdit(RowEditEvent<MarketProduct> event) {
+
+        event.getObject().setName(event.getObject().toString());
+
+        event.getObject().save(getEntityManager1());
+        event.getObject().setIsDirty(false);
     }
 
     public void onDisbursementRowCancel(RowEditEvent<InventoryDisbursement> event) {
@@ -470,7 +493,6 @@ public class InventoryManager implements Serializable, Manager {
 
     public void updateInventoryProduct() {
 
-        // This ensures that the product name field gets updated with the common name, brand and model.
         getSelectedInventoryProduct().setName(getSelectedInventoryProduct().toString());
 
         getSelectedInventoryProduct().setIsDirty(true);
@@ -1592,6 +1614,11 @@ public class InventoryManager implements Serializable, Manager {
 
     @Override
     public void setLogonMessage(String logonMessage) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void doDefaultCommand() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
