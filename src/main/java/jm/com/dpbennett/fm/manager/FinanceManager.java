@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -142,7 +143,7 @@ public class FinanceManager implements Serializable, Manager {
     public void updateSearch() {
         setDefaultCommandTarget("doSearch");
     }
-    
+
     public void onRowSelect() {
         setDefaultCommandTarget("@this");
     }
@@ -2145,7 +2146,11 @@ public class FinanceManager implements Serializable, Manager {
             case "doSearch":
                 doSearch();
                 break;
-            default:                
+            default:
+                PrimeFacesUtils.addMessage("Action NOT Taken",
+                        "No action was taken",
+                        FacesMessage.SEVERITY_INFO);
+                PrimeFaces.current().ajax().update("appForm:growl3");
                 break;
         }
     }
