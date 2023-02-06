@@ -665,16 +665,21 @@ public class SystemManager implements Manager, Serializable {
             return;
         }
 
-        if (updateLDAPUser()) {
+        if (SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser")) {
+            if (updateLDAPUser()) {
 
+                PrimeFaces.current().dialog().closeDynamic(null);
+            } else {
+
+                PrimeFacesUtils.addMessage(
+                        "User Detail NOT Saved",
+                        "The user detail was NOT saved!",
+                        FacesMessage.SEVERITY_ERROR);
+
+            }
+        }
+        else {
             PrimeFaces.current().dialog().closeDynamic(null);
-        } else {
-
-            PrimeFacesUtils.addMessage(
-                    "User Detail NOT Saved",
-                    "The user detail was NOT saved!",
-                    FacesMessage.SEVERITY_ERROR);
-
         }
 
     }
@@ -854,55 +859,50 @@ public class SystemManager implements Manager, Serializable {
                     foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
                             searchText);
                 }
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 0);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 0);
                 }
                 break;
             case "Privileges":
                 foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
                         searchText);
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 1);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 1);
                 }
                 break;
             case "Categories":
                 foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 2);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 2);
                 }
                 break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 3);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 3);
                 }
                 break;
             case "Options":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 4);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 4);
                 }
                 break;
@@ -914,33 +914,30 @@ public class SystemManager implements Manager, Serializable {
                     foundLdapContexts = LdapContext.findLdapContexts(getEntityManager1(),
                             searchText);
                 }
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 5);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 5);
                 }
                 break;
             case "Modules":
                 foundActiveModules = Modules.findActiveModules(getEntityManager1(),
                         searchText);
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 6);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 6);
                 }
                 break;
             case "Attachments":
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText);
-                
+
                 if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 7);
-                }
-                else {
+                } else {
                     selectSystemAdminTab(true, "centerTabVar", 7);
                 }
                 break;
