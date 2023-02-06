@@ -653,20 +653,12 @@ public class InventoryManager implements Serializable, Manager {
         this.searchText = searchText;
     }
 
-    public String getRenderDateSearchFields() {
-        switch (searchType) {
-            case "Inventory":
-                return "false";
-            default:
-                return "true";
-        }
-    }
-
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
         searchTypes.add(new SelectItem("Inventory", "Inventory"));
+        searchTypes.add(new SelectItem("Inventory Product", "Inventory Product"));
 
         return searchTypes;
     }
@@ -1294,6 +1286,11 @@ public class InventoryManager implements Serializable, Manager {
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
                 return dateSearchFields;
+            case "Inventory Product":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;    
             default:
                 break;
         }
@@ -1308,12 +1305,7 @@ public class InventoryManager implements Serializable, Manager {
             String searchText,
             Date startDate,
             Date endDate) {
-        //  etInventoryManager().doInventorySearch(dateSearchPeriod, searchType, searchText);
-        //  getInventoryManager().openInventoryTab();
-        //            case "Inventory requisitions":
-        //                getInventoryManager().doInventoryRequisitionSearch(dateSearchPeriod, searchType, searchText);
-        //                getInventoryManager().openInventoryRequisitionTab();
-        //                break;
+     
         switch (searchType) {
             case "Inventory":
                 doInventorySearch(dateSearchPeriod, searchType, searchText);
@@ -1448,12 +1440,6 @@ public class InventoryManager implements Serializable, Manager {
     public void onMainViewTabChange(TabChangeEvent event) {
         String tabTitle = event.getTab().getTitle();
 
-        switch (tabTitle) {
-            case "Inventory":
-                break;
-            default:
-                break;
-        }
     }
 
     @Override

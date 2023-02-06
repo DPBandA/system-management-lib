@@ -1800,16 +1800,12 @@ public class FinanceManager implements Serializable, Manager {
     public void onMainViewTabClose(TabCloseEvent event) {
         String tabId = ((TabPanel) event.getData()).getId();
 
-        setDefaultCommandTarget("@this");
-
         getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-
-        setDefaultCommandTarget("@this");
-
+        String tabTitle = event.getTab().getTitle();
     }
 
     @Override
@@ -2142,13 +2138,14 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public void doDefaultCommand() {
+
         switch (defaultCommandTarget) {
             case "doSearch":
                 doSearch();
                 break;
             default:
                 PrimeFacesUtils.addMessage("Action NOT Taken",
-                        "No action was taken",
+                        "No action was taken. Enter search text if you are doing a search.",
                         FacesMessage.SEVERITY_INFO);
                 PrimeFaces.current().ajax().update("appForm:growl3");
                 break;
