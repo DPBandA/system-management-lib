@@ -1180,6 +1180,8 @@ public class InventoryManager implements Serializable, Manager {
 
         selectedInventoryRequisition = new InventoryRequisition();
         selectedInventoryRequisition.setType("None");
+        selectedInventoryRequisition.setEnteredBy(getUser().getEmployee());
+        selectedInventoryRequisition.setEditedBy(getUser().getEmployee());
         selectedInventoryRequisition.setDateEntered(new Date());
         selectedInventoryRequisition.setDateEdited(new Date());
 
