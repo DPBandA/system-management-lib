@@ -83,6 +83,7 @@ public class InventoryManager implements Serializable, Manager {
     private Boolean edit;
     private String searchText;
     private String inventoryProductSearchText;
+    private String inventorySearchText;
     private List<Inventory> foundInventories;
     private List<InventoryRequisition> foundInventoryRequisitions;
     private List<MarketProduct> foundInventoryProducts;
@@ -98,11 +99,19 @@ public class InventoryManager implements Serializable, Manager {
     public InventoryManager() {
         init();
     }
-    
-    public void onRowSelect() {
-       getFinanceManager().setDefaultCommandTarget("@this");
+
+    public String getInventorySearchText() {
+        return inventorySearchText;
     }
-    
+
+    public void setInventorySearchText(String inventorySearchText) {
+        this.inventorySearchText = inventorySearchText;
+    }
+
+    public void onRowSelect() {
+        getFinanceManager().setDefaultCommandTarget("@this");
+    }
+
     public List<SelectItem> getProductTypes() {
 
         return getStringListAsSelectItems(getEntityManager1(),
@@ -444,15 +453,13 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void doInventoryProductSearch() {
-
-        if (getIsActiveInventoryProductsOnly()) {
-            foundInventoryProducts = MarketProduct.findActiveMarketProductsByNameAndType(
-                    getEntityManager1(), inventoryProductSearchText, "Inventory");
-        } else {
-            foundInventoryProducts = MarketProduct.findMarketProductsByNameAndType(
-                    getEntityManager1(), inventoryProductSearchText, "Inventory");
-        }
-
+        
+          doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Inventory Products",
+                getInventoryProductSearchText(),
+                null,
+                null);
     }
 
     public void openInventoryProductDialog() {
@@ -658,7 +665,7 @@ public class InventoryManager implements Serializable, Manager {
         ArrayList searchTypes = new ArrayList();
 
         searchTypes.add(new SelectItem("Inventory", "Inventory"));
-        searchTypes.add(new SelectItem("Inventory Product", "Inventory Product"));
+        searchTypes.add(new SelectItem("Inventory Products", "Inventory Products"));
 
         return searchTypes;
     }
@@ -1132,21 +1139,12 @@ public class InventoryManager implements Serializable, Manager {
 
     public void doInventorySearch() {
 
-        EntityManager em = getEntityManager1();
-
-        foundInventories = Inventory.find(em, searchText, 0);
-    }
-
-    public void doInventorySearch(
-            DatePeriod dateSearchPeriod,
-            String searchType,
-            String searchText) {
-
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.searchText = searchText;
-
-        doInventorySearch();
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Inventory",
+                getInventorySearchText(),
+                null,
+                null);
     }
 
     public void doInventoryRequisitionSearch() {
@@ -1229,6 +1227,7 @@ public class InventoryManager implements Serializable, Manager {
         dateSearchPeriod.initDatePeriod();
         searchText = "";
         inventoryProductSearchText = "";
+        inventorySearchText = "";
         isActiveInventoryProductsOnly = true;
         groupedSearchTypes = new ArrayList<>();
         allDateSearchFields = new ArrayList();
@@ -1286,11 +1285,11 @@ public class InventoryManager implements Serializable, Manager {
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
                 return dateSearchFields;
-            case "Inventory Product":
+            case "Inventory Products":
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
-                return dateSearchFields;    
+                return dateSearchFields;
             default:
                 break;
         }
@@ -1305,11 +1304,23 @@ public class InventoryManager implements Serializable, Manager {
             String searchText,
             Date startDate,
             Date endDate) {
-     
+
         switch (searchType) {
             case "Inventory":
-                doInventorySearch(dateSearchPeriod, searchType, searchText);
+                foundInventories = Inventory.find(
+                        getEntityManager1(),
+                        searchText, 0);
                 openInventoryTab();
+                break;
+            case "Inventory Products":
+                if (getIsActiveInventoryProductsOnly()) {
+                    foundInventoryProducts = MarketProduct.findActiveMarketProductsByNameAndType(
+                            getEntityManager1(), searchText, "Inventory");
+                } else {
+                    foundInventoryProducts = MarketProduct.findMarketProductsByNameAndType(
+                            getEntityManager1(), searchText, "Inventory");
+                }
+                openInventoryProductBrowser();
                 break;
             default:
                 break;
