@@ -140,6 +140,7 @@ public class FinanceManager implements Serializable, Manager {
         init();
     }
 
+    @Override
     public void updateSearch() {
         setDefaultCommandTarget("doSearch");
     }

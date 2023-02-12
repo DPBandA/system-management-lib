@@ -42,7 +42,7 @@ public interface Manager {
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod);
 
     public void doSearch();
-    
+
     public void doDefaultCommand();
 
     public void doDefaultSearch(
@@ -59,6 +59,8 @@ public interface Manager {
     public String getApplicationSubheader();
 
     public void login();
+
+    public void login(EntityManager em);
 
     public void logout();
 
@@ -78,9 +80,11 @@ public interface Manager {
 
     public void setUsername(String username);
 
-    public User getUser(EntityManager em);
+    public User getUser();
 
     public void setUser(User user);
+    
+    public User getUser(EntityManager em);
 
     public Boolean checkForLDAPUser(EntityManager em, String username,
             javax.naming.ldap.LdapContext ctx);
@@ -88,11 +92,9 @@ public interface Manager {
     public Boolean validateUser(EntityManager em);
 
     public void checkLoginAttemps();
-    
-    public void login(EntityManager em);
-    
+
     public String getLogonMessage();
-    
+
     public void setLogonMessage(String logonMessage);
 
     public void initSearchPanel();
@@ -104,6 +106,8 @@ public interface Manager {
     public ArrayList<SelectItem> getDatePeriods();
 
     public ArrayList<SelectItem> getAllDateSearchFields();
+    
+    public void updateSearch();
 
     public void updateSearchType();
 
@@ -112,8 +116,6 @@ public interface Manager {
     public String getSearchText();
 
     public void setSearchText(String searchText);
-
-    public User getUser();
 
     public EntityManager getEntityManager1();
 
