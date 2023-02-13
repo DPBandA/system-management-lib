@@ -80,7 +80,7 @@ import org.primefaces.model.DualListModel;
  */
 public class HumanResourceManager implements Serializable, Manager {
 
-    private String dateSearchField;
+//    private String dateSearchField;
     private DatePeriod dateSearchPeriod;
     private String searchType;
     private Boolean startSearchDateDisabled;
@@ -463,7 +463,7 @@ public class HumanResourceManager implements Serializable, Manager {
     @Override
     public void reset() {
         searchType = "Employees";
-        dateSearchField = "dateEntered";
+        //dateSearchField = "dateEntered";
         searchTextVisible = true;
         searchText = "";
         employeeSearchText = "";
@@ -496,6 +496,7 @@ public class HumanResourceManager implements Serializable, Manager {
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
+       defaultCommandTarget = "@this";
     }
 
     public Boolean getIsActiveDepartmentsOnly() {
@@ -918,13 +919,13 @@ public class HumanResourceManager implements Serializable, Manager {
         PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 600, 700);
     }
 
-    public String getDateSearchField() {
-        return dateSearchField;
-    }
-
-    public void setDateSearchField(String dateSearchField) {
-        this.dateSearchField = dateSearchField;
-    }
+//    public String getDateSearchField() {
+//        return dateSearchField;
+//    }
+//
+//    public void setDateSearchField(String dateSearchField) {
+//        this.dateSearchField = dateSearchField;
+//    }
 
     @Override
     public DatePeriod getDateSearchPeriod() {

@@ -77,6 +77,7 @@ import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -120,8 +121,6 @@ public class ReportManager implements Serializable, Manager {
     private String dateSearchField;
     private DatePeriod dateSearchPeriod;
     private String searchType;
-    private Date startDate;
-    private Date endDate;
     private String searchText;
     private String[] moduleNames;
     private User user;
@@ -157,6 +156,7 @@ public class ReportManager implements Serializable, Manager {
      *
      * @return
      */
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -166,6 +166,7 @@ public class ReportManager implements Serializable, Manager {
      *
      * @return
      */
+    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
@@ -605,6 +606,7 @@ public class ReportManager implements Serializable, Manager {
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
+        defaultCommandTarget = "@this";
     }
 
     public void closeReportsTab() {
@@ -2591,47 +2593,69 @@ public class ReportManager implements Serializable, Manager {
 
     @Override
     public void updateAllForms() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tabTitle = event.getTab().getTitle();
+
+        System.out.println("Tab change: " + tabTitle);
     }
 
     @Override
     public String getAppShortcutIconURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public Boolean renderUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getUser().getId() != null;
     }
 
     @Override
     public String getLogoURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
     }
 
     @Override
@@ -2917,11 +2941,18 @@ public class ReportManager implements Serializable, Manager {
 
     @Override
     public Dashboard getDashboard() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getSystemManager().getDashboard();
     }
 
     @Override
     public void handleSelectedNotification(Notification notification) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        switch (notification.getType()) {
+            case "ReportSearch":
+
+                break;
+
+            default:
+                System.out.println("Unkown type");
+        }
     }
 }

@@ -1762,8 +1762,9 @@ public class SystemManager implements Manager, Serializable {
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
+        defaultCommandTarget = "@this";
 
-        PrimeFaces.current().executeScript("PF('loginDialog').show();");
+        //PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
     public SystemOption getSelectedSystemOption() {
