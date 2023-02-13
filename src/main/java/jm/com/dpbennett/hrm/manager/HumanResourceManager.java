@@ -147,10 +147,12 @@ public class HumanResourceManager implements Serializable, Manager {
         reset();
     }
 
+    @Override
     public String getDefaultCommandTarget() {
         return defaultCommandTarget;
     }
 
+    @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
         this.defaultCommandTarget = defaultCommandTarget;
     }
@@ -207,6 +209,7 @@ public class HumanResourceManager implements Serializable, Manager {
      *
      * @return
      */
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -375,6 +378,7 @@ public class HumanResourceManager implements Serializable, Manager {
         return "Human Resource Manager";
     }
 
+    @Override
     public MainTabView getMainTabView() {
 
         return getSystemManager().getMainTabView();
@@ -1048,6 +1052,7 @@ public class HumanResourceManager implements Serializable, Manager {
         updateAllForms();
     }
 
+    @Override
     public Dashboard getDashboard() {
         return getSystemManager().getDashboard();
     }
@@ -1803,6 +1808,8 @@ public class HumanResourceManager implements Serializable, Manager {
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
         String tabTitle = event.getTab().getTitle();
+        
+        System.out.println("Tab change: " + tabTitle);
     }
 
     @Override
@@ -1853,7 +1860,8 @@ public class HumanResourceManager implements Serializable, Manager {
         }
     }
 
-    private void handleSelectedNotification(Notification notification) {
+    @Override
+    public void handleSelectedNotification(Notification notification) {
 
         switch (notification.getType()) {
             case "EmployeeSearch":

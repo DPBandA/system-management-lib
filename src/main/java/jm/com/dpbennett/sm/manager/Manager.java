@@ -11,6 +11,9 @@ import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
+import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.sm.util.Dashboard;
+import jm.com.dpbennett.sm.util.MainTabView;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
@@ -44,6 +47,10 @@ public interface Manager {
     public void doSearch();
 
     public void doDefaultCommand();
+    
+    public String getDefaultCommandTarget();
+    
+    public void setDefaultCommandTarget(String defaultCommandTarget);
 
     public void doDefaultSearch(
             String dateSearchField,
@@ -146,5 +153,13 @@ public interface Manager {
     public Integer getLogoURLImageWidth();
 
     public void onNotificationSelect(SelectEvent event);
+    
+    public Dashboard getDashboard();
+    
+    public MainTabView getMainTabView();
+    
+    public void handleSelectedNotification(Notification notification);
+    
+    public SystemManager getSystemManager();
 
 }

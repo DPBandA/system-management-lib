@@ -149,10 +149,12 @@ public class FinanceManager implements Serializable, Manager {
         setDefaultCommandTarget("@this");
     }
 
+    @Override
     public String getDefaultCommandTarget() {
         return defaultCommandTarget;
     }
 
+    @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
         this.defaultCommandTarget = defaultCommandTarget;
     }
@@ -238,6 +240,7 @@ public class FinanceManager implements Serializable, Manager {
                 getFoundProcurementMethods().get(event.getRowIndex()));
     }
 
+    @Override
     public Dashboard getDashboard() {
         return getSystemManager().getDashboard();
     }
@@ -416,7 +419,8 @@ public class FinanceManager implements Serializable, Manager {
         return groupedSearchTypes;
     }
 
-    private void handleSelectedNotification(Notification notification) {
+    @Override
+    public void handleSelectedNotification(Notification notification) {
 
         switch (notification.getType()) {
             case "PRSearch":
@@ -673,6 +677,7 @@ public class FinanceManager implements Serializable, Manager {
      *
      * @return
      */
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -1104,6 +1109,7 @@ public class FinanceManager implements Serializable, Manager {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    @Override
     public MainTabView getMainTabView() {
 
         return getSystemManager().getMainTabView();
@@ -1896,7 +1902,6 @@ public class FinanceManager implements Serializable, Manager {
         return dateSearchFields;
     }
 
-    // tk auth methods
     @Override
     public void login() {
         login(getEntityManager1());

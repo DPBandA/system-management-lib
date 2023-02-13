@@ -139,6 +139,7 @@ public class SystemManager implements Manager, Serializable {
     private String password;
     private Integer loginAttempts;
     private Boolean userLoggedIn;
+    private String defaultCommandTarget;
 
     /**
      * Creates a new instance of SystemManager
@@ -1183,17 +1184,15 @@ public class SystemManager implements Manager, Serializable {
         return dateSearchFields;
     }
 
+    @Override
     public Dashboard getDashboard() {
         return dashboard;
-    }
-
-    public void setDashboard(Dashboard dashboard) {
-        this.dashboard = dashboard;
     }
 
     /**
      * Gets the SessionScoped bean that deals with user authentication.
      *
+     * @param name
      * @return
      */
     @Override
@@ -1626,7 +1625,8 @@ public class SystemManager implements Manager, Serializable {
         this.notifications = notifications;
     }
 
-    private void handleSelectedNotification(Notification notification) {
+    @Override
+    public void handleSelectedNotification(Notification notification) {
 
         switch (notification.getType()) {
             case "UserNotificationDialog":
@@ -2053,6 +2053,7 @@ public class SystemManager implements Manager, Serializable {
         return user;
     }
 
+    @Override
     public MainTabView getMainTabView() {
         return mainTabView;
     }
@@ -2358,7 +2359,38 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void doDefaultCommand() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+        switch (defaultCommandTarget) {
+            case "doSearch":
+                doSearch();
+                break;
+            default:
+                PrimeFacesUtils.addMessage("Action NOT Taken",
+                        "No action was taken. Enter search text if you are doing a search.",
+                        FacesMessage.SEVERITY_INFO);
+                PrimeFaces.current().ajax().update("appForm:growl3");
+                break;
+        }
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+        return defaultCommandTarget;
+    }
+
+    @Override
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        this.defaultCommandTarget = defaultCommandTarget;
+    }
+
+    @Override
+    public void updateSearch() {
+        setDefaultCommandTarget("doSearch");
+    }
+
+    @Override
+    public SystemManager getSystemManager() {
+        return this;
     }
 
 }

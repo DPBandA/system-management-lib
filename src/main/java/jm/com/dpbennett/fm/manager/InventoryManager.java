@@ -92,6 +92,7 @@ public class InventoryManager implements Serializable, Manager {
     private Boolean isActiveInventoryProductsOnly;
     private ArrayList<SelectItem> groupedSearchTypes;
     private ArrayList<SelectItem> allDateSearchFields;
+    private String defaultCommandTarget;
 
     /**
      * Creates a new instance of InventoryManager
@@ -1199,10 +1200,12 @@ public class InventoryManager implements Serializable, Manager {
      *
      * @return
      */
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
 
+    @Override
     public MainTabView getMainTabView() {
 
         return getSystemManager().getMainTabView();
@@ -1503,7 +1506,8 @@ public class InventoryManager implements Serializable, Manager {
         }
     }
 
-    private void handleSelectedNotification(Notification notification) {
+    @Override
+    public void handleSelectedNotification(Notification notification) {
 
         switch (notification.getType()) {
             case "PRSearch": // tk
@@ -1619,6 +1623,21 @@ public class InventoryManager implements Serializable, Manager {
     @Override
     public void doDefaultCommand() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void updateSearch() {
+        setDefaultCommandTarget("doSearch");
+    }
+
+    @Override
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        this.defaultCommandTarget = defaultCommandTarget;
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+        return defaultCommandTarget;
     }
 
 }
