@@ -1539,12 +1539,31 @@ public class HumanResourceManager implements Serializable, Manager {
 
     @Override
     public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (user == null) {
+            return new User();
+
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User foundUser = em.find(User.class,
+                            user.getId());
+                    if (foundUser != null) {
+                        em.refresh(foundUser);
+                        user = foundUser;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
     }
 
     @Override
     public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.user = user;
     }
 
     @Override
@@ -1808,7 +1827,7 @@ public class HumanResourceManager implements Serializable, Manager {
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
         String tabTitle = event.getTab().getTitle();
-        
+
         System.out.println("Tab change: " + tabTitle);
     }
 
@@ -1888,7 +1907,7 @@ public class HumanResourceManager implements Serializable, Manager {
                 break;
         }
     }
-    
+
     @Override
     public void updateSearch() {
         setDefaultCommandTarget("doSearch");
