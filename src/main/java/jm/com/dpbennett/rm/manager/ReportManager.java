@@ -118,7 +118,7 @@ public class ReportManager implements Serializable, Manager {
     private String reportCategory;
     private DatePeriod selectedDatePeriod;
     private Boolean edit;
-    private String dateSearchField;
+    //private String dateSearchField;
     private DatePeriod dateSearchPeriod;
     private String searchType;
     private String searchText;
@@ -588,7 +588,7 @@ public class ReportManager implements Serializable, Manager {
         columnsToExclude = "";
         reportCategory = "Job";
         searchType = "Reports";
-        dateSearchField = "dateEntered";
+        //dateSearchField = "dateEntered";
         searchText = "";
         dateSearchPeriod = new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false);
