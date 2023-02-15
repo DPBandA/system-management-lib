@@ -48,12 +48,14 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -195,7 +197,7 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     public void openReportsTab() {
-        //getReportManager().openReportsTab("Legal");
+        getReportManager().openReportsTab("Legal");
     }
 
     @Override
@@ -461,6 +463,7 @@ public class LegalDocumentManager implements Serializable, Manager {
         getMainTabView().openTab("Document Browser");
     }
 
+    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
@@ -585,14 +588,8 @@ public class LegalDocumentManager implements Serializable, Manager {
 
         EntityManager em = getEntityManager1();
 
-        if (searchText != null) {
-            documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
-                    dateSearchPeriod, searchType, searchText.trim());
-        } else { // get all documents based on common test ie "" for now
-            documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
-                    dateSearchPeriod, searchType, "");
-        }
-
+        documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
+                dateSearchPeriod, searchType, searchText.trim());
     }
 
     public void doLegalDocumentSearch(
@@ -637,6 +634,11 @@ public class LegalDocumentManager implements Serializable, Manager {
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
+    }
+
+    public ReportManager getReportManager() {
+
+        return BeanUtils.findBean("reportManager");
     }
 
     public void formatDocumentTableXLS(Object document, String headerTitle) {
@@ -744,21 +746,23 @@ public class LegalDocumentManager implements Serializable, Manager {
     @Override
     public void initDashboard() {
 
-        if (getUser().hasModule("LegalOfficeModule")) {
-            getSystemManager().getDashboard().openTab(getUser().
-                    getActiveModule("LegalOfficeModule").getDashboardTitle());
-        }
-
+        initSearchPanel();
     }
 
     @Override
     public void initMainTabView() {
 
-        if (getUser().hasModule("LegalOfficeModule")) {
-            getMainTabView().openTab(getUser().
-                    getActiveModule("LegalOfficeModule").getMainViewTitle());
-        }
+        getMainTabView().reset(getUser());
 
+        for (String moduleName : moduleNames) {
+            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                    moduleName);
+            if (module != null) {
+                if (getUser().hasModule(moduleName)) {
+                    getMainTabView().openTab(module.getDashboardTitle());
+                }
+            }
+        }
     }
 
     @Override
@@ -925,47 +929,69 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void updateAllForms() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        //String tabTitle = event.getTab().getTitle();
+
+        //System.out.println("Tab change: " + tabTitle);
     }
 
     @Override
     public String getAppShortcutIconURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public Boolean renderUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getUser().getId() != null;
     }
 
     @Override
     public String getLogoURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
     }
 
     @Override
@@ -1245,12 +1271,19 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public Dashboard getDashboard() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getSystemManager().getDashboard();
     }
 
     @Override
     public void handleSelectedNotification(Notification notification) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        switch (notification.getType()) {
+            case "LegalDocumentSearch":
+
+                break;
+
+            default:
+                System.out.println("Unkown type");
+        }
     }
 
 }
