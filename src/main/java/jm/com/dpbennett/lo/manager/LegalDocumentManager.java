@@ -39,6 +39,7 @@ import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.lo.LegalDocument;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -74,6 +75,16 @@ public class LegalDocumentManager implements Serializable, Manager {
     private LegalDocument selectedDocument;
     private LegalDocument currentDocument;
     private DocumentReport documentReport;
+    private String[] moduleNames;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
+    private String defaultCommandTarget;
+    private ArrayList<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> allDateSearchFields;
 
     public LegalDocumentManager() {
         init();
@@ -92,7 +103,7 @@ public class LegalDocumentManager implements Serializable, Manager {
     public List getLegalDocumentSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
-        searchTypes.add(new SelectItem("Legal documents", "Legal documents"));
+        searchTypes.add(new SelectItem("Legal Documents", "Legal Documents"));
 
         return searchTypes;
     }
@@ -162,17 +173,16 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     }
 
-    public List getLegalDocumentDateSearchFields() {
-        ArrayList dateFields = new ArrayList();
-
-        // add items
-        dateFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
-        dateFields.add(new SelectItem("dateReceived", "Date received"));
-        dateFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
-
-        return dateFields;
-    }
-
+//    public List getLegalDocumentDateSearchFields() {
+//        ArrayList dateFields = new ArrayList();
+//
+//        // add items
+//        dateFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
+//        dateFields.add(new SelectItem("dateReceived", "Date received"));
+//        dateFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
+//
+//        return dateFields;
+//    }
     @Override
     public final void init() {
         reset();
@@ -185,9 +195,25 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void reset() {
-        searchType = "Legal documents";
-        dateSearchPeriod = new DatePeriod("This month", "month", "dateReceived", null, null, null, false, false, false);
+        searchType = "Legal Documents";
+        searchText = "";
+        dateSearchPeriod = new DatePeriod("This month", "month", "dateReceived",
+                null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
+        groupedSearchTypes = new ArrayList<>();
+        allDateSearchFields = new ArrayList();
+        moduleNames = new String[]{
+            "systemManager",
+            "legalDocumentManager"};
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
+        defaultCommandTarget = "@this";
     }
 
     public List<Classification> completeClassification(String query) {
@@ -535,9 +561,10 @@ public class LegalDocumentManager implements Serializable, Manager {
         this.searchType = searchType;
     }
 
+    @Override
     public void updateSearch() {
         switch (searchType) {
-            case "Legal documents":
+            case "Legal Documents":
                 doLegalDocumentSearch();
                 break;
             default:
@@ -581,17 +608,30 @@ public class LegalDocumentManager implements Serializable, Manager {
     @Override
     public void doSearch() {
 
-        switch (searchType) {
-            case "Legal documents":
-                doLegalDocumentSearch();
-                openDocumentBrowser();
-                break;
-            default:
-                break;
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        manager.doDefaultSearch(
+                                getDateSearchPeriod().getDateField(),
+                                getSearchType(),
+                                getSearchText(),
+                                getDateSearchPeriod().getStartDate(),
+                                getDateSearchPeriod().getEndDate());
+                    }
+                }
+            }
         }
 
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
@@ -676,12 +716,20 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch( String dateSearchField,
+    public void doDefaultSearch(String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,
             Date endDate) {
-        //doSearch();
+
+        switch (searchType) {
+            case "Legal Documents":
+                doLegalDocumentSearch();
+                openDocumentBrowser();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -717,22 +765,40 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        SelectItemGroup group = new SelectItemGroup("Legal");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
     }
 
     @Override
     public ArrayList<SelectItem> getGroupedSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return groupedSearchTypes;
     }
 
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Legal Documents", "Legal Documents"));
+
+        return searchTypes;
     }
 
     @Override
     public void handleKeepAlive() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().setPollTime(new Date());
+
+        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     @Override
@@ -837,7 +903,22 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Legal Documents":
+                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
+                dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
+                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
+
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
     @Override
@@ -927,17 +1008,28 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void doDefaultCommand() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+        switch (defaultCommandTarget) {
+            case "doSearch":
+                doSearch();
+                break;
+            default:
+                PrimeFacesUtils.addMessage("Action NOT Taken",
+                        "No action was taken. Enter search text if you are doing a search.",
+                        FacesMessage.SEVERITY_INFO);
+                PrimeFaces.current().ajax().update("appForm:growl3");
+                break;
+        }
     }
 
     @Override
     public String getDefaultCommandTarget() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return defaultCommandTarget;
     }
 
     @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.defaultCommandTarget = defaultCommandTarget;
     }
 
     @Override
