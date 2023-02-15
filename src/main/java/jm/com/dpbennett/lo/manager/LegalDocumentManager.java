@@ -716,11 +716,18 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch(String dateSearchField,
+    public void doDefaultSearch(
+            String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,
             Date endDate) {
+
+        getDateSearchPeriod().setDateField(dateSearchField);
+        this.searchType = searchType;
+        this.searchText = searchText;
+        getDateSearchPeriod().setStartDate(startDate);
+        getDateSearchPeriod().setEndDate(endDate);
 
         switch (searchType) {
             case "Legal Documents":
@@ -803,12 +810,14 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public String getApplicationSubheader() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return "Legal Office Administration &amp; Management";
     }
 
     @Override
     public void logout() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().logActivity("Logged out", getEntityManager1());
+        reset();
+        completeLogout();
     }
 
     @Override
@@ -923,27 +932,27 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        login(getEntityManager1());
     }
 
     @Override
     public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return loginAttempts;
     }
 
     @Override
     public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.loginAttempts = loginAttempts;
     }
 
     @Override
     public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return userLoggedIn;
     }
 
     @Override
     public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.userLoggedIn = userLoggedIn;
     }
 
     @Override
@@ -993,7 +1002,50 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
     }
 
     @Override
