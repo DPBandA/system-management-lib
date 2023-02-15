@@ -208,7 +208,7 @@ public class ClientManager implements Serializable, Manager {
         selectedClient = null;
         selectedContact = null;
         selectedAddress = null;
-        searchType = "Reports";
+        searchType = "Clients";
         searchText = "";
         dateSearchPeriod = new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false);
@@ -217,7 +217,7 @@ public class ClientManager implements Serializable, Manager {
         allDateSearchFields = new ArrayList();
         moduleNames = new String[]{
             "systemManager",
-            "reportManager"};
+            "clientManager"};
         password = "";
         username = "";
         loginAttempts = 0;
@@ -374,7 +374,11 @@ public class ClientManager implements Serializable, Manager {
 
     @Override
     public User getUser() {
-        return getSystemManager().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        
+        return user;
     }
 
     public void editClient() {
@@ -669,7 +673,6 @@ public class ClientManager implements Serializable, Manager {
     }
 
     public void doDefaultSearch() {
-        //Modules crm = getUser().getActiveModule("CRMModule");
 
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
             case "Clients":
@@ -682,32 +685,50 @@ public class ClientManager implements Serializable, Manager {
     @Override
     public void initDashboard() {
 
-        if (getUser().hasModule("CRMModule")) {
-            getSystemManager().getDashboard().openTab(getUser().
-                    getActiveModule("CRMModule").getDashboardTitle());
-        }
+        initSearchPanel();
 
     }
 
     @Override
     public void initMainTabView() {
 
-        if (getUser().hasModule("CRMModule")) {
-            getSystemManager().getMainTabView().openTab(getUser().
-                    getActiveModule("CRMModule").getMainViewTitle());
+        getMainTabView().reset(getUser());
+
+        for (String moduleName : moduleNames) {
+            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                    moduleName);
+            if (module != null) {
+                if (getUser().hasModule(moduleName)) {
+                    getMainTabView().openTab(module.getDashboardTitle());
+                }
+            }
         }
 
     }
 
     @Override
     public void completeLogin() {
+        getUser().logActivity("Logged in", getEntityManager1());
+
+        getUser().save(getEntityManager1());
+
+        getSystemManager().setUser(getUser());
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
         initDashboard();
+
         initMainTabView();
+
+        updateAllForms();
     }
 
     @Override
     public void completeLogout() {
-        reset();
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        getSystemManager().setUser(getUser());
     }
 
     @Override
