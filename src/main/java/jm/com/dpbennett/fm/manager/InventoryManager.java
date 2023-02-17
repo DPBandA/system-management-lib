@@ -53,6 +53,7 @@ import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -71,7 +72,7 @@ import org.primefaces.event.TabCloseEvent;
  *
  * @author Desmond Bennett
  */
-public class InventoryManager implements Serializable, Manager {
+public class InventoryManager extends GeneralManager implements Serializable {
 
     private Inventory selectedInventory;
     private InventoryRequisition selectedInventoryRequisition;
@@ -81,18 +82,12 @@ public class InventoryManager implements Serializable, Manager {
     private List<InventoryRequisition> selectedInventoryRequisitions;
     private InventoryDisbursement selectedInventoryDisbursement;
     private Boolean edit;
-    private String searchText;
     private String inventoryProductSearchText;
     private String inventorySearchText;
     private List<Inventory> foundInventories;
     private List<InventoryRequisition> foundInventoryRequisitions;
     private List<MarketProduct> foundInventoryProducts;
-    private String searchType;
-    private DatePeriod dateSearchPeriod;
     private Boolean isActiveInventoryProductsOnly;
-    private ArrayList<SelectItem> groupedSearchTypes;
-    private ArrayList<SelectItem> allDateSearchFields;
-    private String defaultCommandTarget;
 
     /**
      * Creates a new instance of InventoryManager
@@ -641,26 +636,6 @@ public class InventoryManager implements Serializable, Manager {
         return "Inventory Manager";
     }
 
-    /**
-     * Gets the general search text.
-     *
-     * @return
-     */
-    @Override
-    public String getSearchText() {
-        return searchText;
-    }
-
-    /**
-     * Sets the general search text.
-     *
-     * @param searchText
-     */
-    @Override
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
@@ -669,37 +644,6 @@ public class InventoryManager implements Serializable, Manager {
         searchTypes.add(new SelectItem("Inventory Products", "Inventory Products"));
 
         return searchTypes;
-    }
-
-    @Override
-    public void doSearch() {
-        for (Modules activeModule : getUser().getActiveModules()) {
-
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                manager.doDefaultSearch(
-                        getDateSearchPeriod().getDateField(),
-                        getSearchType(),
-                        getSearchText(),
-                        getDateSearchPeriod().getStartDate(),
-                        getDateSearchPeriod().getEndDate());
-            }
-
-        }
-    }
-
-    @Override
-    public void updateDateSearchField() {
-    }
-
-    @Override
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    @Override
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
     }
 
     public String formatAsCurrency(Double value, String symbol) {
@@ -1152,15 +1096,15 @@ public class InventoryManager implements Serializable, Manager {
 
         EntityManager em = getEntityManager1();
 
-        foundInventoryRequisitions = InventoryRequisition.find(em, searchText, 0);
+        foundInventoryRequisitions = InventoryRequisition.find(em, getSearchText(), 0);
 
     }
 
     public void doInventoryRequisitionSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
 
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.searchText = searchText;
+        setDateSearchPeriod(dateSearchPeriod);
+        setSearchType(searchType);
+        setSearchText(searchText);
 
         doInventoryRequisitionSearch();
     }
@@ -1195,16 +1139,6 @@ public class InventoryManager implements Serializable, Manager {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    @Override
-    public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
-    }
-
     @Override
     public MainTabView getMainTabView() {
 
@@ -1226,16 +1160,15 @@ public class InventoryManager implements Serializable, Manager {
 
     @Override
     public void reset() {
-        searchType = "Inventory";
-        dateSearchPeriod = new DatePeriod("This year", "year",
-                "dateEdited", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
-        searchText = "";
+        super.reset();
+        
+        setSearchType("Inventory");
+        setDateSearchPeriod(new DatePeriod("This year", "year",
+                "dateEdited", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
         inventoryProductSearchText = "";
         inventorySearchText = "";
         isActiveInventoryProductsOnly = true;
-        groupedSearchTypes = new ArrayList<>();
-        allDateSearchFields = new ArrayList();
     }
 
     @Override
@@ -1255,27 +1188,12 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     @Override
-    public String getSearchType() {
-        return searchType;
-    }
-
-    @Override
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
-    }
-
-    @Override
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Inventory");
 
         group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
-    }
-
-    @Override
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
     }
 
     @Override
@@ -1331,313 +1249,5 @@ public class InventoryManager implements Serializable, Manager {
                 break;
         }
     }
-
-    @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
-    public void logout() {
-        getUser().logActivity("Logged out", getEntityManager1());
-        reset();
-        completeLogout();
-    }
-
-    @Override
-    public void initSearchPanel() {
-        initSearchTypes();
-        updateSearchType();
-    }
-
-    @Override
-    public void initSearchTypes() {
-        groupedSearchTypes.clear();
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                groupedSearchTypes.add(manager.getSearchTypesGroup());
-            }
-        }
-    }
-
-    @Override
-    public Manager getManager(String name) {
-        return BeanUtils.findBean(name);
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        ArrayList<SelectItem> datePeriods = new ArrayList<>();
-
-        for (String name : DatePeriod.getDatePeriodNames()) {
-            datePeriods.add(new SelectItem(name, name));
-        }
-
-        return datePeriods;
-    }
-
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
-
-    @Override
-    public void updateSearchType() {
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                allDateSearchFields = manager.getDateSearchFields(searchType);
-            }
-        }
-    }
-
-    @Override
-    public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager1());
-
-        getUser().save(getEntityManager1());
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initDashboard();
-        initMainTabView();
-        updateAllForms();
-    }
-
-    @Override
-    public void completeLogout() {
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-    }
-
-    public Dashboard getDashboard() {
-        return getSystemManager().getDashboard();
-    }
-
-    @Override
-    public void initDashboard() {
-        initSearchPanel();
-    }
-
-    @Override
-    public void initMainTabView() {
-        getMainTabView().reset(getUser());
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getDashboardTitle());
-        }
-    }
-
-    @Override
-    public void updateAllForms() {
-        PrimeFaces.current().ajax().update("appForm");
-    }
-
-    @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
-
-        getMainTabView().closeTab(tabId);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        String tabTitle = event.getTab().getTitle();
-
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        return getUser().getId() != null;
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
-    }
-
-    @Override
-    public void handleSelectedNotification(Notification notification) {
-
-        switch (notification.getType()) {
-            case "PRSearch": // tk
-                PurchaseRequisition pr = null;
-                EntityManager em = getEntityManager1();
-
-                try {
-                    pr = em.find(PurchaseRequisition.class,
-                            Long.parseLong(notification.getMessage()));
-                } catch (NumberFormatException e) {
-                    System.out.println("PR not found");
-                }
-
-                if (pr != null) {
-                    getPurchasingManager().getFoundPurchaseReqs().clear();
-                    getPurchasingManager().getFoundPurchaseReqs().add(pr);
-                    getPurchasingManager().openPurchaseReqsTab();
-                }
-
-                break;
-
-            default:
-                System.out.println("Unkown type");
-        }
-
-    }
-
-    @Override
-    public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void doDefaultCommand() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void updateSearch() {
-        setDefaultCommandTarget("doSearch");
-    }
-
-    @Override
-    public void setDefaultCommandTarget(String defaultCommandTarget) {
-        this.defaultCommandTarget = defaultCommandTarget;
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-        return defaultCommandTarget;
-    }
-
+    
 }
