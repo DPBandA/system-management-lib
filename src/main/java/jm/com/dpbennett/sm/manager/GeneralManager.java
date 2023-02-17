@@ -638,7 +638,7 @@ public class GeneralManager implements Manager, Serializable {
                 }
             }
 
-            // get the user if one exists
+            // Get the user if one exists
             if (userValidated) {
                 System.out.println("User validated.");
 
