@@ -53,6 +53,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -72,7 +73,7 @@ import org.primefaces.event.TabCloseEvent;
  *
  * @author Desmond Bennett
  */
-public class FinanceManager implements Serializable, Manager {
+public class FinanceManager extends GeneralManager implements Serializable {
 
     private Integer longProcessProgress;
     private AccountingCode selectedAccountingCode;
@@ -1383,6 +1384,8 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public void reset() {
+        super.reset();
+        
         defaultCommandTarget = "@this";
         longProcessProgress = 0;
         procurementMethodSearchText = "";

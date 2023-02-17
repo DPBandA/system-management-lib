@@ -267,34 +267,10 @@ public final class SystemManager extends GeneralManager implements Serializable 
         this.moduleDualList = moduleDualList;
     }
 
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
-    }
-
     public List getContentTypes() {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "contentTypeList");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
     }
 
     public void okPickList() {
@@ -891,51 +867,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         }
     }
 
-    @Override
-    public void doSearch() {
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                manager.doDefaultSearch(
-                        getDateSearchPeriod().getDateField(),
-                        getSearchType(),
-                        getSearchText(),
-                        getDateSearchPeriod().getStartDate(),
-                        getDateSearchPeriod().getEndDate());
-            }
-
-        }
-    }
-
-    @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
-    public void updateAllForms() {
-        PrimeFaces.current().ajax().update("appForm");
-    }
-
-    @Override
-    public void logout() {
-        getUser().logActivity("Logged out", getEntityManager1());
-        reset();
-        completeLogout();
-    }
-
     public String getSupportURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "supportURL");
@@ -950,11 +881,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void viewUserProfile() {
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        return getUser().getId() != null;
     }
 
     public void handleLayoutUnitToggle(ToggleEvent event) {
@@ -999,79 +925,12 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
-
-        getMainTabView().closeTab(tabId);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        String tabTitle = event.getTab().getTitle();
-
-        switch (tabTitle) {
-            case "Human Resource":
-
-                break;
-            case "System Administration":
-
-                break;
-
-        }
-    }
-
-    public void onDashboardTabChange(TabChangeEvent event) {
-        getDashboard().setSelectedTabId(((TabPanel) event.getData()).getId());
-    }
-
-    public void updateDashboard(String tabId) {
-        PrimeFaces.current().ajax().update("appForm");
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        getMainTabView().reset(getUser());
-        for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getDashboardTitle());
-        }
-    }
-
-    @Override
-    public void initDashboard() {
-        initSearchPanel();
-    }
-
-    @Override
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Administration");
 
         group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
-    }
-
-    @Override
-    public void initSearchPanel() {
-
-        initSearchTypes();
-        updateSearchType();
-    }
-
-    @Override
-    public void initSearchTypes() {
-
-        getGroupedSearchTypes().clear();
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                getGroupedSearchTypes().add(manager.getSearchTypesGroup());
-            }
-        }
     }
 
     @Override
@@ -1128,18 +987,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         return dateSearchFields;
     }
 
-    /**
-     * Gets the SessionScoped bean that deals with user authentication.
-     *
-     * @param name
-     * @return
-     */
-    @Override
-    public Manager getManager(String name) {
-
-        return BeanUtils.findBean(name);
-    }
-
     public ArrayList<String> completeCountry(String query) {
         EntityManager em;
 
@@ -1156,17 +1003,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
             System.out.println(e);
             return new ArrayList<>();
         }
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        ArrayList<SelectItem> datePeriods = new ArrayList<>();
-
-        for (String name : DatePeriod.getDatePeriodNames()) {
-            datePeriods.add(new SelectItem(name, name));
-        }
-
-        return datePeriods;
     }
 
     public List<SelectItem> getWorkProgressList() {
@@ -1267,21 +1103,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void setIsActiveEmailsOnly(Boolean isActiveEmailsOnly) {
         this.isActiveEmailsOnly = isActiveEmailsOnly;
-    }
-
-    @Override
-    public void updateDateSearchField() {
-    }
-
-    @Override
-    public void updateSearchType() {
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                setAllDateSearchFields(manager.getDateSearchFields(getSearchType()));
-            }
-        }
     }
 
     public String getModuleSearchText() {
@@ -1547,40 +1368,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
-    }
-
-    @Override
-    public void handleSelectedNotification(Notification notification) {
-
-        switch (notification.getType()) {
-            case "UserNotificationDialog":
-
-                break;
-            default:
-                System.out.println("Unkown type");
-        }
-
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-
-        EntityManager em = getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
-
     }
 
     /**
