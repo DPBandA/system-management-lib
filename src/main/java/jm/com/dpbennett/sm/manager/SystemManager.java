@@ -68,7 +68,7 @@ import org.primefaces.model.file.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public class SystemManager extends GeneralManager implements Serializable {
+public final class SystemManager extends GeneralManager implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
