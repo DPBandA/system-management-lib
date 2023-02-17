@@ -60,6 +60,7 @@ public class GeneralManager implements Manager, Serializable {
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
+    private SystemManager systemManager;
     private MainTabView mainTabView;
     private String searchText;
     private String searchType;
@@ -525,7 +526,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public MainTabView getMainTabView() {
-        return mainTabView;
+         return mainTabView;
     }
 
     @Override
@@ -823,7 +824,12 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
+        
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+
+        return systemManager;
     }
 
 }
