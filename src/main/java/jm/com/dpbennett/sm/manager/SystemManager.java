@@ -33,10 +33,6 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.SearchControls;
-import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -54,7 +50,6 @@ import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
@@ -76,7 +71,7 @@ import org.primefaces.model.file.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public class SystemManager implements Manager, Serializable {
+public class SystemManager extends GeneralManager implements Serializable {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -97,8 +92,8 @@ public class SystemManager implements Manager, Serializable {
     private String notificationSearchText;
     private String privilegeSearchText;
     private String moduleSearchText;
-    private String searchText;
-    private String searchType;
+//    private String searchText;
+//    private String searchType;
     private String attachmentSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundFinancialSystemOptions;
@@ -125,26 +120,27 @@ public class SystemManager implements Manager, Serializable {
     private String userSearchText;
     private Attachment attachment;
     private UploadedFile uploadedFile;
-    private ArrayList<SelectItem> groupedSearchTypes;
-    private DatePeriod dateSearchPeriod;
-    private ArrayList<SelectItem> allDateSearchFields;
+    //private ArrayList<SelectItem> groupedSearchTypes;
+    //private DatePeriod dateSearchPeriod;
+    //private ArrayList<SelectItem> allDateSearchFields;
     private Email selectedEmail;
     private Boolean isActiveEmailsOnly;
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
-    private User user;
-    private String username;
-    private String logonMessage;
-    private String password;
-    private Integer loginAttempts;
-    private Boolean userLoggedIn;
-    private String defaultCommandTarget;
+//    private User user;
+//    private String username;
+//    private String logonMessage;
+//    private String password;
+//    private Integer loginAttempts;
+//    private Boolean userLoggedIn;
+//    private String defaultCommandTarget;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
+        //super();
         init();
     }
 
@@ -260,30 +256,30 @@ public class SystemManager implements Manager, Serializable {
 
     }
 
-    @Override
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
+//    @Override
+//    public DatePeriod getDateSearchPeriod() {
+//        return dateSearchPeriod;
+//    }
+//
+//    @Override
+//    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
+//        this.dateSearchPeriod = dateSearchPeriod;
+//    }
 
-    @Override
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
-    }
+//    @Override
+//    public ArrayList<SelectItem> getGroupedSearchTypes() {
+//        return groupedSearchTypes;
+//    }
 
-    @Override
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
-    }
-
-    @Override
-    public String getSearchType() {
-        return searchType;
-    }
-
-    @Override
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
-    }
+//    @Override
+//    public String getSearchType() {
+//        return searchType;
+//    }
+//
+//    @Override
+//    public void setSearchType(String searchType) {
+//        this.searchType = searchType;
+//    }
 
     public UploadedFile getUploadedFile() {
         return uploadedFile;
@@ -678,8 +674,7 @@ public class SystemManager implements Manager, Serializable {
                         FacesMessage.SEVERITY_ERROR);
 
             }
-        }
-        else {
+        } else {
             PrimeFaces.current().dialog().closeDynamic(null);
         }
 
@@ -1120,12 +1115,12 @@ public class SystemManager implements Manager, Serializable {
     @Override
     public void initSearchTypes() {
 
-        groupedSearchTypes.clear();
+        getGroupedSearchTypes().clear();
 
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
-                groupedSearchTypes.add(manager.getSearchTypesGroup());
+                getGroupedSearchTypes().add(manager.getSearchTypesGroup());
             }
         }
     }
@@ -1230,10 +1225,10 @@ public class SystemManager implements Manager, Serializable {
         return datePeriods;
     }
 
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
+//    @Override
+//    public ArrayList<SelectItem> getAllDateSearchFields() {
+//        return allDateSearchFields;
+//    }
 
     public List<SelectItem> getWorkProgressList() {
 
@@ -1322,7 +1317,7 @@ public class SystemManager implements Manager, Serializable {
     }
 
     @Override
-    public final void init() {
+    public void init() {
 
         reset();
     }
@@ -1345,7 +1340,7 @@ public class SystemManager implements Manager, Serializable {
         for (Modules activeModule : getUser().getActiveModules()) {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
-                allDateSearchFields = manager.getDateSearchFields(searchType);
+                setAllDateSearchFields(manager.getDateSearchFields(getSearchType()));
             }
         }
     }
@@ -1358,15 +1353,15 @@ public class SystemManager implements Manager, Serializable {
         this.moduleSearchText = moduleSearchText;
     }
 
-    @Override
-    public String getSearchText() {
-        return searchText;
-    }
-
-    @Override
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
+//    @Override
+//    public String getSearchText() {
+//        return searchText;
+//    }
+//
+//    @Override
+//    public void setSearchText(String searchText) {
+//        this.searchText = searchText;
+//    }
 
     public Boolean getIsActiveDocumentTypesOnly() {
         return isActiveDocumentTypesOnly;
@@ -1726,6 +1721,8 @@ public class SystemManager implements Manager, Serializable {
 
     @Override
     public void reset() {
+        super.reset();
+        
         activeTabIndex = 0;
         activeNavigationTabIndex = 0;
         activeTabForm = "";
@@ -1740,7 +1737,7 @@ public class SystemManager implements Manager, Serializable {
         privilegeSearchText = "";
         moduleSearchText = "";
         userSearchText = "";
-        searchText = "";
+//        searchText = "";
         attachmentSearchText = "";
         emailSearchText = "";
         isActiveLdapsOnly = true;
@@ -1749,22 +1746,27 @@ public class SystemManager implements Manager, Serializable {
         isActiveEmailsOnly = true;
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
-        groupedSearchTypes = new ArrayList<>();
-        allDateSearchFields = new ArrayList();
-        searchType = "Users";
-        dateSearchPeriod = new DatePeriod("This month", "month",
-                "dateEntered", null, null, null, false, false, false);
-        password = "";
-        username = "";
-        loginAttempts = 0;
-        userLoggedIn = false;
-        logonMessage = "Please provide your login details below:";
-        String theme = getUser().getPFThemeName();
-        user = new User();
-        user.setPFThemeName(theme);
-        defaultCommandTarget = "@this";
+        //groupedSearchTypes = new ArrayList<>();
+        //allDateSearchFields = new ArrayList();
+        setSearchType("Users");
+        setDateSearchPeriod(new DatePeriod("This month", "month",
+                "dateEntered", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
+//        dateSearchPeriod = new DatePeriod("This month", "month",
+//                "dateEntered", null, null, null, false, false, false);
+//        dateSearchPeriod.initDatePeriod();
+//        password = "";
+//        username = "";
+//        loginAttempts = 0;
+//        userLoggedIn = false;
+//        logonMessage = "Please provide your login details below:";
+//        String theme = getUser().getPFThemeName();
+//        user = new User();
+//        user.setPFThemeName(theme);
+//        defaultCommandTarget = "@this";
+        
 
-        //PrimeFaces.current().executeScript("PF('loginDialog').show();");
+//        PrimeFaces.current().executeScript("PF('loginDialog').show();");
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -2046,13 +2048,13 @@ public class SystemManager implements Manager, Serializable {
         return "";
     }
 
-    @Override
-    public User getUser() {
-        if (user == null) {
-            user = new User();
-        }
-        return user;
-    }
+//    @Override
+//    public User getUser() {
+//        if (user == null) {
+//            user = new User();
+//        }
+//        return user;
+//    }
 
     @Override
     public MainTabView getMainTabView() {
@@ -2073,26 +2075,28 @@ public class SystemManager implements Manager, Serializable {
         return new Date();
     }
 
-    @Override
-    public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager1());
-
-        getUser().save(getEntityManager1());
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initDashboard();
-        initMainTabView();
-        updateAllForms();
-
-    }
-
-    @Override
-    public void completeLogout() {
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-    }
+//    @Override
+//    public void completeLogin() {
+//        getUser().logActivity("Logged in", getEntityManager1());
+//
+//        getUser().save(getEntityManager1());
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        initDashboard();
+//        initMainTabView();
+//        updateAllForms();
+//
+//    }
+//
+//    @Override
+//    public void completeLogout() {
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        getSystemManager().setUser(getUser());
+//    }
 
     public Category getSelectedCategory() {
         return selectedCategory;
@@ -2129,269 +2133,269 @@ public class SystemManager implements Manager, Serializable {
         return views;
     }
 
-    @Override
-    public void login() {
-        login(getEntityManager1());
-    }
+//    @Override
+//    public void login() {
+//        login(getEntityManager1());
+//    }
 
-    @Override
-    public Integer getLoginAttempts() {
-        return loginAttempts;
-    }
+//    @Override
+//    public Integer getLoginAttempts() {
+//        return loginAttempts;
+//    }
+//
+//    @Override
+//    public void setLoginAttempts(Integer loginAttempts) {
+//        this.loginAttempts = loginAttempts;
+//    }
+//
+//    @Override
+//    public Boolean getUserLoggedIn() {
+//        return userLoggedIn;
+//    }
+//
+//    @Override
+//    public void setUserLoggedIn(Boolean userLoggedIn) {
+//        this.userLoggedIn = userLoggedIn;
+//    }
+//
+//    @Override
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    @Override
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
+//
+//    @Override
+//    public String getUsername() {
+//        return username;
+//    }
+//
+//    @Override
+//    public void setUsername(String username) {
+//        this.username = username;
+//    }
+//
+//    @Override
+//    public User getUser(EntityManager em) {
+//        if (user == null) {
+//            return new User();
+//        } else {
+//            try {
+//                if (user.getId() != null) {
+//                    User userFound = em.find(User.class, user.getId());
+//                    if (userFound != null) {
+//                        em.refresh(userFound);
+//                        user = userFound;
+//                    }
+//                }
+//            } catch (Exception e) {
+//                System.out.println(e);
+//                return new User();
+//            }
+//        }
+//
+//        return user;
+//    }
+//
+//    @Override
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        this.loginAttempts = loginAttempts;
-    }
+//    @Override
+//    public Boolean checkForLDAPUser(EntityManager em, String username, javax.naming.ldap.LdapContext ctx) {
+//        try {
+//            SearchControls constraints = new SearchControls();
+//            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+//            String[] attrIDs = {"displayName"};
+//
+//            constraints.setReturningAttributes(attrIDs);
+//
+//            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+//            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+//
+//            if (!answer.hasMore()) { // Assuming only one match
+//                // LDAP user not found!
+//                return Boolean.FALSE;
+//            }
+//        } catch (NamingException ex) {
+//            System.out.println(ex);
+//            return Boolean.FALSE;
+//        }
+//
+//        return Boolean.TRUE;
+//    }
 
-    @Override
-    public Boolean getUserLoggedIn() {
-        return userLoggedIn;
-    }
+//    @Override
+//    public Boolean validateUser(EntityManager em) {
+//        Boolean userValidated = false;
+//        InitialLdapContext ctx;
+//
+//        try {
+//            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+//
+//            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+//                if (ldapContext.getName().equals("LDAP")) {
+//                    userValidated = LdapContext.authenticateUser(
+//                            em,
+//                            ldapContext,
+//                            username,
+//                            password);
+//                } else {
+//                    ctx = ldapContext.getInitialLDAPContext(username, password);
+//
+//                    if (ctx != null) {
+//                        if (checkForLDAPUser(em, username, ctx)) {
+//                            // user exists in LDAP                    
+//                            userValidated = true;
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            // get the user if one exists
+//            if (userValidated) {
+//                System.out.println("User validated.");
+//
+//                return true;
+//
+//            } else {
+//                System.out.println("User NOT validated!");
+//
+//                return false;
+//            }
+//
+//        } catch (Exception e) {
+//            System.err.println("Problem connecting to directory: " + e);
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    public void checkLoginAttemps() {
+//        ++loginAttempts;
+//        if (loginAttempts == 2) {
+//
+//            try {
+//                // Send email to system administrator alert if activated
+//                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+//                        "developerEmailAlertActivated")) {
+//                    MailUtils.postMail(null, null, null,
+//                            "Failed user login",
+//                            "Username: " + username + "\nDate/Time: " + new Date(),
+//                            "text/plain",
+//                            getEntityManager1());
+//                }
+//            } catch (Exception ex) {
+//                System.out.println(ex);
+//            }
+//        } else if (loginAttempts > 2) {// tk # attempts to be made option
+//            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+//        }
+//
+//        username = "";
+//        password = "";
+//    }
+//
+//    @Override
+//    public void login(EntityManager em) {
+//
+//        setUserLoggedIn(false);
+//
+//        try {
+//
+//            // Find user and determine if authentication is required for this user
+//            user = User.findActiveJobManagerUserByUsername(em, username);
+//
+//            if (user != null) {
+//                em.refresh(user);
+//                if (!user.getAuthenticate()) {
+//                    System.out.println("User will NOT be authenticated.");
+//                    logonMessage = "Please provide your login details below:";
+//                    username = "";
+//                    password = "";
+//                    setUserLoggedIn(true);
+//
+//                    completeLogin();
+//
+//                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//                } else if (validateUser(em)) {
+//                    logonMessage = "Please provide your login details below:";
+//                    username = "";
+//                    password = "";
+//                    setUserLoggedIn(true);
+//
+//                    completeLogin();
+//
+//                } else {
+//                    setUserLoggedIn(false);
+//                    checkLoginAttemps();
+//                    logonMessage = "Please enter a valid username and password.";
+//                }
+//            } else {
+//                setUserLoggedIn(false);
+//                logonMessage = "Please enter a registered username.";
+//                username = "";
+//                password = "";
+//            }
+//
+//        } catch (Exception e) {
+//            setUserLoggedIn(false);
+//            System.out.println(e);
+//            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+//        }
+//
+//    }
+//
+//    @Override
+//    public String getLogonMessage() {
+//        return logonMessage;
+//    }
+//
+//    @Override
+//    public void setLogonMessage(String logonMessage) {
+//        this.logonMessage = logonMessage;
+//    }
+//
+//    @Override
+//    public void doDefaultCommand() {
+//
+//        switch (defaultCommandTarget) {
+//            case "doSearch":
+//                doSearch();
+//                break;
+//            default:
+//                PrimeFacesUtils.addMessage("Action NOT Taken",
+//                        "No action was taken. Enter search text if you are doing a search.",
+//                        FacesMessage.SEVERITY_INFO);
+//                PrimeFaces.current().ajax().update("appForm:growl3");
+//                break;
+//        }
+//    }
+//
+//    @Override
+//    public String getDefaultCommandTarget() {
+//        return defaultCommandTarget;
+//    }
+//
+//    @Override
+//    public void setDefaultCommandTarget(String defaultCommandTarget) {
+//        this.defaultCommandTarget = defaultCommandTarget;
+//    }
 
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public User getUser(EntityManager em) {
-        if (user == null) {
-            return new User();
-        } else {
-            try {
-                if (user.getId() != null) {
-                    User userFound = em.find(User.class, user.getId());
-                    if (userFound != null) {
-                        em.refresh(userFound);
-                        user = userFound;
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return new User();
-            }
-        }
-
-        return user;
-    }
-
-    @Override
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, javax.naming.ldap.LdapContext ctx) {
-        try {
-            SearchControls constraints = new SearchControls();
-            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String[] attrIDs = {"displayName"};
-
-            constraints.setReturningAttributes(attrIDs);
-
-            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
-            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
-
-            if (!answer.hasMore()) { // Assuming only one match
-                // LDAP user not found!
-                return Boolean.FALSE;
-            }
-        } catch (NamingException ex) {
-            System.out.println(ex);
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        Boolean userValidated = false;
-        InitialLdapContext ctx;
-
-        try {
-            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
-
-            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
-                if (ldapContext.getName().equals("LDAP")) {
-                    userValidated = LdapContext.authenticateUser(
-                            em,
-                            ldapContext,
-                            username,
-                            password);
-                } else {
-                    ctx = ldapContext.getInitialLDAPContext(username, password);
-
-                    if (ctx != null) {
-                        if (checkForLDAPUser(em, username, ctx)) {
-                            // user exists in LDAP                    
-                            userValidated = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // get the user if one exists
-            if (userValidated) {
-                System.out.println("User validated.");
-
-                return true;
-
-            } else {
-                System.out.println("User NOT validated!");
-
-                return false;
-            }
-
-        } catch (Exception e) {
-            System.err.println("Problem connecting to directory: " + e);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-        ++loginAttempts;
-        if (loginAttempts == 2) {
-
-            try {
-                // Send email to system administrator alert if activated
-                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "developerEmailAlertActivated")) {
-                    MailUtils.postMail(null, null, null,
-                            "Failed user login",
-                            "Username: " + username + "\nDate/Time: " + new Date(),
-                            "text/plain",
-                            getEntityManager1());
-                }
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        } else if (loginAttempts > 2) {// tk # attempts to be made option
-            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
-        }
-
-        username = "";
-        password = "";
-    }
-
-    @Override
-    public void login(EntityManager em) {
-
-        setUserLoggedIn(false);
-
-        try {
-
-            // Find user and determine if authentication is required for this user
-            user = User.findActiveJobManagerUserByUsername(em, username);
-
-            if (user != null) {
-                em.refresh(user);
-                if (!user.getAuthenticate()) {
-                    System.out.println("User will NOT be authenticated.");
-                    logonMessage = "Please provide your login details below:";
-                    username = "";
-                    password = "";
-                    setUserLoggedIn(true);
-
-                    completeLogin();
-
-                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-                } else if (validateUser(em)) {
-                    logonMessage = "Please provide your login details below:";
-                    username = "";
-                    password = "";
-                    setUserLoggedIn(true);
-
-                    completeLogin();
-
-                } else {
-                    setUserLoggedIn(false);
-                    checkLoginAttemps();
-                    logonMessage = "Please enter a valid username and password.";
-                }
-            } else {
-                setUserLoggedIn(false);
-                logonMessage = "Please enter a registered username.";
-                username = "";
-                password = "";
-            }
-
-        } catch (Exception e) {
-            setUserLoggedIn(false);
-            System.out.println(e);
-            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
-        }
-
-    }
-
-    @Override
-    public String getLogonMessage() {
-        return logonMessage;
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        this.logonMessage = logonMessage;
-    }
-
-    @Override
-    public void doDefaultCommand() {
-        
-        switch (defaultCommandTarget) {
-            case "doSearch":
-                doSearch();
-                break;
-            default:
-                PrimeFacesUtils.addMessage("Action NOT Taken",
-                        "No action was taken. Enter search text if you are doing a search.",
-                        FacesMessage.SEVERITY_INFO);
-                PrimeFaces.current().ajax().update("appForm:growl3");
-                break;
-        }
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-        return defaultCommandTarget;
-    }
-
-    @Override
-    public void setDefaultCommandTarget(String defaultCommandTarget) {
-        this.defaultCommandTarget = defaultCommandTarget;
-    }
-
-    @Override
-    public void updateSearch() {
-        setDefaultCommandTarget("doSearch");
-    }
-
-    @Override
-    public SystemManager getSystemManager() {
-        return this;
-    }
+//    @Override
+//    public void updateSearch() {
+//        setDefaultCommandTarget("doSearch");
+//    }
+//
+//    @Override
+//    public SystemManager getSystemManager() {
+//        return this;
+//    }
 
 }
