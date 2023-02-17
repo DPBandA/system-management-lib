@@ -41,32 +41,22 @@ import org.primefaces.PrimeFaces;
 import java.util.Objects;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItemGroup;
-import javax.naming.ldap.LdapContext;
 import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.business.entity.fm.InventoryDisbursement;
 import jm.com.dpbennett.business.entity.fm.InventoryRequisition;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
-import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
-import jm.com.dpbennett.sm.manager.Manager;
-import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.event.RowEditEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 
 /**
  *
