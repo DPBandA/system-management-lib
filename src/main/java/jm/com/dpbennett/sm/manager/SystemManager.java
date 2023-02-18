@@ -50,16 +50,13 @@ import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.TabPanel;
 import jm.com.dpbennett.sm.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
@@ -73,7 +70,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
-    private EntityManagerFactory EMF2;
+    private EntityManagerFactory EMF2;    
+    //private MainTabView mainTabView;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;

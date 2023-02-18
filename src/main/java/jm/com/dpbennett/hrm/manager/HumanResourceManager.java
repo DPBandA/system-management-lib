@@ -204,12 +204,6 @@ public class HumanResourceManager implements Serializable, Manager {
         }
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }

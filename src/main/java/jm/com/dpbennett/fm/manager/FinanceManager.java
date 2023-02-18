@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -47,19 +46,14 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
-import jm.com.dpbennett.sm.manager.Manager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
-import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 
 /**
  *
@@ -112,12 +106,20 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private List<ProcurementMethod> foundProcurementMethods;
     private ProcurementMethod selectedProcurementMethod;
     private String procurementMethodSearchText;
+    private SystemManager systemManager;
 
     /**
      * Creates a new instance of FinanceManager.
      */
     public FinanceManager() {
         init();
+    }
+
+    public SystemManager getSystemManager() {
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+        return systemManager;
     }
 
     public void onRowSelect() {
@@ -204,7 +206,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
                 getFoundProcurementMethods().get(event.getRowIndex()));
     }
-
 
     /**
      * Select an financial administration tab based on whether or not the tab is
@@ -994,12 +995,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    @Override
-    public MainTabView getMainTabView() {
-
-        return getSystemManager().getMainTabView();
-    }
-
+//    @Override
+//    public MainTabView getMainTabView() {
+//
+//        return getSystemManager().getMainTabView();
+//    }
     public Boolean getEdit() {
         return edit;
     }
@@ -1552,7 +1552,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
             }
         }
 
-    }    
+    }
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {

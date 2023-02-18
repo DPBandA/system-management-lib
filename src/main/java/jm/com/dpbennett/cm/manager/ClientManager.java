@@ -111,12 +111,7 @@ public class ClientManager implements Serializable, Manager {
         this.clientDialogTitle = clientDialogTitle;
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    @Override
+  
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }

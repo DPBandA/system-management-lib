@@ -151,12 +151,6 @@ public class ReportManager implements Serializable, Manager {
         return "Report Manager";
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }

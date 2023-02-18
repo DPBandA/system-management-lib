@@ -61,10 +61,10 @@ public class GeneralManager implements Manager, Serializable {
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
     private SystemManager systemManager;
-    private MainTabView mainTabView;
     private String searchText;
     private String searchType;
     private Dashboard dashboard;
+    private MainTabView mainTabView;
     private ArrayList<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
     private ArrayList<SelectItem> allDateSearchFields;
@@ -229,9 +229,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
-
-        mainTabView.closeTab(tabId);
+       
     }
 
     @Override
@@ -544,6 +542,8 @@ public class GeneralManager implements Manager, Serializable {
         getUser().logActivity("Logged in", getEntityManager1());
 
         getUser().save(getEntityManager1());
+        
+        getManager("systemManager").setUser(getUser());
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
@@ -559,7 +559,7 @@ public class GeneralManager implements Manager, Serializable {
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
 
-        getSystemManager().setUser(getUser());
+        getManager("systemManager").setUser(getUser());
     }
 
     @Override
@@ -822,14 +822,6 @@ public class GeneralManager implements Manager, Serializable {
         setDefaultCommandTarget("doSearch");
     }
 
-    @Override
-    public SystemManager getSystemManager() {
-        
-        if (systemManager == null) {
-            systemManager = BeanUtils.findBean("systemManager");
-        }
-
-        return systemManager;
-    }
+  
 
 }

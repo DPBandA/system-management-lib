@@ -51,6 +51,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
@@ -78,6 +79,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private List<InventoryRequisition> foundInventoryRequisitions;
     private List<MarketProduct> foundInventoryProducts;
     private Boolean isActiveInventoryProductsOnly;
+    private FinanceManager financeManager;
 
     /**
      * Creates a new instance of InventoryManager
@@ -357,10 +359,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void createNewProductCategory() {
-        getSystemManager().setSelectedCategory(new Category());
-        getSystemManager().getSelectedCategory().setType("Product");
+        getFinanceManager().getSystemManager().setSelectedCategory(new Category());
+        getFinanceManager().getSystemManager().getSelectedCategory().setType("Product");
 
-        getSystemManager().editCategory();
+        getFinanceManager().getSystemManager().editCategory();
     }
 
     public List<Category> completeActiveCategory(String query) {
@@ -439,8 +441,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventoryProductSearch() {
-        
-          doDefaultSearch(
+
+        doDefaultSearch(
                 getDateSearchPeriod().getDateField(),
                 "Inventory Products",
                 getInventoryProductSearchText(),
@@ -455,7 +457,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void openInventoryProductBrowser() {
 
-        getSystemManager().getMainTabView().openTab("Inventory Products");
+        getFinanceManager().getMainTabView().openTab("Inventory Products");
     }
 
     public void createNewInventoryProduct() {
@@ -520,7 +522,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public FinanceManager getFinanceManager() {
-        return BeanUtils.findBean("financeManager");
+        if (financeManager == null) {
+            financeManager = BeanUtils.findBean("financeManager");
+        }
+
+        return financeManager;
     }
 
     public void editInventorySupplier() {
@@ -530,9 +536,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void editInventoryCategory() {
-        getSystemManager().setSelectedCategory(getSelectedInventory().getCategory());
+        getFinanceManager().getSystemManager().setSelectedCategory(getSelectedInventory().getCategory());
 
-        getSystemManager().editCategory();
+        getFinanceManager().getSystemManager().editCategory();
     }
 
     public void inventorySupplierDialogReturn() {
@@ -543,8 +549,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void inventoryCategoryDialogReturn() {
-        if (getSystemManager().getSelectedCategory().getId() != null) {
-            getSelectedInventory().setCategory(getSystemManager().getSelectedCategory());
+        if (getFinanceManager().getSystemManager().getSelectedCategory().getId() != null) {
+            getSelectedInventory().setCategory(getFinanceManager().getSystemManager().getSelectedCategory());
             updateInventory(null);
         }
     }
@@ -1132,7 +1138,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public MainTabView getMainTabView() {
 
-        return getSystemManager().getMainTabView();
+        return getFinanceManager().getMainTabView();
     }
 
     public Boolean getEdit() {
@@ -1151,7 +1157,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public void reset() {
         super.reset();
-        
+
         setSearchType("Inventory");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEdited", null, null, null, false, false, false));
@@ -1163,7 +1169,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     @Override
     public EntityManager getEntityManager1() {
-        return getSystemManager().getEntityManager1();
+        return getFinanceManager().getEntityManager1();
     }
 
     @Override
@@ -1174,7 +1180,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     @Override
     public EntityManager getEntityManager2() {
-        return getSystemManager().getEntityManager2();
+        return getFinanceManager().getEntityManager2();
     }
 
     @Override
@@ -1239,5 +1245,5 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 break;
         }
     }
-    
+
 }

@@ -630,7 +630,6 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     }
 
-    @Override
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");

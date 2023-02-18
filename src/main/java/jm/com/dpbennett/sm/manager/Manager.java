@@ -158,8 +158,6 @@ public interface Manager {
     
     public MainTabView getMainTabView();
     
-    public void handleSelectedNotification(Notification notification);
-    
-    public SystemManager getSystemManager();
+    public void handleSelectedNotification(Notification notification);   
 
 }
