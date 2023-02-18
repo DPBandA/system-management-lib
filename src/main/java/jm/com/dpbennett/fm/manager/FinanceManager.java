@@ -1537,6 +1537,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return subHeader;
     }
 
+    // tk use super class method?
     @Override
     public void initMainTabView() {
 
