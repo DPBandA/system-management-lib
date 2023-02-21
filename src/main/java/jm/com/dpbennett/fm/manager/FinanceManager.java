@@ -1537,24 +1537,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return subHeader;
     }
 
-    // tk use super class method?
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        for (String moduleName : getModuleNames()) {
-            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
-                    moduleName);
-            if (module != null) {
-                if (getUser().hasModule(moduleName)) {
-                    getMainTabView().openTab(module.getDashboardTitle());
-                }
-            }
-        }
-
-    }
-
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();

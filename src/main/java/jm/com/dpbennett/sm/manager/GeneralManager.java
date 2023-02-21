@@ -229,7 +229,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-       
+
     }
 
     @Override
@@ -395,7 +395,6 @@ public class GeneralManager implements Manager, Serializable {
         return allDateSearchFields;
     }
 
-    // tk to be made interface method
     public void setAllDateSearchFields(ArrayList<SelectItem> allDateSearchFields) {
         this.allDateSearchFields = allDateSearchFields;
     }
@@ -408,6 +407,17 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void updateDateSearchField() {
+    }
+
+    private Boolean hasSearchType(Manager manager, String searchType) {
+
+        for (SelectItem type : manager.getSearchTypes()) {
+            if (type.getLabel().equals(searchType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -423,12 +433,15 @@ public class GeneralManager implements Manager, Serializable {
                 if (module != null) {
                     Manager manager = getManager(module.getName());
                     if (manager != null) {
-                        ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
-                        if (!dateFields.isEmpty()) {
-                            allDateSearchFields = dateFields;
+                        if (hasSearchType(manager, searchType)) {
+                            ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                            if (!dateFields.isEmpty()) {
 
-                            return;
-                        }
+                                allDateSearchFields = dateFields;
+
+                                return;
+                            }
+                        } 
                     }
                 }
             }
@@ -524,7 +537,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public MainTabView getMainTabView() {
-         return mainTabView;
+        return mainTabView;
     }
 
     @Override
@@ -542,7 +555,7 @@ public class GeneralManager implements Manager, Serializable {
         getUser().logActivity("Logged in", getEntityManager1());
 
         getUser().save(getEntityManager1());
-        
+
         getManager("systemManager").setUser(getUser());
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
@@ -821,7 +834,5 @@ public class GeneralManager implements Manager, Serializable {
     public void updateSearch() {
         setDefaultCommandTarget("doSearch");
     }
-
-  
 
 }

@@ -41,7 +41,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -71,7 +70,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Email;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
@@ -85,20 +83,15 @@ import jm.com.dpbennett.jmts.JMTSApplication;
 import jm.com.dpbennett.lo.manager.LegalDocumentManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
-import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.UnselectEvent;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
-import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 
 /**
  *
@@ -114,14 +107,9 @@ public class JobManager extends GeneralManager
     private Boolean useAccPacCustomerList;
     private Boolean showJobEntry;
     private List<Job> jobSearchResultList;
-    //private DatePeriod dateSearchPeriod;
-    //private ArrayList<SelectItem> groupedSearchTypes;
-    //private String searchType;
-    //private String searchText;
     private Job[] selectedJobs;
     private AccPacCustomer accPacCustomer;
     private StatusNote selectedStatusNote;
-    //private User user;
     private SystemManager systemManager;
 
     /**
@@ -846,10 +834,39 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("purchasingManager");
     }
 
-    public SelectItem[] getAuthorizedSearchTypes() {
+//    public SelectItem[] getAuthorizedSearchTypes() {
+//
+//        EntityManager em = getEntityManager1();
+//        
+//
+//        if (getUser(em).can("EditJob")
+//                || getUser(em).can("EnterJob")
+//                || getUser(em).can("EditInvoicingAndPayment")
+//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
+//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditJob()
+//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()) {
+//            return new SelectItem[]{
+//                new SelectItem("General", "General"),
+//                new SelectItem("My jobs", "My jobs"),
+//                new SelectItem("My department's jobs", "My department's jobs"),
+//                new SelectItem("Parent jobs only", "Parent jobs only"),
+//                new SelectItem("Unapproved job costings", "Unapproved job costings"),
+//                new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"),
+//                new SelectItem("Incomplete jobs", "Incomplete jobs"),
+//                new SelectItem("Invoiced jobs", "Invoiced jobs")};
+//
+//        } else {
+//
+//            return new SelectItem[]{
+//                new SelectItem("My jobs", "My jobs"),
+//                new SelectItem("My department's jobs", "My department's jobs")};
+//        }
+//
+//    }
+    public ArrayList<SelectItem> getAuthorizedSearchTypes() {
 
-        // Create list based on user's privileges
         EntityManager em = getEntityManager1();
+        ArrayList searchTypes = new ArrayList();
 
         if (getUser(em).can("EditJob")
                 || getUser(em).can("EnterJob")
@@ -857,22 +874,24 @@ public class JobManager extends GeneralManager
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditJob()
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()) {
-            return new SelectItem[]{
-                new SelectItem("General", "General"),
-                new SelectItem("My jobs", "My jobs"),
-                new SelectItem("My department's jobs", "My department's jobs"),
-                new SelectItem("Parent jobs only", "Parent jobs only"),
-                new SelectItem("Unapproved job costings", "Unapproved job costings"),
-                new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"),
-                new SelectItem("Incomplete jobs", "Incomplete jobs"),
-                new SelectItem("Invoiced jobs", "Invoiced jobs")};
+
+            searchTypes.add(new SelectItem("General", "General"));
+            searchTypes.add(new SelectItem("My jobs", "My jobs"));
+            searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+            searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
+            searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
+            searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
+            searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
+            searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
 
         } else {
 
-            return new SelectItem[]{
-                new SelectItem("My jobs", "My jobs"),
-                new SelectItem("My department's jobs", "My department's jobs")};
+            searchTypes.add(new SelectItem("My jobs", "My jobs"));
+            searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+
         }
+
+        return searchTypes;
 
     }
 
@@ -895,20 +914,20 @@ public class JobManager extends GeneralManager
     public void reset() {
         super.reset();
 
-        setSearchType("Accounting Codes");
+        setSearchType("My jobs");
         setSearchText("");
-        setDefaultCommandTarget("@this");
+        setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
             "systemManager",
+            "jobManager",
             "financeManager",
             "reportManager",
             "clientManager",
             "legalDocumentManager",
             "humanResourceManager",
-            "purchasingManager",
-            "inventoryManager"});
-        setDateSearchPeriod(new DatePeriod("This year", "year",
-                "requisitionDate", null, null, null, false, false, false));
+            "purchasingManager"});
+        setDateSearchPeriod(new DatePeriod("This month", "month",
+                "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
 
         showJobEntry = false;
@@ -947,28 +966,25 @@ public class JobManager extends GeneralManager
     }
 
     public void openJobBrowser() {
-        // Set "Job View" based on search type
+
         if (getSearchType().equals("Unapproved job costings")) {
             getUser().setJobTableViewPreference("Job Costings");
         }
 
-        if (getUser().hasModule("JobManagementAndTrackingModule")) {
-            getMainTabView().openTab(getUser().
-                    getActiveModule("JobManagementAndTrackingModule").getMainViewTitle());
-        }
+        getMainTabView().openTab("Job Browser");
+
     }
 
     public void openSystemAdministrationTab() {
-        if (getUser().hasModule("SystemAdministrationModule")) {
-            getSystemManager().getMainTabView().openTab(getUser().
-                    getActiveModule("SystemAdministrationModule").getMainViewTitle());
-        }
+
+        getMainTabView().openTab("System Administration");
+
     }
 
     public void openFinancialAdministrationTab() {
-        if (getUser().hasModule("FinancialManagementModule")) {
-            getSystemManager().getMainTabView().openTab("Financial Administration");
-        }
+
+        getMainTabView().openTab("Financial Administration");
+
     }
 
     public Boolean getShowJobEntry() {
@@ -1213,6 +1229,7 @@ public class JobManager extends GeneralManager
         currentJob.getJobStatusAndTracking().setDocumentCollected(b);
     }
 
+    @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
     }
@@ -2473,38 +2490,12 @@ public class JobManager extends GeneralManager
 
     public void openClientsTab() {
 
-        getSystemManager().getMainTabView().openTab("Clients");
+        getMainTabView().openTab("Clients");
     }
 
     public void openReportsTab() {
         getReportManager().openReportsTab("Job");
     }
-
-     // tk use super class method?
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        for (String moduleName : getModuleNames()) {
-            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
-                    moduleName);
-            if (module != null) {
-                if (getUser().hasModule(moduleName)) {
-                    getMainTabView().openTab(module.getDashboardTitle());
-                }
-            }
-        }
-    }
-//    public List<SelectItem> getJobTableViews() {
-//        ArrayList views = new ArrayList();
-//
-//        views.add(new SelectItem("Jobs", "Jobs"));
-//        views.add(new SelectItem("Job Costings", "Job Costings"));
-//        views.add(new SelectItem("Cashier View", "Cashier View"));
-//
-//        return views;
-//    }
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
@@ -2590,28 +2581,10 @@ public class JobManager extends GeneralManager
         setSearchType(searchType);
 
         switch (searchType) {
-            case "Suppliers":
-                //  dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-                //  dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                break;
-            case "Legal documents":
-                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
-                dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
-                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
-                break;
+            case "General":               
+            case "Legal documents":             
             case "Purchase requisitions":
-                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-                break;
+               break;
             default: // Jobs search
                 return DateUtils.getDateSearchFields();
         }
@@ -2625,15 +2598,16 @@ public class JobManager extends GeneralManager
             case "JobSearch":
 
                 try {
-                   
-                } catch (NumberFormatException e) {
-                    System.out.println(e);
-                }
 
-               break;
+            } catch (NumberFormatException e) {
+                System.out.println(e);
+            }
+
+            break;
 
             default:
                 System.out.println("Unkown type");
-        } }
+        }
+    }
 
 }
