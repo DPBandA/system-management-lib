@@ -41,7 +41,6 @@ import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -164,6 +163,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         if (foundProcurementMethods == null) {
             foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
         }
+        
         return foundProcurementMethods;
     }
 
@@ -220,9 +220,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
             String innerTabViewVar,
             int innerTabIndex) {
 
-        if (openTab) {
-            getMainTabView().openTab("Financial Administration");
+        if (openTab) {            
+            getMainTabView().openTab("Financial Administration");         
         }
+
         PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
 
     }
@@ -995,11 +996,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-//    @Override
-//    public MainTabView getMainTabView() {
-//
-//        return getSystemManager().getMainTabView();
-//    }
     public Boolean getEdit() {
         return edit;
     }
@@ -1359,20 +1355,20 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             searchText);
                 }
 
-                if (startDate == null) {
+                //if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 0);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 0);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 0);
+//                }
                 break;
             case "Currencies":
                 foundCurrencies = Currency.findAllByName(getEntityManager1(), searchText);
 
-                if (startDate == null) {
+                //if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 1);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 1);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 1);
+//                }
                 break;
             case "Discounts":
                 if (getIsActiveDiscountsOnly()) {
@@ -1383,11 +1379,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 2);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 2);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 2);
+//                }
                 break;
             case "Taxes":
                 if (getIsActiveTaxesOnly()) {
@@ -1398,11 +1394,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 3);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 3);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 3);
+//                }
                 break;
             case "Classifications":
                 if (getIsActiveClassificationsOnly()) {
@@ -1411,11 +1407,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundClassifications = Classification.findClassificationsByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 4);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 4);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 4);
+//                }
                 break;
             case "Sectors":
                 if (getIsActiveSectorsOnly()) {
@@ -1424,11 +1420,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundSectors = Sector.findSectorsByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 5);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 5);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 5);
+//                }
                 break;
             case "Job Categories":
                 if (getIsActiveJobCategoriesOnly()) {
@@ -1437,11 +1433,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 6);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 6);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 6);
+//                }
                 break;
             case "Job Subcategories":
                 if (getIsActiveJobSubcategoriesOnly()) {
@@ -1450,11 +1446,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 7);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 7);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 7);
+//                }
                 break;
             case "Services":
                 if (getIsActiveServicesOnly()) {
@@ -1463,30 +1459,30 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundServices = Service.findAllByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 8);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 8);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 8);
+//                }
                 break;
             case "Procurement":
                 foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 9);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 9);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 9);
+//                }
                 break;
             case "Miscellaneous":
                 getSystemManager().doFinancialSystemOptionSearch(searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 10);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 10);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 10);
+//                }
                 break;
             default:
                 break;

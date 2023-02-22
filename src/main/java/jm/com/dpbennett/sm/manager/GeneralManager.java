@@ -76,12 +76,21 @@ public class GeneralManager implements Manager, Serializable {
     private Integer loginAttempts;
     private Boolean userLoggedIn;
     private String defaultCommandTarget;
+    private String tabTitle;
 
     /**
      * Creates a new instance of SystemManager
      */
     public GeneralManager() {
         init();
+    }
+
+    public String getTabTitle() {
+        return tabTitle;
+    }
+
+    public void setTabTitle(String tabTitle) {
+        this.tabTitle = tabTitle;
     }
 
     public String[] getModuleNames() {
@@ -171,12 +180,14 @@ public class GeneralManager implements Manager, Serializable {
                 if (module != null) {
                     Manager manager = getManager(module.getName());
                     if (manager != null) {
-                        manager.doDefaultSearch(
-                                getDateSearchPeriod().getDateField(),
-                                getSearchType(),
-                                getSearchText(),
-                                getDateSearchPeriod().getStartDate(),
-                                getDateSearchPeriod().getEndDate());
+                        if (hasSearchType(manager, getSearchType())) {
+                            manager.doDefaultSearch(
+                                    getDateSearchPeriod().getDateField(),
+                                    getSearchType(),
+                                    getSearchText(),
+                                    getDateSearchPeriod().getStartDate(),
+                                    getDateSearchPeriod().getEndDate());
+                        }
                     }
                 }
             }
@@ -229,23 +240,16 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-
+         String tabId = ((TabPanel) event.getData()).getId();
+        
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-        String tabTitle = event.getTab().getTitle();
-
-        switch (tabTitle) {
-            case "Human Resource":
-
-                break;
-            case "System Administration":
-
-                break;
-
-        }
+        setTabTitle( event.getTab().getTitle());
+        
     }
 
     @Override
@@ -441,7 +445,7 @@ public class GeneralManager implements Manager, Serializable {
 
                                 return;
                             }
-                        } 
+                        }
                     }
                 }
             }

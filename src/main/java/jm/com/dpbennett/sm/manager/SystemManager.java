@@ -779,51 +779,51 @@ public final class SystemManager extends GeneralManager implements Serializable 
                             searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 0);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 0);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 0);
+//                }
                 break;
             case "Privileges":
                 foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 1);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 1);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 1);
+//                }
                 break;
             case "Categories":
                 foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 2);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 2);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 2);
+//                }
                 break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 3);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 3);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 3);
+//                }
                 break;
             case "Options":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 4);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 4);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 4);
+//                }
                 break;
             case "Authentication":
                 if (getIsActiveLdapsOnly()) {
@@ -834,31 +834,31 @@ public final class SystemManager extends GeneralManager implements Serializable 
                             searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 5);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 5);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 5);
+//                }
                 break;
             case "Modules":
                 foundActiveModules = Modules.findActiveModules(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 6);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 6);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 6);
+//                }
                 break;
             case "Attachments":
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectSystemAdminTab(false, "centerTabVar", 7);
-                } else {
-                    selectSystemAdminTab(true, "centerTabVar", 7);
-                }
+//                } else {
+//                    selectSystemAdminTab(true, "centerTabVar", 7);
+//                }
                 break;
             default:
                 break;
@@ -1542,6 +1542,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         if (openTab) {
             getMainTabView().openTab("System Administration");
         }
+        
         PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
 
     }

@@ -918,12 +918,12 @@ public class JobManager extends GeneralManager
         setSearchText("");
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
-            "systemManager",
-            "jobManager",
-            "financeManager",
-            "reportManager",
-            "clientManager",
             "legalDocumentManager",
+            "jobManager",
+            "clientManager",
+            "reportManager",            
+            "systemManager",
+            "financeManager",
             "humanResourceManager",
             "purchasingManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
@@ -1619,7 +1619,7 @@ public class JobManager extends GeneralManager
     public void cancelJobEdit(ActionEvent actionEvent) {
         setIsDirty(false);
         PrimeFacesUtils.closeDialog(null);
-        doJobSearch();
+        //doJobSearch();
     }
 
     private boolean prepareAndSaveJob(Job job) {
@@ -1977,7 +1977,7 @@ public class JobManager extends GeneralManager
             Date startDate,
             Date endDate) {
 
-        switch (getSearchType()) {
+        switch (searchType) {
             case "General":
             case "My jobs":
             case "My department's jobs":
@@ -1986,17 +1986,15 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-                doSearch();
+                search();
                 break;
-
             default:
                 break;
         }
 
     }
 
-    @Override
-    public void doSearch() {
+    public void search() {
 
         doJobSearch();
         openJobBrowser();
@@ -2013,6 +2011,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    // tk del?
     public void doJobSearch(Integer maxResults) {
 
         if (getUser().getId() != null) {
@@ -2024,6 +2023,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    // tk del?
     public void doJobSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
 
         doJobSearch();
@@ -2494,7 +2494,8 @@ public class JobManager extends GeneralManager
     }
 
     public void openReportsTab() {
-        getReportManager().openReportsTab("Job");
+        //getReportManager().openReportsTab("Job");
+        getMainTabView().openTab("Reports");
     }
 
     @Override
@@ -2508,18 +2509,17 @@ public class JobManager extends GeneralManager
 
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
-        ArrayList searchTypes = new ArrayList();
+        //ArrayList searchTypes = new ArrayList();
 
-        searchTypes.add(new SelectItem("General", "General"));
-        searchTypes.add(new SelectItem("My jobs", "My jobs"));
-        searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
-        searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
-        searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
-        searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
-        searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
-        searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
-
-        return searchTypes;
+//        searchTypes.add(new SelectItem("General", "General"));
+//        searchTypes.add(new SelectItem("My jobs", "My jobs"));
+//        searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+//        searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
+//        searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
+//        searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
+//        searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
+//        searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
+        return getAuthorizedSearchTypes(); //searchTypes;
     }
 
     @Override
@@ -2581,12 +2581,18 @@ public class JobManager extends GeneralManager
         setSearchType(searchType);
 
         switch (searchType) {
-            case "General":               
-            case "Legal documents":             
-            case "Purchase requisitions":
-               break;
-            default: // Jobs search
-                return DateUtils.getDateSearchFields();
+            case "General":
+            case "My jobs":
+            case "My department's jobs":
+            case "Parent jobs only":
+            case "Unapproved job costings":
+            case "Appr'd & uninv'd jobs":
+            case "Incomplete jobs":
+            case "Invoiced jobs":
+                dateSearchFields = DateUtils.getDateSearchFields();
+                break;
+            default:
+                break;
         }
 
         return dateSearchFields;
