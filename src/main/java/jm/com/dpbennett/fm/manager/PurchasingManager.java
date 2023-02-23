@@ -432,7 +432,7 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void createNewSupplier() {
         selectedSupplier = new Supplier("", true);
-
+        
         editSelectedSupplier();
     }
 
@@ -805,7 +805,7 @@ public class PurchasingManager implements Serializable, Manager {
     }
 
     public void openSuppliersTab() {
-        getSystemManager().getMainTabView().openTab("Suppliers");
+        getMainTabView().openTab("Suppliers");
     }
 
     public Boolean getCanExportPurchaseReqForm() {
@@ -2401,9 +2401,10 @@ public class PurchasingManager implements Serializable, Manager {
         return BeanUtils.findBean("systemManager");
     }
 
+    @Override
     public MainTabView getMainTabView() {
 
-        return getSystemManager().getMainTabView();
+        return getFinanceManager().getMainTabView();
     }
 
     public Boolean getEdit() {

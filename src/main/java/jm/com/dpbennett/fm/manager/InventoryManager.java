@@ -51,7 +51,6 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
-import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
@@ -74,6 +73,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private InventoryDisbursement selectedInventoryDisbursement;
     private Boolean edit;
     private String inventoryProductSearchText;
+    private String inventoryRequisitionSearchText;
     private String inventorySearchText;
     private List<Inventory> foundInventories;
     private List<InventoryRequisition> foundInventoryRequisitions;
@@ -86,6 +86,14 @@ public class InventoryManager extends GeneralManager implements Serializable {
      */
     public InventoryManager() {
         init();
+    }
+
+    public String getInventoryRequisitionSearchText() {
+        return inventoryRequisitionSearchText;
+    }
+
+    public void setInventoryRequisitionSearchText(String inventoryRequisitionSearchText) {
+        this.inventoryRequisitionSearchText = inventoryRequisitionSearchText;
     }
 
     public String getInventorySearchText() {
@@ -504,6 +512,19 @@ public class InventoryManager extends GeneralManager implements Serializable {
             return MarketProduct.findActiveMarketProductsByNameAndType(
                     getEntityManager1(),
                     query, "Inventory");
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+    
+    public List<Inventory> completeInventoryItem(String query) {
+        try {
+            return Inventory.findAllByName(
+                    getEntityManager1(),
+                    query);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -1092,7 +1113,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        foundInventoryRequisitions = InventoryRequisition.find(em, getSearchText(), 0);
+//        foundInventoryRequisitions = InventoryRequisition.find(em, getSearchText(), 0);
+        foundInventoryRequisitions = InventoryRequisition.find(em, getInventoryRequisitionSearchText(), 0);
 
     }
 
@@ -1163,6 +1185,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 "dateEdited", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
         inventoryProductSearchText = "";
+        inventoryRequisitionSearchText = "";
         inventorySearchText = "";
         isActiveInventoryProductsOnly = true;
     }
