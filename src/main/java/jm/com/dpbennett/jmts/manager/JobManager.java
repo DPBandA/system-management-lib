@@ -921,7 +921,7 @@ public class JobManager extends GeneralManager
             "legalDocumentManager",
             "jobManager",
             "clientManager",
-            "reportManager",            
+            "reportManager",
             "systemManager",
             "financeManager",
             "humanResourceManager",
@@ -934,6 +934,19 @@ public class JobManager extends GeneralManager
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
 
+    }
+
+    public void openSystemBrowser() {
+        getMainTabView().openTab("System Administration");
+    }
+
+    public void openFinancialAdministration() {
+        getMainTabView().openTab("Financial Administration");
+    }
+    
+    public void openHumanResourceBrowser() {
+
+        getMainTabView().openTab("Human Resource");
     }
 
     public Boolean getCanApplyTax() {

@@ -2259,6 +2259,8 @@ public class PurchasingManager implements Serializable, Manager {
         return getFoundPurchaseReqs().size();
     }
 
+    // tk - should check for system admin?
+    // may have to put in try-catch to deal with null pointer.
     public String getPurchaseReqsTableHeader() {
         if (getUser().can("BeFinancialAdministrator")) {
             return "Search Results (found: " + getNumOfPurchaseReqsFound() + ")";
