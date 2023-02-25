@@ -225,24 +225,28 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         doJobSearch();
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoicesDialog", true, true, true, true, 600, 850);
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoicesDialog", 
+                true, true, true, true, 400, 850);
     }
 
     public void openPriceListDialog() {
 
         doJobSearch();
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog", true, true, true, true, 600, 850);
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog", 
+                true, true, true, true, 400, 850);
     }
 
     public void openProformaInvoiceDialog() {
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoiceDialog", true, true, true, true, 600, 850);
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoiceDialog", 
+                true, true, true, true, 400, 850);
     }
 
     public void openJobCostEstimateDialog() {
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/jobCostEstimateDialog", true, true, true, true, 600, 850);
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/jobCostEstimateDialog", 
+                true, true, true, true, 400, 850);
     }
 
     public void proformaDialogReturn() {
@@ -274,7 +278,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoiceDialog", true, true, true, true, 600, 850);
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoiceDialog", 
+                true, true, true, true, 400, 850);
     }
 
     public void openNewCostEstimateDialog() {
@@ -298,7 +303,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().setBillingAddress(getCurrentJob().getClient().getAddresses().get(0));
         getCurrentJob().setContact(getCurrentJob().getClient().getContacts().get(0));
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/jobCostEstimateDialog", true, true, true, true, 600, 850);
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/jobCostEstimateDialog", 
+                true, true, true, true, 400, 850);
     }
 
     public void createNewJob() {
@@ -4013,13 +4019,15 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void editCashPayment(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDialog", true, true, true, 500, 500);
+        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDialog", 
+                true, true, true, 400, 500);
 
     }
     
     public void openClientCreditStatusDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog", true, true, true, 700, 1200);
+        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog", 
+                true, true, true, 400, 1000);
 
     }
 
@@ -4161,7 +4169,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void editJobCosting() {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog", true, true, true, false, 700, 975);
+        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog", 
+                true, true, true, false, 400, 975);
     }
     
     public void okClientCreditStatus() {
@@ -4717,7 +4726,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public void checkForSubcontracts(ActionEvent event) {
-        //PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDeleteConfirmDialog", true, true, true, 110, 375);
+        //PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDeleteConfirmDialog", true, true, true, 400, 375);
     }
 
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
@@ -4731,12 +4740,12 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void openJobPricingsDialog() {
 
-        PrimeFacesUtils.openDialog(null, "jobPricings", true, true, true, 600, 800);
+        PrimeFacesUtils.openDialog(null, "jobPricings", true, true, true, 400, 800);
     }
 
     public void openJobCostingsDialog() {
 
-        PrimeFacesUtils.openDialog(null, "jobCostings", true, true, true, 600, 800);
+        PrimeFacesUtils.openDialog(null, "jobCostings", true, true, true, 400, 800);
     }
 
     public void doJobCostSearch() {

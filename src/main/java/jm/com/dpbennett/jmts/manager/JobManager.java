@@ -374,7 +374,7 @@ public class JobManager extends GeneralManager
     }
 
     public void editStatusNote() {
-        PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 300, 575);
+        PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 400, 575);
     }
 
     public StatusNote getSelectedStatusNote() {
@@ -2102,7 +2102,8 @@ public class JobManager extends GeneralManager
 
     public void editJob() {
 
-        PrimeFacesUtils.openDialog(null, "jobDialog", true, true, true, true, 700, 975);
+        PrimeFacesUtils.openDialog(null, "jobDialog", true, true, true, true, 400, 800);
+
     }
 
     /**
@@ -2288,14 +2289,14 @@ public class JobManager extends GeneralManager
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,
