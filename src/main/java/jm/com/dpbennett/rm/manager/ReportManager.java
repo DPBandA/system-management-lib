@@ -36,9 +36,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -58,16 +63,21 @@ import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.ComplianceSurvey;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
+import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
+import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DatePeriodJobReport;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -108,6 +118,20 @@ public class ReportManager implements Serializable, Manager {
     private String reportCategory;
     private DatePeriod selectedDatePeriod;
     private Boolean edit;
+    //private String dateSearchField;
+    private DatePeriod dateSearchPeriod;
+    private String searchType;
+    private String searchText;
+    private String[] moduleNames;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
+    private String defaultCommandTarget;
+    private ArrayList<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> allDateSearchFields;
 
     /**
      * Creates a new instance of ReportManager
@@ -124,14 +148,9 @@ public class ReportManager implements Serializable, Manager {
     @Override
     public String getApplicationHeader() {
 
-        return "Report Management";
+        return "Report Manager";
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -141,6 +160,7 @@ public class ReportManager implements Serializable, Manager {
      *
      * @return
      */
+    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
@@ -172,10 +192,6 @@ public class ReportManager implements Serializable, Manager {
 
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     public ArrayList<SelectItem> getDatePeriods() {
         ArrayList<SelectItem> datePeriods = new ArrayList<>();
@@ -556,15 +572,35 @@ public class ReportManager implements Serializable, Manager {
     @Override
     public final void init() {
         reset();
-        
+
     }
 
     @Override
     public void reset() {
-        this.reportSearchText = "";
-        this.longProcessProgress = 0;
-        this.columnsToExclude = "";
-        this.reportCategory = "Job";
+        reportSearchText = "";
+        longProcessProgress = 0;
+        columnsToExclude = "";
+        reportCategory = "Job";
+        searchType = "Reports";
+        //dateSearchField = "dateEntered";
+        searchText = "";
+        dateSearchPeriod = new DatePeriod("This year", "year",
+                "dateEntered", null, null, null, false, false, false);
+        dateSearchPeriod.initDatePeriod();
+        groupedSearchTypes = new ArrayList<>();
+        allDateSearchFields = new ArrayList();
+        moduleNames = new String[]{
+            "systemManager",
+            "reportManager"};
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
+        defaultCommandTarget = "@this";
     }
 
     public void closeReportsTab() {
@@ -573,7 +609,10 @@ public class ReportManager implements Serializable, Manager {
 
     @Override
     public User getUser() {
-        return getSystemManager().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        return user;
     }
 
     @Override
@@ -933,7 +972,7 @@ public class ReportManager implements Serializable, Manager {
                     .contentType(selectedReport.getReportOutputFileMimeType())
                     .name(selectedReport.getReportFile())
                     .build();
-            
+
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -961,7 +1000,6 @@ public class ReportManager implements Serializable, Manager {
                     .name(selectedReport.getReportFile())
                     .build();
 
-            
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -1159,7 +1197,7 @@ public class ReportManager implements Serializable, Manager {
                 if (jobSheet == null) {
                     jobSheet = wb.createSheet("Statistics");
                 }
-                
+
                 ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                         "Job Statistics",
                         "java.lang.String", headerCellStyle);
@@ -1167,22 +1205,22 @@ public class ReportManager implements Serializable, Manager {
                 ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                         reportingDepartment.getName(),
                         "java.lang.String", headerCellStyle);
-                
+
                 ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                         BusinessEntityUtils.getDateInMediumDateFormat(new Date()),
                         "java.lang.String", headerCellStyle);
-                
+
                 ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                         jobSubCategoryReport.getDatePeriod(0).getPeriodString(),
                         "java.lang.String", headerCellStyle);
-                
+
                 row++;
-                
+
                 if (jobSubCategoryReport != null) {
                     ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                             "EARNINGS",
                             "java.lang.String", headerCellStyle);
-                    
+
                     row++;
                     for (int i = 0; i < jobSubCategoryReport.getDatePeriods().length; i++) {
                         List<DatePeriodJobReportColumnData> reportColumnData = jobSubCategoryReport.getReportColumnData(jobSubCategoryReport.getDatePeriod(i).getName());
@@ -1195,7 +1233,7 @@ public class ReportManager implements Serializable, Manager {
                                 "Earnings", "java.lang.String", columnHeaderCellStyle);
                         ReportUtils.setExcelCellValue(wb, jobSheet, row++, 2,
                                 "Calibrations/Tests", "java.lang.String", columnHeaderCellStyle);
-                        
+
                         // SUMMARY - earnings
                         for (DatePeriodJobReportColumnData data : reportColumnData) {
                             // subcategory
@@ -1211,12 +1249,12 @@ public class ReportManager implements Serializable, Manager {
                         ++row;
                     }
                 }
-                
+
                 if (sectorReport != null) {
                     ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                             "SECTORS SERVED",
                             "java.lang.String", headerCellStyle);
-                    
+
                     row++;
                     for (int i = 0; i < sectorReport.getDatePeriods().length; i++) {
                         List<DatePeriodJobReportColumnData> reportColumnData = sectorReport.getReportColumnData(sectorReport.getDatePeriod(i).getName());
@@ -1225,10 +1263,10 @@ public class ReportManager implements Serializable, Manager {
                                 sectorReport.getDatePeriod(i).toString(), "java.lang.String", columnHeaderCellStyle);
                         ReportUtils.setExcelCellValue(wb, jobSheet, row, 0,
                                 "Sector", "java.lang.String", columnHeaderCellStyle);
-                        
+
                         ReportUtils.setExcelCellValue(wb, jobSheet, row++, 2,
                                 "Calibrations/Tests", "java.lang.String", columnHeaderCellStyle);
-                        
+
                         // SECTOR - tests/cals
                         for (DatePeriodJobReportColumnData data : reportColumnData) {
                             // sector
@@ -1241,16 +1279,16 @@ public class ReportManager implements Serializable, Manager {
                         ++row;
                     }
                 }
-                
+
                 if (jobQuantitiesAndServicesReport != null) {
                     ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                             "JOB QUANTITIES AND SERVICES",
                             "java.lang.String", headerCellStyle);
-                    
+
                     row++;
                     for (int i = 0; i < jobQuantitiesAndServicesReport.getDatePeriods().length; i++) {
                         List<DatePeriodJobReportColumnData> reportColumnData = jobQuantitiesAndServicesReport.getReportColumnData(jobQuantitiesAndServicesReport.getDatePeriod(i).getName());
-                        
+
                         ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                                 sectorReport.getDatePeriod(i).toString(), "java.lang.String", headerCellStyle);
                         // JobQuantities And Services table headings
@@ -1259,7 +1297,7 @@ public class ReportManager implements Serializable, Manager {
                             ReportUtils.setExcelCellValue(wb, jobSheet, row, 0,
                                     jobReportItem.getName(),
                                     "java.lang.String", dataCellStyle);
-                            
+
                             ReportUtils.setExcelCellValue(wb, jobSheet, row++, 1,
                                     (Double) jobQuantitiesAndServicesReport.getReportItemValue(jobReportItem, jobQuantitiesAndServicesReport.getDatePeriod(i), reportColumnData),
                                     "java.lang.Double", dataCellStyle);
@@ -1267,7 +1305,7 @@ public class ReportManager implements Serializable, Manager {
                         row++;
                     }
                 }
-                
+
                 // write and save file for later use
                 wb.write(out);
             }
@@ -2201,7 +2239,6 @@ public class ReportManager implements Serializable, Manager {
 //
 //        return cellStyle;
 //    }
-
     /**
      *
      * @param wb
@@ -2214,7 +2251,6 @@ public class ReportManager implements Serializable, Manager {
 //
 //        return font;
 //    }
-
     /**
      *
      * @param wb
@@ -2229,7 +2265,6 @@ public class ReportManager implements Serializable, Manager {
 //
 //        return font;
 //    }
-
     /**
      *
      * @param samples
@@ -2306,15 +2341,20 @@ public class ReportManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch( String dateSearchField,
+    public void doDefaultSearch(String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,
             Date endDate) {
-        switch (getSystemManager().getDashboard().getSelectedTabId()) {
-            case "Report Management":
+
+        switch (searchType) {
+            case "Reports":
 
                 break;
+            case "Report Templates":
+
+                break;
+
             default:
                 break;
         }
@@ -2322,268 +2362,591 @@ public class ReportManager implements Serializable, Manager {
 
     @Override
     public void initDashboard() {
-        
-        if (getUser().hasModule("ReportModule")) {
-            getSystemManager().getDashboard().openTab(getUser().
-                    getActiveModule("ReportModule").getDashboardTitle());
-        }
-        
+
+        initSearchPanel();
+
     }
 
     @Override
     public void initMainTabView() {
+        getMainTabView().reset(getUser());
 
-        if (getUser().hasModule("ReportModule")) {
-            getMainTabView().openTab("Report Templates");
-            getMainTabView().openTab(getUser().
-                    getActiveModule("ReportModule").getMainViewTitle());
+        for (String moduleName : moduleNames) {
+            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                    moduleName);
+            if (module != null) {
+                if (getUser().hasModule(moduleName)) {
+                    getMainTabView().openTab(module.getDashboardTitle());
+                }
+            }
         }
 
     }
 
     @Override
     public void completeLogin() {
+        getUser().logActivity("Logged in", getEntityManager1());
+
+        getUser().save(getEntityManager1());
+
+        getSystemManager().setUser(getUser());
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
         initDashboard();
+
         initMainTabView();
+
+        updateAllForms();
     }
 
     @Override
     public void completeLogout() {
-        reset();
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        getSystemManager().setUser(getUser());
     }
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        SelectItemGroup group = new SelectItemGroup("Reporting");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
     }
 
     @Override
     public ArrayList<SelectItem> getGroupedSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return groupedSearchTypes;
     }
 
     @Override
     public String getSearchType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return searchType;
     }
 
     @Override
     public void setSearchType(String searchType) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.searchType = searchType;
     }
 
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Reports", "Reports"));
+        searchTypes.add(new SelectItem("Report Templates", "Report Templates"));
+
+        return searchTypes;
     }
 
     @Override
     public DatePeriod getDateSearchPeriod() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return dateSearchPeriod;
     }
 
     @Override
     public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.dateSearchPeriod = dateSearchPeriod;
     }
 
     @Override
     public void doSearch() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        manager.doDefaultSearch(
+                                getDateSearchPeriod().getDateField(),
+                                getSearchType(),
+                                getSearchText(),
+                                getDateSearchPeriod().getStartDate(),
+                                getDateSearchPeriod().getEndDate());
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void handleKeepAlive() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().setPollTime(new Date());
+
+        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     @Override
     public String getApplicationSubheader() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return "Report Administration &amp; Management";
     }
 
     @Override
     public void logout() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().logActivity("Logged out", getEntityManager1());
+        reset();
+        completeLogout();
     }
 
     @Override
     public void initSearchPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        initSearchTypes();
+        updateSearchType();
     }
 
     @Override
     public void initSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        groupedSearchTypes.clear();
+
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        groupedSearchTypes.add(manager.getSearchTypesGroup());
+                        searchType = manager.getSearchType();
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public Manager getManager(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return BeanUtils.findBean(name);
     }
 
     @Override
     public ArrayList<SelectItem> getAllDateSearchFields() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return allDateSearchFields;
     }
 
     @Override
     public void updateSearchType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                        if (!dateFields.isEmpty()) {
+                            allDateSearchFields = dateFields;
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void updateDateSearchField() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
     public String getSearchText() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return searchText;
     }
 
     @Override
     public void setSearchText(String searchText) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.searchText = searchText;
     }
 
     @Override
     public EntityManager getEntityManager2() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getSystemManager().getEntityManager2();
     }
 
     @Override
     public void updateAllForms() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tabTitle = event.getTab().getTitle();
+
+        System.out.println("Tab change: " + tabTitle);
     }
 
     @Override
     public String getAppShortcutIconURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public Boolean renderUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getUser().getId() != null;
     }
 
     @Override
     public String getLogoURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
     }
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Reports":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            case "Report Templates":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
     @Override
     public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        login(getEntityManager1());
     }
 
     @Override
     public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return loginAttempts;
     }
 
     @Override
     public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.loginAttempts = loginAttempts;
     }
 
     @Override
     public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return userLoggedIn;
     }
 
     @Override
     public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.userLoggedIn = userLoggedIn;
     }
 
     @Override
     public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return password;
     }
 
     @Override
     public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.password = password;
     }
 
     @Override
     public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return username;
     }
 
     @Override
     public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.username = username;
     }
 
     @Override
     public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (user == null) {
+            return new User();
+
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User foundUser = em.find(User.class,
+                            user.getId());
+                    if (foundUser != null) {
+                        em.refresh(foundUser);
+                        user = foundUser;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
     }
 
     @Override
     public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.user = user;
     }
 
     @Override
     public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            SearchControls constraints = new SearchControls();
+            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            String[] attrIDs = {"displayName"};
+
+            constraints.setReturningAttributes(attrIDs);
+
+            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+
+            if (!answer.hasMore()) { // Assuming only one match
+                // LDAP user not found!
+                return false;
+            }
+        } catch (NamingException ex) {
+            System.out.println(ex);
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Boolean userValidated = false;
+        InitialLdapContext ctx;
+
+        try {
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = jm.com.dpbennett.business.entity.sm.LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
+
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Get the user if one exists
+            if (userValidated) {
+                System.out.println("User validated.");
+
+                return true;
+
+            } else {
+                System.out.println("User NOT validated!");
+
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Problem connecting to directory: " + e);
+        }
+
+        return false;
     }
 
     @Override
     public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ++loginAttempts;
+        if (loginAttempts == 2) {
+
+            try {
+                // Send email to system administrator alert if activated
+                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        "developerEmailAlertActivated")) {
+                    MailUtils.postMail(null, null, null,
+                            "Failed user login",
+                            "Username: " + username + "\nDate/Time: " + new Date(),
+                            "text/plain",
+                            getEntityManager1());
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        } else if (loginAttempts > 2) {// tk # attempts to be made option
+            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+        }
+
+        username = "";
+        password = "";
     }
 
     @Override
     public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
     }
 
     @Override
     public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return logonMessage;
     }
 
     @Override
     public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.logonMessage = logonMessage;
+    }
+
+    @Override
+    public void doDefaultCommand() {
+        switch (defaultCommandTarget) {
+            case "doSearch":
+                doSearch();
+                break;
+            default:
+                PrimeFacesUtils.addMessage("Action NOT Taken",
+                        "No action was taken. Enter search text if you are doing a search.",
+                        FacesMessage.SEVERITY_INFO);
+                PrimeFaces.current().ajax().update("appForm:growl3");
+                break;
+        }
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+        return defaultCommandTarget;
+    }
+
+    @Override
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        this.defaultCommandTarget = defaultCommandTarget;
+    }
+
+    @Override
+    public void updateSearch() {
+        setDefaultCommandTarget("doSearch");
+    }
+
+    @Override
+    public Dashboard getDashboard() {
+        return getSystemManager().getDashboard();
+    }
+
+    @Override
+    public void handleSelectedNotification(Notification notification) {
+        switch (notification.getType()) {
+            case "ReportSearch":
+
+                break;
+
+            default:
+                System.out.println("Unkown type");
+        }
     }
 }

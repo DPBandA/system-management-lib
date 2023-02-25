@@ -47,7 +47,9 @@ public class MarketProductValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "marketProductName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name", "Please enter a valid name.");            
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name", "Please enter a valid name.");
+            case "marketProductType":
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Type", "Please enter a valid type.");
             case "marketProductBrand":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Brand", "Please enter a valid brand.");
             case "marketProductModel":

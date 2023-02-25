@@ -26,10 +26,6 @@ import java.util.List;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.SearchControls;
-import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.AccountingCode;
 import jm.com.dpbennett.business.entity.fm.Classification;
@@ -37,7 +33,6 @@ import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.fm.JobCategory;
-import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.fm.JobSubCategory;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.fm.Sector;
@@ -46,32 +41,24 @@ import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
-import jm.com.dpbennett.business.entity.sm.LdapContext;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.business.entity.util.MailUtils;
-import jm.com.dpbennett.sm.manager.Manager;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
-import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class FinanceManager implements Serializable, Manager {
+public class FinanceManager extends GeneralManager implements Serializable {
 
     private Integer longProcessProgress;
     private AccountingCode selectedAccountingCode;
@@ -85,7 +72,6 @@ public class FinanceManager implements Serializable, Manager {
     private Service selectedService;
     private MarketProduct selectedMarketProduct;
     private Boolean edit;
-    private String searchText;
     private String accountingCodeSearchText;
     private String taxSearchText;
     private String currencySearchText;
@@ -105,8 +91,6 @@ public class FinanceManager implements Serializable, Manager {
     private List<JobCategory> foundJobCategories;
     private List<JobSubCategory> foundJobSubcategories;
     private List<Service> foundServices;
-    private String searchType;
-    private DatePeriod dateSearchPeriod;
     private Boolean isActiveDiscountsOnly;
     private Boolean isActiveTaxesOnly;
     private Boolean isActiveCurrenciesOnly;
@@ -116,25 +100,29 @@ public class FinanceManager implements Serializable, Manager {
     private Boolean isActiveJobSubcategoriesOnly;
     private Boolean isActiveSectorsOnly;
     private Boolean isActiveServicesOnly;
-    private ArrayList<SelectItem> groupedSearchTypes;
     private List<MarketProduct> foundMarketProducts;
     private Boolean isActiveMarketProductsOnly;
-    private ArrayList<SelectItem> allDateSearchFields;
     private List<ProcurementMethod> foundProcurementMethods;
     private ProcurementMethod selectedProcurementMethod;
     private String procurementMethodSearchText;
-    private User user;
-    private String username;
-    private String logonMessage;
-    private String password;
-    private Integer loginAttempts;
-    private Boolean userLoggedIn;
+    private SystemManager systemManager;
 
     /**
      * Creates a new instance of FinanceManager.
      */
     public FinanceManager() {
         init();
+    }
+
+    public SystemManager getSystemManager() {
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+        return systemManager;
+    }
+
+    public void onRowSelect() {
+        setDefaultCommandTarget("@this");
     }
 
     public Integer getDialogHeight() {
@@ -175,6 +163,7 @@ public class FinanceManager implements Serializable, Manager {
         if (foundProcurementMethods == null) {
             foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
         }
+        
         return foundProcurementMethods;
     }
 
@@ -218,10 +207,6 @@ public class FinanceManager implements Serializable, Manager {
                 getFoundProcurementMethods().get(event.getRowIndex()));
     }
 
-    public Dashboard getDashboard() {
-        return getSystemManager().getDashboard();
-    }
-
     /**
      * Select an financial administration tab based on whether or not the tab is
      * already opened.
@@ -235,9 +220,10 @@ public class FinanceManager implements Serializable, Manager {
             String innerTabViewVar,
             int innerTabIndex) {
 
-        if (openTab) {
-            getMainTabView().openTab("Financial Administration");
+        if (openTab) {            
+            getMainTabView().openTab("Financial Administration");         
         }
+
         PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
 
     }
@@ -392,11 +378,7 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
-    }
-
-    private void handleSelectedNotification(Notification notification) {
+    public void handleSelectedNotification(Notification notification) {
 
         switch (notification.getType()) {
             case "PRSearch":
@@ -648,15 +630,6 @@ public class FinanceManager implements Serializable, Manager {
         editClassification();
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
-    }
-
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -726,10 +699,6 @@ public class FinanceManager implements Serializable, Manager {
     }
 
     @Override
-    public void updateDateSearchField() {
-    }
-
-    @Override
     public ArrayList<SelectItem> getSearchTypes() {
 
         ArrayList searchTypes = new ArrayList();
@@ -748,36 +717,6 @@ public class FinanceManager implements Serializable, Manager {
 
         return searchTypes;
 
-    }
-
-    @Override
-    public String getSearchType() {
-        return searchType;
-    }
-
-    @Override
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
-    }
-
-    @Override
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    @Override
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
-    }
-
-    @Override
-    public String getSearchText() {
-        return searchText;
-    }
-
-    @Override
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
     }
 
     public void saveSelectedAccountingCode() {
@@ -1053,32 +992,8 @@ public class FinanceManager implements Serializable, Manager {
         PrimeFacesUtils.closeDialog(null);
     }
 
-    @Override
-    public void doSearch() {
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                manager.doDefaultSearch(
-                        getDateSearchPeriod().getDateField(),
-                        getSearchType(),
-                        getSearchText(),
-                        getDateSearchPeriod().getStartDate(),
-                        getDateSearchPeriod().getEndDate());
-            }
-
-        }
-
-    }
-
     public void cancelDialogEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public MainTabView getMainTabView() {
-
-        return getSystemManager().getMainTabView();
     }
 
     public Boolean getEdit() {
@@ -1349,10 +1264,22 @@ public class FinanceManager implements Serializable, Manager {
 
     @Override
     public void reset() {
+        super.reset();
+
+        setSearchType("Accounting Codes");
+        setSearchText("");
+        setDefaultCommandTarget("@this");
+        setModuleNames(new String[]{
+            "systemManager",
+            "financeManager",
+            "purchasingManager",
+            "inventoryManager"});
+        setDateSearchPeriod(new DatePeriod("This year", "year",
+                "requisitionDate", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
         longProcessProgress = 0;
         procurementMethodSearchText = "";
         accountingCodeSearchText = "";
-        searchText = "";
         taxSearchText = "";
         currencySearchText = "";
         discountSearchText = "";
@@ -1362,12 +1289,6 @@ public class FinanceManager implements Serializable, Manager {
         jobSubcategorySearchText = "";
         serviceSearchText = "";
         marketProductSearchText = "";
-        searchType = "Accounting Codes"; // tk make have to change or make system option
-        dateSearchPeriod = new DatePeriod("This year", "year",
-                "requisitionDate", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
-        groupedSearchTypes = new ArrayList<>();
-        allDateSearchFields = new ArrayList();
         isActiveDiscountsOnly = true;
         isActiveTaxesOnly = true;
         isActiveCurrenciesOnly = true;
@@ -1378,30 +1299,12 @@ public class FinanceManager implements Serializable, Manager {
         isActiveServicesOnly = true;
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
-        password = "";
-        username = "";
-        loginAttempts = 0;
-        userLoggedIn = false;
-        logonMessage = "Please provide your login details below:";
-        String theme = getUser().getPFThemeName();
-        user = new User();
-        user.setPFThemeName(theme);
-
-        PrimeFaces.current().executeScript("PF('loginDialog').show();");
 
     }
 
     @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
-    }
-
-    @Override
-    public User getUser() {
-        if (user == null) {
-            user = new User();
-        }
-        return user;
     }
 
     // tk not used so to be deleted
@@ -1452,20 +1355,20 @@ public class FinanceManager implements Serializable, Manager {
                             searchText);
                 }
 
-                if (startDate == null) {
+                //if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 0);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 0);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 0);
+//                }
                 break;
             case "Currencies":
                 foundCurrencies = Currency.findAllByName(getEntityManager1(), searchText);
 
-                if (startDate == null) {
+                //if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 1);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 1);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 1);
+//                }
                 break;
             case "Discounts":
                 if (getIsActiveDiscountsOnly()) {
@@ -1476,11 +1379,11 @@ public class FinanceManager implements Serializable, Manager {
                             searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 2);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 2);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 2);
+//                }
                 break;
             case "Taxes":
                 if (getIsActiveTaxesOnly()) {
@@ -1491,11 +1394,11 @@ public class FinanceManager implements Serializable, Manager {
                             searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 3);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 3);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 3);
+//                }
                 break;
             case "Classifications":
                 if (getIsActiveClassificationsOnly()) {
@@ -1504,11 +1407,11 @@ public class FinanceManager implements Serializable, Manager {
                     foundClassifications = Classification.findClassificationsByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 4);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 4);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 4);
+//                }
                 break;
             case "Sectors":
                 if (getIsActiveSectorsOnly()) {
@@ -1517,11 +1420,11 @@ public class FinanceManager implements Serializable, Manager {
                     foundSectors = Sector.findSectorsByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 5);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 5);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 5);
+//                }
                 break;
             case "Job Categories":
                 if (getIsActiveJobCategoriesOnly()) {
@@ -1530,11 +1433,11 @@ public class FinanceManager implements Serializable, Manager {
                     foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 6);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 6);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 6);
+//                }
                 break;
             case "Job Subcategories":
                 if (getIsActiveJobSubcategoriesOnly()) {
@@ -1543,11 +1446,11 @@ public class FinanceManager implements Serializable, Manager {
                     foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 7);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 7);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 7);
+//                }
                 break;
             case "Services":
                 if (getIsActiveServicesOnly()) {
@@ -1556,47 +1459,33 @@ public class FinanceManager implements Serializable, Manager {
                     foundServices = Service.findAllByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 8);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 8);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 8);
+//                }
                 break;
             case "Procurement":
                 foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 9);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 9);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 9);
+//                }
                 break;
             case "Miscellaneous":
                 getSystemManager().doFinancialSystemOptionSearch(searchText);
 
-                if (startDate == null) {
+//                if (startDate == null) {
                     selectFinancialAdminTab(false, "financialAdminTabVar", 10);
-                } else {
-                    selectFinancialAdminTab(true, "financialAdminTabVar", 10);
-                }
+//                } else {
+//                    selectFinancialAdminTab(true, "financialAdminTabVar", 10);
+//                }
                 break;
             default:
                 break;
-        }
-    }
-
-    // tk may make this a method in the Manager interface
-    @Override
-    public void initSearchTypes() {
-
-        groupedSearchTypes.clear();
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                groupedSearchTypes.add(manager.getSearchTypesGroup());
-            }
         }
     }
 
@@ -1642,147 +1531,6 @@ public class FinanceManager implements Serializable, Manager {
         }
 
         return subHeader;
-    }
-
-    @Override
-    public void logout() {
-        getUser().logActivity("Logged out", getEntityManager1());
-        reset();
-        completeLogout();
-    }
-
-    @Override
-    public void initSearchPanel() {
-
-        initSearchTypes();
-        updateSearchType();
-    }
-
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
-
-    @Override
-    public Manager getManager(String name) {
-        return BeanUtils.findBean(name);
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        ArrayList<SelectItem> datePeriods = new ArrayList<>();
-
-        for (String name : DatePeriod.getDatePeriodNames()) {
-            datePeriods.add(new SelectItem(name, name));
-        }
-
-        return datePeriods;
-    }
-
-    @Override
-    public void updateSearchType() {
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
-                if (!dateFields.isEmpty()) {
-                    allDateSearchFields = dateFields;
-
-                    return;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager1());
-
-        getUser().save(getEntityManager1());
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initDashboard();
-        initMainTabView();
-        updateAllForms();
-    }
-
-    @Override
-    public void updateAllForms() {
-        PrimeFaces.current().ajax().update("appForm");
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getDashboardTitle());
-        }
-    }
-
-    @Override
-    public void initDashboard() {
-        initSearchPanel();
-    }
-
-    @Override
-    public void completeLogout() {
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-    }
-
-    @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
-
-        getMainTabView().closeTab(tabId);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        String tabTitle = event.getTab().getTitle();
-
-        switch (tabTitle) {
-            case "Human Resource":
-
-                break;
-            case "System Administration":
-
-                break;
-
-        }
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        return getUser().getId() != null;
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
@@ -1841,245 +1589,6 @@ public class FinanceManager implements Serializable, Manager {
         }
 
         return dateSearchFields;
-    }
-
-    // tk auth methods
-    @Override
-    public void login() {
-        login(getEntityManager1());
-    }
-
-    @Override
-    public Integer getLoginAttempts() {
-        return loginAttempts;
-    }
-
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        this.loginAttempts = loginAttempts;
-    }
-
-    @Override
-    public Boolean getUserLoggedIn() {
-        return userLoggedIn;
-    }
-
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * Get user as currently stored in the database
-     *
-     * @param em
-     * @return
-     */
-    @Override
-    public User getUser(EntityManager em) {
-        if (user == null) {
-            return new User();
-        } else {
-            try {
-                if (user.getId() != null) {
-                    User foundUser = em.find(User.class, user.getId());
-                    if (foundUser != null) {
-                        em.refresh(foundUser);
-                        user = foundUser;
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return new User();
-            }
-        }
-
-        return user;
-    }
-
-    @Override
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username,
-            javax.naming.ldap.LdapContext ctx) {
-
-        try {
-            SearchControls constraints = new SearchControls();
-            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String[] attrIDs = {"displayName"};
-
-            constraints.setReturningAttributes(attrIDs);
-
-            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
-            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
-
-            if (!answer.hasMore()) { // Assuming only one match
-                // LDAP user not found!
-                return Boolean.FALSE;
-            }
-        } catch (NamingException ex) {
-            System.out.println(ex);
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        Boolean userValidated = false;
-        InitialLdapContext ctx;
-
-        try {
-            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
-
-            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
-                if (ldapContext.getName().equals("LDAP")) {
-                    userValidated = LdapContext.authenticateUser(
-                            em,
-                            ldapContext,
-                            username,
-                            password);
-                } else {
-                    ctx = ldapContext.getInitialLDAPContext(username, password);
-
-                    if (ctx != null) {
-                        if (checkForLDAPUser(em, username, ctx)) {
-                            // user exists in LDAP                    
-                            userValidated = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // get the user if one exists
-            if (userValidated) {
-                System.out.println("User validated.");
-
-                return true;
-
-            } else {
-                System.out.println("User NOT validated!");
-
-                return false;
-            }
-
-        } catch (Exception e) {
-            System.err.println("Problem connecting to directory: " + e);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-
-        ++loginAttempts;
-        if (loginAttempts == 2) {
-
-            try {
-                // Send email to system administrator alert if activated
-                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "developerEmailAlertActivated")) {
-                    MailUtils.postMail(null, null, null,
-                            "Failed user login",
-                            "Username: " + username + "\nDate/Time: " + new Date(),
-                            "text/plain",
-                            getEntityManager1());
-                }
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        } else if (loginAttempts > 2) {// tk # attempts to be made option
-            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
-        }
-
-        username = "";
-        password = "";
-    }
-
-    @Override
-    public void login(EntityManager em) {
-
-        setUserLoggedIn(false);
-
-        try {
-
-            // Find user and determine if authentication is required for this user
-            user = User.findActiveJobManagerUserByUsername(em, username);
-
-            if (user != null) {
-                em.refresh(user);
-                if (!user.getAuthenticate()) {
-                    System.out.println("User will NOT be authenticated.");
-                    logonMessage = "Please provide your login details below:";
-                    username = "";
-                    password = "";
-                    setUserLoggedIn(true);
-
-                    completeLogin();
-
-                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-                } else if (validateUser(em)) {
-                    logonMessage = "Please provide your login details below:";
-                    username = "";
-                    password = "";
-                    setUserLoggedIn(true);
-
-                    completeLogin();
-
-                } else {
-                    setUserLoggedIn(false);
-                    checkLoginAttemps();
-                    logonMessage = "Please enter a valid username and password.";
-                }
-            } else {
-                setUserLoggedIn(false);
-                logonMessage = "Please enter a registered username.";
-                username = "";
-                password = "";
-            }
-
-        } catch (Exception e) {
-            setUserLoggedIn(false);
-            System.out.println(e);
-            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
-        }
-
-    }
-
-    @Override
-    public String getLogonMessage() {
-        return logonMessage;
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        this.logonMessage = logonMessage;
     }
 
 }

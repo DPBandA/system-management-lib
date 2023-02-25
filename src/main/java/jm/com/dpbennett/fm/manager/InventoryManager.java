@@ -41,36 +41,28 @@ import org.primefaces.PrimeFaces;
 import java.util.Objects;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItemGroup;
-import javax.naming.ldap.LdapContext;
 import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.business.entity.fm.InventoryDisbursement;
 import jm.com.dpbennett.business.entity.fm.InventoryRequisition;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
-import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
-import jm.com.dpbennett.sm.manager.Manager;
-import jm.com.dpbennett.sm.manager.SystemManager;
+import jm.com.dpbennett.sm.manager.GeneralManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.event.RowEditEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class InventoryManager implements Serializable, Manager {
+public class InventoryManager extends GeneralManager implements Serializable {
 
     private Inventory selectedInventory;
     private InventoryRequisition selectedInventoryRequisition;
@@ -80,22 +72,46 @@ public class InventoryManager implements Serializable, Manager {
     private List<InventoryRequisition> selectedInventoryRequisitions;
     private InventoryDisbursement selectedInventoryDisbursement;
     private Boolean edit;
-    private String searchText;
     private String inventoryProductSearchText;
+    private String inventoryRequisitionSearchText;
+    private String inventorySearchText;
     private List<Inventory> foundInventories;
     private List<InventoryRequisition> foundInventoryRequisitions;
     private List<MarketProduct> foundInventoryProducts;
-    private String searchType;
-    private DatePeriod dateSearchPeriod;
     private Boolean isActiveInventoryProductsOnly;
-    private ArrayList<SelectItem> groupedSearchTypes;
-    private ArrayList<SelectItem> allDateSearchFields;
+    private FinanceManager financeManager;
 
     /**
      * Creates a new instance of InventoryManager
      */
     public InventoryManager() {
         init();
+    }
+
+    public String getInventoryRequisitionSearchText() {
+        return inventoryRequisitionSearchText;
+    }
+
+    public void setInventoryRequisitionSearchText(String inventoryRequisitionSearchText) {
+        this.inventoryRequisitionSearchText = inventoryRequisitionSearchText;
+    }
+
+    public String getInventorySearchText() {
+        return inventorySearchText;
+    }
+
+    public void setInventorySearchText(String inventorySearchText) {
+        this.inventorySearchText = inventorySearchText;
+    }
+
+    public void onRowSelect() {
+        getFinanceManager().setDefaultCommandTarget("@this");
+    }
+
+    public List<SelectItem> getProductTypes() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "productTypes");
     }
 
     public Integer getDialogHeight() {
@@ -186,43 +202,68 @@ public class InventoryManager implements Serializable, Manager {
         setEdit(true);
     }
 
+    public void editDisbursement(ActionEvent event) {
+        setEdit(true);
+    }
+
+    public void deleteDisbursement() {
+        deleteDisbursementByProductName(selectedInventoryDisbursement.
+                getInventory().getProduct().getCommonName());
+    }
+
+    public void deleteSelectedDisbursement() {
+        deleteDisbursementByProductName(selectedInventoryDisbursement.
+                getInventory().getProduct().getCommonName());
+    }
+
+    public void deleteDisbursementByProductName(String productName) {
+
+        List<InventoryDisbursement> disbusements = getSelectedInventoryRequisition().getAllSortedInventoryDisbursements();
+        int index = 0;
+        for (InventoryDisbursement disbursement : disbusements) {
+            if (disbursement.getInventory().getProduct().getCommonName().equals(productName)) {
+                disbusements.remove(index);
+                updateInventoryRequisition(null);
+
+                break;
+            }
+            ++index;
+        }
+    }
+
+    public void updateSelectedDisbursement() {
+        updateDisbursement(getSelectedInventoryDisbursement());
+    }
+
+    public void cancelDisbursementEdit() {
+        selectedInventoryDisbursement.setIsDirty(false);
+    }
+
+    public void okDisbursement() {
+        if (selectedInventoryDisbursement.getId() == null && !getEdit()) {
+            getSelectedInventoryRequisition().getInventoryDisbursements().add(selectedInventoryDisbursement);
+        }
+        setEdit(false);
+
+        updateDisbursement(selectedInventoryDisbursement);
+        updateInventoryRequisition(null);
+
+        PrimeFaces.current().executeScript("PF('inventoryDisbursementDialog').hide();");
+    }
+
+    public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
+
+        inventoryDisbursement.update();
+
+        inventoryDisbursement.setIsDirty(true);
+
+    }
+
     public void updateCostType() {
-        //updateCostType(selectedCostComponent);
+
         selectedCostComponent.update();
     }
 
-//    public void updateCostType(CostComponent costComponent) {
-//
-//        switch (costComponent.getType()) {
-//            case "Fixed":
-//                costComponent.setIsFixedCost(true);
-//                costComponent.setIsHeading(false);
-//                costComponent.setHours(0.0);
-//                costComponent.setHoursOrQuantity(0.0);
-//                costComponent.setRate(0.0);
-//                break;
-//            case "Heading":
-//                costComponent.setIsFixedCost(false);
-//                costComponent.setIsHeading(true);
-//                costComponent.setHours(0.0);
-//                costComponent.setHoursOrQuantity(0.0);
-//                costComponent.setRate(0.0);
-//                costComponent.setCost(0.0);
-//                costComponent.setUnit("");
-//                break;
-//            case "Variable":
-//                costComponent.setIsFixedCost(false);
-//                costComponent.setIsHeading(false);
-//                break;
-//            default:
-//                costComponent.setIsFixedCost(false);
-//                costComponent.setIsHeading(false);
-//                break;
-//        }
-//
-//        // Recalculate cost if necessary
-//        costComponent.getCost();
-//    }
     public void updateCostComponent(CostComponent costComponent) {
 
         costComponent.update();
@@ -258,24 +299,32 @@ public class InventoryManager implements Serializable, Manager {
         event.getObject().setIsDirty(false);
     }
 
+    public void onInventoryProductRowCancel(RowEditEvent<MarketProduct> event) {
+        event.getObject().setIsDirty(false);
+    }
+
     public void onCostComponentRowEdit(RowEditEvent<CostComponent> event) {
 
         updateCostComponent(event.getObject());
         updateInventory(null);
     }
 
+    public void onInventoryProductRowEdit(RowEditEvent<MarketProduct> event) {
+
+        event.getObject().setName(event.getObject().toString());
+
+        event.getObject().save(getEntityManager1());
+        event.getObject().setIsDirty(false);
+    }
+
+    public void onDisbursementRowCancel(RowEditEvent<InventoryDisbursement> event) {
+        event.getObject().setIsDirty(false);
+    }
+
     public void onDisbursementRowEdit(RowEditEvent<InventoryDisbursement> event) {
 
         updateDisbursement(event.getObject());
         updateInventoryRequisition(null);
-    }
-
-    public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
-
-        inventoryDisbursement.update();
-
-        inventoryDisbursement.setIsDirty(true);
-
     }
 
     public void addNewCostComponent() {
@@ -318,10 +367,10 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void createNewProductCategory() {
-        getSystemManager().setSelectedCategory(new Category());
-        getSystemManager().getSelectedCategory().setType("Product");
+        getFinanceManager().getSystemManager().setSelectedCategory(new Category());
+        getFinanceManager().getSystemManager().getSelectedCategory().setType("Product");
 
-        getSystemManager().editCategory();
+        getFinanceManager().getSystemManager().editCategory();
     }
 
     public List<Category> completeActiveCategory(String query) {
@@ -401,24 +450,22 @@ public class InventoryManager implements Serializable, Manager {
 
     public void doInventoryProductSearch() {
 
-        if (getIsActiveInventoryProductsOnly()) {
-            foundInventoryProducts = MarketProduct.findActiveMarketProductsByNameAndType(
-                    getEntityManager1(), inventoryProductSearchText, "Inventory");
-        } else {
-            foundInventoryProducts = MarketProduct.findMarketProductsByNameAndType(
-                    getEntityManager1(), inventoryProductSearchText, "Inventory");
-        }
-
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Inventory Products",
+                getInventoryProductSearchText(),
+                null,
+                null);
     }
 
     public void openInventoryProductDialog() {
         PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth());
+                true, true, true, true, getDialogHeight(), getDialogWidth() + 20);
     }
 
     public void openInventoryProductBrowser() {
 
-        getSystemManager().getMainTabView().openTab("Inventory Products");
+        getFinanceManager().getMainTabView().openTab("Inventory Products");
     }
 
     public void createNewInventoryProduct() {
@@ -449,7 +496,6 @@ public class InventoryManager implements Serializable, Manager {
 
     public void updateInventoryProduct() {
 
-        // This ensures that the product name field gets updated with the common name, brand and model.
         getSelectedInventoryProduct().setName(getSelectedInventoryProduct().toString());
 
         getSelectedInventoryProduct().setIsDirty(true);
@@ -473,6 +519,19 @@ public class InventoryManager implements Serializable, Manager {
             return new ArrayList<>();
         }
     }
+    
+    public List<Inventory> completeInventoryItem(String query) {
+        try {
+            return Inventory.findAllByName(
+                    getEntityManager1(),
+                    query);
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
 
     public Boolean getIsInventoryProductNameValid() {
         return BusinessEntityUtils.validateName(
@@ -484,7 +543,11 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public FinanceManager getFinanceManager() {
-        return BeanUtils.findBean("financeManager");
+        if (financeManager == null) {
+            financeManager = BeanUtils.findBean("financeManager");
+        }
+
+        return financeManager;
     }
 
     public void editInventorySupplier() {
@@ -494,9 +557,9 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void editInventoryCategory() {
-        getSystemManager().setSelectedCategory(getSelectedInventory().getCategory());
+        getFinanceManager().getSystemManager().setSelectedCategory(getSelectedInventory().getCategory());
 
-        getSystemManager().editCategory();
+        getFinanceManager().getSystemManager().editCategory();
     }
 
     public void inventorySupplierDialogReturn() {
@@ -507,8 +570,8 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     public void inventoryCategoryDialogReturn() {
-        if (getSystemManager().getSelectedCategory().getId() != null) {
-            getSelectedInventory().setCategory(getSystemManager().getSelectedCategory());
+        if (getFinanceManager().getSystemManager().getSelectedCategory().getId() != null) {
+            getSelectedInventory().setCategory(getFinanceManager().getSystemManager().getSelectedCategory());
             updateInventory(null);
         }
     }
@@ -590,73 +653,14 @@ public class InventoryManager implements Serializable, Manager {
         return "Inventory Manager";
     }
 
-    /**
-     * Gets the general search text.
-     *
-     * @return
-     */
-    @Override
-    public String getSearchText() {
-        return searchText;
-    }
-
-    /**
-     * Sets the general search text.
-     *
-     * @param searchText
-     */
-    @Override
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    public String getRenderDateSearchFields() {
-        switch (searchType) {
-            case "Inventory":
-                return "false";
-            default:
-                return "true";
-        }
-    }
-
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
         searchTypes.add(new SelectItem("Inventory", "Inventory"));
+        searchTypes.add(new SelectItem("Inventory Products", "Inventory Products"));
 
         return searchTypes;
-    }
-
-    @Override
-    public void doSearch() {
-        for (Modules activeModule : getUser().getActiveModules()) {
-
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                manager.doDefaultSearch(
-                        getDateSearchPeriod().getDateField(),
-                        getSearchType(),
-                        getSearchText(),
-                        getDateSearchPeriod().getStartDate(),
-                        getDateSearchPeriod().getEndDate());
-            }
-
-        }
-    }
-
-    @Override
-    public void updateDateSearchField() {
-    }
-
-    @Override
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    @Override
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
     }
 
     public String formatAsCurrency(Double value, String symbol) {
@@ -1070,7 +1074,7 @@ public class InventoryManager implements Serializable, Manager {
     public void editSelectedInventoryRequisition() {
 
         PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth());
+                true, true, true, true, getDialogHeight(), getDialogWidth() + 200);
     }
 
     public List<Inventory> getFoundInventories() {
@@ -1097,36 +1101,28 @@ public class InventoryManager implements Serializable, Manager {
 
     public void doInventorySearch() {
 
-        EntityManager em = getEntityManager1();
-
-        foundInventories = Inventory.find(em, searchText, 0);
-    }
-
-    public void doInventorySearch(
-            DatePeriod dateSearchPeriod,
-            String searchType,
-            String searchText) {
-
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.searchText = searchText;
-
-        doInventorySearch();
+        doDefaultSearch(
+                getDateSearchPeriod().getDateField(),
+                "Inventory",
+                getInventorySearchText(),
+                null,
+                null);
     }
 
     public void doInventoryRequisitionSearch() {
 
         EntityManager em = getEntityManager1();
 
-        foundInventoryRequisitions = InventoryRequisition.find(em, searchText, 0);
+//        foundInventoryRequisitions = InventoryRequisition.find(em, getSearchText(), 0);
+        foundInventoryRequisitions = InventoryRequisition.find(em, getInventoryRequisitionSearchText(), 0);
 
     }
 
     public void doInventoryRequisitionSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
 
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.searchText = searchText;
+        setDateSearchPeriod(dateSearchPeriod);
+        setSearchType(searchType);
+        setSearchText(searchText);
 
         doInventoryRequisitionSearch();
     }
@@ -1147,6 +1143,8 @@ public class InventoryManager implements Serializable, Manager {
 
         selectedInventoryRequisition = new InventoryRequisition();
         selectedInventoryRequisition.setType("None");
+        selectedInventoryRequisition.setEnteredBy(getUser().getEmployee());
+        selectedInventoryRequisition.setEditedBy(getUser().getEmployee());
         selectedInventoryRequisition.setDateEntered(new Date());
         selectedInventoryRequisition.setDateEdited(new Date());
 
@@ -1159,18 +1157,10 @@ public class InventoryManager implements Serializable, Manager {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
-    }
-
+    @Override
     public MainTabView getMainTabView() {
 
-        return getSystemManager().getMainTabView();
+        return getFinanceManager().getMainTabView();
     }
 
     public Boolean getEdit() {
@@ -1188,41 +1178,32 @@ public class InventoryManager implements Serializable, Manager {
 
     @Override
     public void reset() {
-        searchType = "Inventory";
-        dateSearchPeriod = new DatePeriod("This year", "year",
-                "dateEdited", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
-        searchText = "";
+        super.reset();
+
+        setSearchType("Inventory");
+        setDateSearchPeriod(new DatePeriod("This year", "year",
+                "dateEdited", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
         inventoryProductSearchText = "";
+        inventoryRequisitionSearchText = "";
+        inventorySearchText = "";
         isActiveInventoryProductsOnly = true;
-        groupedSearchTypes = new ArrayList<>();
-        allDateSearchFields = new ArrayList();
     }
 
     @Override
     public EntityManager getEntityManager1() {
-        return getSystemManager().getEntityManager1();
+        return getFinanceManager().getEntityManager1();
     }
-    
+
     @Override
     public User getUser() {
-        
-      return getFinanceManager().getUser();
+
+        return getFinanceManager().getUser();
     }
 
     @Override
     public EntityManager getEntityManager2() {
-        return getSystemManager().getEntityManager2();
-    }
-
-    @Override
-    public String getSearchType() {
-        return searchType;
-    }
-
-    @Override
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
+        return getFinanceManager().getEntityManager2();
     }
 
     @Override
@@ -1235,11 +1216,6 @@ public class InventoryManager implements Serializable, Manager {
     }
 
     @Override
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
-    }
-
-    @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
@@ -1247,6 +1223,11 @@ public class InventoryManager implements Serializable, Manager {
 
         switch (searchType) {
             case "Inventory":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;
+            case "Inventory Products":
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
@@ -1265,313 +1246,27 @@ public class InventoryManager implements Serializable, Manager {
             String searchText,
             Date startDate,
             Date endDate) {
-        //  etInventoryManager().doInventorySearch(dateSearchPeriod, searchType, searchText);
-        //  getInventoryManager().openInventoryTab();
-        //            case "Inventory requisitions":
-        //                getInventoryManager().doInventoryRequisitionSearch(dateSearchPeriod, searchType, searchText);
-        //                getInventoryManager().openInventoryRequisitionTab();
-        //                break;
+
         switch (searchType) {
             case "Inventory":
-                doInventorySearch(dateSearchPeriod, searchType, searchText);
+                foundInventories = Inventory.find(
+                        getEntityManager1(),
+                        searchText, 0);
                 openInventoryTab();
                 break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
-    public void logout() {
-        getUser().logActivity("Logged out", getEntityManager1());
-        reset();
-        completeLogout();
-    }
-
-    @Override
-    public void initSearchPanel() {
-        initSearchTypes();
-        updateSearchType();
-    }
-
-    @Override
-    public void initSearchTypes() {
-        groupedSearchTypes.clear();
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                groupedSearchTypes.add(manager.getSearchTypesGroup());
-            }
-        }
-    }
-
-    @Override
-    public Manager getManager(String name) {
-        return BeanUtils.findBean(name);
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        ArrayList<SelectItem> datePeriods = new ArrayList<>();
-
-        for (String name : DatePeriod.getDatePeriodNames()) {
-            datePeriods.add(new SelectItem(name, name));
-        }
-
-        return datePeriods;
-    }
-
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
-
-    @Override
-    public void updateSearchType() {
-        for (Modules activeModule : getUser().getActiveModules()) {
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                allDateSearchFields = manager.getDateSearchFields(searchType);
-            }
-        }
-    }
-
-    @Override
-    public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager1());
-
-        getUser().save(getEntityManager1());
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initDashboard();
-        initMainTabView();
-        updateAllForms();
-    }
-
-    @Override
-    public void completeLogout() {
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-    }
-
-    public Dashboard getDashboard() {
-        return getSystemManager().getDashboard();
-    }
-
-    @Override
-    public void initDashboard() {
-        initSearchPanel();
-    }
-
-    @Override
-    public void initMainTabView() {
-        getMainTabView().reset(getUser());
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-            getMainTabView().openTab(activeModule.getDashboardTitle());
-        }
-    }
-
-    @Override
-    public void updateAllForms() {
-        PrimeFaces.current().ajax().update("appForm");
-    }
-
-    @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
-
-        getMainTabView().closeTab(tabId);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        String tabTitle = event.getTab().getTitle();
-
-        switch (tabTitle) {
-            case "Inventory":
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        return getUser().getId() != null;
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
-    }
-
-    private void handleSelectedNotification(Notification notification) {
-
-        switch (notification.getType()) {
-            case "PRSearch": // tk
-                PurchaseRequisition pr = null;
-                EntityManager em = getEntityManager1();
-
-                try {
-                    pr = em.find(PurchaseRequisition.class,
-                            Long.parseLong(notification.getMessage()));
-                } catch (NumberFormatException e) {
-                    System.out.println("PR not found");
+            case "Inventory Products":
+                if (getIsActiveInventoryProductsOnly()) {
+                    foundInventoryProducts = MarketProduct.findActiveMarketProductsByNameAndType(
+                            getEntityManager1(), searchText, "Inventory");
+                } else {
+                    foundInventoryProducts = MarketProduct.findMarketProductsByNameAndType(
+                            getEntityManager1(), searchText, "Inventory");
                 }
-
-                if (pr != null) {
-                    getPurchasingManager().getFoundPurchaseReqs().clear();
-                    getPurchasingManager().getFoundPurchaseReqs().add(pr);
-                    getPurchasingManager().openPurchaseReqsTab();
-                }
-
+                openInventoryProductBrowser();
                 break;
-
             default:
-                System.out.println("Unkown type");
+                break;
         }
-
-    }
-
-    @Override
-    public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

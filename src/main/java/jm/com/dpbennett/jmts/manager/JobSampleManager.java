@@ -151,7 +151,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
         jobSampleDialogTabViewActiveIndex = 0;
 
         //if (event != null) {
-        //    PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 600, 700);
+        //    PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
         //}
         editJobSample(event);
     }
@@ -321,7 +321,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     public void editJobSample(ActionEvent event) {
         jobSampleDialogTabViewActiveIndex = 0;
         setCancelEdit(false);
-        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
     }
 
     public void openJobSampleDeleteConfirmDialog(ActionEvent event) {
@@ -347,7 +347,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     }
 
     public void copyJobSample() {
-        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
     }
 
     public void setCopySelectedJobSample(JobSample selectedJobSample) {

@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Financial Management (FM)
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,31 +17,39 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.fm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.fm.Service;
+import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author desbenn
  */
-@FacesConverter("serviceConverter")
-public class ServiceConverter extends ConverterAdapter {
+@FacesConverter("inventoryConverter")
+public class InventoryConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        
-        Service service = Service.findByName(getEntityManager(), value);
 
-        if (service == null) {
-            service =  new Service(value);
+        Inventory inventory = 
+                Inventory.findByName(getEntityManager(), value);
+
+        if (inventory == null) {
+            inventory = new Inventory(value);
         }
-
-        return service;
+       
+        return inventory;
     }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        return ((Inventory) value).getName();
+    }
+    
+    
 
 }

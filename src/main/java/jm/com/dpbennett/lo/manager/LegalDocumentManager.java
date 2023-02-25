@@ -28,6 +28,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Classification;
@@ -39,13 +43,19 @@ import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.lo.LegalDocument;
+import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -72,6 +82,16 @@ public class LegalDocumentManager implements Serializable, Manager {
     private LegalDocument selectedDocument;
     private LegalDocument currentDocument;
     private DocumentReport documentReport;
+    private String[] moduleNames;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
+    private String defaultCommandTarget;
+    private ArrayList<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> allDateSearchFields;
 
     public LegalDocumentManager() {
         init();
@@ -90,7 +110,7 @@ public class LegalDocumentManager implements Serializable, Manager {
     public List getLegalDocumentSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
-        searchTypes.add(new SelectItem("Legal documents", "Legal documents"));
+        searchTypes.add(new SelectItem("Legal Documents", "Legal Documents"));
 
         return searchTypes;
     }
@@ -160,17 +180,16 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     }
 
-    public List getLegalDocumentDateSearchFields() {
-        ArrayList dateFields = new ArrayList();
-
-        // add items
-        dateFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
-        dateFields.add(new SelectItem("dateReceived", "Date received"));
-        dateFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
-
-        return dateFields;
-    }
-
+//    public List getLegalDocumentDateSearchFields() {
+//        ArrayList dateFields = new ArrayList();
+//
+//        // add items
+//        dateFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
+//        dateFields.add(new SelectItem("dateReceived", "Date received"));
+//        dateFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
+//
+//        return dateFields;
+//    }
     @Override
     public final void init() {
         reset();
@@ -178,14 +197,30 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     public void openReportsTab() {
-        //getReportManager().openReportsTab("Legal");
+        getReportManager().openReportsTab("Legal");
     }
 
     @Override
     public void reset() {
-        searchType = "Legal documents";
-        dateSearchPeriod = new DatePeriod("This month", "month", "dateReceived", null, null, null, false, false, false);
+        searchType = "Legal Documents";
+        searchText = "";
+        dateSearchPeriod = new DatePeriod("This month", "month", "dateReceived",
+                null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
+        groupedSearchTypes = new ArrayList<>();
+        allDateSearchFields = new ArrayList();
+        moduleNames = new String[]{
+            "systemManager",
+            "legalDocumentManager"};
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
+        defaultCommandTarget = "@this";
     }
 
     public List<Classification> completeClassification(String query) {
@@ -428,13 +463,18 @@ public class LegalDocumentManager implements Serializable, Manager {
         getMainTabView().openTab("Document Browser");
     }
 
+    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
 
     @Override
     public User getUser() {
-        return getSystemManager().getUser();
+        if (user == null) {
+            user = new User();
+        }
+
+        return user;
     }
 
     public LegalDocument createNewLegalDocument(EntityManager em,
@@ -533,15 +573,9 @@ public class LegalDocumentManager implements Serializable, Manager {
         this.searchType = searchType;
     }
 
+    @Override
     public void updateSearch() {
-        switch (searchType) {
-            case "Legal documents":
-                doLegalDocumentSearch();
-                break;
-            default:
-                doLegalDocumentSearch();
-                break;
-        }
+        setDefaultCommandTarget("doSearch");
     }
 
     public void updateDatePeriodSearch() {
@@ -554,14 +588,8 @@ public class LegalDocumentManager implements Serializable, Manager {
 
         EntityManager em = getEntityManager1();
 
-        if (searchText != null) {
-            documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
-                    dateSearchPeriod, searchType, searchText.trim());
-        } else { // get all documents based on common test ie "" for now
-            documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
-                    dateSearchPeriod, searchType, "");
-        }
-
+        documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
+                dateSearchPeriod, searchType, searchText.trim());
     }
 
     public void doLegalDocumentSearch(
@@ -579,13 +607,25 @@ public class LegalDocumentManager implements Serializable, Manager {
     @Override
     public void doSearch() {
 
-        switch (searchType) {
-            case "Legal documents":
-                doLegalDocumentSearch();
-                openDocumentBrowser();
-                break;
-            default:
-                break;
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        manager.doDefaultSearch(
+                                getDateSearchPeriod().getDateField(),
+                                getSearchType(),
+                                getSearchText(),
+                                getDateSearchPeriod().getStartDate(),
+                                getDateSearchPeriod().getEndDate());
+                    }
+                }
+            }
         }
 
     }
@@ -593,6 +633,11 @@ public class LegalDocumentManager implements Serializable, Manager {
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
+    }
+
+    public ReportManager getReportManager() {
+
+        return BeanUtils.findBean("reportManager");
     }
 
     public void formatDocumentTableXLS(Object document, String headerTitle) {
@@ -674,108 +719,201 @@ public class LegalDocumentManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch( String dateSearchField,
+    public void doDefaultSearch(
+            String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,
             Date endDate) {
-        //doSearch();
+
+        getDateSearchPeriod().setDateField(dateSearchField);
+        this.searchType = searchType;
+        this.searchText = searchText;
+        getDateSearchPeriod().setStartDate(startDate);
+        getDateSearchPeriod().setEndDate(endDate);
+
+        switch (searchType) {
+            case "Legal Documents":
+                doLegalDocumentSearch();
+                openDocumentBrowser();
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void initDashboard() {
 
-        if (getUser().hasModule("LegalOfficeModule")) {
-            getSystemManager().getDashboard().openTab(getUser().
-                    getActiveModule("LegalOfficeModule").getDashboardTitle());
-        }
-
+        initSearchPanel();
     }
 
     @Override
     public void initMainTabView() {
 
-        if (getUser().hasModule("LegalOfficeModule")) {
-            getMainTabView().openTab(getUser().
-                    getActiveModule("LegalOfficeModule").getMainViewTitle());
-        }
+        getMainTabView().reset(getUser());
 
+        for (String moduleName : moduleNames) {
+            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                    moduleName);
+            if (module != null) {
+                if (getUser().hasModule(moduleName)) {
+                    getMainTabView().openTab(module.getDashboardTitle());
+                }
+            }
+        }
     }
 
     @Override
     public void completeLogin() {
+        getUser().logActivity("Logged in", getEntityManager1());
+
+        getUser().save(getEntityManager1());
+
+        getSystemManager().setUser(getUser());
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
         initDashboard();
+
         initMainTabView();
+
+        updateAllForms();
     }
 
     @Override
     public void completeLogout() {
-        reset();
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        getSystemManager().setUser(getUser());
     }
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        SelectItemGroup group = new SelectItemGroup("Legal");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
     }
 
     @Override
     public ArrayList<SelectItem> getGroupedSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return groupedSearchTypes;
     }
 
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Legal Documents", "Legal Documents"));
+
+        return searchTypes;
     }
 
     @Override
     public void handleKeepAlive() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().setPollTime(new Date());
+
+        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     @Override
     public String getApplicationSubheader() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return "Legal Office Administration &amp; Management";
     }
 
     @Override
     public void logout() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().logActivity("Logged out", getEntityManager1());
+        reset();
+        completeLogout();
     }
 
     @Override
     public void initSearchPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        initSearchTypes();
+        updateSearchType();
     }
 
     @Override
     public void initSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        groupedSearchTypes.clear();
+
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        groupedSearchTypes.add(manager.getSearchTypesGroup());
+                        searchType = manager.getSearchType();
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public Manager getManager(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return BeanUtils.findBean(name);
     }
 
     @Override
     public ArrayList<SelectItem> getDatePeriods() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<SelectItem> datePeriods = new ArrayList<>();
+
+        for (String name : DatePeriod.getDatePeriodNames()) {
+            datePeriods.add(new SelectItem(name, name));
+        }
+
+        return datePeriods;
     }
 
     @Override
     public ArrayList<SelectItem> getAllDateSearchFields() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return allDateSearchFields;
     }
 
     @Override
     public void updateSearchType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                        if (!dateFields.isEmpty()) {
+                            allDateSearchFields = dateFields;
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void updateDateSearchField() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
@@ -790,137 +928,361 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void updateAllForms() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        PrimeFaces.current().ajax().update("appForm");
     }
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        //String tabTitle = event.getTab().getTitle();
+
+        //System.out.println("Tab change: " + tabTitle);
     }
 
     @Override
     public String getAppShortcutIconURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public Boolean renderUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return getUser().getId() != null;
     }
 
     @Override
     public String getLogoURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
     }
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Legal Documents":
+                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
+                dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
+                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
+
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
     @Override
     public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        login(getEntityManager1());
     }
 
     @Override
     public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return loginAttempts;
     }
 
     @Override
     public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.loginAttempts = loginAttempts;
     }
 
     @Override
     public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return userLoggedIn;
     }
 
     @Override
     public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.userLoggedIn = userLoggedIn;
     }
 
     @Override
     public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return password;
     }
 
     @Override
     public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.password = password;
     }
 
     @Override
     public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return username;
     }
 
     @Override
     public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.username = username;
     }
 
     @Override
     public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (user == null) {
+            return new User();
+
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User foundUser = em.find(User.class,
+                            user.getId());
+                    if (foundUser != null) {
+                        em.refresh(foundUser);
+                        user = foundUser;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
     }
 
     @Override
     public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.user = user;
     }
 
     @Override
     public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            SearchControls constraints = new SearchControls();
+            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            String[] attrIDs = {"displayName"};
+
+            constraints.setReturningAttributes(attrIDs);
+
+            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+
+            if (!answer.hasMore()) { // Assuming only one match
+                // LDAP user not found!
+                return false;
+            }
+        } catch (NamingException ex) {
+            System.out.println(ex);
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Boolean userValidated = false;
+        InitialLdapContext ctx;
+
+        try {
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = jm.com.dpbennett.business.entity.sm.LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
+
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Get the user if one exists
+            if (userValidated) {
+                System.out.println("User validated.");
+
+                return true;
+
+            } else {
+                System.out.println("User NOT validated!");
+
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Problem connecting to directory: " + e);
+        }
+
+        return false;
     }
 
     @Override
     public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ++loginAttempts;
+        if (loginAttempts == 2) {
+
+            try {
+                // Send email to system administrator alert if activated
+                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        "developerEmailAlertActivated")) {
+                    MailUtils.postMail(null, null, null,
+                            "Failed user login",
+                            "Username: " + username + "\nDate/Time: " + new Date(),
+                            "text/plain",
+                            getEntityManager1());
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        } else if (loginAttempts > 2) {// tk # attempts to be made option
+            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+        }
+
+        username = "";
+        password = "";
     }
 
     @Override
     public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
     }
 
     @Override
     public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return logonMessage;
     }
 
     @Override
     public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        this.logonMessage = logonMessage;
+    }
+
+    @Override
+    public void doDefaultCommand() {
+
+        switch (defaultCommandTarget) {
+            case "doSearch":
+                doSearch();
+                break;
+            default:
+                PrimeFacesUtils.addMessage("Action NOT Taken",
+                        "No action was taken. Enter search text if you are doing a search.",
+                        FacesMessage.SEVERITY_INFO);
+                PrimeFaces.current().ajax().update("appForm:growl3");
+                break;
+        }
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+        return defaultCommandTarget;
+    }
+
+    @Override
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        this.defaultCommandTarget = defaultCommandTarget;
+    }
+
+    @Override
+    public Dashboard getDashboard() {
+        return getSystemManager().getDashboard();
+    }
+
+    @Override
+    public void handleSelectedNotification(Notification notification) {
+        switch (notification.getType()) {
+            case "LegalDocumentSearch":
+
+                break;
+
+            default:
+                System.out.println("Unkown type");
+        }
     }
 
 }

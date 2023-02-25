@@ -27,6 +27,13 @@ import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.SearchControls;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
 import jm.com.dpbennett.business.entity.hrm.Address;
@@ -36,28 +43,51 @@ import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.hrm.Internet;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.rm.DatePeriod;
+import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
+import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
+import org.primefaces.event.TabCloseEvent;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class ClientManager implements Serializable {
+public class ClientManager implements Serializable, Manager {
 
     private Boolean isActiveClientsOnly;
     private Client selectedClient;
     private Contact selectedContact;
     private Address selectedAddress;
-    private String searchText;
     private List<Client> foundClients;
     private Boolean edit;
     private String clientDialogTitle;
+    private DatePeriod dateSearchPeriod;
+    private String searchType;
+    private String searchText;
+    private String[] moduleNames;
+    private User user;
+    private String username;
+    private String logonMessage;
+    private String password;
+    private Integer loginAttempts;
+    private Boolean userLoggedIn;
+    private String defaultCommandTarget;
+    private ArrayList<SelectItem> groupedSearchTypes;
+    private ArrayList<SelectItem> allDateSearchFields;
 
     /**
      * Creates a new instance of ClientManager
@@ -66,9 +96,10 @@ public class ClientManager implements Serializable {
         init();
     }
 
+    @Override
     public String getApplicationHeader() {
 
-        return "Client Management";
+        return "Client Manager";
     }
 
     public String getClientDialogTitle() {
@@ -80,11 +111,7 @@ public class ClientManager implements Serializable {
         this.clientDialogTitle = clientDialogTitle;
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
+  
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -154,6 +181,7 @@ public class ClientManager implements Serializable {
         this.edit = edit;
     }
 
+    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
@@ -163,17 +191,37 @@ public class ClientManager implements Serializable {
         getMainTabView().openTab("Clients");
     }
 
-    private void init() {
+    @Override
+    public final void init() {
         reset();
 
     }
 
+    @Override
     public void reset() {
         foundClients = new ArrayList<>();
         selectedClient = null;
         selectedContact = null;
         selectedAddress = null;
+        searchType = "Clients";
         searchText = "";
+        dateSearchPeriod = new DatePeriod("This year", "year",
+                "dateEntered", null, null, null, false, false, false);
+        dateSearchPeriod.initDatePeriod();
+        groupedSearchTypes = new ArrayList<>();
+        allDateSearchFields = new ArrayList();
+        moduleNames = new String[]{
+            "systemManager",
+            "clientManager"};
+        password = "";
+        username = "";
+        loginAttempts = 0;
+        userLoggedIn = false;
+        logonMessage = "Please provide your login details below:";
+        String theme = getUser().getPFThemeName();
+        user = new User();
+        user.setPFThemeName(theme);
+        defaultCommandTarget = "@this";
     }
 
     public Client getSelectedClient() {
@@ -255,10 +303,12 @@ public class ClientManager implements Serializable {
         this.foundClients = foundClients;
     }
 
+    @Override
     public String getSearchText() {
         return searchText;
     }
 
+    @Override
     public void setSearchText(String searchText) {
         this.searchText = searchText;
     }
@@ -317,8 +367,13 @@ public class ClientManager implements Serializable {
         return getSelectedClient().getDefaultAddress();
     }
 
+    @Override
     public User getUser() {
-        return getSystemManager().getUser();
+        if (user == null) {
+            user = new User();
+        }
+        
+        return user;
     }
 
     public void editClient() {
@@ -358,16 +413,16 @@ public class ClientManager implements Serializable {
     }
 
     public void updateContact() {
-        
+
         getSelectedContact().setIsDirty(true);
-        
+
         setIsDirty(true);
     }
 
     public void updateAddress() {
-        
+
         getSelectedAddress().setIsDirty(true);
-        
+
         setIsDirty(true);
     }
 
@@ -430,12 +485,14 @@ public class ClientManager implements Serializable {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    @Override
     public EntityManager getEntityManager1() {
 
         return getSystemManager().getEntityManager1();
 
     }
 
+    @Override
     public EntityManager getEntityManager2() {
 
         return getSystemManager().getEntityManager2();
@@ -611,7 +668,6 @@ public class ClientManager implements Serializable {
     }
 
     public void doDefaultSearch() {
-        //Modules crm = getUser().getActiveModule("CRMModule");
 
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
             case "Clients":
@@ -621,31 +677,598 @@ public class ClientManager implements Serializable {
         }
     }
 
-    private void initDashboard() {
+    @Override
+    public void initDashboard() {
 
-        if (getUser().hasModule("CRMModule")) {
-            getSystemManager().getDashboard().openTab(getUser().
-                    getActiveModule("CRMModule").getDashboardTitle());
+        initSearchPanel();
+
+    }
+
+    @Override
+    public void initMainTabView() {
+
+        getMainTabView().reset(getUser());
+
+        for (String moduleName : moduleNames) {
+            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                    moduleName);
+            if (module != null) {
+                if (getUser().hasModule(moduleName)) {
+                    getMainTabView().openTab(module.getDashboardTitle());
+                }
+            }
         }
 
     }
 
-    private void initMainTabView() {
-
-        if (getUser().hasModule("CRMModule")) {
-            getSystemManager().getMainTabView().openTab(getUser().
-                    getActiveModule("CRMModule").getMainViewTitle());
-        }
-
-    }
-
+    @Override
     public void completeLogin() {
+        getUser().logActivity("Logged in", getEntityManager1());
+
+        getUser().save(getEntityManager1());
+
+        getSystemManager().setUser(getUser());
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
         initDashboard();
+
         initMainTabView();
+
+        updateAllForms();
     }
 
+    @Override
     public void completeLogout() {
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        getSystemManager().setUser(getUser());
+    }
+
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        SelectItemGroup group = new SelectItemGroup("Clients");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        return groupedSearchTypes;
+    }
+
+    @Override
+    public String getSearchType() {
+        return searchType;
+    }
+
+    @Override
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getSearchTypes() {
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Clients", "Clients"));
+
+        return searchTypes;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Clients":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                return dateSearchFields;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
+    }
+
+    @Override
+    public DatePeriod getDateSearchPeriod() {
+        return dateSearchPeriod;
+    }
+
+    @Override
+    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
+        this.dateSearchPeriod = dateSearchPeriod;
+    }
+
+    @Override
+    public void doSearch() {
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        manager.doDefaultSearch(
+                                getDateSearchPeriod().getDateField(),
+                                getSearchType(),
+                                getSearchText(),
+                                getDateSearchPeriod().getStartDate(),
+                                getDateSearchPeriod().getEndDate());
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void doDefaultCommand() {
+        switch (defaultCommandTarget) {
+            case "doSearch":
+                doSearch();
+                break;
+            default:
+                PrimeFacesUtils.addMessage("Action NOT Taken",
+                        "No action was taken. Enter search text if you are doing a search.",
+                        FacesMessage.SEVERITY_INFO);
+                PrimeFaces.current().ajax().update("appForm:growl3");
+                break;
+        }
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+        return defaultCommandTarget;
+    }
+
+    @Override
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        this.defaultCommandTarget = defaultCommandTarget;
+    }
+
+    @Override
+    public void doDefaultSearch(String dateSearchField, String searchType, String searchText, Date startDate, Date endDate) {
+        switch (searchType) {
+            case "Clients":
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void handleKeepAlive() {
+        getUser().setPollTime(new Date());
+
+        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+    }
+
+    @Override
+    public String getApplicationSubheader() {
+        return "Client Administration &amp; Management";
+    }
+
+    @Override
+    public void login() {
+        login(getEntityManager1());
+    }
+
+    @Override
+    public void login(EntityManager em) {
+        setUserLoggedIn(false);
+
+        try {
+
+            // Find user and determine if authentication is required for this user
+            user = User.findActiveJobManagerUserByUsername(em, username);
+
+            if (user != null) {
+                em.refresh(user);
+                if (!user.getAuthenticate()) {
+                    System.out.println("User will NOT be authenticated.");
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                } else if (validateUser(em)) {
+                    logonMessage = "Please provide your login details below:";
+                    username = "";
+                    password = "";
+                    setUserLoggedIn(true);
+
+                    completeLogin();
+
+                } else {
+                    setUserLoggedIn(false);
+                    checkLoginAttemps();
+                    logonMessage = "Please enter a valid username and password.";
+                }
+            } else {
+                setUserLoggedIn(false);
+                logonMessage = "Please enter a registered username.";
+                username = "";
+                password = "";
+            }
+
+        } catch (Exception e) {
+            setUserLoggedIn(false);
+            System.out.println(e);
+            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
+        }
+    }
+
+    @Override
+    public void logout() {
+        getUser().logActivity("Logged out", getEntityManager1());
         reset();
+        completeLogout();
+    }
+
+    @Override
+    public Integer getLoginAttempts() {
+        return loginAttempts;
+    }
+
+    @Override
+    public void setLoginAttempts(Integer loginAttempts) {
+        this.loginAttempts = loginAttempts;
+    }
+
+    @Override
+    public Boolean getUserLoggedIn() {
+        return userLoggedIn;
+    }
+
+    @Override
+    public void setUserLoggedIn(Boolean userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public User getUser(EntityManager em) {
+        if (user == null) {
+            return new User();
+
+        } else {
+            try {
+                if (user.getId() != null) {
+                    User foundUser = em.find(User.class,
+                            user.getId());
+                    if (foundUser != null) {
+                        em.refresh(foundUser);
+                        user = foundUser;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                return new User();
+            }
+        }
+
+        return user;
+    }
+
+    @Override
+    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
+        try {
+            SearchControls constraints = new SearchControls();
+            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            String[] attrIDs = {"displayName"};
+
+            constraints.setReturningAttributes(attrIDs);
+
+            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+
+            if (!answer.hasMore()) { // Assuming only one match
+                // LDAP user not found!
+                return false;
+            }
+        } catch (NamingException ex) {
+            System.out.println(ex);
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Boolean validateUser(EntityManager em) {
+
+        Boolean userValidated = false;
+        InitialLdapContext ctx;
+
+        try {
+            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+
+            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+                if (ldapContext.getName().equals("LDAP")) {
+                    userValidated = jm.com.dpbennett.business.entity.sm.LdapContext.authenticateUser(
+                            em,
+                            ldapContext,
+                            username,
+                            password);
+                } else {
+                    ctx = ldapContext.getInitialLDAPContext(username, password);
+
+                    if (ctx != null) {
+                        if (checkForLDAPUser(em, username, ctx)) {
+                            // user exists in LDAP                    
+                            userValidated = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Get the user if one exists
+            if (userValidated) {
+                System.out.println("User validated.");
+
+                return true;
+
+            } else {
+                System.out.println("User NOT validated!");
+
+                return false;
+            }
+
+        } catch (Exception e) {
+            System.err.println("Problem connecting to directory: " + e);
+        }
+
+        return false;
+    }
+
+    @Override
+    public void checkLoginAttemps() {
+        ++loginAttempts;
+        if (loginAttempts == 2) {
+
+            try {
+                // Send email to system administrator alert if activated
+                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        "developerEmailAlertActivated")) {
+                    MailUtils.postMail(null, null, null,
+                            "Failed user login",
+                            "Username: " + username + "\nDate/Time: " + new Date(),
+                            "text/plain",
+                            getEntityManager1());
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        } else if (loginAttempts > 2) {// tk # attempts to be made option
+            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
+        }
+
+        username = "";
+        password = "";
+    }
+
+    @Override
+    public String getLogonMessage() {
+        return logonMessage;
+    }
+
+    @Override
+    public void setLogonMessage(String logonMessage) {
+        this.logonMessage = logonMessage;
+    }
+
+    @Override
+    public void initSearchPanel() {
+        initSearchTypes();
+        updateSearchType();
+    }
+
+    @Override
+    public void initSearchTypes() {
+        groupedSearchTypes.clear();
+
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        groupedSearchTypes.add(manager.getSearchTypesGroup());
+                        searchType = manager.getSearchType();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public Manager getManager(String name) {
+        return BeanUtils.findBean(name);
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDatePeriods() {
+        ArrayList<SelectItem> datePeriods = new ArrayList<>();
+
+        for (String name : DatePeriod.getDatePeriodNames()) {
+            datePeriods.add(new SelectItem(name, name));
+        }
+
+        return datePeriods;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getAllDateSearchFields() {
+        return allDateSearchFields;
+    }
+
+    @Override
+    public void updateSearch() {
+        setDefaultCommandTarget("doSearch");
+    }
+
+    @Override
+    public void updateSearchType() {
+        for (String moduleName : moduleNames) {
+
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (module != null) {
+                    Manager manager = getManager(module.getName());
+                    if (manager != null) {
+                        ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                        if (!dateFields.isEmpty()) {
+                            allDateSearchFields = dateFields;
+
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateDateSearchField() {
+    }
+
+    @Override
+    public void updateAllForms() {
+        PrimeFaces.current().ajax().update("appForm");
+    }
+
+    @Override
+    public void onMainViewTabClose(TabCloseEvent event) {
+        String tabId = ((TabPanel) event.getData()).getId();
+
+        getMainTabView().closeTab(tabId);
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+        String tabTitle = event.getTab().getTitle();
+
+        System.out.println("Tab change: " + tabTitle);
+    }
+
+    @Override
+    public String getAppShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
+    }
+
+    @Override
+    public Boolean renderUserMenu() {
+        return getUser().getId() != null;
+    }
+
+    @Override
+    public String getLogoURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
+    }
+
+    @Override
+    public Integer getLogoURLImageHeight() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
+    }
+
+    @Override
+    public Integer getLogoURLImageWidth() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
+    }
+
+    @Override
+    public void onNotificationSelect(SelectEvent event) {
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
+    }
+
+    @Override
+    public Dashboard getDashboard() {
+        return getSystemManager().getDashboard();
+    }
+
+    @Override
+    public void handleSelectedNotification(Notification notification) {
+        switch (notification.getType()) {
+            case "ClientSearch":
+
+                break;
+
+            default:
+                System.out.println("Unkown type");
+        }
     }
 
 }

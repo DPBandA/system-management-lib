@@ -41,7 +41,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -81,28 +80,25 @@ import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
+import jm.com.dpbennett.lo.manager.LegalDocumentManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
-import jm.com.dpbennett.sm.manager.Manager;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.UnselectEvent;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
-import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class JobManager implements
-        Serializable, BusinessEntityManagement, Manager {
+public class JobManager extends GeneralManager
+        implements Serializable, BusinessEntityManagement {
 
     private JMTSApplication application;
     private Job currentJob;
@@ -111,20 +107,23 @@ public class JobManager implements
     private Boolean useAccPacCustomerList;
     private Boolean showJobEntry;
     private List<Job> jobSearchResultList;
-    private DatePeriod dateSearchPeriod;
-    private ArrayList<SelectItem> groupedSearchTypes;
-    private String searchType;
-    private String searchText;
     private Job[] selectedJobs;
     private AccPacCustomer accPacCustomer;
     private StatusNote selectedStatusNote;
-    private User user;
+    private SystemManager systemManager;
 
     /**
      * Creates a new instance of JobManager
      */
     public JobManager() {
         init();
+    }
+
+    public SystemManager getSystemManager() {
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+        return systemManager;
     }
 
     @Override
@@ -375,7 +374,7 @@ public class JobManager implements
     }
 
     public void editStatusNote() {
-        PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 300, 575);
+        PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 400, 575);
     }
 
     public StatusNote getSelectedStatusNote() {
@@ -585,17 +584,9 @@ public class JobManager implements
 
     }
 
+    @Override
     public String getApplicationHeader() {
         return "Job Management & Tracking System";
-    }
-
-    public String getRenderDateSearchFields() {
-        switch (searchType) {
-            case "Suppliers":
-                return "false";
-            default:
-                return "true";
-        }
     }
 
     /**
@@ -770,8 +761,6 @@ public class JobManager implements
     @Override
     public final void init() {
         reset();
-
-        //getSystemManager().addSingleAuthenticationListener(this);
     }
 
     /**
@@ -837,78 +826,47 @@ public class JobManager implements
         return BeanUtils.findBean("humanResourceManager");
     }
 
-    public LegalDocumentManagerDelete getLegalDocumentManager() {
+    public LegalDocumentManager getLegalDocumentManager() {
         return BeanUtils.findBean("legalDocumentManager");
     }
 
-//    public ComplianceManager getComplianceManager() {
-//        return BeanUtils.findBean("complianceManager");
-//    }
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
 
-    /**
-     * Gets the date search period for jobs.
-     *
-     * @return
-     */
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
+//    public SelectItem[] getAuthorizedSearchTypes() {
+//
+//        EntityManager em = getEntityManager1();
+//        
+//
+//        if (getUser(em).can("EditJob")
+//                || getUser(em).can("EnterJob")
+//                || getUser(em).can("EditInvoicingAndPayment")
+//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
+//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditJob()
+//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()) {
+//            return new SelectItem[]{
+//                new SelectItem("General", "General"),
+//                new SelectItem("My jobs", "My jobs"),
+//                new SelectItem("My department's jobs", "My department's jobs"),
+//                new SelectItem("Parent jobs only", "Parent jobs only"),
+//                new SelectItem("Unapproved job costings", "Unapproved job costings"),
+//                new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"),
+//                new SelectItem("Incomplete jobs", "Incomplete jobs"),
+//                new SelectItem("Invoiced jobs", "Invoiced jobs")};
+//
+//        } else {
+//
+//            return new SelectItem[]{
+//                new SelectItem("My jobs", "My jobs"),
+//                new SelectItem("My department's jobs", "My department's jobs")};
+//        }
+//
+//    }
+    public ArrayList<SelectItem> getAuthorizedSearchTypes() {
 
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
-    }
-
-    public void updateDateSearchField() {
-    }
-
-    public String getSearchType() {
-        return searchType;
-    }
-
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
-    }
-
-    public ArrayList getDateSearchFields() {
-        ArrayList dateSearchFields = new ArrayList();
-
-        switch (searchType) {
-            case "Suppliers":
-                //  dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-                //  dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                break;
-            case "Legal documents":
-                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
-                dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
-                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
-                break;
-            case "Purchase requisitions":
-                dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-                dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-                dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-                dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-                dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-                dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
-                dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
-                break;
-            default: // Jobs search
-                return DateUtils.getDateSearchFields();
-        }
-
-        return dateSearchFields;
-    }
-
-    public SelectItem[] getAuthorizedSearchTypes() {
-
-        // Create list based on user's privileges
         EntityManager em = getEntityManager1();
+        ArrayList searchTypes = new ArrayList();
 
         if (getUser(em).can("EditJob")
                 || getUser(em).can("EnterJob")
@@ -916,22 +874,24 @@ public class JobManager implements
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditJob()
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()) {
-            return new SelectItem[]{
-                new SelectItem("General", "General"),
-                new SelectItem("My jobs", "My jobs"),
-                new SelectItem("My department's jobs", "My department's jobs"),
-                new SelectItem("Parent jobs only", "Parent jobs only"),
-                new SelectItem("Unapproved job costings", "Unapproved job costings"),
-                new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"),
-                new SelectItem("Incomplete jobs", "Incomplete jobs"),
-                new SelectItem("Invoiced jobs", "Invoiced jobs")};
+
+            searchTypes.add(new SelectItem("General", "General"));
+            searchTypes.add(new SelectItem("My jobs", "My jobs"));
+            searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+            searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
+            searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
+            searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
+            searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
+            searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
 
         } else {
 
-            return new SelectItem[]{
-                new SelectItem("My jobs", "My jobs"),
-                new SelectItem("My department's jobs", "My department's jobs")};
+            searchTypes.add(new SelectItem("My jobs", "My jobs"));
+            searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+
         }
+
+        return searchTypes;
 
     }
 
@@ -950,93 +910,52 @@ public class JobManager implements
 
     }
 
-    // tk may not be necessary.
-//    private void initManagers() {
-//        try {
-//
-//            getClientManager();
-//            getJobContractManager();
-//            getJobFinanceManager();
-//            getFinanceManager();
-//            getPurchasingManager();
-//            getJobSampleManager();
-//            getReportManager();
-//            getHumanResourceManager();
-//            getLegalDocumentManager();
-//            //getComplianceManager();
-//
-//        } catch (Exception e) {
-//            System.out.println("An error occured while resetting managers: " + e);
-//        }
-//    }
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
-    }
-
+    @Override
     public void reset() {
+        super.reset();
+
+        setSearchType("My jobs");
+        setSearchText("");
+        setDefaultCommandTarget("doSearch");
+        setModuleNames(new String[]{
+            "legalDocumentManager",
+            "jobManager",
+            "clientManager",
+            "reportManager",
+            "systemManager",
+            "financeManager",
+            "humanResourceManager",
+            "purchasingManager"});
+        setDateSearchPeriod(new DatePeriod("This month", "month",
+                "dateAndTimeEntered", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
+
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
-        groupedSearchTypes = new ArrayList<>();
-        searchType = "";
-        dateSearchPeriod = new DatePeriod("This month", "month",
-                "dateAndTimeEntered", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
 
-        //initManagers();
+    }
+
+    public void openSystemBrowser() {
+        getMainTabView().openTab("System Administration");
+    }
+
+    public void openFinancialAdministration() {
+        getMainTabView().openTab("Financial Administration");
+    }
+    
+    public void openHumanResourceBrowser() {
+
+        getMainTabView().openTab("Human Resource");
     }
 
     public Boolean getCanApplyTax() {
         return JobCostingAndPayment.getCanApplyTax(getCurrentJob());
     }
 
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
     @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
-    }
-
-    @Override
-    public User getUser() {
-        if (user == null) {
-            user = new User();
-        }
-        return user;
-    }
-
-    /**
-     * Get user as currently stored in the database
-     *
-     * @param em
-     * @return
-     */
-    @Override
-    public User getUser(EntityManager em) {
-        if (user == null) {
-            return new User();
-        } else {
-            try {
-                if (user.getId() != null) {
-                    User foundUser = em.find(User.class, user.getId());
-                    if (foundUser != null) {
-                        em.refresh(foundUser);
-                        user = foundUser;
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return new User();
-            }
-        }
-
-        return user;
-    }
-
-    public Dashboard getDashboard() {
-        return getSystemManager().getDashboard();
     }
 
     public void prepareToCloseJobDetail() {
@@ -1060,36 +979,25 @@ public class JobManager implements
     }
 
     public void openJobBrowser() {
-        // Set "Job View" based on search type
+
         if (getSearchType().equals("Unapproved job costings")) {
             getUser().setJobTableViewPreference("Job Costings");
         }
 
-        if (getUser().hasModule("JobManagementAndTrackingModule")) {
-            getMainTabView().openTab(getUser().
-                    getActiveModule("JobManagementAndTrackingModule").getMainViewTitle());
-        }
+        getMainTabView().openTab("Job Browser");
+
     }
 
     public void openSystemAdministrationTab() {
-        if (getUser().hasModule("SystemAdministrationModule")) {
-            getSystemManager().getMainTabView().openTab(getUser().
-                    getActiveModule("SystemAdministrationModule").getMainViewTitle());
-        }
+
+        getMainTabView().openTab("System Administration");
+
     }
 
     public void openFinancialAdministrationTab() {
-        if (getUser().hasModule("FinancialManagementModule")) {
-            getSystemManager().getMainTabView().openTab("Financial Administration");
-        }
-    }
 
-    public String getSearchText() {
-        return searchText;
-    }
+        getMainTabView().openTab("Financial Administration");
 
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
     }
 
     public Boolean getShowJobEntry() {
@@ -1334,6 +1242,7 @@ public class JobManager implements
         currentJob.getJobStatusAndTracking().setDocumentCollected(b);
     }
 
+    @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
     }
@@ -1723,7 +1632,7 @@ public class JobManager implements
     public void cancelJobEdit(ActionEvent actionEvent) {
         setIsDirty(false);
         PrimeFacesUtils.closeDialog(null);
-        doJobSearch();
+        //doJobSearch();
     }
 
     private boolean prepareAndSaveJob(Job job) {
@@ -2081,8 +1990,7 @@ public class JobManager implements
             Date startDate,
             Date endDate) {
 
-        // getDashboard().getSelectedTabId()
-        switch (getSearchType()) {
+        switch (searchType) {
             case "General":
             case "My jobs":
             case "My department's jobs":
@@ -2091,29 +1999,15 @@ public class JobManager implements
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-                doSearch();
-                break;
-            case "Legal documents":
-                getLegalDocumentManager().
-                        doLegalDocumentSearch(dateSearchPeriod, searchType, searchText);
-                getMainTabView().openTab("Document Browser");
-                break;
-            case "Purchase requisitions":
-                //getPurchasingManager().doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-                getMainTabView().openTab("Purchase Requisitions");
-                break;
-            case "Suppliers":
-                getPurchasingManager().doSupplierSearch(searchText);
-                getMainTabView().openTab("Suppliers");
+                search();
                 break;
             default:
-                System.out.println("Default search type not implemented.");
                 break;
         }
 
     }
 
-    public void doSearch() {
+    public void search() {
 
         doJobSearch();
         openJobBrowser();
@@ -2130,6 +2024,7 @@ public class JobManager implements
 
     }
 
+    // tk del?
     public void doJobSearch(Integer maxResults) {
 
         if (getUser().getId() != null) {
@@ -2141,10 +2036,8 @@ public class JobManager implements
 
     }
 
+    // tk del?
     public void doJobSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
-        this.dateSearchPeriod = dateSearchPeriod;
-        this.searchType = searchType;
-        this.searchText = searchText;
 
         doJobSearch();
     }
@@ -2209,7 +2102,8 @@ public class JobManager implements
 
     public void editJob() {
 
-        PrimeFacesUtils.openDialog(null, "jobDialog", true, true, true, true, 700, 975);
+        PrimeFacesUtils.openDialog(null, "jobDialog", true, true, true, true, 400, 800);
+
     }
 
     /**
@@ -2395,14 +2289,14 @@ public class JobManager implements
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,
@@ -2610,279 +2504,130 @@ public class JobManager implements
 
     public void openClientsTab() {
 
-        getSystemManager().getMainTabView().openTab("Clients");
+        getMainTabView().openTab("Clients");
     }
 
     public void openReportsTab() {
-        getReportManager().openReportsTab("Job");
+        //getReportManager().openReportsTab("Job");
+        getMainTabView().openTab("Reports");
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    public SystemManager getSystemManager() {
-
-        return BeanUtils.findBean("systemManager");
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        if (getUser().hasModule("JobManagementAndTrackingModule")) {
-            getMainTabView().openTab(getUser().
-                    getActiveModule("JobManagementAndTrackingModule").getMainViewTitle());
-        }
-
-        if (getUser().hasModule("ComplianceModule")) {
-            getSystemManager().getMainTabView().openTab(getUser().
-                    getActiveModule("ComplianceModule").getMainViewTitle());
-        }
-
-    }
-
-    @Override
-    public void initSearchTypes() {
-
-        groupedSearchTypes.clear();
-
-        if (getUser().hasModule("LegalOfficeModule")) {
-            SelectItemGroup legalGroup = new SelectItemGroup("Legal");
-            legalGroup.setSelectItems(new SelectItem[]{
-                new SelectItem("Legal documents", "Legal documents")
-            });
-            groupedSearchTypes.add(legalGroup);
-            setSearchType("Legal documents");
-            getDateSearchFields();
-        }
-
-        if (getUser().hasModule("PurchaseManagementModule")) {
-            SelectItemGroup procurementGroup = new SelectItemGroup("Procurement");
-            procurementGroup.setSelectItems(new SelectItem[]{
-                new SelectItem("Purchase requisitions", "Purchase requisitions"),
-                new SelectItem("Suppliers", "Suppliers")
-            });
-            groupedSearchTypes.add(procurementGroup);
-            setSearchType("Purchase requisitions");
-            getDateSearchFields();
-        }
-
-        if (getUser().hasModule("JobManagementAndTrackingModule")) {
-            SelectItemGroup jobsGroup = new SelectItemGroup("Jobs");
-            jobsGroup.setSelectItems(getAuthorizedSearchTypes());
-            groupedSearchTypes.add(jobsGroup);
-            setSearchType("General");
-            getDateSearchFields();
-        }
-
-    }
-
-    @Override
-    public void initDashboard() {
-
-        if (getUser().hasModule("JobManagementAndTrackingModule")) {
-            getDashboard().openTab(getUser().
-                    getActiveModule("JobManagementAndTrackingModule").getDashboardTitle());
-        }
-
-        initSearchTypes();
-
-    }
-
-    @Override
-    public void completeLogin() {
-        initDashboard();
-        initMainTabView();
-    }
-
-    @Override
-    public void completeLogout() {
-        reset();
-    }
-
-//    public List<SelectItem> getJobTableViews() {
-//        ArrayList views = new ArrayList();
-//
-//        views.add(new SelectItem("Jobs", "Jobs"));
-//        views.add(new SelectItem("Job Costings", "Job Costings"));
-//        views.add(new SelectItem("Cashier View", "Cashier View"));
-//
-//        return views;
-//    }
     @Override
     public SelectItemGroup getSearchTypesGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        SelectItemGroup group = new SelectItemGroup("Jobs");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
     }
 
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        //ArrayList searchTypes = new ArrayList();
+
+//        searchTypes.add(new SelectItem("General", "General"));
+//        searchTypes.add(new SelectItem("My jobs", "My jobs"));
+//        searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+//        searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
+//        searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
+//        searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
+//        searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
+//        searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
+        return getAuthorizedSearchTypes(); //searchTypes;
     }
 
     @Override
     public void handleKeepAlive() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        getUser().setPollTime(new Date());
+
+        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     @Override
     public String getApplicationSubheader() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        String subHeader;
 
-    @Override
-    public void logout() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        subHeader = (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "applicationSubheader");
 
-    @Override
-    public void initSearchPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        if (subHeader != null) {
+            if (subHeader.trim().equals("None")) {
+                return getUser().getEmployee().getDepartment().getName();
+            }
+        } else {
+            subHeader = "";
+        }
 
-    @Override
-    public Manager getManager(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void updateSearchType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void updateAllForms() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getLogoURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return subHeader;
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
     }
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "General":
+            case "My jobs":
+            case "My department's jobs":
+            case "Parent jobs only":
+            case "Unapproved job costings":
+            case "Appr'd & uninv'd jobs":
+            case "Incomplete jobs":
+            case "Invoiced jobs":
+                dateSearchFields = DateUtils.getDateSearchFields();
+                break;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
     @Override
-    public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    public void handleSelectedNotification(Notification notification) {
+        switch (notification.getType()) {
+            case "JobSearch":
 
-    @Override
-    public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+                try {
 
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+            } catch (NumberFormatException e) {
+                System.out.println(e);
+            }
 
-    @Override
-    public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+            break;
 
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            default:
+                System.out.println("Unkown type");
+        }
     }
 
 }
