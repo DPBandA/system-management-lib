@@ -90,6 +90,7 @@ import org.primefaces.event.UnselectEvent;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
+import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 
@@ -943,7 +944,7 @@ public class JobManager extends GeneralManager
     public void openFinancialAdministration() {
         getMainTabView().openTab("Financial Administration");
     }
-    
+
     public void openHumanResourceBrowser() {
 
         getMainTabView().openTab("Human Resource");
@@ -1984,7 +1985,9 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void doDefaultSearch(String dateSearchField,
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,

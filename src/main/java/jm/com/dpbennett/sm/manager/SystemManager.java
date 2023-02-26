@@ -70,7 +70,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
-    private EntityManagerFactory EMF2;    
+    private EntityManagerFactory EMF2;
     //private MainTabView mainTabView;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
@@ -448,6 +448,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doUserSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Users",
                 getUserSearchText(),
@@ -458,6 +459,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doAttachmentSearch() {
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Attachments",
                 getAttachmentSearchText(),
@@ -763,7 +765,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     @Override
-    public void doDefaultSearch(String dateSearchField,
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,
@@ -779,51 +783,51 @@ public final class SystemManager extends GeneralManager implements Serializable 
                             searchText);
                 }
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 0);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 0);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 0);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 0);
+                }
                 break;
             case "Privileges":
                 foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 1);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 1);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 1);
+                }
                 break;
             case "Categories":
                 foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 2);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 2);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 2);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 2);
+                }
                 break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 3);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 3);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 3);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 3);
+                }
                 break;
             case "Options":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 4);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 4);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 4);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
+                }
                 break;
             case "Authentication":
                 if (getIsActiveLdapsOnly()) {
@@ -834,31 +838,31 @@ public final class SystemManager extends GeneralManager implements Serializable 
                             searchText);
                 }
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 5);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 5);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 5);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 5);
+                }
                 break;
             case "Modules":
                 foundActiveModules = Modules.findActiveModules(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 6);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 6);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 6);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 6);
+                }
                 break;
             case "Attachments":
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-                    selectSystemAdminTab(false, "centerTabVar", 7);
-//                } else {
-//                    selectSystemAdminTab(true, "centerTabVar", 7);
-//                }
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 7);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 7);
+                }
                 break;
             default:
                 break;
@@ -1186,6 +1190,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doDocumentTypeSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Document Types",
                 getDocumentTypeSearchText(),
@@ -1197,6 +1202,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doCategorySearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Categories",
                 getCategorySearchText(),
@@ -1212,6 +1218,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doActivePrivilegeSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Privileges",
                 getPrivilegeSearchText(),
@@ -1223,6 +1230,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doActiveModuleSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Modules",
                 getModuleSearchText(),
@@ -1436,7 +1444,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     @Override
     public void reset() {
         super.reset();
-        
+
         activeNavigationTabIndex = 0;
         foundLdapContexts = null;
         foundSystemOptions = null;
@@ -1530,19 +1538,21 @@ public final class SystemManager extends GeneralManager implements Serializable 
      * Select an system administration tab based on whether or not the tab is
      * already opened.
      *
+     * @param mainTabView
      * @param openTab
      * @param innerTabViewVar
      * @param innerTabIndex
      */
     public void selectSystemAdminTab(
+            MainTabView mainTabView,
             Boolean openTab,
             String innerTabViewVar,
             int innerTabIndex) {
 
         if (openTab) {
-            getMainTabView().openTab("System Administration");
+            mainTabView.openTab("System Administration");
         }
-        
+
         PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
 
     }
@@ -1567,6 +1577,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doSystemOptionSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Options",
                 getSystemOptionSearchText(),
@@ -1578,6 +1589,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void doLdapContextSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Authentication",
                 getLdapSearchText(),
@@ -1716,7 +1728,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public String getSystemInfo() {
         return "";
     }
-
 
     @Override
     public EntityManager getEntityManager1() {

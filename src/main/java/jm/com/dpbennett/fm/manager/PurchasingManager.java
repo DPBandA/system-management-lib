@@ -129,7 +129,7 @@ public class PurchasingManager implements Serializable, Manager {
     public PurchasingManager() {
         init();
     }
-    
+
     public Integer getDialogHeight() {
         return 400;
     }
@@ -432,7 +432,7 @@ public class PurchasingManager implements Serializable, Manager {
 
     public void createNewSupplier() {
         selectedSupplier = new Supplier("", true);
-        
+
         editSelectedSupplier();
     }
 
@@ -752,6 +752,7 @@ public class PurchasingManager implements Serializable, Manager {
             Manager manager = getManager(activeModule.getName());
             if (manager != null) {
                 manager.doDefaultSearch(
+                        getMainTabView(),
                         getDateSearchPeriod().getDateField(),
                         getSearchType(),
                         getSearchText(),
@@ -2337,7 +2338,6 @@ public class PurchasingManager implements Serializable, Manager {
 //                    searchDepartmentId);
 //        }
 //    }
-
 //    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
 //            String searchType, String searchText, Long searchDepartmentId) {
 //
@@ -2349,7 +2349,6 @@ public class PurchasingManager implements Serializable, Manager {
 //        doPurchaseReqSearch();
 //
 //    }
-
     public String getPurchaseReqSearchText() {
         return purchaseReqSearchText;
     }
@@ -2827,6 +2826,7 @@ public class PurchasingManager implements Serializable, Manager {
 
     @Override
     public void doDefaultSearch(
+            MainTabView mainTabView,
             String dateSearchField,
             String searchType,
             String searchText,
@@ -2837,14 +2837,14 @@ public class PurchasingManager implements Serializable, Manager {
             case "Purchase requisitions":
                 //doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
                 //if (!searchText.isEmpty()) {
-                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
-                            getEntityManager1(),
-                            dateSearchField, 
-                            searchType, 
-                            searchText,
-                            startDate, 
-                            endDate,
-                            searchDepartmentId);
+                foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+                        getEntityManager1(),
+                        dateSearchField,
+                        searchType,
+                        searchText,
+                        startDate,
+                        endDate,
+                        searchDepartmentId);
 //                } else {
 //                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
 //                            getEntityManager1(),

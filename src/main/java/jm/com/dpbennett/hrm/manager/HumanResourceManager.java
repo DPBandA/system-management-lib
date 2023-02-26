@@ -490,7 +490,7 @@ public class HumanResourceManager implements Serializable, Manager {
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
-       defaultCommandTarget = "@this";
+        defaultCommandTarget = "@this";
     }
 
     public Boolean getIsActiveDepartmentsOnly() {
@@ -920,7 +920,6 @@ public class HumanResourceManager implements Serializable, Manager {
 //    public void setDateSearchField(String dateSearchField) {
 //        this.dateSearchField = dateSearchField;
 //    }
-
     @Override
     public DatePeriod getDateSearchPeriod() {
         return dateSearchPeriod;
@@ -1422,6 +1421,7 @@ public class HumanResourceManager implements Serializable, Manager {
                     Manager manager = getManager(module.getName());
                     if (manager != null) {
                         manager.doDefaultSearch(
+                                getMainTabView(),
                                 getDateSearchPeriod().getDateField(),
                                 getSearchType(),
                                 getSearchText(),
@@ -1434,7 +1434,13 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch(String dateSearchField, String searchType, String searchText, Date startDate, Date endDate) {
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
         switch (searchType) {
             case "Employees":
 

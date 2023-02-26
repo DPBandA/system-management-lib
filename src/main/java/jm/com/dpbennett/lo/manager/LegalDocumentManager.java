@@ -618,6 +618,7 @@ public class LegalDocumentManager implements Serializable, Manager {
                     Manager manager = getManager(module.getName());
                     if (manager != null) {
                         manager.doDefaultSearch(
+                                getMainTabView(),
                                 getDateSearchPeriod().getDateField(),
                                 getSearchType(),
                                 getSearchText(),
@@ -720,6 +721,7 @@ public class LegalDocumentManager implements Serializable, Manager {
 
     @Override
     public void doDefaultSearch(
+            MainTabView mainTabView,
             String dateSearchField,
             String searchType,
             String searchText,
