@@ -451,6 +451,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void doInventoryProductSearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Inventory Products",
                 getInventoryProductSearchText(),
@@ -1102,6 +1103,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void doInventorySearch() {
 
         doDefaultSearch(
+                getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Inventory",
                 getInventorySearchText(),
@@ -1241,6 +1243,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     @Override
     public void doDefaultSearch(
+             MainTabView mainTabView,
             String dateSearchField,
             String searchType,
             String searchText,

@@ -47,12 +47,13 @@ public interface Manager {
     public void doSearch();
 
     public void doDefaultCommand();
-    
+
     public String getDefaultCommandTarget();
-    
+
     public void setDefaultCommandTarget(String defaultCommandTarget);
 
     public void doDefaultSearch(
+            MainTabView mainTabView,
             String dateSearchField,
             String searchType,
             String searchText,
@@ -90,7 +91,7 @@ public interface Manager {
     public User getUser();
 
     public void setUser(User user);
-    
+
     public User getUser(EntityManager em);
 
     public Boolean checkForLDAPUser(EntityManager em, String username,
@@ -113,7 +114,7 @@ public interface Manager {
     public ArrayList<SelectItem> getDatePeriods();
 
     public ArrayList<SelectItem> getAllDateSearchFields();
-    
+
     public void updateSearch();
 
     public void updateSearchType();
@@ -153,11 +154,11 @@ public interface Manager {
     public Integer getLogoURLImageWidth();
 
     public void onNotificationSelect(SelectEvent event);
-    
+
     public Dashboard getDashboard();
-    
+
     public MainTabView getMainTabView();
-    
-    public void handleSelectedNotification(Notification notification);   
+
+    public void handleSelectedNotification(Notification notification);
 
 }

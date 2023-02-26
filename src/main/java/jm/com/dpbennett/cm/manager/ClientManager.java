@@ -800,6 +800,7 @@ public class ClientManager implements Serializable, Manager {
                     Manager manager = getManager(module.getName());
                     if (manager != null) {
                         manager.doDefaultSearch(
+                                getMainTabView(),
                                 getDateSearchPeriod().getDateField(),
                                 getSearchType(),
                                 getSearchText(),
@@ -837,7 +838,13 @@ public class ClientManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultSearch(String dateSearchField, String searchType, String searchText, Date startDate, Date endDate) {
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField, 
+            String searchType, 
+            String searchText, 
+            Date startDate, 
+            Date endDate) {
         switch (searchType) {
             case "Clients":
 

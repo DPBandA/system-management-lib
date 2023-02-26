@@ -151,7 +151,9 @@ public class GeneralManager implements Manager, Serializable {
     }
 
     @Override
-    public void doDefaultSearch(String dateSearchField,
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField,
             String searchType,
             String searchText,
             Date startDate,
@@ -182,6 +184,7 @@ public class GeneralManager implements Manager, Serializable {
                     if (manager != null) {
                         if (hasSearchType(manager, getSearchType())) {
                             manager.doDefaultSearch(
+                                    getMainTabView(),
                                     getDateSearchPeriod().getDateField(),
                                     getSearchType(),
                                     getSearchText(),
@@ -240,16 +243,16 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onMainViewTabClose(TabCloseEvent event) {
-         String tabId = ((TabPanel) event.getData()).getId();
-        
+        String tabId = ((TabPanel) event.getData()).getId();
+
         getMainTabView().closeTab(tabId);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-        setTabTitle( event.getTab().getTitle());
-        
+        setTabTitle(event.getTab().getTitle());
+
     }
 
     @Override
