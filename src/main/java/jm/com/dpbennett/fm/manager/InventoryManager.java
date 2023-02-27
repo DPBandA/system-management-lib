@@ -520,7 +520,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
             return new ArrayList<>();
         }
     }
-    
+
     public List<Inventory> completeInventoryItem(String query) {
         try {
             return Inventory.findAllByName(
@@ -660,6 +660,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         searchTypes.add(new SelectItem("Inventory", "Inventory"));
         searchTypes.add(new SelectItem("Inventory Products", "Inventory Products"));
+        searchTypes.add(new SelectItem("Inventory Requisitions", "Inventory Requisitions"));
 
         return searchTypes;
     }
@@ -1113,11 +1114,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void doInventoryRequisitionSearch() {
 
-        EntityManager em = getEntityManager1();
-
-//        foundInventoryRequisitions = InventoryRequisition.find(em, getSearchText(), 0);
-        foundInventoryRequisitions = InventoryRequisition.find(em, getInventoryRequisitionSearchText(), 0);
-
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Inventory Requisitions",
+                getInventoryRequisitionSearchText(),
+                null,
+                null);
     }
 
     public void doInventoryRequisitionSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
@@ -1234,6 +1237,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
                 return dateSearchFields;
+                
+            case "Inventory Requisitions":
+                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+
+                return dateSearchFields;    
             default:
                 break;
         }
@@ -1243,7 +1252,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     @Override
     public void doDefaultSearch(
-             MainTabView mainTabView,
+            MainTabView mainTabView,
             String dateSearchField,
             String searchType,
             String searchText,
@@ -1255,7 +1264,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 foundInventories = Inventory.find(
                         getEntityManager1(),
                         searchText, 0);
-                openInventoryTab();
+
+                if (startDate != null) {
+                    openInventoryTab();
+                }
                 break;
             case "Inventory Products":
                 if (getIsActiveInventoryProductsOnly()) {
@@ -1265,7 +1277,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     foundInventoryProducts = MarketProduct.findMarketProductsByNameAndType(
                             getEntityManager1(), searchText, "Inventory");
                 }
-                openInventoryProductBrowser();
+                if (startDate != null) {
+                    openInventoryProductBrowser();
+                }
+                break;
+            case "Inventory Requisitions":
+                foundInventoryRequisitions = InventoryRequisition.find(
+                        getEntityManager1(),
+                        searchText, 0);
+                if (startDate != null) {
+                    openInventoryRequisitionTab();
+                }
                 break;
             default:
                 break;
