@@ -920,13 +920,13 @@ public class JobManager extends GeneralManager
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
             "legalDocumentManager",
-            "jobManager",
             "clientManager",
             "reportManager",
             "systemManager",
             "financeManager",
             "humanResourceManager",
-            "purchasingManager"});
+            "purchasingManager",
+            "jobManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
