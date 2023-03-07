@@ -113,9 +113,6 @@ public class JobManager extends GeneralManager
     private StatusNote selectedStatusNote;
     private SystemManager systemManager;
 
-    /**
-     * Creates a new instance of JobManager
-     */
     public JobManager() {
         init();
     }
