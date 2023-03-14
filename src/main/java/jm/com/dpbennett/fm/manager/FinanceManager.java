@@ -122,6 +122,32 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return systemManager;
     }
 
+    public void createNewMarketProductInDialog() {
+        //currentMarketProduct = new MarketProduct();
+
+        //openMarketProductDialog();
+    }
+
+    // tk
+    public ArrayList<String> completeMarketProduct(String query) {
+        EntityManager em;
+        ArrayList<MarketProduct> products = new ArrayList<>(); // tk
+
+        try {
+            em = getEntityManager1();
+
+//            ArrayList<MarketProduct> products
+//                    = new ArrayList<>(MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(em, query));
+            ArrayList<String> productsList = (ArrayList<String>) (ArrayList<?>) products;
+
+            return productsList;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
     public void onRowSelect() {
         setDefaultCommandTarget("@this");
     }
