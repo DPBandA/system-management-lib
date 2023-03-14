@@ -146,7 +146,7 @@ public class HumanResourceManager implements Serializable, Manager {
     public final void init() {
         reset();
     }
-
+    
     @Override
     public String getDefaultCommandTarget() {
         return defaultCommandTarget;
@@ -185,6 +185,14 @@ public class HumanResourceManager implements Serializable, Manager {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "departmentLabels");
+    }
+
+    public void openManufacturerBrowser() {
+        getMainTabView().openTab("Manufacturers");
+    }
+
+    public List<Manufacturer> completeManufacturer(String query) {
+        return Manufacturer.findManufacturersBySearchPattern(getEntityManager1(), query);
     }
 
     public List<String> completePreferenceValue(String query) {
