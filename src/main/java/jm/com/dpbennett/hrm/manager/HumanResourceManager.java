@@ -56,6 +56,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.validator.AddressValidator;
 import jm.com.dpbennett.sm.validator.ContactValidator;
@@ -78,7 +79,7 @@ import org.primefaces.model.DualListModel;
  *
  * @author Desmond Bennett
  */
-public class HumanResourceManager implements Serializable, Manager {
+public class HumanResourceManager extends GeneralManager implements Serializable {
 
 //    private String dateSearchField;
     private DatePeriod dateSearchPeriod;

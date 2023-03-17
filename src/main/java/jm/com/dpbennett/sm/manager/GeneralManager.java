@@ -819,10 +819,10 @@ public class GeneralManager implements Manager, Serializable {
                 doSearch();
                 break;
             default:
-                PrimeFacesUtils.addMessage("Action NOT Taken",
-                        "No action was taken. Enter search text if you are doing a search.",
-                        FacesMessage.SEVERITY_INFO);
-                PrimeFaces.current().ajax().update("appForm:growl3");
+                //PrimeFacesUtils.addMessage("Action NOT Taken",
+                //        "No action was taken. Enter search text if you are doing a search.",
+                //        FacesMessage.SEVERITY_INFO);
+                //PrimeFaces.current().ajax().update("appForm:growl3");
                 break;
         }
     }

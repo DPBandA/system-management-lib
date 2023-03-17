@@ -71,7 +71,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
-    //private MainTabView mainTabView;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
@@ -119,6 +118,10 @@ public final class SystemManager extends GeneralManager implements Serializable 
      */
     public SystemManager() {
         init();
+    }
+    
+    public void onRowSelect()  {
+        setDefaultCommandTarget("@this");
     }
 
     public Integer getDialogHeight() {
@@ -224,6 +227,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doEmailSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         if (getIsActiveEmailsOnly()) {
             foundEmails = Email.findActiveEmails(getEntityManager1(), getEmailSearchText());
@@ -446,6 +451,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doUserSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -458,6 +465,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doAttachmentSearch() {
+        
+        setDefaultCommandTarget("@this");
+        
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1188,6 +1198,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doDocumentTypeSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1200,6 +1212,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doCategorySearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1211,11 +1225,15 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doNotificationSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         foundNotifications = Notification.findNotificationsByName(getEntityManager1(), getNotificationSearchText());
     }
 
     public void doActivePrivilegeSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1228,6 +1246,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doActiveModuleSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1575,6 +1595,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doSystemOptionSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1587,6 +1609,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doLdapContextSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),

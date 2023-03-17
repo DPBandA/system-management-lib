@@ -49,6 +49,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.rm.manager.ReportManager;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -73,7 +74,7 @@ import org.primefaces.event.TabCloseEvent;
  *
  * @author Desmond Bennett
  */
-public class LegalDocumentManager implements Serializable, Manager {
+public class LegalDocumentManager extends GeneralManager implements Serializable {
 
     private DatePeriod dateSearchPeriod;
     private String searchType;

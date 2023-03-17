@@ -68,6 +68,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -106,7 +107,7 @@ import org.primefaces.event.TabCloseEvent;
  *
  * @author Desmond Bennett
  */
-public class ReportManager implements Serializable, Manager {
+public class ReportManager extends GeneralManager implements Serializable {
 
     private String columnsToExclude;
     private Integer longProcessProgress;
