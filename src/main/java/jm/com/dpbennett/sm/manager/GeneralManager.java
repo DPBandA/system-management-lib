@@ -815,16 +815,17 @@ public class GeneralManager implements Manager, Serializable {
     public void doDefaultCommand() {
 
         switch (defaultCommandTarget) {
-            case "doSearch":
-                doSearch();
-                break;
-            default:
+            case "@this":
                 //PrimeFacesUtils.addMessage("Action NOT Taken",
                 //        "No action was taken. Enter search text if you are doing a search.",
                 //        FacesMessage.SEVERITY_INFO);
                 //PrimeFaces.current().ajax().update("appForm:growl3");
                 break;
+            default:
+                doSearch();
+                break;
         }
+
     }
 
     @Override
