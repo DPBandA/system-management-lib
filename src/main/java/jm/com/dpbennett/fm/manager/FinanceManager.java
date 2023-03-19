@@ -1316,6 +1316,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
+        
         longProcessProgress = 0;
         procurementMethodSearchText = "";
         accountingCodeSearchText = "";
