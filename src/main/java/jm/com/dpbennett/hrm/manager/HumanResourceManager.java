@@ -112,6 +112,14 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         reset();
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 600;
+    }
+
     public List<SelectItem> getManufacturerStatuses() {
         ArrayList statuses = new ArrayList();
 
@@ -580,34 +588,69 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void doDepartmentSearch() {
 
-        if (getIsActiveDepartmentsOnly()) {
-            foundDepartments = Department.findActiveDepartmentsByName(getEntityManager1(), getDepartmentSearchText());
-        } else {
-            foundDepartments = Department.findDepartmentsByName(getEntityManager1(), getDepartmentSearchText());
-        }
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Departments",
+                getDepartmentSearchText(),
+                null,
+                null);
 
     }
 
     public void doEmployeePositionSearch() {
 
-        if (getIsActiveEmployeePositionsOnly()) {
-            foundEmployeePositions = EmployeePosition.findActiveEmployeePositionsByTitle(getEntityManager1(), getEmployeePositionSearchText());
-        } else {
-            foundEmployeePositions = EmployeePosition.findEmployeePositionsByTitle(getEntityManager1(), getEmployeePositionSearchText());
-        }
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Employee Positions",
+                getEmployeePositionSearchText(),
+                null,
+                null);
 
     }
 
     public void doSubgroupSearch() {
-        foundSubgroups = Subgroup.findAllByName(getEntityManager1(), getSubgroupSearchText());
+
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Subgroups",
+                getSubgroupSearchText(),
+                null,
+                null);
     }
 
     public void doDivisionSearch() {
-        foundDivisions = Division.findAllByName(getEntityManager1(), getDivisionSearchText());
+
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Divisions",
+                getDivisionSearchText(),
+                null,
+                null);
     }
 
     public void doBusinessSearch() {
-        foundBusinesses = Business.findBusinessesByName(getEntityManager1(), getBusinessSearchText());
+
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Organizations",
+                getBusinessSearchText(),
+                null,
+                null);
     }
 
     public void doEmployeeSearch() {
@@ -644,28 +687,34 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void editDepartment() {
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 600, 800);
+        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editEmployeePosition() {
-        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true, 600, 725);
+        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editSubgroup() {
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editDivision() {
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editBusiness() {
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editEmployee() {
 
-        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true, 500, 700);
+        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public Employee getSelectedEmployee() {
@@ -771,7 +820,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openDepartmentPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addSubgroupDepartments() {
@@ -803,7 +853,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openEmployeePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addDivisionDepartments() {
@@ -829,7 +880,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openSubgroupPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true, 320, 500);
+        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addBusinessDepartments() {
@@ -847,14 +899,16 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedBusiness = new Business();
 
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewSubgroup() {
 
         selectedSubgroup = new Subgroup();
 
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewEmployee() {
@@ -868,7 +922,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedDivision = new Division();
 
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public List<BusinessOffice> getBusinessOffices() {
@@ -931,7 +986,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void editSelectedManufacturer() {
 
-        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true, 500, 700);
+        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public String getManufacturerSearchText() {
@@ -1254,24 +1310,77 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 if (startDate != null) {
                     setEmployeeSearchText(searchText);
                     selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 0);
-                } 
-                
+                }
+
                 setDefaultCommandTarget("doSearch");
 
                 break;
             case "Employee Positions":
+                if (getIsActiveEmployeePositionsOnly()) {
+                    foundEmployeePositions = EmployeePosition.findActiveEmployeePositionsByTitle(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundEmployeePositions = EmployeePosition.findEmployeePositionsByTitle(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate != null) {
+                    setEmployeePositionSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 1);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Departments":
+                if (getIsActiveDepartmentsOnly()) {
+                    foundDepartments = Department.findActiveDepartmentsByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundDepartments = Department.findDepartmentsByName(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate != null) {
+                    setDepartmentSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 2);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Subgroups":
+                foundSubgroups = Subgroup.findAllByName(getEntityManager1(), searchText);
+
+                if (startDate != null) {
+                    setSubgroupSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 3);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Divisions":
+                foundDivisions = Division.findAllByName(getEntityManager1(), searchText);
+
+                if (startDate != null) {
+                    setDivisionSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 4);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Organizations":
+                foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
+                        searchText);
+
+                if (startDate != null) {
+                    setBusinessSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 5);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
 

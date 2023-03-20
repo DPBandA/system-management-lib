@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.naming.NamingEnumeration;
@@ -43,7 +42,6 @@ import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
-import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -824,7 +822,7 @@ public class GeneralManager implements Manager, Serializable {
             default:
                 doSearch();
                 break;
-        }
+        }      
 
     }
 
