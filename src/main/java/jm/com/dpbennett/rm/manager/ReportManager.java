@@ -141,11 +141,14 @@ public class ReportManager extends GeneralManager implements Serializable {
         init();
     }
 
-    /**
-     * Gets the header or title for this application.
-     *
-     * @return
-     */
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 600;
+    }
+
     @Override
     public String getApplicationHeader() {
 
@@ -156,21 +159,11 @@ public class ReportManager extends GeneralManager implements Serializable {
         return BeanUtils.findBean("systemManager");
     }
 
-    /**
-     * Gets the main user interface Tab View.
-     *
-     * @return
-     */
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
 
-    /**
-     * Gets local entity manager.
-     *
-     * @return
-     */
     private EntityManager getLocalEntityManager() {
         Map props = new HashMap();
         props.put("javax.persistence.jdbc.driver",
@@ -466,7 +459,8 @@ public class ReportManager extends GeneralManager implements Serializable {
     }
 
     public void editReport() {
-        PrimeFacesUtils.openDialog(null, "reportTemplateDialog", true, true, true, 625, 750);
+        PrimeFacesUtils.openDialog(null, "reportTemplateDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth() + 50);
     }
 
     public Report getSelectedReport() {
@@ -537,7 +531,8 @@ public class ReportManager extends GeneralManager implements Serializable {
 
         setEdit(false);
 
-        PrimeFacesUtils.openDialog(null, "reportDatePeriodDialog", true, true, true, 0, 400);
+        PrimeFacesUtils.openDialog(null, "reportDatePeriodDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public Boolean getIsNewDatePeriod() {
@@ -548,7 +543,8 @@ public class ReportManager extends GeneralManager implements Serializable {
 
         setEdit(true);
 
-        PrimeFacesUtils.openDialog(null, "reportDatePeriodDialog", true, true, true, 0, 400);
+        PrimeFacesUtils.openDialog(null, "reportDatePeriodDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
 
     }
 

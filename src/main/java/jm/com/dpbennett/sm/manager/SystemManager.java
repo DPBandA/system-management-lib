@@ -37,6 +37,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.auth.Privilege;
+import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -44,6 +45,7 @@ import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
+import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
@@ -119,8 +121,53 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public SystemManager() {
         init();
     }
-    
-    public void onRowSelect()  {
+
+    public List<Client> completeActiveClient(String query) {
+        try {
+            return Client.findActiveClientsByAnyPartOfName(getEntityManager1(), query);
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Employee> completeActiveEmployee(String query) {
+        EntityManager em;
+
+        try {
+
+            em = getEntityManager1();
+            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+
+            if (employees != null) {
+                return employees;
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Department> completeActiveDepartment(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
+
+            return departments;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public void onRowSelect() {
         setDefaultCommandTarget("@this");
     }
 
@@ -227,7 +274,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doEmailSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         if (getIsActiveEmailsOnly()) {
@@ -387,25 +434,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         this.selectedModule = selectedModule;
     }
 
-    public List<Employee> completeActiveEmployee(String query) {
-        EntityManager em;
-
-        try {
-
-            em = getEntityManager1();
-            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
-
-            if (employees != null) {
-                return employees;
-            } else {
-                return new ArrayList<>();
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
     public void updatePreferences() {
         updateUserPreferences(getUser());
     }
@@ -451,7 +479,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doUserSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -465,9 +493,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doAttachmentSearch() {
-        
+
         setDefaultCommandTarget("@this");
-        
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1198,7 +1226,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doDocumentTypeSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1212,7 +1240,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doCategorySearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1225,14 +1253,14 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doNotificationSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         foundNotifications = Notification.findNotificationsByName(getEntityManager1(), getNotificationSearchText());
     }
 
     public void doActivePrivilegeSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1246,7 +1274,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doActiveModuleSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1595,7 +1623,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doSystemOptionSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1609,7 +1637,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doLdapContextSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
