@@ -187,7 +187,7 @@ public class ClientManager extends GeneralManager implements Serializable {
             "systemManager",
             "clientManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
-                "requisitionDate", null, null, null, false, false, false));
+                "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
 
         foundClients = new ArrayList<>();
