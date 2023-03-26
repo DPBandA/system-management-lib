@@ -449,6 +449,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventoryProductSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1102,6 +1104,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventorySearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1113,6 +1117,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventoryRequisitionSearch() {
+        
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1198,12 +1204,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
         return getFinanceManager().getEntityManager1();
-    }
-
-    @Override
-    public User getUser() {
-
-        return getFinanceManager().getUser();
     }
 
     @Override

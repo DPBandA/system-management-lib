@@ -525,7 +525,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void editUser() {
 
         PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+                getDialogHeight(), getDialogWidth() + 100);
     }
 
     public User getSelectedUser() {

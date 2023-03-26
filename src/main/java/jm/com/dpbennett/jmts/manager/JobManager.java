@@ -121,6 +121,7 @@ public class JobManager extends GeneralManager
         if (systemManager == null) {
             systemManager = BeanUtils.findBean("systemManager");
         }
+        
         return systemManager;
     }
 

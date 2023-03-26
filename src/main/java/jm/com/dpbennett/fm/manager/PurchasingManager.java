@@ -104,11 +104,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     private List<PurchaseRequisition> selectedPurchaseRequisitions;
     private Employee selectedApprover;
     private Boolean edit;
-    private String searchText;
     private String purchaseReqSearchText;
     private List<PurchaseRequisition> foundPurchaseReqs;
-    private String searchType;
-    private DatePeriod dateSearchPeriod;
     private Long searchDepartmentId;
     private List<Employee> toEmployees;
     private String purchaseReqEmailSubject;
@@ -122,7 +119,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     private Attachment selectedAttachment;
     private UploadedFile uploadedFile;
     private List<CashPayment> cashPayments;
-    private ArrayList<SelectItem> groupedSearchTypes;
 
     /**
      * Creates a new instance of PurchasingManager
@@ -137,10 +133,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public Integer getDialogWidth() {
         return 700;
-    }
-
-    public String getScrollPanelHeight() {
-        return "350px";
     }
 
     public void onCostComponentRowCancel(RowEditEvent<CostComponent> event) {
@@ -279,13 +271,13 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     @Override
     public String getApplicationHeader() {
 
-        return "Procure";
+        return "Procurement";
 
     }
 
     @Override
     public String getApplicationSubheader() {
-        String subHeader = "";
+        String subHeader = "Purchase Management &amp; Administration";
 
         return subHeader;
     }
@@ -356,27 +348,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
      * @return
      */
     public String getTitle() {
-        return "Purchase Management";
-    }
-
-    /**
-     * Gets the general search text.
-     *
-     * @return
-     */
-    @Override
-    public String getSearchText() {
-        return searchText;
-    }
-
-    /**
-     * Sets the general search text.
-     *
-     * @param searchText
-     */
-    @Override
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
+        return "Procurement";
     }
 
     /**
@@ -515,15 +487,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         } catch (Exception e) {
             System.out.println(e);
-        }
-    }
-
-    public String getRenderDateSearchFields() {
-        switch (searchType) {
-            case "Suppliers":
-                return "false";
-            default:
-                return "true";
         }
     }
 
@@ -745,26 +708,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     }
 
-    @Override
-    public void doSearch() {
-
-        for (Modules activeModule : getUser().getActiveModules()) {
-
-            Manager manager = getManager(activeModule.getName());
-            if (manager != null) {
-                manager.doDefaultSearch(
-                        getMainTabView(),
-                        getDateSearchPeriod().getDateField(),
-                        getSearchType(),
-                        getSearchText(),
-                        getDateSearchPeriod().getStartDate(),
-                        getDateSearchPeriod().getEndDate());
-            }
-
-        }
-
-    }
-
     public Boolean getIsNewSupplierContact() {
         return getSelectedSupplierContact().getId() == null && !getEdit();
     }
@@ -856,16 +799,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     @Override
     public void updateDateSearchField() {
         //doSearch();
-    }
-
-    @Override
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    @Override
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
     }
 
     public String getPRApprovalOrRecommendationDate(Employee approverOrRecommender) {
@@ -2424,15 +2357,23 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     @Override
     public void reset() {
+        super.reset();
+
+        setSearchType("Purchase requisitions");
+        setSearchText("");
+        setDefaultCommandTarget("@this");
+        setModuleNames(new String[]{
+            "systemManager",
+            "financeManager",
+            "purchasingManager"});
+        setDateSearchPeriod(new DatePeriod("This year", "year",
+                "requisitionDate", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
+
         selectedCostComponent = null;
-        searchType = "Purchase requisitions";
-        dateSearchPeriod = new DatePeriod("This year", "year",
-                "requisitionDate", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
         foundPurchaseReqs = new ArrayList<>();
         toEmployees = new ArrayList<>();
         supplierSearchText = "";
-        searchText = "";
         purchaseReqSearchText = "";
 
     }
@@ -2451,12 +2392,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return getFinanceManager().getProcurementMethods();
     }
 
-    @Override
-    public User getUser() {
-
-        return getFinanceManager().getUser();
-    }
-
     public void onCostComponentSelect(SelectEvent event) {
         selectedCostComponent = (CostComponent) event.getObject();
     }
@@ -2469,6 +2404,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.selectedCostComponent = selectedCostComponent;
     }
 
+    @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
     }
@@ -2811,14 +2747,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return newCostComponents;
     }
 
-    public String getSearchType() {
-        return searchType;
-    }
-
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
-    }
-
     public List<SelectItem> getPriorityCodes() {
 
         return getStringListAsSelectItems(getEntityManager1(),
@@ -2877,11 +2805,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
-    }
-
-    @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList dateSearchFields = new ArrayList();
 
@@ -2910,221 +2833,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         }
 
         return dateSearchFields;
-    }
-
-    @Override
-    public void handleKeepAlive() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void login() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void logout() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLoginAttempts() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean getUserLoggedIn() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public User getUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void login(EntityManager em) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getLogonMessage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void initSearchPanel() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void initSearchTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Manager getManager(String name) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void updateSearchType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void completeLogin() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void completeLogout() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void initDashboard() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void initMainTabView() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void updateAllForms() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getLogoURL() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void doDefaultCommand() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void setDefaultCommandTarget(String defaultCommandTarget) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void updateSearch() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Dashboard getDashboard() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void handleSelectedNotification(Notification notification) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }
