@@ -58,7 +58,6 @@ public class GeneralManager implements Manager, Serializable {
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
-    private SystemManager systemManager;
     private String searchText;
     private String searchType;
     private Dashboard dashboard;
@@ -555,13 +554,19 @@ public class GeneralManager implements Manager, Serializable {
         return EMF2.createEntityManager();
     }
 
+    public void setManagersUser() {
+
+       getManager("systemManager").setUser(getUser());
+
+    }
+
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager1());
 
         getUser().save(getEntityManager1());
 
-        getManager("systemManager").setUser(getUser());
+        setManagersUser();
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
@@ -822,7 +827,7 @@ public class GeneralManager implements Manager, Serializable {
             default:
                 doSearch();
                 break;
-        }      
+        }
 
     }
 

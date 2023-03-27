@@ -121,7 +121,7 @@ public class JobManager extends GeneralManager
         if (systemManager == null) {
             systemManager = BeanUtils.findBean("systemManager");
         }
-        
+
         return systemManager;
     }
 
@@ -2629,6 +2629,19 @@ public class JobManager extends GeneralManager
             default:
                 System.out.println("Unkown type");
         }
+    }
+
+    @Override
+    public void setManagersUser() {
+        
+        getManager("systemManager").setUser(getUser());
+        getManager("legalDocumentManager").setUser(getUser());
+        getManager("clientManager").setUser(getUser());
+        getManager("reportManager").setUser(getUser());
+        getManager("financeManager").setUser(getUser());
+        getManager("humanResourceManager").setUser(getUser());
+        getManager("purchasingManager").setUser(getUser());
+        
     }
 
 }

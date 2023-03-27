@@ -1654,12 +1654,12 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public void completeLogin() {
+    public void setManagersUser() {
         
-        super.completeLogin();
-       
+        getManager("systemManager").setUser(getUser());
         getManager("inventoryManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
+
     }
 
 }
