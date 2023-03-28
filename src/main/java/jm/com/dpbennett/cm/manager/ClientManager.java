@@ -348,7 +348,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         setClientDialogTitle("Client");
 
-        PrimeFacesUtils.openDialog(null, "clientDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "clientDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -773,6 +773,11 @@ public class ClientManager extends GeneralManager implements Serializable {
             default:
                 System.out.println("Unkown type");
         }
+    }
+
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
     }
 
 }

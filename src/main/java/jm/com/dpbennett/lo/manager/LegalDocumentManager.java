@@ -46,6 +46,7 @@ import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -257,7 +258,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void editClient() {
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -314,12 +315,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void editDocument() {
         getCurrentDocument().setIsDirty(false);
 
-        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDialog", true, true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDialog", true, true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void deleteDocumentConfirmDialog() {
-        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDeleteConfirmDialog", 
+        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDeleteConfirmDialog",
                 true, true, true, false, 125, 400);
     }
 
@@ -342,7 +343,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void editClassification() {
 
-        PrimeFacesUtils.openDialog(null, "/finance/classificationDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/finance/classificationDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
 
     }
@@ -350,7 +351,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void createNewDocumentType(ActionEvent actionEvent) {
         getSystemManager().setSelectedDocumentType(new DocumentType());
 
-        PrimeFacesUtils.openDialog(null, "/admin/documentTypeDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "/admin/documentTypeDialog", true, true, true,
                 275, 400);
     }
 
@@ -552,8 +553,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         return BeanUtils.findBean("reportManager");
     }
-    
-     public FinanceManager getFinanceManager() {
+
+    public FinanceManager getFinanceManager() {
 
         return BeanUtils.findBean("financeManager");
     }
@@ -757,6 +758,11 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             default:
                 System.out.println("Unkown type");
         }
+    }
+
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
     }
 
 }

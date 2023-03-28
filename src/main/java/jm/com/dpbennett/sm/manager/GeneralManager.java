@@ -291,8 +291,11 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void initSearchTypes() {
+        
+        String orgSearchType = searchType;
 
         groupedSearchTypes.clear();
+        
 
         for (String moduleName : moduleNames) {
 
@@ -310,6 +313,8 @@ public class GeneralManager implements Manager, Serializable {
                 }
             }
         }
+        
+        searchType = orgSearchType;
     }
 
     @Override

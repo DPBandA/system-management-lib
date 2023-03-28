@@ -70,6 +70,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Email;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
@@ -917,14 +918,15 @@ public class JobManager extends GeneralManager
         setSearchText("");
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
+            "jobManager",
             "legalDocumentManager",
             "clientManager",
             "reportManager",
             "systemManager",
             "financeManager",
             "humanResourceManager",
-            "purchasingManager",
-            "jobManager"});
+            "purchasingManager"
+        });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2633,7 +2635,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void setManagersUser() {
-        
+
         getManager("systemManager").setUser(getUser());
         getManager("legalDocumentManager").setUser(getUser());
         getManager("clientManager").setUser(getUser());
@@ -2641,7 +2643,35 @@ public class JobManager extends GeneralManager
         getManager("financeManager").setUser(getUser());
         getManager("humanResourceManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
-        
+
+    }
+
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public void initMainTabView() {
+
+        getMainTabView().reset(getUser());
+
+        Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                "jobManager");
+        if (module != null) {
+            if (getUser().hasModule("jobManager")) {
+                getMainTabView().openTab(module.getDashboardTitle());
+            }
+        }
+
+        module = Modules.findActiveModuleByName(getEntityManager1(),
+                "systemManager");
+        if (module != null) {
+            if (getUser().hasModule("systemManager")) {
+                getMainTabView().openTab(module.getDashboardTitle());
+            }
+        }
+
     }
 
 }

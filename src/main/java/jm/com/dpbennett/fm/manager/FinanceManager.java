@@ -1661,5 +1661,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getManager("purchasingManager").setUser(getUser());
 
     }
+    
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
+    }
 
 }

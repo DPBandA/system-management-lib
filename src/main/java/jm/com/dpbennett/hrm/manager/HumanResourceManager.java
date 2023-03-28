@@ -687,33 +687,33 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void editDepartment() {
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editEmployeePosition() {
-        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editSubgroup() {
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editDivision() {
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editBusiness() {
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
     public void editEmployee() {
 
-        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -820,7 +820,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openDepartmentPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -853,7 +853,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openEmployeePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -880,7 +880,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openSubgroupPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -899,7 +899,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedBusiness = new Business();
 
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -907,7 +907,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedSubgroup = new Subgroup();
 
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -922,7 +922,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedDivision = new Division();
 
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -986,7 +986,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void editSelectedManufacturer() {
 
-        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
@@ -1469,6 +1469,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 System.out.println("Unkown type");
         }
 
+    }
+
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
     }
 
 }
