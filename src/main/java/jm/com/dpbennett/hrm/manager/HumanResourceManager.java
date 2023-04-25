@@ -111,6 +111,18 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public final void init() {
         reset();
     }
+    
+    public List<SelectItem> getEmploymentTypeList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "employmentTypes");
+    }
+   
+    public List<SelectItem> getPayCycleList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "payCycles");
+    }
 
     public Integer getDialogHeight() {
         return 400;
