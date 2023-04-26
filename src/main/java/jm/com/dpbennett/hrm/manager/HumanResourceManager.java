@@ -111,13 +111,13 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public final void init() {
         reset();
     }
-    
+
     public List<SelectItem> getEmploymentTypeList() {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "employmentTypes");
     }
-   
+
     public List<SelectItem> getPayCycleList() {
 
         return getStringListAsSelectItems(getEntityManager1(),
@@ -1362,7 +1362,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
                 break;
             case "Subgroups":
-                foundSubgroups = Subgroup.findAllByName(getEntityManager1(), searchText);
+                if (getIsActiveSubgroupsOnly()) {
+                    foundSubgroups = Subgroup.findAllActiveByName(getEntityManager1(), searchText);
+                } else {
+                    foundSubgroups = Subgroup.findAllByName(getEntityManager1(), searchText);
+                }
 
                 if (startDate != null) {
                     setSubgroupSearchText(searchText);
@@ -1373,7 +1377,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
                 break;
             case "Divisions":
-                foundDivisions = Division.findAllByName(getEntityManager1(), searchText);
+                if (getIsActiveDivisionsOnly()) {
+                    foundDivisions = Division.findAllActiveByName(getEntityManager1(), searchText);
+                } else {
+                    foundDivisions = Division.findAllByName(getEntityManager1(), searchText);
+                }
 
                 if (startDate != null) {
                     setDivisionSearchText(searchText);
@@ -1384,8 +1392,14 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
                 break;
             case "Organizations":
-                foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
-                        searchText);
+                if (getIsActiveBusinessesOnly()) {
+                    foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
+                            searchText);
+                }
+                else {
+                    foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
+                            searchText);
+                }
 
                 if (startDate != null) {
                     setBusinessSearchText(searchText);
