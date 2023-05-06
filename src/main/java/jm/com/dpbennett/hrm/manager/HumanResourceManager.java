@@ -544,7 +544,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Business> getFoundBusinesses() {
         if (foundBusinesses == null) {
-            foundBusinesses = Business.findAllBusinesses(getEntityManager1());
+            foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
+                            getSearchText());
         }
 
         return foundBusinesses;

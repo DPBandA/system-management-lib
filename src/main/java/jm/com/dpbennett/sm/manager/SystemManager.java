@@ -191,6 +191,10 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public List getPersonalTitles() {
         return Utils.getPersonalTitles();
     }
+    
+    public List getSexes() {
+        return Utils.getSexes();
+    }
 
     public boolean getEnableUpdateLDAPUser() {
         return SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser");
