@@ -194,18 +194,20 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         setSearchType("Legal Documents");
         setSearchText("");
-        setDefaultCommandTarget("@this");
         setModuleNames(new String[]{
             "systemManager",
             "reportManager",
             "legalDocumentManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
-                "dateEntered", null, null, null, false, false, false));
+                "dateReceived", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
 
     }
+    
+    public void onRowSelect() {
+        setDefaultCommandTarget("@this");
+    }
 
-    // tk use from SM?
     public List<Classification> completeClassification(String query) {
         EntityManager em = getEntityManager1();
 
@@ -524,25 +526,58 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void doLegalDocumentSearch() {
+        
+         setDefaultCommandTarget("@this");
 
-        EntityManager em = getEntityManager1();
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Legal Documents",
+                getSearchText(),
+                null,
+                null);
 
-        documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(em,
-                getDateSearchPeriod(), getSearchType(), getSearchText().trim());
     }
+
+    @Override
+    public void doDefaultSearch(
+            MainTabView mainTabView, 
+            String dateSearchField, 
+            String searchType, 
+            String searchText, 
+            Date startDate, 
+            Date endDate) {
+        
+        switch (searchType) {
+            case "Legal Documents":
+                documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(
+                        getEntityManager1(),
+                        getDateSearchPeriod(),                         
+                        searchType, 
+                        searchText);
+                
+                openDocumentBrowser();
+                
+                break;            
+            default:
+                break;
+        }
+    }
+    
+    
 
     // tk needed? temove?
-    public void doLegalDocumentSearch(
-            DatePeriod dateSearchPeriod,
-            String searchType,
-            String searchText) {
-
-        setDateSearchPeriod(dateSearchPeriod);
-        setSearchType(searchType);
-        setSearchText(searchText);
-
-        doLegalDocumentSearch();
-    }
+//    public void doLegalDocumentSearch(
+//            DatePeriod dateSearchPeriod,
+//            String searchType,
+//            String searchText) {
+//
+//        setDateSearchPeriod(dateSearchPeriod);
+//        setSearchType(searchType);
+//        setSearchText(searchText);
+//
+//        doLegalDocumentSearch();
+//    }
 
     public SystemManager getSystemManager() {
 
