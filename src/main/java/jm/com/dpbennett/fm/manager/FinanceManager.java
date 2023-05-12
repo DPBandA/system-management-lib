@@ -220,6 +220,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doProcurementMethodSearch() {
 
+        setDefaultCommandTarget("@this");
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -522,6 +524,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doServiceSearch() {
+
+        setDefaultCommandTarget("@this");
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -623,6 +628,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doClassificationSearch() {
+
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -939,6 +946,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doAccountingCodeSearch() {
 
+        setDefaultCommandTarget("@this");
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -950,6 +959,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doTaxSearch() {
+
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -963,6 +974,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doCurrencySearch() {
 
+        setDefaultCommandTarget("@this");
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -974,6 +987,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doDiscountSearch() {
+
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1078,6 +1093,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doJobCategorySearch() {
 
+        setDefaultCommandTarget("@this");
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1139,6 +1156,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doJobSubcategorySearch() {
+
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1204,6 +1223,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doSectorSearch() {
+
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1316,6 +1337,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
+
         longProcessProgress = 0;
         procurementMethodSearchText = "";
         accountingCodeSearchText = "";
@@ -1629,6 +1651,20 @@ public class FinanceManager extends GeneralManager implements Serializable {
         }
 
         return dateSearchFields;
+    }
+
+    @Override
+    public void setManagersUser() {
+        
+        getManager("systemManager").setUser(getUser());
+        getManager("inventoryManager").setUser(getUser());
+        getManager("purchasingManager").setUser(getUser());
+
+    }
+    
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
     }
 
 }

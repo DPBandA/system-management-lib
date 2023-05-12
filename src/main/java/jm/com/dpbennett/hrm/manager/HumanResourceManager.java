@@ -29,11 +29,6 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.SearchControls;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Business;
@@ -49,14 +44,11 @@ import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
-import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.business.entity.util.MailUtils;
-import jm.com.dpbennett.sm.manager.Manager;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.validator.AddressValidator;
 import jm.com.dpbennett.sm.validator.ContactValidator;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -65,27 +57,17 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.Utils;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
-import jm.com.dpbennett.sm.util.Dashboard;
-import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DualListModel;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class HumanResourceManager implements Serializable, Manager {
+public class HumanResourceManager extends GeneralManager implements Serializable {
 
-//    private String dateSearchField;
-    private DatePeriod dateSearchPeriod;
-    private String searchType;
-    private Boolean startSearchDateDisabled;
-    private Boolean endSearchDateDisabled;
-    private Boolean searchTextVisible;
     private Boolean isActiveEmployeesOnly;
     private Boolean isActiveEmployeePositionsOnly;
     private Boolean isActiveDepartmentsOnly;
@@ -93,9 +75,6 @@ public class HumanResourceManager implements Serializable, Manager {
     private Boolean isActiveSubgroupsOnly;
     private Boolean isActiveDivisionsOnly;
     private Boolean isActiveManufacturersOnly;
-    private Date startDate;
-    private Date endDate;
-    private String searchText;
     private String employeeSearchText;
     private String employeePositionSearchText;
     private String departmentSearchText;
@@ -113,7 +92,6 @@ public class HumanResourceManager implements Serializable, Manager {
     private DualListModel<Employee> employeeDualList;
     private DualListModel<Department> departmentDualList;
     private DualListModel<Subgroup> subgroupDualList;
-    // Selected objects
     private Employee selectedEmployee;
     private EmployeePosition selectedEmployeePosition;
     private Department selectedDepartment;
@@ -124,20 +102,7 @@ public class HumanResourceManager implements Serializable, Manager {
     private Address selectedAddress;
     private Manufacturer selectedManufacturer;
     private Boolean edit;
-    private String[] moduleNames;
-    private User user;
-    private String username;
-    private String logonMessage;
-    private String password;
-    private Integer loginAttempts;
-    private Boolean userLoggedIn;
-    private String defaultCommandTarget;
-    private ArrayList<SelectItem> groupedSearchTypes;
-    private ArrayList<SelectItem> allDateSearchFields;
 
-    /**
-     * Creates a new instance of SystemManager
-     */
     public HumanResourceManager() {
         init();
     }
@@ -146,15 +111,25 @@ public class HumanResourceManager implements Serializable, Manager {
     public final void init() {
         reset();
     }
-    
-    @Override
-    public String getDefaultCommandTarget() {
-        return defaultCommandTarget;
+
+    public List<SelectItem> getEmploymentTypeList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "employmentTypes");
     }
 
-    @Override
-    public void setDefaultCommandTarget(String defaultCommandTarget) {
-        this.defaultCommandTarget = defaultCommandTarget;
+    public List<SelectItem> getPayCycleList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "payCycles");
+    }
+
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 600;
     }
 
     public List<SelectItem> getManufacturerStatuses() {
@@ -380,12 +355,6 @@ public class HumanResourceManager implements Serializable, Manager {
         return "Human Resource Manager";
     }
 
-    @Override
-    public MainTabView getMainTabView() {
-
-        return getSystemManager().getMainTabView();
-    }
-
     public List<Division> getFoundDivisions() {
         if (foundDivisions == null) {
             foundDivisions = Division.findAllActive(getEntityManager1());
@@ -464,10 +433,18 @@ public class HumanResourceManager implements Serializable, Manager {
 
     @Override
     public void reset() {
-        searchType = "Employees";
-        //dateSearchField = "dateEntered";
-        searchTextVisible = true;
-        searchText = "";
+        super.reset();
+
+        setSearchType("Employees");
+        setSearchText("");
+        setDefaultCommandTarget("@this");
+        setModuleNames(new String[]{
+            "systemManager",
+            "humanResourceManager"});
+        setDateSearchPeriod(new DatePeriod("This year", "year",
+                "requisitionDate", null, null, null, false, false, false));
+        getDateSearchPeriod().initDatePeriod();
+
         employeeSearchText = "";
         employeePositionSearchText = "";
         departmentSearchText = "";
@@ -482,23 +459,7 @@ public class HumanResourceManager implements Serializable, Manager {
         isActiveSubgroupsOnly = true;
         isActiveDivisionsOnly = true;
         isActiveManufacturersOnly = true;
-        dateSearchPeriod = new DatePeriod("This year", "year",
-                "dateEntered", null, null, null, false, false, false);
-        dateSearchPeriod.initDatePeriod();
-        groupedSearchTypes = new ArrayList<>();
-        allDateSearchFields = new ArrayList();
-        moduleNames = new String[]{
-            "systemManager",
-            "humanResourceManager"};
-        password = "";
-        username = "";
-        loginAttempts = 0;
-        userLoggedIn = false;
-        logonMessage = "Please provide your login details below:";
-        String theme = getUser().getPFThemeName();
-        user = new User();
-        user.setPFThemeName(theme);
-        defaultCommandTarget = "@this";
+
     }
 
     public Boolean getIsActiveDepartmentsOnly() {
@@ -583,7 +544,8 @@ public class HumanResourceManager implements Serializable, Manager {
 
     public List<Business> getFoundBusinesses() {
         if (foundBusinesses == null) {
-            foundBusinesses = Business.findAllBusinesses(getEntityManager1());
+            foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
+                            getSearchText());
         }
 
         return foundBusinesses;
@@ -639,43 +601,82 @@ public class HumanResourceManager implements Serializable, Manager {
 
     public void doDepartmentSearch() {
 
-        if (getIsActiveDepartmentsOnly()) {
-            foundDepartments = Department.findActiveDepartmentsByName(getEntityManager1(), getDepartmentSearchText());
-        } else {
-            foundDepartments = Department.findDepartmentsByName(getEntityManager1(), getDepartmentSearchText());
-        }
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Departments",
+                getDepartmentSearchText(),
+                null,
+                null);
 
     }
 
     public void doEmployeePositionSearch() {
 
-        if (getIsActiveEmployeePositionsOnly()) {
-            foundEmployeePositions = EmployeePosition.findActiveEmployeePositionsByTitle(getEntityManager1(), getEmployeePositionSearchText());
-        } else {
-            foundEmployeePositions = EmployeePosition.findEmployeePositionsByTitle(getEntityManager1(), getEmployeePositionSearchText());
-        }
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Employee Positions",
+                getEmployeePositionSearchText(),
+                null,
+                null);
 
     }
 
     public void doSubgroupSearch() {
-        foundSubgroups = Subgroup.findAllByName(getEntityManager1(), getSubgroupSearchText());
+
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Subgroups",
+                getSubgroupSearchText(),
+                null,
+                null);
     }
 
     public void doDivisionSearch() {
-        foundDivisions = Division.findAllByName(getEntityManager1(), getDivisionSearchText());
+
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Divisions",
+                getDivisionSearchText(),
+                null,
+                null);
     }
 
     public void doBusinessSearch() {
-        foundBusinesses = Business.findBusinessesByName(getEntityManager1(), getBusinessSearchText());
+
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Organizations",
+                getBusinessSearchText(),
+                null,
+                null);
     }
 
     public void doEmployeeSearch() {
 
-        if (getIsActiveEmployeesOnly()) {
-            foundEmployees = Employee.findActiveEmployees(getEntityManager1(), getEmployeeSearchText());
-        } else {
-            foundEmployees = Employee.findEmployees(getEntityManager1(), getEmployeeSearchText());
-        }
+        setDefaultCommandTarget("@this");
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Employees",
+                getEmployeeSearchText(),
+                null,
+                null);
 
     }
 
@@ -684,29 +685,49 @@ public class HumanResourceManager implements Serializable, Manager {
         getMainTabView().openTab("Human Resource");
     }
 
+    public void selectHumanResourceTab(
+            MainTabView mainTabView,
+            Boolean openTab,
+            String innerTabViewVar,
+            int innerTabIndex) {
+
+        if (openTab) {
+            mainTabView.openTab("Human Resource");
+        }
+
+        PrimeFaces.current().executeScript("PF('" + innerTabViewVar + "').select(" + innerTabIndex + ");");
+
+    }
+
     public void editDepartment() {
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true, 600, 800);
+        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editEmployeePosition() {
-        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true, 600, 725);
+        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editSubgroup() {
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editDivision() {
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editBusiness() {
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editEmployee() {
 
-        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true, 500, 700);
+        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public Employee getSelectedEmployee() {
@@ -723,14 +744,6 @@ public class HumanResourceManager implements Serializable, Manager {
 
         this.selectedEmployee = Employee.findEmployeeById(getEntityManager1(), selectedEmployee.getId());
 
-    }
-
-    public Boolean getSearchTextVisible() {
-        return searchTextVisible;
-    }
-
-    public void setSearchTextVisible(Boolean searchTextVisible) {
-        this.searchTextVisible = searchTextVisible;
     }
 
     public void closeDialog(ActionEvent actionEvent) {
@@ -767,7 +780,6 @@ public class HumanResourceManager implements Serializable, Manager {
 
     public void saveSelectedEmployee(ActionEvent actionEvent) {
 
-        // Ensure that the employee's fullname is updated
         selectedEmployee.getName();
 
         selectedEmployee.save(getEntityManager1());
@@ -821,7 +833,8 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     public void openDepartmentPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addSubgroupDepartments() {
@@ -853,7 +866,8 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     public void openEmployeePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true, 500, 600);
+        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addDivisionDepartments() {
@@ -879,7 +893,8 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     public void openSubgroupPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true, 320, 500);
+        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void addBusinessDepartments() {
@@ -897,14 +912,16 @@ public class HumanResourceManager implements Serializable, Manager {
 
         selectedBusiness = new Business();
 
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewSubgroup() {
 
         selectedSubgroup = new Subgroup();
 
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewEmployee() {
@@ -918,76 +935,8 @@ public class HumanResourceManager implements Serializable, Manager {
 
         selectedDivision = new Division();
 
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true, 600, 700);
-    }
-
-//    public String getDateSearchField() {
-//        return dateSearchField;
-//    }
-//
-//    public void setDateSearchField(String dateSearchField) {
-//        this.dateSearchField = dateSearchField;
-//    }
-    @Override
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    @Override
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Boolean getEndSearchDateDisabled() {
-        return endSearchDateDisabled;
-    }
-
-    public void setEndSearchDateDisabled(Boolean endSearchDateDisabled) {
-        this.endSearchDateDisabled = endSearchDateDisabled;
-    }
-
-    @Override
-    public String getSearchText() {
-        return searchText;
-    }
-
-    @Override
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Boolean getStartSearchDateDisabled() {
-        return startSearchDateDisabled;
-    }
-
-    public void setStartSearchDateDisabled(Boolean startSearchDateDisabled) {
-        this.startSearchDateDisabled = startSearchDateDisabled;
-    }
-
-    @Override
-    public String getSearchType() {
-        return searchType;
-    }
-
-    @Override
-    public void setSearchType(String searchType) {
-        this.searchType = searchType;
+        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public List<BusinessOffice> getBusinessOffices() {
@@ -1013,58 +962,6 @@ public class HumanResourceManager implements Serializable, Manager {
     @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();
-    }
-
-    @Override
-    public void initDashboard() {
-        initSearchPanel();
-
-    }
-
-    @Override
-    public void initMainTabView() {
-        getMainTabView().reset(getUser());
-
-        for (String moduleName : moduleNames) {
-            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
-                    moduleName);
-            if (module != null) {
-                if (getUser().hasModule(moduleName)) {
-                    getMainTabView().openTab(module.getDashboardTitle());
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager1());
-
-        getUser().save(getEntityManager1());
-
-        getSystemManager().setUser(getUser());
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initDashboard();
-
-        initMainTabView();
-
-        updateAllForms();
-    }
-
-    @Override
-    public Dashboard getDashboard() {
-        return getSystemManager().getDashboard();
-    }
-
-    @Override
-    public void completeLogout() {
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        getSystemManager().setUser(getUser());
     }
 
     // Manufacturer Management
@@ -1102,7 +999,8 @@ public class HumanResourceManager implements Serializable, Manager {
 
     public void editSelectedManufacturer() {
 
-        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true, 500, 700);
+        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public String getManufacturerSearchText() {
@@ -1145,8 +1043,6 @@ public class HumanResourceManager implements Serializable, Manager {
 
         try {
 
-            // Validate 
-            // Check for a valid address
             for (Address address : selectedManufacturer.getAddresses()) {
                 hasValidAddress = hasValidAddress || AddressValidator.validate(address);
             }
@@ -1158,7 +1054,6 @@ public class HumanResourceManager implements Serializable, Manager {
                 return;
             }
 
-            // Check for a valid contact
             for (Contact contact : getSelectedManufacturer().getContacts()) {
                 hasValidContact = hasValidContact || ContactValidator.validate(contact);
             }
@@ -1170,7 +1065,6 @@ public class HumanResourceManager implements Serializable, Manager {
                 return;
             }
 
-            // Do save
             if (getSelectedManufacturer().getIsDirty()) {
 
                 getSelectedManufacturer().save(getEntityManager1());
@@ -1188,7 +1082,6 @@ public class HumanResourceManager implements Serializable, Manager {
 
         getSelectedManufacturer().setIsDirty(false);
 
-        // Remove unsaved addresses
         Iterator addressIterator = getSelectedManufacturer().getAddresses().iterator();
         Address address;
         while (addressIterator.hasNext()) {
@@ -1197,7 +1090,7 @@ public class HumanResourceManager implements Serializable, Manager {
                 addressIterator.remove();
             }
         }
-        // Remove unsaved contacts
+
         Iterator contactIterator = getSelectedManufacturer().getContacts().iterator();
         Contact contact;
         while (contactIterator.hasNext()) {
@@ -1223,7 +1116,6 @@ public class HumanResourceManager implements Serializable, Manager {
     public void createNewAddress() {
         selectedAddress = null;
 
-        // Find an existing invalid or blank address and use it as the neww address
         for (Address address : getSelectedManufacturer().getAddresses()) {
             if (address.getAddressLine1().trim().isEmpty()) {
                 selectedAddress = address;
@@ -1231,7 +1123,6 @@ public class HumanResourceManager implements Serializable, Manager {
             }
         }
 
-        // No existing blank or invalid address found so creating new one.
         if (selectedAddress == null) {
             selectedAddress = new Address("", "Billing");
         }
@@ -1360,11 +1251,6 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     @Override
-    public ArrayList<SelectItem> getGroupedSearchTypes() {
-        return groupedSearchTypes;
-    }
-
-    @Override
     public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
@@ -1417,31 +1303,6 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     @Override
-    public void doSearch() {
-        for (String moduleName : moduleNames) {
-
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    moduleName);
-
-            if (getUser().hasModule(moduleName)) {
-                if (module != null) {
-                    Manager manager = getManager(module.getName());
-                    if (manager != null) {
-                        manager.doDefaultSearch(
-                                getMainTabView(),
-                                getDateSearchPeriod().getDateField(),
-                                getSearchType(),
-                                getSearchText(),
-                                getDateSearchPeriod().getStartDate(),
-                                getDateSearchPeriod().getEndDate());
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
             String dateSearchField,
@@ -1451,21 +1312,102 @@ public class HumanResourceManager implements Serializable, Manager {
             Date endDate) {
         switch (searchType) {
             case "Employees":
+                if (getIsActiveEmployeesOnly()) {
+                    foundEmployees = Employee.findActiveEmployees(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundEmployees = Employee.findEmployees(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate != null) {
+                    setEmployeeSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 0);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Employee Positions":
+                if (getIsActiveEmployeePositionsOnly()) {
+                    foundEmployeePositions = EmployeePosition.findActiveEmployeePositionsByTitle(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundEmployeePositions = EmployeePosition.findEmployeePositionsByTitle(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate != null) {
+                    setEmployeePositionSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 1);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Departments":
+                if (getIsActiveDepartmentsOnly()) {
+                    foundDepartments = Department.findActiveDepartmentsByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundDepartments = Department.findDepartmentsByName(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate != null) {
+                    setDepartmentSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 2);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Subgroups":
+                if (getIsActiveSubgroupsOnly()) {
+                    foundSubgroups = Subgroup.findAllActiveByName(getEntityManager1(), searchText);
+                } else {
+                    foundSubgroups = Subgroup.findAllByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate != null) {
+                    setSubgroupSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 3);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Divisions":
+                if (getIsActiveDivisionsOnly()) {
+                    foundDivisions = Division.findAllActiveByName(getEntityManager1(), searchText);
+                } else {
+                    foundDivisions = Division.findAllByName(getEntityManager1(), searchText);
+                }
+
+                if (startDate != null) {
+                    setDivisionSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 4);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Organizations":
+                if (getIsActiveBusinessesOnly()) {
+                    foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
+                            searchText);
+                }
+                else {
+                    foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
+                            searchText);
+                }
+
+                if (startDate != null) {
+                    setBusinessSearchText(searchText);
+                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 5);
+                }
+
+                setDefaultCommandTarget("doSearch");
 
                 break;
 
@@ -1495,360 +1437,14 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     @Override
-    public void login() {
-        login(getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        getUser().logActivity("Logged out", getEntityManager1());
-        reset();
-        completeLogout();
-    }
-
-    @Override
-    public Integer getLoginAttempts() {
-        return loginAttempts;
-    }
-
-    @Override
-    public void setLoginAttempts(Integer loginAttempts) {
-        this.loginAttempts = loginAttempts;
-    }
-
-    @Override
-    public Boolean getUserLoggedIn() {
-        return userLoggedIn;
-    }
-
-    @Override
-    public void setUserLoggedIn(Boolean userLoggedIn) {
-        this.userLoggedIn = userLoggedIn;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    @Override
-    public User getUser(EntityManager em) {
-        if (user == null) {
-            return new User();
-
-        } else {
-            try {
-                if (user.getId() != null) {
-                    User foundUser = em.find(User.class,
-                            user.getId());
-                    if (foundUser != null) {
-                        em.refresh(foundUser);
-                        user = foundUser;
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-                return new User();
-            }
-        }
-
-        return user;
-    }
-
-    @Override
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, LdapContext ctx) {
-        try {
-            SearchControls constraints = new SearchControls();
-            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String[] attrIDs = {"displayName"};
-
-            constraints.setReturningAttributes(attrIDs);
-
-            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
-            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
-
-            if (!answer.hasMore()) { // Assuming only one match
-                // LDAP user not found!
-                return Boolean.FALSE;
-            }
-        } catch (NamingException ex) {
-            System.out.println(ex);
-            return Boolean.FALSE;
-        }
-
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Boolean validateUser(EntityManager em) {
-        Boolean userValidated = false;
-        InitialLdapContext ctx;
-
-        try {
-            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
-
-            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
-                if (ldapContext.getName().equals("LDAP")) {
-                    userValidated = jm.com.dpbennett.business.entity.sm.LdapContext.authenticateUser(
-                            em,
-                            ldapContext,
-                            username,
-                            password);
-                } else {
-                    ctx = ldapContext.getInitialLDAPContext(username, password);
-
-                    if (ctx != null) {
-                        if (checkForLDAPUser(em, username, ctx)) {
-                            // user exists in LDAP                    
-                            userValidated = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // get the user if one exists
-            if (userValidated) {
-                System.out.println("User validated.");
-
-                return true;
-
-            } else {
-                System.out.println("User NOT validated!");
-
-                return false;
-            }
-
-        } catch (Exception e) {
-            System.err.println("Problem connecting to directory: " + e);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void checkLoginAttemps() {
-        ++loginAttempts;
-        if (loginAttempts == 2) {
-
-            try {
-                // Send email to system administrator alert if activated
-                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "developerEmailAlertActivated")) {
-                    MailUtils.postMail(null, null, null,
-                            "Failed user login",
-                            "Username: " + username + "\nDate/Time: " + new Date(),
-                            "text/plain",
-                            getEntityManager1());
-                }
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        } else if (loginAttempts > 2) {// tk # attempts to be made option
-            PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
-        }
-
-        username = "";
-        password = "";
-    }
-
-    @Override
-    public void login(EntityManager em) {
-        setUserLoggedIn(false);
-
-        try {
-
-            // Find user and determine if authentication is required for this user
-            user = User.findActiveJobManagerUserByUsername(em, username);
-
-            if (user != null) {
-                em.refresh(user);
-                if (!user.getAuthenticate()) {
-                    System.out.println("User will NOT be authenticated.");
-                    logonMessage = "Please provide your login details below:";
-                    username = "";
-                    password = "";
-                    setUserLoggedIn(true);
-
-                    completeLogin();
-
-                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-                } else if (validateUser(em)) {
-                    logonMessage = "Please provide your login details below:";
-                    username = "";
-                    password = "";
-                    setUserLoggedIn(true);
-
-                    completeLogin();
-
-                } else {
-                    setUserLoggedIn(false);
-                    checkLoginAttemps();
-                    logonMessage = "Please enter a valid username and password.";
-                }
-            } else {
-                setUserLoggedIn(false);
-                logonMessage = "Please enter a registered username.";
-                username = "";
-                password = "";
-            }
-
-        } catch (Exception e) {
-            setUserLoggedIn(false);
-            System.out.println(e);
-            logonMessage = "Login error occurred! Please try again or contact the System Administrator";
-        }
-    }
-
-    @Override
-    public String getLogonMessage() {
-        return logonMessage;
-    }
-
-    @Override
-    public void setLogonMessage(String logonMessage) {
-        this.logonMessage = logonMessage;
-    }
-
-    @Override
-    public void initSearchPanel() {
-
-        initSearchTypes();
-        updateSearchType();
-    }
-
-    @Override
-    public void initSearchTypes() {
-        groupedSearchTypes.clear();
-
-        for (String moduleName : moduleNames) {
-
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    moduleName);
-
-            if (getUser().hasModule(moduleName)) {
-                if (module != null) {
-                    Manager manager = getManager(module.getName());
-                    if (manager != null) {
-                        groupedSearchTypes.add(manager.getSearchTypesGroup());
-                        searchType = manager.getSearchType();
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public Manager getManager(String name) {
-        return BeanUtils.findBean(name);
-    }
-
-    @Override
-    public ArrayList<SelectItem> getDatePeriods() {
-        ArrayList<SelectItem> datePeriods = new ArrayList<>();
-
-        for (String name : DatePeriod.getDatePeriodNames()) {
-            datePeriods.add(new SelectItem(name, name));
-        }
-
-        return datePeriods;
-    }
-
-    @Override
-    public ArrayList<SelectItem> getAllDateSearchFields() {
-        return allDateSearchFields;
-    }
-
-    @Override
-    public void updateSearchType() {
-        for (String moduleName : moduleNames) {
-
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    moduleName);
-
-            if (getUser().hasModule(moduleName)) {
-                if (module != null) {
-                    Manager manager = getManager(module.getName());
-                    if (manager != null) {
-                        ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
-                        if (!dateFields.isEmpty()) {
-                            allDateSearchFields = dateFields;
-
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void updateDateSearchField() {
-    }
-
-    @Override
-    public User getUser() {
-        if (user == null) {
-            user = new User();
-        }
-        return user;
-    }
-
-    @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
-    }
-
-    @Override
-    public void updateAllForms() {
-        PrimeFaces.current().ajax().update("appForm");
-    }
-
-    @Override
-    public void onMainViewTabClose(TabCloseEvent event) {
-        String tabId = ((TabPanel) event.getData()).getId();
-
-        getMainTabView().closeTab(tabId);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        String tabTitle = event.getTab().getTitle();
-
-        System.out.println("Tab change: " + tabTitle);
     }
 
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public Boolean renderUserMenu() {
-        return getUser().getId() != null;
     }
 
     @Override
@@ -1903,23 +1499,8 @@ public class HumanResourceManager implements Serializable, Manager {
     }
 
     @Override
-    public void doDefaultCommand() {
-        switch (defaultCommandTarget) {
-            case "doSearch":
-                doSearch();
-                break;
-            default:
-                PrimeFacesUtils.addMessage("Action NOT Taken",
-                        "No action was taken. Enter search text if you are doing a search.",
-                        FacesMessage.SEVERITY_INFO);
-                PrimeFaces.current().ajax().update("appForm:growl3");
-                break;
-        }
-    }
-
-    @Override
-    public void updateSearch() {
-        setDefaultCommandTarget("doSearch");
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
     }
 
 }

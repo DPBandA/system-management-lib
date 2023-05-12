@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.manager;
 import java.io.Serializable;
 import java.util.List;
 import jm.com.dpbennett.business.entity.fm.FinancialAccount;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.TreeNode;
@@ -30,7 +31,7 @@ import org.primefaces.model.TreeNode;
  *
  * @author Desmond Bennett
  */
-public class AccountingManager implements Serializable{
+public class AccountingManager extends GeneralManager implements Serializable {
     
      private TreeNode<FinancialAccount> chartOfAccounts;
     private List<SortMeta> sortBy;
@@ -40,7 +41,8 @@ public class AccountingManager implements Serializable{
         init();
     }
     
-    private void init() {
+     @Override
+    public final void init() {
         chartOfAccounts = createAccounts();
     }  
     

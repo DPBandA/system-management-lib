@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.naming.NamingEnumeration;
@@ -43,7 +42,6 @@ import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
-import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.TabPanel;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -60,7 +58,6 @@ public class GeneralManager implements Manager, Serializable {
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
-    private SystemManager systemManager;
     private String searchText;
     private String searchType;
     private Dashboard dashboard;
@@ -294,8 +291,11 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void initSearchTypes() {
+        
+        String orgSearchType = searchType;
 
         groupedSearchTypes.clear();
+        
 
         for (String moduleName : moduleNames) {
 
@@ -313,6 +313,8 @@ public class GeneralManager implements Manager, Serializable {
                 }
             }
         }
+        
+        searchType = orgSearchType;
     }
 
     @Override
@@ -557,13 +559,19 @@ public class GeneralManager implements Manager, Serializable {
         return EMF2.createEntityManager();
     }
 
+    public void setManagersUser() {
+
+       getManager("systemManager").setUser(getUser());
+
+    }
+
     @Override
     public void completeLogin() {
         getUser().logActivity("Logged in", getEntityManager1());
 
         getUser().save(getEntityManager1());
 
-        getManager("systemManager").setUser(getUser());
+        setManagersUser();
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
@@ -815,16 +823,17 @@ public class GeneralManager implements Manager, Serializable {
     public void doDefaultCommand() {
 
         switch (defaultCommandTarget) {
-            case "doSearch":
-                doSearch();
+            case "@this":
+                //PrimeFacesUtils.addMessage("Action NOT Taken",
+                //        "No action was taken. Enter search text if you are doing a search.",
+                //        FacesMessage.SEVERITY_INFO);
+                //PrimeFaces.current().ajax().update("appForm:growl3");
                 break;
             default:
-                PrimeFacesUtils.addMessage("Action NOT Taken",
-                        "No action was taken. Enter search text if you are doing a search.",
-                        FacesMessage.SEVERITY_INFO);
-                PrimeFaces.current().ajax().update("appForm:growl3");
+                doSearch();
                 break;
         }
+
     }
 
     @Override

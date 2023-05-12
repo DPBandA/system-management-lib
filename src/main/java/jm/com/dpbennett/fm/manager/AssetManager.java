@@ -19,10 +19,16 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.fm.manager;
 
+import java.io.Serializable;
+import jm.com.dpbennett.sm.manager.GeneralManager;
+
 /**
  *
  * @author Desmond Bennett
  */
-public class AssetManager {
+public class AssetManager extends GeneralManager implements Serializable {
+
+    public AssetManager() {
+    }
     
 }
