@@ -751,15 +751,11 @@ public class ReportManager extends GeneralManager implements Serializable {
                                 .stream(() -> new ByteArrayInputStream(fileBytes))
                                 .build();
 
-//                        streamContent = new DefaultStreamedContent(new ByteArrayInputStream(fileBytes),
-//                                selectedReport.getReportOutputFileMimeType(),
-//                                selectedReport.getReportFile());
                         break;
 
                     case "application/xlsx":
                     case "application/xls":
 
-                        //JRXlsExporter exporterXLS = new JRXlsExporter();
                         JRXlsxExporter exporterXLS = new JRXlsxExporter();
                         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
                         exporterXLS.setParameter(JRXlsExporterParameter.JASPER_PRINT, print);
@@ -892,8 +888,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                     .contentType(selectedReport.getReportOutputFileMimeType())
                     .name(selectedReport.getReportFile())
                     .build();
-
-            //return new DefaultStreamedContent(stream, getSelectedReport().getReportFileMimeType(), getSelectedReport().getReportFile());
+        
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -1280,7 +1275,6 @@ public class ReportManager extends GeneralManager implements Serializable {
             FileInputStream inp = new FileInputStream(reportFile);
             int row = 1;
             int col;
-            //int cell;
 
             XSSFWorkbook wb = new XSSFWorkbook(inp);
             XSSFCellStyle stringCellStyle = wb.createCellStyle();
@@ -1821,6 +1815,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 BusinessEntityUtils.getDateString(getReportingDatePeriod1().getStartDate(), "'", "YMD", "-"),
                 BusinessEntityUtils.getDateString(getReportingDatePeriod1().getEndDate(), "'", "YMD", "-"),
                 departmentId);
+        
         // Fill in report data   
         for (Object[] rowData : reportData) {
             // Job number
@@ -2174,49 +2169,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 getReportingDatePeriod3().getEndDate(),
                 "java.util.Date", datePeriodsCellStyle);
     }
-
-    /**
-     *
-     * @param wb
-     * @return
-     */
-//    HSSFCellStyle getDefaultCellStyle(HSSFWorkbook wb) {
-//        HSSFCellStyle cellStyle = wb.createCellStyle();
-//        Font font = wb.createFont();
-//        font.setFontHeightInPoints((short) 12);
-//        font.setFontName("Arial");
-//        cellStyle.setFont(font);
-//        cellStyle.setFillForegroundColor(HSSFColor.WHITE.index);
-//        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-//
-//        return cellStyle;
-//    }
-    /**
-     *
-     * @param wb
-     * @return
-     */
-//    Font getWingdingsFont(HSSFWorkbook wb) {
-//        Font font = wb.createFont();
-//        font.setFontHeightInPoints((short) 14);
-//        font.setFontName("Wingdings");
-//
-//        return font;
-//    }
-    /**
-     *
-     * @param wb
-     * @param fontName
-     * @param fontsize
-     * @return
-     */
-//    Font getFont(HSSFWorkbook wb, String fontName, short fontsize) {
-//        Font font = wb.createFont();
-//        font.setFontHeightInPoints(fontsize);
-//        font.setFontName(fontName);
-//
-//        return font;
-//    }
+    
     /**
      *
      * @param samples

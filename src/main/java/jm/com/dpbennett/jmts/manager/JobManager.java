@@ -1290,6 +1290,7 @@ public class JobManager extends GeneralManager
     }
 
     public void updateTestsAndCalibration() {
+        
         currentJob.setNoOfTestsOrCalibrations(currentJob.getNoOfTests() + currentJob.getNoOfCalibrations());
 
         setIsDirty(true);
@@ -1300,13 +1301,15 @@ public class JobManager extends GeneralManager
     }
 
     public void updateDocumentsCollectedBy() {
-        setIsDirty(true);
+        
         if (!currentJob.getJobStatusAndTracking().getDocumentCollected()) {
             currentJob.getJobStatusAndTracking().setDocumentCollectedBy("");
             setDateDocumentCollected(null);
         } else {
             setDateDocumentCollected(new Date());
         }
+        
+        setIsDirty(true);
     }
 
     public void updateJobCompleted() {
@@ -1321,13 +1324,15 @@ public class JobManager extends GeneralManager
     }
 
     public void updateSamplesCollectedBy() {
-        setIsDirty(true);
+        
         if (!currentJob.getJobStatusAndTracking().getSamplesCollected()) {
             currentJob.getJobStatusAndTracking().setSamplesCollectedBy("");
             currentJob.getJobStatusAndTracking().setDateSamplesCollected(null);
         } else {
             currentJob.getJobStatusAndTracking().setDateSamplesCollected(new Date());
         }
+        
+        setIsDirty(true);
     }
 
     public void updateJobReportNumber() {
@@ -1339,6 +1344,7 @@ public class JobManager extends GeneralManager
         if (currentJob.getAutoGenerateJobNumber()) {
             currentJob.setJobNumber(getCurrentJobNumber());
         }
+        
         setIsDirty(true);
 
     }
@@ -1441,7 +1447,8 @@ public class JobManager extends GeneralManager
                 if (job.getJobStatusAndTracking().getWorkProgress().equals("Ongoing")
                         && job.getJobStatusAndTracking().getStartDate() == null) {
                     job.getJobStatusAndTracking().setStartDate(new Date());
-                } else if (job.getJobStatusAndTracking().getWorkProgress().equals("Not started")) {
+                } 
+                else if (job.getJobStatusAndTracking().getWorkProgress().equals("Not started")) {
                     job.getJobStatusAndTracking().setStartDate(null);
                 }
 
@@ -1810,8 +1817,8 @@ public class JobManager extends GeneralManager
             message = message + "<span style='font-weight:bold'>Department: </span>" + job.getDepartment().getName() + "<br>";
         }
         message = message + "<span style='font-weight:bold'>Date submitted: </span>" + formatter.format(job.getJobStatusAndTracking().getDateSubmitted()) + "<br>";
-        message = message + "<span style='font-weight:bold'>Current assignee: </span>" + BusinessEntityUtils.getPersonFullName(job.getAssignedTo(), Boolean.FALSE) + "<br>";
-        message = message + "<span style='font-weight:bold'>Updated by: </span>" + BusinessEntityUtils.getPersonFullName(job.getJobStatusAndTracking().getEditedBy(), Boolean.FALSE) + "<br>";
+        message = message + "<span style='font-weight:bold'>Current assignee: </span>" + BusinessEntityUtils.getPersonFullName(job.getAssignedTo(), false) + "<br>";
+        message = message + "<span style='font-weight:bold'>Updated by: </span>" + BusinessEntityUtils.getPersonFullName(job.getJobStatusAndTracking().getEditedBy(), false) + "<br>";
         message = message + "<span style='font-weight:bold'>Task/Sample descriptions: </span>" + job.getJobSampleDescriptions() + "<br><br>";
         message = message + "You are being informed of this update so that you may take the requisite action.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
@@ -1935,7 +1942,7 @@ public class JobManager extends GeneralManager
 
         currentJob.getJobStatusAndTracking().setExpectedDateOfCompletion(selectedDate);
 
-        setIsDirty(Boolean.TRUE);
+        setIsDirty(true);
     }
 
     public List<Address> completeClientAddress(String query) {
@@ -2244,6 +2251,8 @@ public class JobManager extends GeneralManager
             if (currentJob.getId() != null) {
                 getJobFinanceManager().updateAllTaxes(null);
             }
+            
+            setIsDirty(true);
 
         } catch (Exception e) {
             System.out.println(e + ": updateSubContractedDepartment");

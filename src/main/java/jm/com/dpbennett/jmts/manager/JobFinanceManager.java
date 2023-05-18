@@ -4056,7 +4056,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
                     getJobManager().processJobActions();
 
-                    PrimeFacesUtils.addMessage("Payment and Job Saved", "Payment and the job and the payment were saved", FacesMessage.SEVERITY_INFO);
+                    PrimeFacesUtils.addMessage("Payment and Job Saved", "The payment and the job were saved", FacesMessage.SEVERITY_INFO);
                 }
             }
         }
