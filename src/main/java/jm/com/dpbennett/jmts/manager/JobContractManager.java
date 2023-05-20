@@ -276,6 +276,11 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
         return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
                 "useServiceContractExcel");
     }
+    
+    public Boolean getUseServiceContractPDF() {
+        return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                "useServiceContractJRXML");
+    }
 
     /**
      * Creates a list of Service objects based on a query string for a
