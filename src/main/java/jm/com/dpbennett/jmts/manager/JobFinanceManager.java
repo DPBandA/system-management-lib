@@ -4167,7 +4167,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public void editJobCosting() {
 
         PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog", 
-                true, true, true, false, 400, 975);
+                true, true, true, false, 400, 800);
     }
     
     public void okClientCreditStatus() {
