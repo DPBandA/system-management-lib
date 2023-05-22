@@ -2673,14 +2673,6 @@ public class JobManager extends GeneralManager
             }
         }
 
-        module = Modules.findActiveModuleByName(getEntityManager1(),
-                "systemManager");
-        if (module != null) {
-            if (getUser().hasModule("systemManager")) {
-                getMainTabView().openTab(module.getDashboardTitle());
-            }
-        }
-
     }
 
 }

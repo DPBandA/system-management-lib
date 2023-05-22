@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2021  D P Bennett & Associates Limited
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -218,31 +218,37 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void openProformaInvoicesDialog() {
+//    public void openProformaInvoicesDialog() {
+//
+//        doJobSearch();
+//
+//        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoicesDialog", 
+//                true, true, true, true, 400, 850);
+//    }
+    public void openProformaInvoicesTab() {
 
         doJobSearch();
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoicesDialog", 
-                true, true, true, true, 400, 850);
+        getMainTabView().openTab("Proforma Invoices");
     }
 
     public void openPriceListDialog() {
 
         doJobSearch();
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog", 
+        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog",
                 true, true, true, true, 400, 850);
     }
 
     public void openProformaInvoiceDialog() {
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoiceDialog", 
+        PrimeFacesUtils.openDialog(null, "proformaInvoiceDialog",
                 true, true, true, true, 400, 850);
     }
 
     public void openJobCostEstimateDialog() {
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/jobCostEstimateDialog", 
+        PrimeFacesUtils.openDialog(null, "jobCostEstimateDialog",
                 true, true, true, true, 400, 850);
     }
 
@@ -275,8 +281,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoiceDialog", 
-                true, true, true, true, 400, 850);
+        openProformaInvoiceDialog();
     }
 
     public void openNewCostEstimateDialog() {
@@ -300,8 +305,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().setBillingAddress(getCurrentJob().getClient().getAddresses().get(0));
         getCurrentJob().setContact(getCurrentJob().getClient().getContacts().get(0));
 
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/jobCostEstimateDialog", 
-                true, true, true, true, 400, 850);
+        openJobCostEstimateDialog();
     }
 
     public void createNewJob() {
@@ -2737,7 +2741,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         HashMap parameters = new HashMap();
 
         try {
-            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");  
+            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
             parameters.put("logoURL", logoURL);
             parameters.put("jobId", getCurrentJob().getId());
             parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(getCurrentJob().getContact()));
@@ -2896,7 +2900,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                             .contentType("application/pdf")
                             .name("Proforma Invoice - " + getCurrentJob().getJobNumber() + ".pdf")
                             .build();
-                    
+
                     setLongProcessProgress(100);
 
                     return streamContent;
@@ -4016,14 +4020,14 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void editCashPayment(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDialog", 
+        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDialog",
                 true, true, true, 400, 500);
 
     }
-    
+
     public void openClientCreditStatusDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog", 
+        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog",
                 true, true, true, 400, 1000);
 
     }
@@ -4127,7 +4131,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public Boolean getCanApproveJobCosting() {
-        
+
         return getCanApproveJobCosting(getCurrentJob());
     }
 
@@ -4155,21 +4159,21 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
 
             editJobCosting();
-            
+
         } else {
             PrimeFacesUtils.addMessage("Job NOT Saved",
                     "Job must be saved before the job costing can be viewed or edited",
                     FacesMessage.SEVERITY_WARN);
-           
+
         }
     }
 
     public void editJobCosting() {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog", 
+        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog",
                 true, true, true, false, 400, 800);
     }
-    
+
     public void okClientCreditStatus() {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -4467,7 +4471,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             System.out.println(e);
         }
     }
-    
+
     public void updateAccPacClient() {
 
         setShowPrepayments(false);
