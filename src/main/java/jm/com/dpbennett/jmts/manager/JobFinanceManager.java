@@ -218,27 +218,27 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-//    public void openProformaInvoicesDialog() {
-//
-//        doJobSearch();
-//
-//        PrimeFacesUtils.openDialog(null, "/dashboard/job/proformaInvoicesDialog", 
-//                true, true, true, true, 400, 850);
-//    }
     public void openProformaInvoicesTab() {
 
-        doJobSearch();
+        //doJobSearch();
 
         getMainTabView().openTab("Proforma Invoices");
     }
+    
+     public void openPriceListTab() {
 
-    public void openPriceListDialog() {
+        //doJobSearch();
 
-        doJobSearch();
-
-        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog",
-                true, true, true, true, 400, 850);
+        getMainTabView().openTab("Price List");
     }
+
+//    public void openPriceListDialog() {
+//
+//        doJobSearch();
+//
+//        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog",
+//                true, true, true, true, 400, 850);
+//    }
 
     public void openProformaInvoiceDialog() {
 
