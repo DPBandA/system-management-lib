@@ -149,12 +149,31 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     private DatePeriod dateSearchPeriod;
     private String searchType;
     private String searchText;
+    private String proformaInvoiceSearchText;
+    private String costEstimateSearchText;
+    
 
     /**
      * Creates a new instance of the JobFinanceManager class.
      */
     public JobFinanceManager() {
         init();
+    }
+
+    public String getProformaInvoiceSearchText() {
+        return proformaInvoiceSearchText;
+    }
+
+    public void setProformaInvoiceSearchText(String proformaInvoiceSearchText) {
+        this.proformaInvoiceSearchText = proformaInvoiceSearchText;
+    }
+
+    public String getCostEstimateSearchText() {
+        return costEstimateSearchText;
+    }
+
+    public void setCostEstimateSearchText(String costEstimateSearchText) {
+        this.costEstimateSearchText = costEstimateSearchText;
     }
 
     public String getSearchType() {
@@ -2034,6 +2053,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
+        proformaInvoiceSearchText = "";
+        costEstimateSearchText = "";
     }
 
     /**
