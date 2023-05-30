@@ -62,6 +62,7 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
+import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -1092,6 +1093,7 @@ public class JobManager extends GeneralManager
 
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
         editJob();
         openJobBrowser();
     }
@@ -1290,7 +1292,7 @@ public class JobManager extends GeneralManager
     }
 
     public void updateTestsAndCalibration() {
-        
+
         currentJob.setNoOfTestsOrCalibrations(currentJob.getNoOfTests() + currentJob.getNoOfCalibrations());
 
         setIsDirty(true);
@@ -1301,14 +1303,14 @@ public class JobManager extends GeneralManager
     }
 
     public void updateDocumentsCollectedBy() {
-        
+
         if (!currentJob.getJobStatusAndTracking().getDocumentCollected()) {
             currentJob.getJobStatusAndTracking().setDocumentCollectedBy("");
             setDateDocumentCollected(null);
         } else {
             setDateDocumentCollected(new Date());
         }
-        
+
         setIsDirty(true);
     }
 
@@ -1324,14 +1326,14 @@ public class JobManager extends GeneralManager
     }
 
     public void updateSamplesCollectedBy() {
-        
+
         if (!currentJob.getJobStatusAndTracking().getSamplesCollected()) {
             currentJob.getJobStatusAndTracking().setSamplesCollectedBy("");
             currentJob.getJobStatusAndTracking().setDateSamplesCollected(null);
         } else {
             currentJob.getJobStatusAndTracking().setDateSamplesCollected(new Date());
         }
-        
+
         setIsDirty(true);
     }
 
@@ -1344,7 +1346,7 @@ public class JobManager extends GeneralManager
         if (currentJob.getAutoGenerateJobNumber()) {
             currentJob.setJobNumber(getCurrentJobNumber());
         }
-        
+
         setIsDirty(true);
 
     }
@@ -1447,8 +1449,7 @@ public class JobManager extends GeneralManager
                 if (job.getJobStatusAndTracking().getWorkProgress().equals("Ongoing")
                         && job.getJobStatusAndTracking().getStartDate() == null) {
                     job.getJobStatusAndTracking().setStartDate(new Date());
-                } 
-                else if (job.getJobStatusAndTracking().getWorkProgress().equals("Not started")) {
+                } else if (job.getJobStatusAndTracking().getWorkProgress().equals("Not started")) {
                     job.getJobStatusAndTracking().setStartDate(null);
                 }
 
@@ -2251,7 +2252,7 @@ public class JobManager extends GeneralManager
             if (currentJob.getId() != null) {
                 getJobFinanceManager().updateAllTaxes(null);
             }
-            
+
             setIsDirty(true);
 
         } catch (Exception e) {
@@ -2526,7 +2527,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
-        SelectItemGroup group = new SelectItemGroup("Jobs");
+        SelectItemGroup group = new SelectItemGroup("Jobs & Costings");
 
         group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 

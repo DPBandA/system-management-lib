@@ -151,7 +151,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     private String searchText;
     private String proformaInvoiceSearchText;
     private String costEstimateSearchText;
-    
 
     /**
      * Creates a new instance of the JobFinanceManager class.
@@ -188,18 +187,16 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         return searchText;
     }
 
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
-    }
-
-    public DatePeriod getDateSearchPeriod() {
-        return dateSearchPeriod;
-    }
-
-    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-        this.dateSearchPeriod = dateSearchPeriod;
-    }
-
+//    public void setSearchText(String searchText) {
+//        this.searchText = searchText;
+//    }
+//
+//    public DatePeriod getDateSearchPeriod() {
+//        return dateSearchPeriod;
+//    }
+//    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
+//        this.dateSearchPeriod = dateSearchPeriod;
+//    }
     public List<Job> getJobSearchResultList() {
         return jobSearchResultList;
     }
@@ -226,7 +223,9 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public String getSearchResultsTableHeader() {
-        return ReportUtils.getSearchResultsTableHeader(getDateSearchPeriod(), getJobSearchResultList());
+        return ReportUtils.getSearchResultsTableHeader(
+                getJobManager().getDateSearchPeriod(),
+                getJobSearchResultList());
     }
 
     public void closeProformaInvoicesDialog() {
@@ -240,14 +239,12 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public void openProformaInvoicesTab() {
 
         //doJobSearch();
-
         getMainTabView().openTab("Proforma Invoices");
     }
-    
-     public void openPriceListTab() {
+
+    public void openPriceListTab() {
 
         //doJobSearch();
-
         getMainTabView().openTab("Price List");
     }
 
@@ -258,16 +255,15 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 //        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog",
 //                true, true, true, true, 400, 850);
 //    }
-
     public void openProformaInvoiceDialog() {
 
-        PrimeFacesUtils.openDialog(null, "proformaInvoiceDialog",
+        PrimeFacesUtils.openDialog(null, "/job/finance/proformaInvoiceDialog",
                 true, true, true, true, 400, 850);
     }
 
     public void openJobCostEstimateDialog() {
 
-        PrimeFacesUtils.openDialog(null, "jobCostEstimateDialog",
+        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostEstimateDialog",
                 true, true, true, true, 400, 850);
     }
 
@@ -300,7 +296,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
 
-        openProformaInvoiceDialog();
+        // tk commented out for testing
+        //openProformaInvoiceDialog();
+        // tk inserted for testing
+        getJobManager().editJob();
     }
 
     public void openNewCostEstimateDialog() {
@@ -4167,26 +4166,32 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public void openJobCostingDialog() {
-        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+//        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
             // Reload cash payments if possible to avoid overwriting them 
             // when saving
-            EntityManager em = getEntityManager1();
-            JobCostingAndPayment jcp
-                    = JobCostingAndPayment.findJobCostingAndPaymentById(em,
-                            getCurrentJob().getJobCostingAndPayment().getId());
+            // tk the following was commented out for testing.
+//            EntityManager em = getEntityManager1();
+//            JobCostingAndPayment jcp
+//                    = JobCostingAndPayment.findJobCostingAndPaymentById(em,
+//                            getCurrentJob().getJobCostingAndPayment().getId());
+//
+//            em.refresh(jcp);
+//
+//            getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
 
-            em.refresh(jcp);
+            if (getCurrentJob().getJobCostingAndPayment().getEstimate()) {
+                openProformaInvoiceDialog();                
+            }
+            else {
+                editJobCosting();
+            }
 
-            getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
-
-            editJobCosting();
-
-        } else {
-            PrimeFacesUtils.addMessage("Job NOT Saved",
-                    "Job must be saved before the job costing can be viewed or edited",
-                    FacesMessage.SEVERITY_WARN);
-
-        }
+//        } else {
+//            PrimeFacesUtils.addMessage("Job NOT Saved",
+//                    "Job must be saved before the job costing can be viewed or edited",
+//                    FacesMessage.SEVERITY_WARN);
+//
+//        }
     }
 
     public void editJobCosting() {
@@ -4236,9 +4241,9 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public List<Job> findJobs(Integer maxResults) {
         return Job.findJobsByDateSearchField(getEntityManager1(),
                 getUser(),
-                getDateSearchPeriod(),
-                getSearchType(),
-                getSearchText(),
+                getJobManager().getDateSearchPeriod(),
+                getJobManager().getSearchType(),
+                getProformaInvoiceSearchText(),
                 maxResults, true);
     }
 
