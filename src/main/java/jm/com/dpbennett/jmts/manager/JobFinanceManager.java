@@ -4166,32 +4166,31 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public void openJobCostingDialog() {
-//        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
             // Reload cash payments if possible to avoid overwriting them 
             // when saving
             // tk the following was commented out for testing.
-//            EntityManager em = getEntityManager1();
-//            JobCostingAndPayment jcp
-//                    = JobCostingAndPayment.findJobCostingAndPaymentById(em,
-//                            getCurrentJob().getJobCostingAndPayment().getId());
-//
-//            em.refresh(jcp);
-//
-//            getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
+            EntityManager em = getEntityManager1();
+            JobCostingAndPayment jcp
+                    = JobCostingAndPayment.findJobCostingAndPaymentById(em,
+                            getCurrentJob().getJobCostingAndPayment().getId());
+
+            em.refresh(jcp);
+
+            getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
 
             if (getCurrentJob().getJobCostingAndPayment().getEstimate()) {
-                openProformaInvoiceDialog();                
-            }
-            else {
+                openProformaInvoiceDialog();
+            } else {
                 editJobCosting();
             }
 
-//        } else {
-//            PrimeFacesUtils.addMessage("Job NOT Saved",
-//                    "Job must be saved before the job costing can be viewed or edited",
-//                    FacesMessage.SEVERITY_WARN);
-//
-//        }
+        } else {
+            PrimeFacesUtils.addMessage("Job NOT Saved",
+                    "Job must be saved before the job costing can be viewed or edited",
+                    FacesMessage.SEVERITY_WARN);
+
+        }
     }
 
     public void editJobCosting() {
@@ -4251,10 +4250,12 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         EntityManager em;
 
         try {
+
             em = getEntityManager1();
 
-            List<JobCostingAndPayment> results = JobCostingAndPayment.findAllActiveJobCostingAndPaymentsByDepartmentAndName(em,
-                    Department.findDepartmentAssignedToJob(getCurrentJob(), em).getName(), query);
+            List<JobCostingAndPayment> results
+                    = JobCostingAndPayment.findAllActiveJobCostingAndPaymentsByDepartmentAndName(em,
+                            Department.findDepartmentAssignedToJob(getCurrentJob(), em).getName(), query);
 
             return results;
 
