@@ -119,6 +119,11 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    public Boolean getEnableJobDialogTab() {
+        return (!getJobFinanceManager().getEnableOnlyPaymentEditing()
+                && getCurrentJob().getType().equals("Job"));
+    }
+
     public SystemManager getSystemManager() {
         if (systemManager == null) {
             systemManager = BeanUtils.findBean("systemManager");

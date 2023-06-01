@@ -281,6 +281,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         createNewJob();
 
+        getCurrentJob().setType("Proforma");
         getCurrentJob().setClassification(Classification.
                 findClassificationByName(getEntityManager1(),
                         (String) SystemOption.getOptionValueObject(getEntityManager1(),
@@ -296,9 +297,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
 
-        // tk commented out for testing
-        //openProformaInvoiceDialog();
-        // tk inserted for testing
         getJobManager().editJob();
     }
 
@@ -4179,11 +4177,11 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
             getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
 
-            if (getCurrentJob().getJobCostingAndPayment().getEstimate()) {
-                openProformaInvoiceDialog();
-            } else {
-                editJobCosting();
-            }
+//            if (getCurrentJob().getJobCostingAndPayment().getEstimate()) {
+//                openProformaInvoiceDialog();
+//            } else {
+            editJobCosting();
+//            }
 
         } else {
             PrimeFacesUtils.addMessage("Job NOT Saved",
