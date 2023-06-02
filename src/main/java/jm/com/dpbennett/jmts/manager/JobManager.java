@@ -62,7 +62,6 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
-import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -120,8 +119,16 @@ public class JobManager extends GeneralManager
     }
 
     public Boolean getEnableJobDialogTab() {
+      
         return (!getJobFinanceManager().getEnableOnlyPaymentEditing()
                 && getCurrentJob().getType().equals("Job"));
+    
+    }
+
+    public Boolean getEnableJobDialogCostingTab() {
+        
+        return (getCurrentJob().getType().equals("Proforma Invoice"));
+     
     }
 
     public SystemManager getSystemManager() {

@@ -281,7 +281,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         createNewJob();
 
-        getCurrentJob().setType("Proforma");
+        getCurrentJob().setType("Proforma Invoice");
         getCurrentJob().setClassification(Classification.
                 findClassificationByName(getEntityManager1(),
                         (String) SystemOption.getOptionValueObject(getEntityManager1(),
