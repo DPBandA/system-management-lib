@@ -4167,21 +4167,18 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
             // Reload cash payments if possible to avoid overwriting them 
             // when saving
-            // tk the following was commented out for testing.
+            // tk the following was commented out for testing
             EntityManager em = getEntityManager1();
             JobCostingAndPayment jcp
                     = JobCostingAndPayment.findJobCostingAndPaymentById(em,
                             getCurrentJob().getJobCostingAndPayment().getId());
 
-            em.refresh(jcp);
+            if (jcp != null) {
+                em.refresh(jcp);
+                getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
+            }
 
-            getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
-
-//            if (getCurrentJob().getJobCostingAndPayment().getEstimate()) {
-//                openProformaInvoiceDialog();
-//            } else {
             editJobCosting();
-//            }
 
         } else {
             PrimeFacesUtils.addMessage("Job NOT Saved",
