@@ -4163,6 +4163,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 && job.getJobCostingAndPayment().getCostingCompleted());
     }
 
+    // tk
     public void openJobCostingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
             // Reload cash payments if possible to avoid overwriting them 
@@ -4176,15 +4177,26 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             if (jcp != null) {
                 em.refresh(jcp);
                 getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
+                editJobCosting();
             }
 
-            editJobCosting();
-
+            //editJobCosting(); // tk commented out for testing
         } else {
-            PrimeFacesUtils.addMessage("Job NOT Saved",
+            // tk try to save the job before editing 
+            getJobManager().saveCurrentJob();
+            if (getCurrentJob().getId() != null) {
+                 editJobCosting();
+            }
+            else {
+                  PrimeFacesUtils.addMessage("Job NOT Saved",
                     "Job must be saved before the job costing can be viewed or edited",
                     FacesMessage.SEVERITY_WARN);
-
+            }
+            
+            // tk commented out for testing
+//            PrimeFacesUtils.addMessage("Job NOT Saved",
+//                    "Job must be saved before the job costing can be viewed or edited",
+//                    FacesMessage.SEVERITY_WARN);
         }
     }
 

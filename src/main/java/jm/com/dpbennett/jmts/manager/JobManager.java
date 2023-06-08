@@ -1662,21 +1662,21 @@ public class JobManager extends GeneralManager
         returnMessage = job.prepareAndSave(getEntityManager1(), getUser());
 
         if (returnMessage.isSuccess()) {
-            if (job.getJobCostingAndPayment().getEstimate()) {
-                PrimeFacesUtils.addMessage("Saved!", "Costing was saved", FacesMessage.SEVERITY_INFO);
-            } else {
-                PrimeFacesUtils.addMessage("Saved!", "Job was saved", FacesMessage.SEVERITY_INFO);
-            }
+//            if (job.getJobCostingAndPayment().getEstimate()) {
+                PrimeFacesUtils.addMessage("Saved!", job.getType() + " was saved", FacesMessage.SEVERITY_INFO);
+//            } else {
+//                PrimeFacesUtils.addMessage("Saved!", "Job was saved", FacesMessage.SEVERITY_INFO);
+//            }
             job.getJobStatusAndTracking().setEditStatus("        ");
 
             return true;
         } else {
-            PrimeFacesUtils.addMessage("Job/Costing NOT Saved!",
-                    "Job/Costing was NOT saved. Please contact the System Administrator!",
+            PrimeFacesUtils.addMessage(job.getType() + " NOT Saved!",
+                    job.getType() + " was NOT saved. Please contact the System Administrator!",
                     FacesMessage.SEVERITY_ERROR);
 
-            sendErrorEmail("An error occurred while saving a job/costing!",
-                    "Job/Proforma number: " + job.getJobNumber()
+            sendErrorEmail("An error occurred while saving a " + job.getType(),
+                    job.getType() + " number: " + job.getJobNumber()
                     + "\nJMTS User: " + getUser().getUsername()
                     + "\nDate/time: " + new Date()
                     + "\nDetail: " + returnMessage.getDetail());
@@ -1697,8 +1697,8 @@ public class JobManager extends GeneralManager
                 if (job.getClient().getCreditLimit()
                         < job.getJobCostingAndPayment().getCalculatedCostEstimate()) {
                     PrimeFacesUtils.addMessage(
-                            "Job Cannot Be Saved",
-                            "This job's cost estimate exceeds the client's credit limit.",
+                            job.getType() + " Cannot Be Saved",
+                            "This " + job.getType() + "'s cost estimate exceeds the client's credit limit.",
                             FacesMessage.SEVERITY_ERROR);
 
                     return;
@@ -1717,8 +1717,8 @@ public class JobManager extends GeneralManager
                 job.setIsDirty(false);
 
                 PrimeFacesUtils.addMessage(
-                        "Job Cannot Be Saved",
-                        "This job is marked as completed so changes cannot be saved. You may contact your supervisor or a system administrator",
+                        job.getType() + " Cannot Be Saved",
+                        "This " + job.getType() + " is marked as completed so changes cannot be saved. You may contact your supervisor or a system administrator",
                         FacesMessage.SEVERITY_ERROR);
 
                 return;
@@ -1785,13 +1785,13 @@ public class JobManager extends GeneralManager
 
             } else {
                 PrimeFacesUtils.addMessage("Insufficient Privilege",
-                        "You do not have the privilege to enter/edit jobs/proforma invoices. \n"
+                        "You do not have the privilege to enter/edit " + job.getType() + "s. \n"
                         + "Please contact the System Administrator for assistance.",
                         FacesMessage.SEVERITY_ERROR);
             }
         } else {
             PrimeFacesUtils.addMessage("Insufficient Privilege",
-                    "You do not have the privilege to enter/edit jobs. \n"
+                    "You do not have the privilege to enter/edit " + job.getType() + "s. \n"
                     + "Please contact the System Administrator for assistance.",
                     FacesMessage.SEVERITY_ERROR);
         }
