@@ -4183,16 +4183,18 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             //editJobCosting(); // tk commented out for testing
         } else {
             // tk try to save the job before editing 
-            getJobManager().saveCurrentJob();
+            if (getJobManager().getCurrentJob().getIsDirty()) {
+                getJobManager().saveCurrentJob();
+            }
+            // tk edit costing if job was saved
             if (getCurrentJob().getId() != null) {
-                 editJobCosting();
+                editJobCosting();
+            } else {
+                PrimeFacesUtils.addMessage("Job NOT Saved",
+                        "Job must be saved before the job costing can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
             }
-            else {
-                  PrimeFacesUtils.addMessage("Job NOT Saved",
-                    "Job must be saved before the job costing can be viewed or edited",
-                    FacesMessage.SEVERITY_WARN);
-            }
-            
+
             // tk commented out for testing
 //            PrimeFacesUtils.addMessage("Job NOT Saved",
 //                    "Job must be saved before the job costing can be viewed or edited",
