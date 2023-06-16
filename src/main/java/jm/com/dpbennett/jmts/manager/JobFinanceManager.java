@@ -63,8 +63,8 @@ import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
 import jm.com.dpbennett.business.entity.fm.AccPacDocument;
 import jm.com.dpbennett.business.entity.fm.AccountingCode;
 import jm.com.dpbennett.business.entity.fm.Classification;
+import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.business.entity.jmts.Job;
-import jm.com.dpbennett.business.entity.gm.MessageManagement;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -82,7 +82,6 @@ import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.DateUtils;
-import jm.com.dpbennett.sm.util.DialogActionHandler;
 import jm.com.dpbennett.sm.util.FileUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
@@ -105,8 +104,7 @@ import org.primefaces.event.UnselectEvent;
  *
  * @author Desmond P. Bennett (info@dpbenentt.com.jm)
  */
-public class JobFinanceManager implements Serializable, BusinessEntityManagement,
-        DialogActionHandler, MessageManagement {
+public class JobFinanceManager implements Serializable, BusinessEntityManagement {
 
     private CashPayment selectedCashPayment;
     private StreamedContent jobCostingFile;
@@ -125,17 +123,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     private Job currentJobWithCosting;
     private Department jobCostDepartment;
     private Boolean showPrepayments;
-    // NB: These fields may be deprecated/removed in the future if they are no longer being used.
-    private String invalidFormFieldMessage;
-    private String dialogMessage;
-    private String dialogMessageHeader;
-    private String dialogMessageSeverity;
-    private Boolean dialogRenderOkButton;
-    private Boolean dialogRenderYesButton;
-    private Boolean dialogRenderNoButton;
-    private Boolean dialogRenderCancelButton;
-    private DialogActionHandler dialogActionHandler;
-    // End fields to be deprecated.
     private Boolean enableOnlyPaymentEditing;
     private JobManager jobManager;
     private JobContractManager jobContractManager;
@@ -187,16 +174,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         return searchText;
     }
 
-//    public void setSearchText(String searchText) {
-//        this.searchText = searchText;
-//    }
-//
-//    public DatePeriod getDateSearchPeriod() {
-//        return dateSearchPeriod;
-//    }
-//    public void setDateSearchPeriod(DatePeriod dateSearchPeriod) {
-//        this.dateSearchPeriod = dateSearchPeriod;
-//    }
     public List<Job> getJobSearchResultList() {
         return jobSearchResultList;
     }
@@ -248,13 +225,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getMainTabView().openTab("Price List");
     }
 
-//    public void openPriceListDialog() {
-//
-//        doJobSearch();
-//
-//        PrimeFacesUtils.openDialog(null, "/dashboard/job/priceListDialog",
-//                true, true, true, true, 400, 850);
-//    }
     public void openProformaInvoiceDialog() {
 
         PrimeFacesUtils.openDialog(null, "/job/finance/proformaInvoiceDialog",
@@ -406,18 +376,18 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
                 } else {
                     PrimeFacesUtils.addMessage("Aready Approved",
-                            "The job costing for " + job.getJobNumber() + " was already approved",
+                            "This " + job.getType() + " costing for " + job.getJobNumber() + " was already approved",
                             FacesMessage.SEVERITY_WARN);
                 }
             }
 
             PrimeFacesUtils.addMessage("Job Costing(s) Approved",
-                    "" + numCostingsCApproved + " job costing(s) approved",
+                    "" + numCostingsCApproved + " Job costing(s) approved",
                     FacesMessage.SEVERITY_INFO);
 
         } else {
             PrimeFacesUtils.addMessage("No Selection",
-                    "No job costing was selected",
+                    "No Job costing was selected",
                     FacesMessage.SEVERITY_WARN);
         }
 
@@ -478,7 +448,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
                     } else {
                         PrimeFacesUtils.addMessage("Aready Invoiced",
-                                "The job costing for " + job.getJobNumber() + " was already invoiced",
+                                "The " + job.getType() + " costing for " + job.getJobNumber() + " was already invoiced",
                                 FacesMessage.SEVERITY_WARN);
 
                         return;
@@ -657,6 +627,21 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         }
     }
 
+    public List<Currency> completeCurrency(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Currency> currencies = Currency.findAllByName(em, query);
+
+            return currencies;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
     /**
      * This method is called automatically by a JSF "auto complete" component to
      * "complete" a list of discount objects based on a database query.
@@ -789,7 +774,9 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             return DefaultStreamedContent.builder()
                     .stream(() -> stream)
                     .contentType("application/zip")
-                    .name("Job Costings - " + BusinessEntityUtils.getDateInMediumDateAndTimeFormat(new Date()) + ".zip")
+                    .name("Job Costings - "
+                            + BusinessEntityUtils.getDateInMediumDateAndTimeFormat(new Date())
+                            + ".zip")
                     .build();
 
         } catch (Exception ex) {
@@ -2088,141 +2075,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     /**
-     * Gets the dialogRenderCancelButton field.
-     *
-     * @return
-     */
-    public Boolean getDialogRenderCancelButton() {
-        return dialogRenderCancelButton;
-    }
-
-    /**
-     * Sets the dialogRenderCancelButton field.
-     *
-     * @param dialogRenderCancelButton
-     */
-    public void setDialogRenderCancelButton(Boolean dialogRenderCancelButton) {
-        this.dialogRenderCancelButton = dialogRenderCancelButton;
-    }
-
-    /**
-     * Sets the dialogActionHandler field.
-     *
-     * @param dialogActionHandler
-     */
-    public void setDialogActionHandler(DialogActionHandler dialogActionHandler) {
-        this.dialogActionHandler = dialogActionHandler;
-    }
-
-    /**
-     * Gets the dialogRenderOkButton field.
-     *
-     * @return
-     */
-    public Boolean getDialogRenderOkButton() {
-        return dialogRenderOkButton;
-    }
-
-    /**
-     * Sets the dialogRenderOkButton field.
-     *
-     * @param dialogRenderOkButton
-     */
-    public void setDialogRenderOkButton(Boolean dialogRenderOkButton) {
-        this.dialogRenderOkButton = dialogRenderOkButton;
-    }
-
-    /**
-     * Gets the dialogRenderYesButton field.
-     *
-     * @return
-     */
-    public Boolean getDialogRenderYesButton() {
-        return dialogRenderYesButton;
-    }
-
-    /**
-     * Sets the dialogRenderYesButton field.
-     *
-     * @param dialogRenderYesButton
-     */
-    public void setDialogRenderYesButton(Boolean dialogRenderYesButton) {
-        this.dialogRenderYesButton = dialogRenderYesButton;
-    }
-
-    /**
-     * Gets the dialogRenderNoButton field.
-     *
-     * @return
-     */
-    public Boolean getDialogRenderNoButton() {
-        return dialogRenderNoButton;
-    }
-
-    /**
-     * Sets the dialogRenderNoButton field.
-     *
-     * @param dialogRenderNoButton
-     */
-    public void setDialogRenderNoButton(Boolean dialogRenderNoButton) {
-        this.dialogRenderNoButton = dialogRenderNoButton;
-    }
-
-    /**
-     * Gets the dialogMessage field.
-     *
-     * @return
-     */
-    public String getDialogMessage() {
-        return dialogMessage;
-    }
-
-    /**
-     * Sets the dialogMessage field.
-     *
-     * @param dialogMessage
-     */
-    public void setDialogMessage(String dialogMessage) {
-        this.dialogMessage = dialogMessage;
-    }
-
-    /**
-     * Gets the dialogMessageHeader field.
-     *
-     * @return
-     */
-    public String getDialogMessageHeader() {
-        return dialogMessageHeader;
-    }
-
-    /**
-     * Sets the dialogMessageHeader field.
-     *
-     * @param dialogMessageHeader
-     */
-    public void setDialogMessageHeader(String dialogMessageHeader) {
-        this.dialogMessageHeader = dialogMessageHeader;
-    }
-
-    /**
-     * Gets the dialogMessageSeverity field.
-     *
-     * @return
-     */
-    public String getDialogMessageSeverity() {
-        return dialogMessageSeverity;
-    }
-
-    /**
-     * Sets the dialogMessageSeverity field.
-     *
-     * @param dialogMessageSeverity
-     */
-    public void setDialogMessageSeverity(String dialogMessageSeverity) {
-        this.dialogMessageSeverity = dialogMessageSeverity;
-    }
-
-    /**
      * Creates and gets an EntityManager object using the EMF1
      * EntityManagerFactory object.
      *
@@ -2239,118 +2091,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      */
     public User getUser() {
         return getJobManager().getUser();
-    }
-
-    /**
-     * Gets the invalidFormFieldMessage field.
-     *
-     * @return
-     */
-    @Override
-    public String getInvalidFormFieldMessage() {
-        return invalidFormFieldMessage;
-    }
-
-    /**
-     * Sets the invalidFormFieldMessage field.
-     *
-     * @param invalidFormFieldMessage
-     */
-    @Override
-    public void setInvalidFormFieldMessage(String invalidFormFieldMessage) {
-        this.invalidFormFieldMessage = invalidFormFieldMessage;
-    }
-
-    /**
-     * Displays a PrimeFaces message dialog.
-     *
-     * @param dialogActionHandler
-     * @param dialogMessage
-     * @param dialogMessageHeader
-     * @param dialoMessageSeverity
-     */
-    public void displayCommonMessageDialog(
-            DialogActionHandler dialogActionHandler,
-            String dialogMessage,
-            String dialogMessageHeader,
-            String dialoMessageSeverity) {
-
-        setDialogActionHandler(dialogActionHandler);
-
-        setDialogRenderOkButton(true);
-        setDialogRenderYesButton(false);
-        setDialogRenderNoButton(false);
-
-        setDialogMessage(dialogMessage);
-        setDialogMessageHeader(dialogMessageHeader);
-        setDialogMessageSeverity(dialoMessageSeverity);
-
-        PrimeFaces.current().ajax().update("commonMessageDialogForm");
-        PrimeFaces.current().executeScript("PF('commonMessageDialog').show();");
-    }
-
-    /**
-     * Displays a PrimeFaces confirmation dialog.
-     *
-     * @param dialogActionHandler
-     * @param dialogMessage
-     * @param dialogMessageHeader
-     * @param dialoMessageSeverity
-     */
-    public void displayCommonConfirmationDialog(DialogActionHandler dialogActionHandler,
-            String dialogMessage,
-            String dialogMessageHeader,
-            String dialoMessageSeverity) {
-
-        setDialogActionHandler(dialogActionHandler);
-
-        setDialogRenderOkButton(false);
-        setDialogRenderYesButton(true);
-        setDialogRenderNoButton(true);
-        setDialogRenderCancelButton(true);
-
-        setDialogMessage(dialogMessage);
-        setDialogMessageHeader(dialogMessageHeader);
-        setDialogMessageSeverity(dialoMessageSeverity);
-
-        PrimeFaces.current().ajax().update("commonMessageDialogForm");
-        PrimeFaces.current().executeScript("PF('commonMessageDialog').show();");
-    }
-
-    /**
-     * A "wrapper" method for the handleDialogOkButtonClick method.
-     */
-    public void handleDialogOkButtonPressed() {
-        if (dialogActionHandler != null) {
-            dialogActionHandler.handleDialogOkButtonClick();
-        }
-    }
-
-    /**
-     * A "wrapper" method for the handleDialogYesButtonClick method.
-     */
-    public void handleDialogYesButtonPressed() {
-        if (dialogActionHandler != null) {
-            dialogActionHandler.handleDialogYesButtonClick();
-        }
-    }
-
-    /**
-     * A "wrapper" method for the handleDialogNoButtonClick method.
-     */
-    public void handleDialogNoButtonPressed() {
-        if (dialogActionHandler != null) {
-            dialogActionHandler.handleDialogNoButtonClick();
-        }
-    }
-
-    /**
-     * A "wrapper" method for the handleDialogCancelButtonClick method.
-     */
-    public void handleDialogCancelButtonPressed() {
-        if (dialogActionHandler != null) {
-            dialogActionHandler.handleDialogCancelButtonClick();
-        }
     }
 
     /**
@@ -3430,7 +3170,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         if (!validateCurrentJobCosting() && getCurrentJob().getJobCostingAndPayment().getCostingCompleted()) {
             getCurrentJob().getJobCostingAndPayment().setCostingCompleted(false);
             getCurrentJob().getJobCostingAndPayment().setCostingApproved(false);
-            displayCommonMessageDialog(null, "Removing the content of a required field has invalidated this job costing", "Invalid Job Costing", "info");
+            //displayCommonMessageDialog(null, "Removing the content of a required field has invalidated this job costing", "Invalid Job Costing", "info");
         } else {
             setJobCostingAndPaymentDirty(true);
         }
@@ -3648,7 +3388,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         // prompt to save modified job before attempting to create new job
         if (getIsDirty()) {
             // ask to save         
-            displayCommonConfirmationDialog(initDialogActionHandlerId("unitCostDirty"), "This unit cost was modified. Do you wish to save it?", "Unit Cost Not Saved", "info");
+            //displayCommonConfirmationDialog(initDialogActionHandlerId("unitCostDirty"), "This unit cost was modified. Do you wish to save it?", "Unit Cost Not Saved", "info");
         } else {
             PrimeFaces.current().executeScript("PF('unitCostDialog').hide();");
         }
@@ -3678,9 +3418,17 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
                     getJobManager().processJobActions();
                     getCurrentJob().getJobStatusAndTracking().setEditStatus("");
-                    PrimeFacesUtils.addMessage("Job Costing and Job Saved", "This job and the costing were saved", FacesMessage.SEVERITY_INFO);
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Costing and " + getCurrentJob().getType()
+                            + " Saved", "This " + getCurrentJob().getType()
+                            + " and the costing were saved", FacesMessage.SEVERITY_INFO);
                 } else {
-                    PrimeFacesUtils.addMessage("Job Costing and Job NOT Saved", "This job and the costing were NOT saved", FacesMessage.SEVERITY_ERROR);
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Costing and " + getCurrentJob().getType()
+                            + " NOT Saved", "This "
+                            + getCurrentJob().getType()
+                            + " and the costing were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
                 }
             }
 
@@ -3766,7 +3514,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             // Department
             Department department = Department.findDepartmentByName(em, getCurrentUnitCost().getDepartment().getName());
             if (department == null) {
-                setInvalidFormFieldMessage("This unit cost cannot be saved because a valid department was not entered.");
+                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid department was not entered.");
 
                 return;
             } else {
@@ -3791,21 +3539,21 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
             // Service
             if (getCurrentUnitCost().getService().trim().equals("")) {
-                setInvalidFormFieldMessage("This unit cost cannot be saved because a valid service was not entered.");
+                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid service was not entered.");
 
                 return;
             }
 
             // Cost
             if (getCurrentUnitCost().getCost() <= 0.0) {
-                setInvalidFormFieldMessage("This unit cost cannot be saved because a valid cost was not entered.");
+                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid cost was not entered.");
 
                 return;
             }
 
             // Effective date
             if (getCurrentUnitCost().getEffectiveDate() == null) {
-                setInvalidFormFieldMessage("This unit cost cannot be saved because a valid effective date was not entered.");
+                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid effective date was not entered.");
 
                 return;
             }
@@ -4052,6 +3800,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void createNewCostComponent(ActionEvent event) {
         selectedCostComponent = new CostComponent();
+        selectedCostComponent.setCurrency(getCurrentJob().getJobCostingAndPayment().getCurrency());
         setEdit(false);
     }
 
@@ -4190,22 +3939,18 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             if (getCurrentJob().getId() != null) {
                 editJobCosting();
             } else {
-                PrimeFacesUtils.addMessage("Job NOT Saved",
-                        "Job must be saved before the job costing can be viewed or edited",
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before the costing can be viewed or edited",
                         FacesMessage.SEVERITY_WARN);
             }
-
-            // tk commented out for testing
-//            PrimeFacesUtils.addMessage("Job NOT Saved",
-//                    "Job must be saved before the job costing can be viewed or edited",
-//                    FacesMessage.SEVERITY_WARN);
         }
     }
 
     public void editJobCosting() {
 
         PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog",
-                true, true, true, false, 400, 800);
+                true, true, true, true, 400, 800);
     }
 
     public void okClientCreditStatus() {
@@ -4750,12 +4495,14 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         // Do job save if possible...
         if (getCurrentJob().getId() != null
                 && getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
-            PrimeFacesUtils.addMessage("Job Saved",
-                    "The payment was deleted and the job was saved", FacesMessage.SEVERITY_INFO);
+            PrimeFacesUtils.addMessage(getCurrentJob().getType() + " Saved",
+                    "The payment was deleted and the " + getCurrentJob().getType() + " was saved",
+                    FacesMessage.SEVERITY_INFO);
         } else {
             setJobCostingAndPaymentDirty(true);
-            PrimeFacesUtils.addMessage("Job NOT Saved",
-                    "The payment was deleted but the job was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                    "The payment was deleted but the " + getCurrentJob().getType() + " was not saved",
+                    FacesMessage.SEVERITY_WARN);
         }
 
         PrimeFaces.current().dialog().closeDynamic(null);
@@ -4798,44 +4545,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public void editUnitCost() {
-    }
-
-    @Override
-    public void handleDialogOkButtonClick() {
-    }
-
-    @Override
-    public void handleDialogYesButtonClick() {
-
-        if (dialogActionHandlerId.equals("unitCostDirty")) {
-            saveUnitCost();
-            PrimeFaces.current().executeScript("PF('unitCostDialog').hide();");
-        }
-
-    }
-
-    @Override
-    public void handleDialogNoButtonClick() {
-
-        if (dialogActionHandlerId.equals("unitCostDirty")) {
-            setIsDirty(false);
-            PrimeFaces.current().executeScript("PF('unitCostDialog').hide();");
-        }
-    }
-
-    @Override
-    public DialogActionHandler initDialogActionHandlerId(String id) {
-        dialogActionHandlerId = id;
-        return this;
-    }
-
-    @Override
-    public String getDialogActionHandlerId() {
-        return dialogActionHandlerId;
-    }
-
-    @Override
-    public void handleDialogCancelButtonClick() {
     }
 
     public void onJobCostingsTableCellEdit(CellEditEvent event) {

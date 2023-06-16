@@ -119,16 +119,16 @@ public class JobManager extends GeneralManager
     }
 
     public Boolean getEnableJobDialogTab() {
-      
+
         return (!getJobFinanceManager().getEnableOnlyPaymentEditing()
                 && getCurrentJob().getType().equals("Job"));
-    
+
     }
 
     public Boolean getEnableJobDialogCostingTab() {
-        
+
         return (getCurrentJob().getType().equals("Proforma Invoice"));
-     
+
     }
 
     public SystemManager getSystemManager() {
@@ -1390,8 +1390,10 @@ public class JobManager extends GeneralManager
             if (!job.getJobCostingAndPayment().getCostingApproved()
                     && job.getJobStatusAndTracking().getWorkProgress().equals("Completed")) {
 
-                PrimeFacesUtils.addMessage("Job Work Progress Cannot Be As Marked Completed",
-                        "The job costing needs to be approved before this job can be marked as completed.",
+                PrimeFacesUtils.addMessage(job.getType()
+                        + " Work Progress Cannot Be As Marked Completed",
+                        "The " + job.getType()
+                        + " costing needs to be approved before this job can be marked as completed.",
                         FacesMessage.SEVERITY_WARN);
 
                 return false;
@@ -1404,8 +1406,8 @@ public class JobManager extends GeneralManager
                 job.getJobStatusAndTracking().
                         setWorkProgress(savedJob.getJobStatusAndTracking().getWorkProgress());
 
-                PrimeFacesUtils.addMessage("Job Work Progress Cannot Be Changed",
-                        "\"This job is marked as completed and cannot be changed. You may contact your supervisor.",
+                PrimeFacesUtils.addMessage(job.getType() + " Work Progress Cannot Be Changed",
+                        "\"This " + job.getType() + " is marked as completed and cannot be changed. You may contact your supervisor.",
                         FacesMessage.SEVERITY_WARN);
 
                 return false;
@@ -1421,8 +1423,10 @@ public class JobManager extends GeneralManager
                 job.getJobStatusAndTracking().
                         setWorkProgress(savedJob.getJobStatusAndTracking().getWorkProgress());
 
-                PrimeFacesUtils.addMessage("Job Work Progress Cannot Be As Marked Completed",
-                        "The job costing needs to be prepared before this job can be marked as completed.",
+                PrimeFacesUtils.addMessage(job.getType() + " Work Progress Cannot Be As Marked Completed",
+                        "The " + job.getType() + " costing needs to be prepared before this "
+                        + job.getType()
+                        + " can be marked as completed.",
                         FacesMessage.SEVERITY_WARN);
 
                 return false;
@@ -1430,8 +1434,9 @@ public class JobManager extends GeneralManager
             }
         } else {
 
-            PrimeFacesUtils.addMessage("Job Work Progress Cannot be Changed",
-                    "This job's work progress cannot be changed until the job is saved.",
+            PrimeFacesUtils.addMessage(job.getType() + " Work Progress Cannot be Changed",
+                    "This " + job.getType() + "'s work progress cannot be changed until the " 
+                            + job.getType() + " is saved.",
                     FacesMessage.SEVERITY_WARN);
             return false;
         }
@@ -1663,7 +1668,7 @@ public class JobManager extends GeneralManager
 
         if (returnMessage.isSuccess()) {
 //            if (job.getJobCostingAndPayment().getEstimate()) {
-                PrimeFacesUtils.addMessage("Saved!", job.getType() + " was saved", FacesMessage.SEVERITY_INFO);
+            PrimeFacesUtils.addMessage("Saved!", job.getType() + " was saved", FacesMessage.SEVERITY_INFO);
 //            } else {
 //                PrimeFacesUtils.addMessage("Saved!", "Job was saved", FacesMessage.SEVERITY_INFO);
 //            }
@@ -1726,7 +1731,7 @@ public class JobManager extends GeneralManager
         }
 
         // Ensure that at least 1 service is selected
-        if (job.getServices().isEmpty() && !job.getJobCostingAndPayment().getEstimate()) {
+        if (job.getServices().isEmpty()) {
             PrimeFacesUtils.addMessage("Service(s) NOT Selected",
                     "Please select at least one service",
                     FacesMessage.SEVERITY_ERROR);
