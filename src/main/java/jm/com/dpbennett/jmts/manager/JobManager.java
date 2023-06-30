@@ -2538,7 +2538,6 @@ public class JobManager extends GeneralManager
     }
 
     public void openReportsTab() {
-        //getReportManager().openReportsTab("Job");
         getMainTabView().openTab("Reports");
     }
 

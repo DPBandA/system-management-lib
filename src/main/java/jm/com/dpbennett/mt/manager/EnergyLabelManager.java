@@ -23,10 +23,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
@@ -39,6 +41,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.SelectEvent;
 
 /**
  *
@@ -58,6 +61,64 @@ public class EnergyLabelManager extends GeneralManager
         init();
     }
 
+    public void openReportsTab() {
+        getMainTabView().openTab("Reports");
+    }
+
+    public void openEnergyLabelBrowser() {
+        System.out.println("open label browser: to be implemented"); // tk
+    }
+
+    public void openClientsTab() {
+
+        getMainTabView().openTab("Clients");
+    }
+
+    public void energyLabelDialogReturn() {
+//        if (currentJob.getIsDirty()) {
+//            PrimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            currentJob.setIsDirty(false);
+//        }
+
+    }
+
+    @Override
+    public void onNotificationSelect(SelectEvent event) {
+        EntityManager em = getEntityManager1();
+
+        Notification notification = Notification.findNotificationByNameAndOwnerId(
+                em,
+                (String) event.getObject(),
+                getUser().getId(),
+                false);
+
+        if (notification != null) {
+
+            handleSelectedNotification(notification);
+
+            notification.setActive(false);
+            notification.save(em);
+        }
+    }
+
+    @Override
+    public Integer getLogoURLImageHeight() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageHeight");
+    }
+
+    @Override
+    public Integer getLogoURLImageWidth() {
+        return (Integer) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURLImageWidth");
+    }
+
+    @Override
+    public String getApplicationSubheader() {
+        return "Energy Label Printing";
+    }
+
     public List<SelectItem> getEnergyEfficiencyProductTypes() {
         return SystemManager.getStringListAsSelectItems(getEntityManager1(),
                 "energyEfficiencyProductTypes");
@@ -72,17 +133,17 @@ public class EnergyLabelManager extends GeneralManager
         return SystemManager.getStringListAsSelectItems(getEntityManager1(),
                 "refrigeratorFeatures");
     }
-    
+
     public List<SelectItem> getRatedVoltages() {
         return SystemManager.getStringListAsSelectItems(getEntityManager1(),
                 "ratedVoltages");
     }
-    
+
     public List<SelectItem> getRatedFrequencies() {
         return SystemManager.getStringListAsSelectItems(getEntityManager1(),
                 "ratedFrequencies");
     }
-    
+
     public List<SelectItem> getEnergyEfficiencyClasses() {
         return SystemManager.getStringListAsSelectItems(getEntityManager1(),
                 "energyEfficiencyClasses");
@@ -138,7 +199,7 @@ public class EnergyLabelManager extends GeneralManager
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
-    
+
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
@@ -154,11 +215,11 @@ public class EnergyLabelManager extends GeneralManager
     public final void init() {
         reset();
     }
-    
+
     public ReportManager getReportManager() {
         return BeanUtils.findBean("reportManager");
     }
-    
+
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
@@ -180,7 +241,7 @@ public class EnergyLabelManager extends GeneralManager
 
     @Override
     public void reset() {
-       super.reset();
+        super.reset();
 
         setSearchType("Energy labels");
         setSearchText("");
@@ -195,7 +256,7 @@ public class EnergyLabelManager extends GeneralManager
         getDateSearchPeriod().initDatePeriod();
 
     }
-    
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -206,7 +267,7 @@ public class EnergyLabelManager extends GeneralManager
             Date endDate) {
 
         switch (searchType) {
-            case "Energy labels":         
+            case "Energy labels":
                 //findLabels();
                 break;
             default:
