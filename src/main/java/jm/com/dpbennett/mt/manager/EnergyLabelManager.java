@@ -23,16 +23,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
-import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -50,7 +49,6 @@ import org.primefaces.event.SelectEvent;
 public class EnergyLabelManager extends GeneralManager
         implements Serializable {
 
-    private String searchText;
     private List<EnergyLabel> foundEnergyLabels;
     private EnergyLabel selectedEnergyLabel;
 
@@ -59,6 +57,36 @@ public class EnergyLabelManager extends GeneralManager
      */
     public EnergyLabelManager() {
         init();
+    }
+
+    @Override
+    public void initMainTabView() {
+
+        getMainTabView().reset(getUser());
+
+        Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+                "energyLabelManager");
+        if (module != null) {
+            if (getUser().hasModule("energyLabelManager")) {
+                getMainTabView().openTab(module.getDashboardTitle());
+            }
+        }
+
+    }
+
+    @Override
+    public void handleKeepAlive() {
+        getUser().setPollTime(new Date());
+
+        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     public void openReportsTab() {
@@ -225,20 +253,6 @@ public class EnergyLabelManager extends GeneralManager
         return BeanUtils.findBean("clientManager");
     }
 
-    public HumanResourceManager getHumanResourceManager() {
-        return BeanUtils.findBean("humanResourceManager");
-    }
-
-    private void initManagers() {
-        try {
-
-            getClientManager();
-
-        } catch (Exception e) {
-            System.out.println("An error occured while resetting managers: " + e);
-        }
-    }
-
     @Override
     public void reset() {
         super.reset();
@@ -249,6 +263,7 @@ public class EnergyLabelManager extends GeneralManager
         setModuleNames(new String[]{
             "energyLabelManager",
             "clientManager",
+            "systemManager",
             "reportManager"
         });
         setDateSearchPeriod(new DatePeriod("This month", "month",
@@ -317,15 +332,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public void doEnergyLabelSearch() {
         // tk Implement better search
-        foundEnergyLabels = findLabels("brand", searchText);
-    }
-
-    public String getSearchText() {
-        return searchText;
-    }
-
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
+        foundEnergyLabels = findLabels("brand", getSearchText());
     }
 
     @Override
@@ -340,27 +347,6 @@ public class EnergyLabelManager extends GeneralManager
 
         return getSystemManager().getEntityManager2();
 
-    }
-
-    public void doDefaultSearch() {
-
-        switch (getSystemManager().getDashboard().getSelectedTabId()) {
-            case "Energy Labels":
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void completeLogin() {
-        initDashboard();
-        initMainTabView();
-    }
-
-    @Override
-    public void completeLogout() {
-        reset();
     }
 
 }
