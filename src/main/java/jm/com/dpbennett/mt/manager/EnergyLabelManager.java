@@ -129,6 +129,12 @@ public class EnergyLabelManager extends GeneralManager
             notification.save(em);
         }
     }
+    
+    @Override
+    public String getLogoURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "LabelPrintLogoURL");
+    }
 
     @Override
     public Integer getLogoURLImageHeight() {
@@ -231,7 +237,7 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+                getEntityManager1(), "LabelPrintAppShortcutIconURL");
     }
 
     @Override
