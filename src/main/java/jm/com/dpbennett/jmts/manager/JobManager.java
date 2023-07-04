@@ -2552,17 +2552,8 @@ public class JobManager extends GeneralManager
 
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
-        //ArrayList searchTypes = new ArrayList();
 
-//        searchTypes.add(new SelectItem("General", "General"));
-//        searchTypes.add(new SelectItem("My jobs", "My jobs"));
-//        searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
-//        searchTypes.add(new SelectItem("Parent jobs only", "Parent jobs only"));
-//        searchTypes.add(new SelectItem("Unapproved job costings", "Unapproved job costings"));
-//        searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
-//        searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
-//        searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
-        return getAuthorizedSearchTypes(); //searchTypes;
+        return getAuthorizedSearchTypes();
     }
 
     @Override

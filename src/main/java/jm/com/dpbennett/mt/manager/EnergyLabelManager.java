@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -36,6 +37,7 @@ import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.PrimeFaces;
@@ -51,12 +53,21 @@ public class EnergyLabelManager extends GeneralManager
 
     private List<EnergyLabel> foundEnergyLabels;
     private EnergyLabel selectedEnergyLabel;
+    private String energyLabelSearchText;
 
     /**
      * Creates a new instance of LabelManager
      */
     public EnergyLabelManager() {
         init();
+    }
+
+    public String getEnergyLabelSearchText() {
+        return energyLabelSearchText;
+    }
+
+    public void setEnergyLabelSearchText(String energyLabelSearchText) {
+        this.energyLabelSearchText = energyLabelSearchText;
     }
 
     @Override
@@ -94,7 +105,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void openEnergyLabelBrowser() {
-        System.out.println("open label browser: to be implemented"); // tk
+        getMainTabView().openTab("Label Browser");
     }
 
     public void openClientsTab() {
@@ -129,7 +140,7 @@ public class EnergyLabelManager extends GeneralManager
             notification.save(em);
         }
     }
-    
+
     @Override
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
@@ -275,6 +286,7 @@ public class EnergyLabelManager extends GeneralManager
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
+        energyLabelSearchText = "";
 
     }
 
@@ -289,7 +301,9 @@ public class EnergyLabelManager extends GeneralManager
 
         switch (searchType) {
             case "Energy labels":
-                //findLabels();
+                // tk be replaced with search on all fields
+                foundEnergyLabels = findLabels(searchText);
+                openEnergyLabelBrowser();
                 break;
             default:
                 break;
@@ -298,12 +312,43 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     // tk Implement find* method in the EnergyLabel class that searches more fields.
-    public List<EnergyLabel> findLabels(String searchField,
-            String searchPattern) {
+    public List<EnergyLabel> findLabels(String searchPattern) {
 
         List<EnergyLabel> labelsFound;
 
-        String query = "SELECT r FROM EnergyLabel r WHERE r." + searchField + " LIKE '%" + searchPattern + "%'";
+        String query = "SELECT r FROM EnergyLabel r WHERE"
+                + " r.model LIKE '%" + searchPattern + "%'"
+                + " OR r.brand LIKE '%" + searchPattern + "%'"
+                + " OR r.starRating LIKE '%" + searchPattern + "%'"
+                + " OR r.ratedVoltage LIKE '%" + searchPattern + "%'"
+                + " OR r.ratedCurrent LIKE '%" + searchPattern + "%'"
+                + " OR r.ratedFrequency LIKE '%" + searchPattern + "%'"
+                + " OR r.annualConsumption LIKE '%" + searchPattern + "%'"
+                + " OR r.capacity LIKE '%" + searchPattern + "%'"
+                + " OR r.freshFoodCompartmentVol LIKE '%" + searchPattern + "%'"
+                + " OR r.freezerCompartmentVol LIKE '%" + searchPattern + "%'"
+                + " OR r.coolingCapacity LIKE '%" + searchPattern + "%'"
+                + " OR r.heatingCapacity LIKE '%" + searchPattern + "%'"
+                + " OR r.costPerKwh LIKE '%" + searchPattern + "%'"
+                + " OR r.costPerKwh2 LIKE '%" + searchPattern + "%'"
+                + " OR r.CEC LIKE '%" + searchPattern + "%'"
+                + " OR r.BEC LIKE '%" + searchPattern + "%'"
+                + " OR r.ERF LIKE '%" + searchPattern + "%'"
+                + " OR r.totalAdjustedVol LIKE '%" + searchPattern + "%'"
+                + " OR r.Cf LIKE '%" + searchPattern + "%'"
+                + " OR r.Cv LIKE '%" + searchPattern + "%'"
+                + " OR r.AEER LIKE '%" + searchPattern + "%'"
+                + " OR r.ACOP LIKE '%" + searchPattern + "%'"
+                + " OR r.country LIKE '%" + searchPattern + "%'"
+                + " OR r.defrost LIKE '%" + searchPattern + "%'"
+                + " OR r.distributor LIKE '%" + searchPattern + "%'"
+                + " OR r.jobNumber LIKE '%" + searchPattern + "%'"
+                + " OR r.labelName LIKE '%" + searchPattern + "%'"
+                + " OR r.manufacturer LIKE '%" + searchPattern + "%'"
+                + " OR r.operatingCost LIKE '%" + searchPattern + "%'"
+                + " OR r.standard LIKE '%" + searchPattern + "%'"
+                + " OR r.type LIKE '%" + searchPattern + "%'"
+                + " OR r.validity LIKE '%" + searchPattern + "%'";
 
         try {
             labelsFound = (List<EnergyLabel>) getEntityManager1().createQuery(query).getResultList();
@@ -318,7 +363,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public List<EnergyLabel> getFoundEnergyLabels() {
         if (foundEnergyLabels == null) {
-            foundEnergyLabels = findLabels("model", "");
+            foundEnergyLabels = findLabels("");
         }
         return foundEnergyLabels;
     }
@@ -337,8 +382,8 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void doEnergyLabelSearch() {
-        // tk Implement better search
-        foundEnergyLabels = findLabels("brand", getSearchText());
+        // tk Implement search on all fields
+        foundEnergyLabels = findLabels(getEnergyLabelSearchText());
     }
 
     @Override
@@ -353,6 +398,44 @@ public class EnergyLabelManager extends GeneralManager
 
         return getSystemManager().getEntityManager2();
 
+    }
+
+    @Override
+    public ArrayList<SelectItem> getSearchTypes() {
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("Energy labels", "Energy labels"));
+
+        return searchTypes;
+    }
+
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        SelectItemGroup group = new SelectItemGroup("Energy Labels");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getDateSearchFields(String searchType) {
+        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+
+        setSearchType(searchType);
+
+        switch (searchType) {
+            case "Energy labels":
+//                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
+//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+                dateSearchFields.add(new SelectItem("-- Not applicable --",
+                        "-- Not applicable --"));
+                break;
+            default:
+                break;
+        }
+
+        return dateSearchFields;
     }
 
 }
