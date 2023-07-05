@@ -69,6 +69,7 @@ public class EnergyLabelManager extends GeneralManager
     private List<EnergyLabel> foundEnergyLabels;
     private EnergyLabel selectedEnergyLabel;
     private String energyLabelSearchText;
+    private Document svgDocument;
 
     /**
      * Creates a new instance of LabelManager
