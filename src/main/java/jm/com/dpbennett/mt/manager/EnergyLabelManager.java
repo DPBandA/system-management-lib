@@ -19,6 +19,10 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.mt.manager;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,12 +41,23 @@ import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
+import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
+import org.apache.batik.anim.dom.SVGDOMImplementation;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.svg.SVGDocument;
 
 /**
  *
@@ -161,7 +176,7 @@ public class EnergyLabelManager extends GeneralManager
 
     @Override
     public String getApplicationSubheader() {
-        return "Energy Label Printing";
+        return "Energy Label Generation and Printing";
     }
 
     public List<SelectItem> getEnergyEfficiencyProductTypes() {
@@ -221,7 +236,8 @@ public class EnergyLabelManager extends GeneralManager
 
     public void editSelectedEnergyLabel() {
 
-        PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, 600, 700);
+        //PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, true, 400, 800);
     }
 
     public void createNewEnergyLabel() {
@@ -348,7 +364,13 @@ public class EnergyLabelManager extends GeneralManager
                 + " OR r.operatingCost LIKE '%" + searchPattern + "%'"
                 + " OR r.standard LIKE '%" + searchPattern + "%'"
                 + " OR r.type LIKE '%" + searchPattern + "%'"
-                + " OR r.validity LIKE '%" + searchPattern + "%'";
+                + " OR r.validity LIKE '%" + searchPattern + "%'"
+                + " OR r.yearOfEvaluation LIKE '%" + searchPattern + "%'"
+                + " OR r.feature1 LIKE '%" + searchPattern + "%'"
+                + " OR r.feature2 LIKE '%" + searchPattern + "%'"
+                + " OR r.letterRating LIKE '%" + searchPattern + "%'"
+                + " OR r.batchCode LIKE '%" + searchPattern + "%'"
+                + " OR r.efficiencyRatio LIKE '%" + searchPattern + "%'";
 
         try {
             labelsFound = (List<EnergyLabel>) getEntityManager1().createQuery(query).getResultList();
@@ -382,7 +404,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void doEnergyLabelSearch() {
-        // tk Implement search on all fields
+
         foundEnergyLabels = findLabels(getEnergyLabelSearchText());
     }
 
@@ -436,6 +458,73 @@ public class EnergyLabelManager extends GeneralManager
         }
 
         return dateSearchFields;
+    }
+
+    public void exportLabelToRasterGraphic(Document doc) {
+
+        try {
+
+//            String svgURI
+//                    = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg").toURL().toString();
+            TranscoderInput input = new TranscoderInput(/*svgURI*/doc);
+            OutputStream ostream;
+            TranscoderOutput output;
+
+            //switch (formatName) {
+            //case "jpg":
+            ostream = new FileOutputStream("C:\\LabelPrint\\images\\yesjpg" + ".jpg");
+            output = new TranscoderOutput(ostream);
+            JPEGTranscoder t = new JPEGTranscoder();
+
+            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(.8));
+
+            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
+                    new Float("2000"));
+            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
+                    new Float("2712"));
+
+            t.transcode(input, output);
+
+            ostream.flush();
+            ostream.close();
+
+
+        } catch (IOException | TranscoderException e) {
+            System.out.println(e);
+        } finally {
+
+        }
+    }
+
+    public void getSVDoc() {
+        try {
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+            //String uri = "http://www.example.org/diagram.svg";
+            //Document doc = f.createDocument(uri);
+            File svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
+            Document doc = f.createDocument(svgFile.toURI().toString());
+
+            setElementText(doc, "yearOfEvaluation", "2023", "start");
+            
+            System.out.println("Got it!!");
+            
+            exportLabelToRasterGraphic(doc);
+            
+            System.out.println("Exported it!");
+
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    private void setElementText(Document svgDocument,
+            String elementId, String content, String anchor) {
+        if (svgDocument != null) {
+            Element element = svgDocument.getElementById(elementId);
+            element.setAttribute("text-anchor", anchor);
+            element.setTextContent(content);
+        }
     }
 
 }
