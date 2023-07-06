@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -103,14 +104,18 @@ public class EnergyLabelManager extends GeneralManager
 
     @Override
     public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
+        getUser().setPollTime(new Date());
+        getUser().setActivity(" (" + formatter.format(getUser().getPollTime()) + ")");
+
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+      
         if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
         }
 
         PrimeFaces.current().ajax().update(":appForm:notificationBadge");
@@ -489,7 +494,6 @@ public class EnergyLabelManager extends GeneralManager
             ostream.flush();
             ostream.close();
 
-
         } catch (IOException | TranscoderException e) {
             System.out.println(e);
         } finally {
@@ -507,11 +511,11 @@ public class EnergyLabelManager extends GeneralManager
             Document doc = f.createDocument(svgFile.toURI().toString());
 
             setElementText(doc, "yearOfEvaluation", "2023", "start");
-            
+
             System.out.println("Got it!!");
-            
+
             exportLabelToRasterGraphic(doc);
-            
+
             System.out.println("Exported it!");
 
         } catch (IOException ex) {

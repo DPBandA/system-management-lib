@@ -1564,17 +1564,12 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
+        
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged in");
 
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        super.handleKeepAlive();
     }
 
     @Override
@@ -1667,4 +1662,23 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return getSystemManager().getMainTabView();
     }
 
+    @Override
+    public void completeLogout() {
+        
+        super.updateUserActivity("FMv"
+                + SystemOption.getString(getEntityManager1(), "FMv"),
+                "Logged out");
+
+        super.completeLogout();
+    }
+
+    @Override
+    public void completeLogin() {
+        super.updateUserActivity("FMv"
+                + SystemOption.getString(getEntityManager1(), "FMv"),
+                "Logged in");
+
+        super.completeLogin();
+    }
+    
 }

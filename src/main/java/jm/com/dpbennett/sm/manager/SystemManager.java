@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -191,7 +192,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public List getPersonalTitles() {
         return Utils.getPersonalTitles();
     }
-    
+
     public List getSexes() {
         return Utils.getSexes();
     }
@@ -1832,6 +1833,37 @@ public final class SystemManager extends GeneralManager implements Serializable 
         views.add(new SelectItem("Cashier View", "Cashier View"));
 
         return views;
+    }
+
+    @Override
+    public void handleKeepAlive() {
+
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+
+    }
+
+    @Override
+    public void completeLogin() {
+
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged in");
+
+        super.completeLogin();
+    }
+
+    @Override
+    public void completeLogout() {
+
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged out");
+
+        super.completeLogout();
     }
 
 }

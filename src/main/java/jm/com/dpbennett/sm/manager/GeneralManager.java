@@ -20,6 +20,7 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sm.manager;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -196,14 +197,14 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
+
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
 
         if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
         }
 
         PrimeFaces.current().ajax().update(":appForm:notificationBadge");
@@ -216,8 +217,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void logout() {
-        getUser().logActivity("Logged out", getEntityManager1());
-        reset();
+        //reset();
         completeLogout();
     }
 
@@ -291,11 +291,10 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void initSearchTypes() {
-        
+
         String orgSearchType = searchType;
 
         groupedSearchTypes.clear();
-        
 
         for (String moduleName : moduleNames) {
 
@@ -313,7 +312,7 @@ public class GeneralManager implements Manager, Serializable {
                 }
             }
         }
-        
+
         searchType = orgSearchType;
     }
 
@@ -561,15 +560,16 @@ public class GeneralManager implements Manager, Serializable {
 
     public void setManagersUser() {
 
-       getManager("systemManager").setUser(getUser());
+        getManager("systemManager").setUser(getUser());
 
     }
 
     @Override
     public void completeLogin() {
-        getUser().logActivity("Logged in", getEntityManager1());
 
-        getUser().save(getEntityManager1());
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
 
         setManagersUser();
 
@@ -584,8 +584,14 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void completeLogout() {
 
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
         getDashboard().removeAllTabs();
         getMainTabView().removeAllTabs();
+
+        reset();
 
         getManager("systemManager").setUser(getUser());
     }
@@ -849,6 +855,17 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void updateSearch() {
         setDefaultCommandTarget("doSearch");
+    }
+
+    public void updateUserActivity(String appVersion, String activity) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
+
+        getUser().setPollTime(new Date());
+
+        getUser().setActivity(appVersion + " " + activity
+                + " (" + formatter.format(getUser().getPollTime()) + ")");
+
     }
 
 }
