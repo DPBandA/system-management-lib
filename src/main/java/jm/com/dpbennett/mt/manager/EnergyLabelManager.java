@@ -19,6 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.mt.manager;
 
+import com.google.zxing.WriterException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -51,14 +53,18 @@ import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGLocatable;
+import org.w3c.dom.svg.SVGRect;
 
 /**
  *
@@ -447,72 +453,6 @@ public class EnergyLabelManager extends GeneralManager
         return dateSearchFields;
     }
 
-    public void exportLabelToRasterGraphic(Document doc) {
-
-        try {
-
-//            String svgURI
-//                    = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg").toURL().toString();
-            TranscoderInput input = new TranscoderInput(/*svgURI*/doc);
-            OutputStream ostream;
-            TranscoderOutput output;
-
-            //switch (formatName) {
-            //case "jpg":
-            ostream = new FileOutputStream("C:\\LabelPrint\\images\\yesjpg" + ".jpg");
-            output = new TranscoderOutput(ostream);
-            JPEGTranscoder t = new JPEGTranscoder();
-
-            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(.8));
-
-            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
-                    new Float("2000"));
-            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
-                    new Float("2712"));
-
-            t.transcode(input, output);
-
-            ostream.flush();
-            ostream.close();
-
-        } catch (IOException | TranscoderException e) {
-            System.out.println(e);
-        } finally {
-
-        }
-    }
-
-    public void getSVDoc() {
-        try {
-            String parser = XMLResourceDescriptor.getXMLParserClassName();
-            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-            //String uri = "http://www.example.org/diagram.svg";
-            //Document doc = f.createDocument(uri);
-            File svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
-            Document doc = f.createDocument(svgFile.toURI().toString());
-
-            setElementText(doc, "yearOfEvaluation", "2023", "start");
-
-            System.out.println("Got it!!");
-
-            exportLabelToRasterGraphic(doc);
-
-            System.out.println("Exported it!");
-
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }
-    }
-
-    private void setElementText(Document svgDocument,
-            String elementId, String content, String anchor) {
-        if (svgDocument != null) {
-            Element element = svgDocument.getElementById(elementId);
-            element.setAttribute("text-anchor", anchor);
-            element.setTextContent(content);
-        }
-    }
-
     @Override
     public void handleKeepAlive() {
 
@@ -544,6 +484,243 @@ public class EnergyLabelManager extends GeneralManager
 
         super.completeLogin();
 
+    }
+
+    // SVG manipulation
+    
+    public void updateLabel() {
+
+        if (svgDocument != null) {
+            try {
+
+                if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
+                    // Year of evaluation
+                    setElementText("yearOfEvaluation", getSelectedEnergyLabel().getYearOfEvaluation(), "start");
+                    // Letter rating                
+                    eraseAllRatingLetters();
+                    renderRating(getSelectedEnergyLabel().getLetterRating(), true);
+                    // Annual consumption
+                    setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "middle");
+                    // Batch code
+                    setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
+                    // Efficiency ratio
+                    setElementText("efficiencyRatio", getSelectedEnergyLabel().getEfficiencyRatio(), "middle");
+                    // Carrier //tk
+                    setElementText("carrier", getSelectedEnergyLabel().getManufacturer(), "end");
+                    // Code //tk
+                    setElementText("code", getSelectedEnergyLabel().getModel(), "end");
+                    Element qrcode = svgDocument.getElementById("qrcode");
+                    try {
+                        qrcode.setAttributeNS(SVGConstants.XLINK_NAMESPACE_URI,
+                                SVGConstants.XLINK_HREF_QNAME,
+                                "data:image/png;base64,"
+                                + QRCodeGenerator.getQRCodeImageData(
+                                        getQRCodeData(), 125));
+                    } catch (WriterException | IOException ex) {
+                        System.out.println(ex);
+                    }
+
+                } else {
+                    // Year of evaluation
+                    setElementText("yearOfEvaluation", getSelectedEnergyLabel().getYearOfEvaluation(), "start");
+                    // Manufacturer
+                    setElementText("manufacturer", getSelectedEnergyLabel().getManufacturer(), "end");
+                    // Model(s)
+                    setElementText("models", "Model(s) " + getSelectedEnergyLabel().getModel(), "end");
+                    // Capacity
+                    setElementText("capacity",
+                            "Capacity "
+                            + getSelectedEnergyLabel().getCapacity()
+                            + " Litres", "end");
+                    // Electrical ratings
+                    setElementText("electricalRatings",
+                            getSelectedEnergyLabel().getRatedVoltage() + "V, "
+                            + getSelectedEnergyLabel().getRatedFrequency() + "Hz, "
+                            + getSelectedEnergyLabel().getRatedCurrent() + "A", "end");
+                    // Type
+                    setElementText("type", getSelectedEnergyLabel().getType(), "start");
+                    // Defrost
+                    setElementText("defrost", "- " + getSelectedEnergyLabel().getDefrost(), "start");
+                    // Feature 1
+                    setElementText("feature1", "- " + getSelectedEnergyLabel().getFeature1(), "start");
+                    // Feature 2
+                    setElementText("feature2", "- " + getSelectedEnergyLabel().getFeature2(), "start");
+                    // Letter rating                
+                    eraseAllRatingLetters();
+                    renderRating(getSelectedEnergyLabel().getLetterRating(), true);
+                    // Operating cost
+                    setElementText("operatingCost", getSelectedEnergyLabel().getOperatingCost(), "start");
+                    // Annual consumption
+                    setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "start");
+                    // Annual consumption unit
+                    Element annualConsumption = svgDocument.getElementById("annualConsumption");
+                    SVGLocatable locatable = (SVGLocatable) annualConsumption;
+                    SVGRect rect = locatable.getBBox();
+                    Element annualConsumptionUnit = svgDocument.getElementById("annualConsumptionUnitSpan");
+                    if (annualConsumptionUnit != null && rect != null) {
+                        annualConsumptionUnit.setAttribute("x", "" + (rect.getX() + rect.getWidth()));
+                    }
+                    // Batch code
+                    setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
+                    // QR Code
+                    Element qrcode = svgDocument.getElementById("qrcode");
+                    try {
+                        qrcode.setAttributeNS(SVGConstants.XLINK_NAMESPACE_URI,
+                                SVGConstants.XLINK_HREF_QNAME,
+                                "data:image/png;base64,"
+                                + QRCodeGenerator.getQRCodeImageData(
+                                        getQRCodeData(), 125));
+                    } catch (WriterException | IOException ex) {
+                        System.out.println(ex);
+                    }
+
+                }
+
+            } catch (DOMException e) {
+                System.out.println("Error updating label..." + e);
+            }
+
+        }
+
+    }
+
+    private String getQRCodeData() {
+
+        String data = "Manufacturer: " + getSelectedEnergyLabel().getManufacturer() + "\n"
+                + "Distributor: " + getSelectedEnergyLabel().getDistributor() + "\n"
+                + "Country of origin: " + getSelectedEnergyLabel().getCountry() + "\n"
+                + "Brand: " + getSelectedEnergyLabel().getBrand() + "\n"
+                + "Model: " + getSelectedEnergyLabel().getModel() + "\n"
+                + "Electricity rate 1: " + getSelectedEnergyLabel().getCostPerKwh() + "\n"
+                + "Electricity rate 2: " + getSelectedEnergyLabel().getCostPerKwh2() + "\n"
+                + "Year of evaluation: " + getSelectedEnergyLabel().getYearOfEvaluation() + "\n"
+                + "Batch code: " + getSelectedEnergyLabel().getBatchCode() + "\n"
+                + "";
+
+        return data;
+
+    }
+
+    public void renderRating(String ratingLetter, Boolean render) {
+
+        try {
+            if (svgDocument != null) {
+
+                Element rating = svgDocument.getElementById("rating" + ratingLetter);
+
+                if (render) {
+                    rating.setAttribute("visibility", "visible");
+                } else {
+                    rating.setAttribute("visibility", "hidden");
+                }
+            }
+        } catch (DOMException e) {
+            System.out.println(e);
+        }
+
+    }
+
+    private void eraseAllRatingLetters() {
+
+        renderRating("A", false);
+        renderRating("B", false);
+        renderRating("C", false);
+        renderRating("D", false);
+        renderRating("E", false);
+        renderRating("F", false);
+
+    }
+
+    private void setElementText(String elementId, String content, String anchor) {
+
+        if (svgDocument != null) {
+            Element element = svgDocument.getElementById(elementId);
+            if (element != null) {
+                element.setAttribute("text-anchor", anchor);
+                element.setTextContent(content);
+            }
+        }
+
+    }
+
+    public void setElementFill(String elementId, String fill) {
+
+        if (svgDocument != null) {
+            Element element = svgDocument.getElementById(elementId);
+            element.setAttribute("style", "fill:" + fill);
+        }
+    }
+
+    public void setElementStyle(String elementId, String style) {
+
+        if (svgDocument != null) {
+            Element element = svgDocument.getElementById(elementId);
+            element.setAttribute("style", style);
+        }
+    }
+
+    public void exportEnergyLabel() {
+        loadSVGLabel(); //tk
+    }
+
+    // tk
+    public void exportLabelToRasterGraphics() {
+
+        try {
+
+            TranscoderInput input = new TranscoderInput(svgDocument);
+            OutputStream ostream;
+            TranscoderOutput output;
+
+            //switch (formatName) {
+            //case "jpg":
+            ostream = new FileOutputStream("C:\\LabelPrint\\images\\yesjpg" + ".jpg");
+            output = new TranscoderOutput(ostream);
+            JPEGTranscoder t = new JPEGTranscoder();
+
+            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(.8));
+
+            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
+                    new Float("2000"));
+            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
+                    new Float("2712"));
+
+            t.transcode(input, output);
+
+            ostream.flush();
+            ostream.close();
+
+        } catch (IOException | TranscoderException e) {
+            System.out.println(e);
+        } finally {
+
+        }
+    }
+
+    public void loadSVGLabel() {
+        try {
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+            // tk user system option to get file
+            File svgFile;
+            if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
+                // tk use system option for file
+                svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
+            } else {
+                // tk use system option for file
+                svgFile = new File("C:\\LabelPrint\\images\\CROSQFridgeEnergyLabel.svg");
+            }
+            svgDocument = f.createDocument(svgFile.toURI().toString());
+
+            updateLabel();
+
+            exportLabelToRasterGraphics(); // tk
+
+            System.out.println("Exported it!"); // tk
+
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
     }
 
 }
