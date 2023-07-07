@@ -203,7 +203,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         getDateSearchPeriod().initDatePeriod();
 
     }
-    
+
     public void onRowSelect() {
         setDefaultCommandTarget("@this");
     }
@@ -526,8 +526,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void doLegalDocumentSearch() {
-        
-         setDefaultCommandTarget("@this");
+
+        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -541,30 +541,28 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public void doDefaultSearch(
-            MainTabView mainTabView, 
-            String dateSearchField, 
-            String searchType, 
-            String searchText, 
-            Date startDate, 
+            MainTabView mainTabView,
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
             Date endDate) {
-        
+
         switch (searchType) {
             case "Legal Documents":
                 documentSearchResultList = LegalDocument.findLegalDocumentsByDateSearchField(
                         getEntityManager1(),
-                        getDateSearchPeriod(),                         
-                        searchType, 
+                        getDateSearchPeriod(),
+                        searchType,
                         searchText);
-                
+
                 openDocumentBrowser();
-                
-                break;            
+
+                break;
             default:
                 break;
         }
     }
-    
-    
 
     // tk needed? temove?
 //    public void doLegalDocumentSearch(
@@ -578,7 +576,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 //
 //        doLegalDocumentSearch();
 //    }
-
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
@@ -691,21 +688,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
     public String getApplicationSubheader() {
         return "Legal Office Administration &amp; Management";
     }
@@ -798,6 +780,39 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public void handleKeepAlive() {
+
+        super.updateUserActivity("LOv"
+                + SystemOption.getString(getEntityManager1(), "LOv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+
+    }
+
+    @Override
+    public void completeLogout() {
+        
+        super.updateUserActivity("LOv"
+                + SystemOption.getString(getEntityManager1(), "LOv"),
+                "Logged out");
+
+        super.completeLogout();
+
+    }
+
+    @Override
+    public void completeLogin() {
+        
+        super.updateUserActivity("LOv"
+                + SystemOption.getString(getEntityManager1(), "LOv"),
+                "Logged in");
+
+        super.completeLogin();
+
     }
 
 }

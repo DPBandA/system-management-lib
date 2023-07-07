@@ -102,25 +102,6 @@ public class EnergyLabelManager extends GeneralManager
 
     }
 
-    @Override
-    public void handleKeepAlive() {
-        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
-
-        getUser().setPollTime(new Date());
-        getUser().setActivity(" (" + formatter.format(getUser().getPollTime()) + ")");
-
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-      
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
     public void openReportsTab() {
         getMainTabView().openTab("Reports");
     }
@@ -530,6 +511,39 @@ public class EnergyLabelManager extends GeneralManager
             element.setAttribute("text-anchor", anchor);
             element.setTextContent(content);
         }
+    }
+
+    @Override
+    public void handleKeepAlive() {
+
+        super.updateUserActivity("LPv"
+                + SystemOption.getString(getEntityManager1(), "LPv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+
+    }
+
+    @Override
+    public void completeLogout() {
+
+        super.updateUserActivity("LPv"
+                + SystemOption.getString(getEntityManager1(), "LPv"),
+                "Logged out");
+
+        super.completeLogout();
+
+    }
+
+    @Override
+    public void completeLogin() {
+
+        super.updateUserActivity("LPv"
+                + SystemOption.getString(getEntityManager1(), "LPv"),
+                "Logged in");
+
+        super.completeLogin();
+
     }
 
 }

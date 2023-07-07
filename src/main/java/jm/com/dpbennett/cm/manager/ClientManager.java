@@ -767,6 +767,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     @Override
     public void handleKeepAlive() {
+        
         super.updateUserActivity("CMv"
                 + SystemOption.getString(getEntityManager1(), "CMv"),
                 "Logged in");

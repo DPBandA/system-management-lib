@@ -2384,15 +2384,33 @@ public class ReportManager extends GeneralManager implements Serializable {
     @Override
     public void handleKeepAlive() {
 
+        super.updateUserActivity("RMv"
+                + SystemOption.getString(getEntityManager1(), "RMv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+
     }
 
     @Override
     public void completeLogout() {
 
+        super.updateUserActivity("RMv"
+                + SystemOption.getString(getEntityManager1(), "RMv"),
+                "Logged out");
+
+        super.completeLogout();
+
     }
 
     @Override
     public void completeLogin() {
+
+        super.updateUserActivity("RMv"
+                + SystemOption.getString(getEntityManager1(), "RMv"),
+                "Logged in");
+
+        super.completeLogin();
 
     }
 

@@ -1435,8 +1435,8 @@ public class JobManager extends GeneralManager
         } else {
 
             PrimeFacesUtils.addMessage(job.getType() + " Work Progress Cannot be Changed",
-                    "This " + job.getType() + "'s work progress cannot be changed until the " 
-                            + job.getType() + " is saved.",
+                    "This " + job.getType() + "'s work progress cannot be changed until the "
+                    + job.getType() + " is saved.",
                     FacesMessage.SEVERITY_WARN);
             return false;
         }
@@ -2557,21 +2557,6 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
     public String getApplicationSubheader() {
         String subHeader;
 
@@ -2680,6 +2665,39 @@ public class JobManager extends GeneralManager
                 getMainTabView().openTab(module.getDashboardTitle());
             }
         }
+
+    }
+
+    @Override
+    public void handleKeepAlive() {
+
+        super.updateUserActivity("JMTSv"
+                + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+
+    }
+
+    @Override
+    public void completeLogout() {
+
+        super.updateUserActivity("JMTSv"
+                + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                "Logged out");
+
+        super.completeLogout();
+
+    }
+
+    @Override
+    public void completeLogin() {
+        
+        super.updateUserActivity("JMTSv"
+                + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                "Logged in");
+
+        super.completeLogin();
 
     }
 
