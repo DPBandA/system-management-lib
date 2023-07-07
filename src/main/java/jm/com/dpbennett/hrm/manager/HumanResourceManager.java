@@ -545,7 +545,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<Business> getFoundBusinesses() {
         if (foundBusinesses == null) {
             foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
-                            getSearchText());
+                    getSearchText());
         }
 
         return foundBusinesses;
@@ -1396,8 +1396,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 if (getIsActiveBusinessesOnly()) {
                     foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
                             searchText);
-                }
-                else {
+                } else {
                     foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
                             searchText);
                 }
@@ -1414,21 +1413,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             default:
                 break;
         }
-    }
-
-    @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
     }
 
     @Override
@@ -1501,6 +1485,38 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public void handleKeepAlive() {
+
+        super.updateUserActivity("HRMv"
+                + SystemOption.getString(getEntityManager1(), "HRMv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+    }
+
+    @Override
+    public void completeLogout() {
+
+        super.updateUserActivity("HRMv"
+                + SystemOption.getString(getEntityManager1(), "HRMv"),
+                "Logged out");
+
+        super.completeLogout();
+
+    }
+
+    @Override
+    public void completeLogin() {
+
+        super.updateUserActivity("HRMv"
+                + SystemOption.getString(getEntityManager1(), "HRMv"),
+                "Logged in");
+
+        super.completeLogin();
+
     }
 
 }

@@ -1847,16 +1847,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     @Override
-    public void completeLogin() {
-
-        super.updateUserActivity("SMv"
-                + SystemOption.getString(getEntityManager1(), "SMv"),
-                "Logged in");
-
-        super.completeLogin();
-    }
-
-    @Override
     public void completeLogout() {
 
         super.updateUserActivity("SMv"
@@ -1864,6 +1854,16 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 "Logged out");
 
         super.completeLogout();
+    }
+
+    @Override
+    public void completeLogin() {
+
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged in");
+
+        super.completeLogin();
     }
 
 }

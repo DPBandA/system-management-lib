@@ -701,21 +701,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
     public String getApplicationSubheader() {
         return "Client Administration &amp; Management";
     }
@@ -778,6 +763,37 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public void handleKeepAlive() {
+        super.updateUserActivity("CMv"
+                + SystemOption.getString(getEntityManager1(), "CMv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+    }
+
+    @Override
+    public void completeLogout() {
+
+        super.updateUserActivity("CMv"
+                + SystemOption.getString(getEntityManager1(), "CMv"),
+                "Logged out");
+
+        super.completeLogout();
+
+    }
+
+    @Override
+    public void completeLogin() {
+
+        super.updateUserActivity("CMv"
+                + SystemOption.getString(getEntityManager1(), "CMv"),
+                "Logged in");
+
+        super.completeLogin();
+        
     }
 
 }

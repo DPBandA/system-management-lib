@@ -888,7 +888,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                     .contentType(selectedReport.getReportOutputFileMimeType())
                     .name(selectedReport.getReportFile())
                     .build();
-        
+
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -1815,7 +1815,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 BusinessEntityUtils.getDateString(getReportingDatePeriod1().getStartDate(), "'", "YMD", "-"),
                 BusinessEntityUtils.getDateString(getReportingDatePeriod1().getEndDate(), "'", "YMD", "-"),
                 departmentId);
-        
+
         // Fill in report data   
         for (Object[] rowData : reportData) {
             // Job number
@@ -2169,7 +2169,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 getReportingDatePeriod3().getEndDate(),
                 "java.util.Date", datePeriodsCellStyle);
     }
-    
+
     /**
      *
      * @param samples
@@ -2295,21 +2295,6 @@ public class ReportManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public void handleKeepAlive() {
-        getUser().setPollTime(new Date());
-
-        if (SystemOption.getBoolean(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
-    }
-
-    @Override
     public String getApplicationSubheader() {
         return "Report Administration &amp; Management";
     }
@@ -2395,4 +2380,20 @@ public class ReportManager extends GeneralManager implements Serializable {
                 System.out.println("Unkown type");
         }
     }
+
+    @Override
+    public void handleKeepAlive() {
+
+    }
+
+    @Override
+    public void completeLogout() {
+
+    }
+
+    @Override
+    public void completeLogin() {
+
+    }
+
 }
