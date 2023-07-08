@@ -673,18 +673,17 @@ public class EnergyLabelManager extends GeneralManager
         }
     }
 
-    public void exportEnergyLabel() {
-        loadSVGLabel(); //tk
-    }
-
     public StreamedContent getEnergyLabelImage() {
+        
         try {
 
             ByteArrayInputStream stream = getLabelImageByteArrayInputStream();
 
             DefaultStreamedContent dsc = DefaultStreamedContent.builder()
                     .contentType("image/jpg")
-                    .name("yes iya.jpg") // tk build name from label data
+                    .name(getSelectedEnergyLabel().getBrand()
+                            + "-" + getSelectedEnergyLabel().getModel()
+                            + ".jpg")
                     .stream(() -> stream)
                     .build();
 
@@ -702,8 +701,8 @@ public class EnergyLabelManager extends GeneralManager
         try {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-            // tk user system option to get file
             File svgFile;
+            
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
                 // tk use system option for file
                 svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
@@ -713,13 +712,10 @@ public class EnergyLabelManager extends GeneralManager
             }
             svgDocument = f.createDocument(svgFile.toURI().toString());
 
-            updateLabel();            
-            
+            updateLabel();
+
             TranscoderInput input = new TranscoderInput(svgDocument);
 
-            //switch (formatName) {
-            //case "jpg":
-            //ostream = new FileOutputStream("C:\\LabelPrint\\images\\yesjpg" + ".jpg");
             ByteArrayOutputStream ostream = new ByteArrayOutputStream();
             TranscoderOutput output = new TranscoderOutput(ostream);
             JPEGTranscoder t = new JPEGTranscoder();
@@ -732,12 +728,11 @@ public class EnergyLabelManager extends GeneralManager
             t.transcode(input, output);
 
             return new ByteArrayInputStream(ostream.toByteArray());
-            
 
         } catch (IOException | TranscoderException ex) {
             System.out.println(ex);
         }
-       
+
         return null;
 
     }
@@ -778,6 +773,7 @@ public class EnergyLabelManager extends GeneralManager
         }
     }
 
+    /*
     public void loadSVGLabel() {
         try {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
@@ -801,5 +797,6 @@ public class EnergyLabelManager extends GeneralManager
             System.out.println(ex);
         }
     }
+    */
 
 }
