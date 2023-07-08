@@ -20,6 +20,8 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.mt.manager;
 
 import com.google.zxing.WriterException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +60,8 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -579,7 +583,7 @@ public class EnergyLabelManager extends GeneralManager
                                 SVGConstants.XLINK_HREF_QNAME,
                                 "data:image/png;base64,"
                                 + QRCodeGenerator.getQRCodeImageData(
-                                        getQRCodeData(), 125));
+                                        getQRCodeData(), 125)); // tk use QRCodeImageSize option
                     } catch (WriterException | IOException ex) {
                         System.out.println(ex);
                     }
@@ -587,7 +591,7 @@ public class EnergyLabelManager extends GeneralManager
                 }
 
             } catch (DOMException e) {
-                System.out.println("Error updating label..." + e);
+                System.out.println("Error updating label...: " + e);
             }
 
         }
@@ -673,6 +677,71 @@ public class EnergyLabelManager extends GeneralManager
         loadSVGLabel(); //tk
     }
 
+    public StreamedContent getEnergyLabelImage() {
+        try {
+
+            ByteArrayInputStream stream = getLabelImageByteArrayInputStream();
+
+            DefaultStreamedContent dsc = DefaultStreamedContent.builder()
+                    .contentType("image/jpg")
+                    .name("yes iya.jpg") // tk build name from label data
+                    .stream(() -> stream)
+                    .build();
+
+            return dsc;
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return null;
+    }
+
+    public ByteArrayInputStream getLabelImageByteArrayInputStream() {
+
+        try {
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+            // tk user system option to get file
+            File svgFile;
+            if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
+                // tk use system option for file
+                svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
+            } else {
+                // tk use system option for file
+                svgFile = new File("C:\\LabelPrint\\images\\CROSQFridgeEnergyLabel.svg");
+            }
+            svgDocument = f.createDocument(svgFile.toURI().toString());
+
+            updateLabel();            
+            
+            TranscoderInput input = new TranscoderInput(svgDocument);
+
+            //switch (formatName) {
+            //case "jpg":
+            //ostream = new FileOutputStream("C:\\LabelPrint\\images\\yesjpg" + ".jpg");
+            ByteArrayOutputStream ostream = new ByteArrayOutputStream();
+            TranscoderOutput output = new TranscoderOutput(ostream);
+            JPEGTranscoder t = new JPEGTranscoder();
+
+            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(0.8)); // tk use option
+
+            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH, Float.valueOf("2000")); // tk use option
+            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT, Float.valueOf("2712")); // tk use option
+
+            t.transcode(input, output);
+
+            return new ByteArrayInputStream(ostream.toByteArray());
+            
+
+        } catch (IOException | TranscoderException ex) {
+            System.out.println(ex);
+        }
+       
+        return null;
+
+    }
+
     // tk
     public void exportLabelToRasterGraphics() {
 
@@ -688,18 +757,20 @@ public class EnergyLabelManager extends GeneralManager
             output = new TranscoderOutput(ostream);
             JPEGTranscoder t = new JPEGTranscoder();
 
-            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(.8));
+            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(0.8)); // tk use option
 
-            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
-                    new Float("2000"));
-            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
-                    new Float("2712"));
+            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH, Float.valueOf("2000")); // tk use option
+            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT, Float.valueOf("2712")); // tk use option
 
             t.transcode(input, output);
 
+            // tk get bytes
+            //ByteArrayOutputStream baos = (ByteArrayOutputStream) ostream;
             ostream.flush();
             ostream.close();
 
+            //            ostream.flush();
+//            ostream.close();
         } catch (IOException | TranscoderException e) {
             System.out.println(e);
         } finally {
@@ -725,8 +796,6 @@ public class EnergyLabelManager extends GeneralManager
             updateLabel();
 
             exportLabelToRasterGraphics(); // tk
-
-            System.out.println("Exported it!"); // tk
 
         } catch (IOException ex) {
             System.out.println(ex);
