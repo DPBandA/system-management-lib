@@ -487,7 +487,6 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     // SVG manipulation
-    
     public void updateLabel() {
 
         if (svgDocument != null) {
@@ -552,13 +551,24 @@ public class EnergyLabelManager extends GeneralManager
                     setElementText("operatingCost", getSelectedEnergyLabel().getOperatingCost(), "start");
                     // Annual consumption
                     setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "start");
-                    // Annual consumption unit
+                    // Annual consumption unit placement
                     Element annualConsumption = svgDocument.getElementById("annualConsumption");
                     SVGLocatable locatable = (SVGLocatable) annualConsumption;
                     SVGRect rect = locatable.getBBox();
-                    Element annualConsumptionUnit = svgDocument.getElementById("annualConsumptionUnitSpan");
-                    if (annualConsumptionUnit != null && rect != null) {
-                        annualConsumptionUnit.setAttribute("x", "" + (rect.getX() + rect.getWidth()));
+                    Element annualConsumptionUnitSpan = svgDocument.getElementById("annualConsumptionUnitSpan");
+                    if (annualConsumptionUnitSpan != null && rect != null) {
+                        annualConsumptionUnitSpan.setAttribute("x", "" + (rect.getX() + rect.getWidth()));
+                    } else {
+                        int length = getSelectedEnergyLabel().getAnnualConsumption().length();
+                        int xmul = length - 3; // tk make option
+
+                        annualConsumptionUnitSpan = svgDocument.getElementById("annualConsumptionUnitSpan");
+                        String annualConsumptionUnitSpanX
+                                = annualConsumptionUnitSpan.getAttribute("x");
+                        Double annualConsumptionUnitSpanXValue
+                                = Double.valueOf(annualConsumptionUnitSpanX);
+                        annualConsumptionUnitSpan.setAttribute("x",
+                                Double.toString(annualConsumptionUnitSpanXValue + xmul * 6.25)); // tk make option
                     }
                     // Batch code
                     setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
