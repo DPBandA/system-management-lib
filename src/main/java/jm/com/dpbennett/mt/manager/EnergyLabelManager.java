@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
@@ -41,6 +42,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -126,11 +128,16 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void energyLabelDialogReturn() {
-//        if (currentJob.getIsDirty()) {
-//            PrimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("appForm:growl3");
-//            currentJob.setIsDirty(false);
-//        }
+        
+        if (selectedEnergyLabel.getIsDirty()) {
+            PrimeFacesUtils.addMessage("Energy Label was NOT saved!", 
+                    "The recently edited energy label was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("appForm:growl3");
+            selectedEnergyLabel.setIsDirty(false);
+        }
+        else {
+            doEnergyLabelSearch();
+        }
 
     }
 
@@ -215,12 +222,41 @@ public class EnergyLabelManager extends GeneralManager
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    public void saveEnergyLabel() {
+
+        ReturnMessage returnMessage;
+
+        if (selectedEnergyLabel.getIsDirty()) {
+
+            returnMessage = selectedEnergyLabel.save(getEntityManager1());
+            if (returnMessage.isSuccess()) {
+
+                selectedEnergyLabel.setIsDirty(false);
+                selectedEnergyLabel.setEditStatus("        ");
+                PrimeFacesUtils.addMessage("Saved!", "Energy label was saved",
+                        FacesMessage.SEVERITY_INFO);
+                
+            } else {
+
+                PrimeFacesUtils.addMessage("Energy Label NOT Saved!",
+                        "Energy label was NOT saved. Please contact the System Administrator!",
+                        FacesMessage.SEVERITY_ERROR);
+
+            }
+
+        }
+
+    }
+
     public void cancelLabelEdit() {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
     public void updateEnergyLabel() {
+        
         selectedEnergyLabel.setIsDirty(true);
+        selectedEnergyLabel.setEditStatus("(edited)");
+        
     }
 
     public EnergyLabel getSelectedEnergyLabel() {
@@ -674,7 +710,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public StreamedContent getEnergyLabelImage() {
-        
+
         try {
 
             ByteArrayInputStream stream = getLabelImageByteArrayInputStream();
@@ -695,6 +731,26 @@ public class EnergyLabelManager extends GeneralManager
 
         return null;
     }
+    
+     public StreamedContent getEnergyLabelImagePreview() {
+
+        try {
+
+            ByteArrayInputStream stream = getLabelImageByteArrayInputStream();
+
+            DefaultStreamedContent dsc = DefaultStreamedContent.builder()
+                    .contentType("image/jpg")
+                    .stream(() -> stream)
+                    .build();
+
+            return dsc;
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return null;
+    }
 
     public ByteArrayInputStream getLabelImageByteArrayInputStream() {
 
@@ -702,7 +758,7 @@ public class EnergyLabelManager extends GeneralManager
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
             File svgFile;
-            
+
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
                 // tk use system option for file
                 svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
@@ -797,6 +853,5 @@ public class EnergyLabelManager extends GeneralManager
             System.out.println(ex);
         }
     }
-    */
-
+     */
 }
