@@ -128,14 +128,13 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void energyLabelDialogReturn() {
-        
+
         if (selectedEnergyLabel.getIsDirty()) {
-            PrimeFacesUtils.addMessage("Energy Label was NOT saved!", 
+            PrimeFacesUtils.addMessage("Energy Label was NOT saved!",
                     "The recently edited energy label was not saved", FacesMessage.SEVERITY_WARN);
             PrimeFaces.current().ajax().update("appForm:growl3");
             selectedEnergyLabel.setIsDirty(false);
-        }
-        else {
+        } else {
             doEnergyLabelSearch();
         }
 
@@ -235,7 +234,7 @@ public class EnergyLabelManager extends GeneralManager
                 selectedEnergyLabel.setEditStatus("        ");
                 PrimeFacesUtils.addMessage("Saved!", "Energy label was saved",
                         FacesMessage.SEVERITY_INFO);
-                
+
             } else {
 
                 PrimeFacesUtils.addMessage("Energy Label NOT Saved!",
@@ -253,10 +252,10 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void updateEnergyLabel() {
-        
+
         selectedEnergyLabel.setIsDirty(true);
         selectedEnergyLabel.setEditStatus("(edited)");
-        
+
     }
 
     public EnergyLabel getSelectedEnergyLabel() {
@@ -274,7 +273,22 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void createNewEnergyLabel() {
+        EntityManager em = getEntityManager1();
         selectedEnergyLabel = new EnergyLabel();
+
+        String defaultProductType = SystemOption.getString(em, "defaultProductType");
+        String defaultRatedVoltage = SystemOption.getString(em, "defaultRatedVoltage");
+        String defaultRatedFrequency = SystemOption.getString(em, "defaultRatedFrequency");
+        String costPerKWh_1 = SystemOption.getString(em, "costPerKWh_1");
+        String costPerKWh_2 = SystemOption.getString(em, "costPerKWh_2");
+
+        selectedEnergyLabel.setType(defaultProductType);
+        selectedEnergyLabel.setRatedVoltage(defaultRatedVoltage);
+        selectedEnergyLabel.setRatedFrequency(defaultRatedFrequency);
+        selectedEnergyLabel.setCostPerKwh(costPerKWh_1);
+        selectedEnergyLabel.setCostPerKwh2(costPerKWh_2);
+        selectedEnergyLabel.setValidity("" + BusinessEntityUtils.getCurrentYear());
+        selectedEnergyLabel.setYearOfEvaluation("" + BusinessEntityUtils.getCurrentYear());
 
         editSelectedEnergyLabel();
     }
@@ -529,6 +543,8 @@ public class EnergyLabelManager extends GeneralManager
     // SVG manipulation
     public void updateLabel() {
 
+        EntityManager em = getEntityManager1();
+
         if (svgDocument != null) {
             try {
 
@@ -600,7 +616,12 @@ public class EnergyLabelManager extends GeneralManager
                         annualConsumptionUnitSpan.setAttribute("x", "" + (rect.getX() + rect.getWidth()));
                     } else {
                         int length = getSelectedEnergyLabel().getAnnualConsumption().length();
-                        int xmul = length - 3; // tk make option
+                        int annualConsumptionUnitXMulConst
+                                = SystemOption.getInteger(em, "annualConsumptionUnitXMulConst");
+                        double annualConsumptionUnitXMul
+                                = SystemOption.getDouble(em, "annualConsumptionUnitXMul");
+
+                        annualConsumptionUnitXMulConst = length - annualConsumptionUnitXMulConst;
 
                         annualConsumptionUnitSpan = svgDocument.getElementById("annualConsumptionUnitSpan");
                         String annualConsumptionUnitSpanX
@@ -608,7 +629,9 @@ public class EnergyLabelManager extends GeneralManager
                         Double annualConsumptionUnitSpanXValue
                                 = Double.valueOf(annualConsumptionUnitSpanX);
                         annualConsumptionUnitSpan.setAttribute("x",
-                                Double.toString(annualConsumptionUnitSpanXValue + xmul * 6.25)); // tk make option
+                                Double.toString(annualConsumptionUnitSpanXValue
+                                        + annualConsumptionUnitXMulConst
+                                        * annualConsumptionUnitXMul));
                     }
                     // Batch code
                     setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
@@ -619,7 +642,7 @@ public class EnergyLabelManager extends GeneralManager
                                 SVGConstants.XLINK_HREF_QNAME,
                                 "data:image/png;base64,"
                                 + QRCodeGenerator.getQRCodeImageData(
-                                        getQRCodeData(), 125)); // tk use QRCodeImageSize option
+                                        getQRCodeData(), 125)); // tk use qRCodeImageSize option
                     } catch (WriterException | IOException ex) {
                         System.out.println(ex);
                     }
@@ -731,8 +754,8 @@ public class EnergyLabelManager extends GeneralManager
 
         return null;
     }
-    
-     public StreamedContent getEnergyLabelImagePreview() {
+
+    public StreamedContent getEnergyLabelImagePreview() {
 
         try {
 
