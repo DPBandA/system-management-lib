@@ -19,6 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -87,6 +88,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private String moduleSearchText;
     private String attachmentSearchText;
     private List<SystemOption> foundSystemOptions;
+    private List<SystemOption> foundSystemOptionsByCategory;
     private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
@@ -796,6 +798,19 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     }
 
+    public void doSystemOptionSearch(String category) {
+
+        foundSystemOptionsByCategory = SystemOption.findSystemOptions(
+                getEntityManager1(),
+                getSystemOptionSearchText(),
+                category);
+
+        if (foundSystemOptionsByCategory == null) {
+            foundSystemOptionsByCategory = new ArrayList<>();
+        }
+
+    }
+
     public void createNewFinancialSystemOption() {
 
         selectedSystemOption = new SystemOption();
@@ -1501,6 +1516,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         activeNavigationTabIndex = 0;
         foundLdapContexts = null;
         foundSystemOptions = null;
+        foundSystemOptionsByCategory = new ArrayList<>();
         foundLdapContexts = null;
         systemOptionSearchText = "";
         ldapSearchText = "";
@@ -1520,6 +1536,14 @@ public final class SystemManager extends GeneralManager implements Serializable 
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
+    }
+
+    public List<SystemOption> getFoundSystemOptionsByCategory() {
+        return foundSystemOptionsByCategory;
+    }
+
+    public void setFoundSystemOptionsByCategory(List<SystemOption> foundSystemOptionsByCategory) {
+        this.foundSystemOptionsByCategory = foundSystemOptionsByCategory;
     }
 
     public SystemOption getSelectedSystemOption() {
@@ -1772,6 +1796,14 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void createNewSystemOption() {
 
         selectedSystemOption = new SystemOption();
+
+        editSystemOption();
+    }
+
+    public void createNewSystemOption(String category) {
+
+        selectedSystemOption = new SystemOption();
+        selectedSystemOption.setCategory(category);
 
         editSystemOption();
     }
