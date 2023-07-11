@@ -23,11 +23,8 @@ import com.google.zxing.WriterException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,12 +48,10 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
-import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.JPEGTranscoder;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
@@ -65,10 +60,8 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.w3c.dom.DOMException;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGRect;
 
@@ -364,7 +357,6 @@ public class EnergyLabelManager extends GeneralManager
 
         switch (searchType) {
             case "Energy labels":
-                // tk be replaced with search on all fields
                 foundEnergyLabels = findLabels(searchText);
                 openEnergyLabelBrowser();
                 break;
@@ -374,7 +366,6 @@ public class EnergyLabelManager extends GeneralManager
 
     }
 
-    // tk Implement find* method in the EnergyLabel class that searches more fields.
     public List<EnergyLabel> findLabels(String searchPattern) {
 
         List<EnergyLabel> labelsFound;
@@ -560,9 +551,9 @@ public class EnergyLabelManager extends GeneralManager
                     setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
                     // Efficiency ratio
                     setElementText("efficiencyRatio", getSelectedEnergyLabel().getEfficiencyRatio(), "middle");
-                    // Carrier //tk
+                    // Carrier
                     setElementText("carrier", getSelectedEnergyLabel().getManufacturer(), "end");
-                    // Code //tk
+                    // Code
                     setElementText("code", getSelectedEnergyLabel().getModel(), "end");
                     Element qrcode = svgDocument.getElementById("qrcode");
                     try {
@@ -642,7 +633,9 @@ public class EnergyLabelManager extends GeneralManager
                                 SVGConstants.XLINK_HREF_QNAME,
                                 "data:image/png;base64,"
                                 + QRCodeGenerator.getQRCodeImageData(
-                                        getQRCodeData(), 125)); // tk use qRCodeImageSize option
+                                        getQRCodeData(),
+                                        SystemOption.getInteger(em,
+                                                "qRCodeImageSize")));
                     } catch (WriterException | IOException ex) {
                         System.out.println(ex);
                     }
@@ -777,34 +770,46 @@ public class EnergyLabelManager extends GeneralManager
 
     public ByteArrayInputStream getLabelImageByteArrayInputStream() {
 
+        EntityManager em = getEntityManager1();
+
         try {
             String parser = XMLResourceDescriptor.getXMLParserClassName();
             SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
             File svgFile;
 
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
-                // tk use system option for file
-                svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
+
+                svgFile = new File(SystemOption.getString(em, "aCLabelTemplate"));
+
             } else {
-                // tk use system option for file
-                svgFile = new File("C:\\LabelPrint\\images\\CROSQFridgeEnergyLabel.svg");
+
+                svgFile = new File(SystemOption.getString(em, "refrigeratorLabelTemplate"));
             }
             svgDocument = f.createDocument(svgFile.toURI().toString());
 
             updateLabel();
 
             TranscoderInput input = new TranscoderInput(svgDocument);
-
             ByteArrayOutputStream ostream = new ByteArrayOutputStream();
             TranscoderOutput output = new TranscoderOutput(ostream);
             JPEGTranscoder t = new JPEGTranscoder();
 
-            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(0.8)); // tk use option
-
-            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH, Float.valueOf("2000")); // tk use option
-            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT, Float.valueOf("2712")); // tk use option
-
-            t.transcode(input, output);
+            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
+                    new Float(SystemOption.getDouble(em, "jPEGTranscoderKeyQuality")).floatValue());
+            
+            if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
+                t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
+                        Float.valueOf(SystemOption.getString(em, "aCImageWidth")));
+                t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
+                        Float.valueOf(SystemOption.getString(em, "aCImageHeight")));
+                t.transcode(input, output);
+            } else {
+                t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
+                        Float.valueOf(SystemOption.getString(em, "fridgeImageWidth")));
+                t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
+                        Float.valueOf(SystemOption.getString(em, "fridgeImageHeight")));
+                t.transcode(input, output);
+            }
 
             return new ByteArrayInputStream(ostream.toByteArray());
 
@@ -815,66 +820,5 @@ public class EnergyLabelManager extends GeneralManager
         return null;
 
     }
-
-    // tk
-    public void exportLabelToRasterGraphics() {
-
-        try {
-
-            TranscoderInput input = new TranscoderInput(svgDocument);
-            OutputStream ostream;
-            TranscoderOutput output;
-
-            //switch (formatName) {
-            //case "jpg":
-            ostream = new FileOutputStream("C:\\LabelPrint\\images\\yesjpg" + ".jpg");
-            output = new TranscoderOutput(ostream);
-            JPEGTranscoder t = new JPEGTranscoder();
-
-            t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY, new Float(0.8)); // tk use option
-
-            t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH, Float.valueOf("2000")); // tk use option
-            t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT, Float.valueOf("2712")); // tk use option
-
-            t.transcode(input, output);
-
-            // tk get bytes
-            //ByteArrayOutputStream baos = (ByteArrayOutputStream) ostream;
-            ostream.flush();
-            ostream.close();
-
-            //            ostream.flush();
-//            ostream.close();
-        } catch (IOException | TranscoderException e) {
-            System.out.println(e);
-        } finally {
-
-        }
-    }
-
-    /*
-    public void loadSVGLabel() {
-        try {
-            String parser = XMLResourceDescriptor.getXMLParserClassName();
-            SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-            // tk user system option to get file
-            File svgFile;
-            if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
-                // tk use system option for file
-                svgFile = new File("C:\\LabelPrint\\images\\CROSQACEnergyLabel.svg");
-            } else {
-                // tk use system option for file
-                svgFile = new File("C:\\LabelPrint\\images\\CROSQFridgeEnergyLabel.svg");
-            }
-            svgDocument = f.createDocument(svgFile.toURI().toString());
-
-            updateLabel();
-
-            exportLabelToRasterGraphics(); // tk
-
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }
-    }
-     */
+    
 }
