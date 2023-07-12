@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -60,6 +61,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.ToggleEvent;
+import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
@@ -114,12 +116,75 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
+    private int stringListItemIndex;
+    private String stringListItem;
 
     /**
      * Creates a new instance of SystemManager
      */
     public SystemManager() {
         init();
+    }
+
+    public int getStringListItemIndex() {
+        return stringListItemIndex;
+    }
+
+    public void setStringListItemIndex(int stringListItemIndex) {
+        this.stringListItemIndex = stringListItemIndex;
+    }
+
+    public String getStringListItem() {
+        if (stringListItem == null) {
+            stringListItem = "";
+        }
+        return stringListItem;
+    }
+
+    public void setStringListItem(String stringListItem) {
+        this.stringListItem = stringListItem;
+    }
+
+    public void onStringListItemSelect(SelectEvent<String> event) {
+        
+        stringListItemIndex = 0;
+        // tk
+//        FacesContext context = FacesContext.getCurrentInstance();
+//        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, 
+//                "Item Selected: " + event.getObject(), event.getObject()));
+        for (String stringListItem : getSelectedSystemOptionTextList()) {
+            // get stringListItemIndex
+            
+            // assign value for editing
+            //setStringListItem(stringListItem);
+        }
+        
+        setStringListItem(event.getObject());
+
+    }
+
+    public void onStringListItemUnselect(UnselectEvent<String> event) {
+//        FacesContext context = FacesContext.getCurrentInstance();
+//        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+//                "Item Unselected: " + event.getObject(), event.getObject()));
+    }
+
+    public List<String> getSelectedSystemOptionTextList() {
+
+        List<String> selectedSystemOptionTextList
+                = (List<String>) SystemOption.getOptionValueObject(
+                        getEntityManager1(), selectedSystemOption.getName());
+
+        if (selectedSystemOptionTextList != null) {
+
+            return selectedSystemOptionTextList;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    public void setSelectedSystemOptionTextList(List<String> selectedSystemOptionTextList) {
+        // tk 
     }
 
     public List<Client> completeActiveClient(String query) {
@@ -450,14 +515,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         user.save(getEntityManager1());
     }
 
-    public void updateSystemOptionValue() {
-        if (selectedSystemOption.getBooleanValue().equals("Yes")) {
-            selectedSystemOption.setOptionValue("true");
-        } else {
-            selectedSystemOption.setOptionValue("false");
-        }
-    }
-
     public Boolean getIsActiveUsersOnly() {
 
         return isActiveUsersOnly;
@@ -767,16 +824,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     }
 
-//    public void createNewFinancialSystemOption() {
-//
-//        selectedSystemOption = new SystemOption();
-//        selectedSystemOption.setCategory("Finance");
-//
-//        getMainTabView().openTab("Financial Administration");
-//
-//        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
-//                getDialogHeight(), getDialogWidth());
-//    }
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -1086,13 +1133,22 @@ public final class SystemManager extends GeneralManager implements Serializable 
         ArrayList valueTypes = new ArrayList();
 
         valueTypes.add(new SelectItem("String", "Text"));
-        valueTypes.add(new SelectItem("Boolean", "Yes/No"));
+        valueTypes.add(new SelectItem("Boolean", "Yes or No"));
         valueTypes.add(new SelectItem("Integer", "Small number"));
-        valueTypes.add(new SelectItem("Double", "Number with decimal point"));
         valueTypes.add(new SelectItem("Long", "Large number"));
+        valueTypes.add(new SelectItem("Double", "Number with decimal point"));
         valueTypes.add(new SelectItem("List<String>", "List of text"));
 
         return valueTypes;
+    }
+
+    public List getBooleanValues() {
+        ArrayList values = new ArrayList();
+
+        values.add(new SelectItem("true", "Yes"));
+        values.add(new SelectItem("false", "No"));
+
+        return values;
     }
 
     public List<SelectItem> getPFThemes() {
@@ -1857,8 +1913,15 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {
 
-        return valueType.equals(selectedSystemOption.getOptionValueType());
-        
+        if (valueType.equals("StringList")
+                && selectedSystemOption.getOptionValueType().equals("List<String>")) {
+
+            return true;
+        }
+
+        return selectedSystemOption.getOptionValueType().equals(valueType)
+                && !selectedSystemOption.getOptionValueType().equals("List<String>");
+
     }
 
 }
