@@ -19,14 +19,12 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -89,7 +87,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private String attachmentSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundSystemOptionsByCategory;
-    private List<SystemOption> foundFinancialSystemOptions;
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
     private List<Category> foundCategories;
@@ -749,55 +746,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         }
     }
 
-    public void onFinancialSystemOptionCellEdit(CellEditEvent event) {
-        int index = event.getRowIndex();
-        Object oldValue = event.getOldValue();
-        Object newValue = event.getNewValue();
-
-        try {
-            if (newValue != null && !newValue.equals(oldValue)) {
-                if (!newValue.toString().trim().equals("")) {
-                    EntityManager em = getEntityManager1();
-
-                    em.getTransaction().begin();
-                    SystemOption option = getFoundFinancialSystemOptions().get(index);
-                    BusinessEntityUtils.saveBusinessEntity(em, option);
-                    em.getTransaction().commit();
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-    }
-
-    public List<SystemOption> getFoundFinancialSystemOptions() {
-        if (foundFinancialSystemOptions == null) {
-            foundFinancialSystemOptions = SystemOption.findAllFinancialSystemOptions(getEntityManager1());
-        }
-        return foundFinancialSystemOptions;
-    }
-
-    public void setFoundFinancialSystemOptions(List<SystemOption> foundFinancialSystemOptions) {
-        this.foundFinancialSystemOptions = foundFinancialSystemOptions;
-    }
-
-    public void doFinancialSystemOptionSearch() {
-
-        doFinancialSystemOptionSearch(getSystemOptionSearchText());
-
-    }
-
-    public void doFinancialSystemOptionSearch(String searchText) {
-
-        foundFinancialSystemOptions = SystemOption.findFinancialSystemOptions(getEntityManager1(), searchText);
-
-        if (foundFinancialSystemOptions == null) {
-            foundFinancialSystemOptions = new ArrayList<>();
-        }
-
-    }
-
     public void doSystemOptionSearch(String category) {
 
         foundSystemOptionsByCategory = SystemOption.findSystemOptions(
@@ -811,16 +759,16 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     }
 
-    public void createNewFinancialSystemOption() {
-
-        selectedSystemOption = new SystemOption();
-        selectedSystemOption.setCategory("Finance");
-
-        getMainTabView().openTab("Financial Administration");
-
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
-    }
+//    public void createNewFinancialSystemOption() {
+//
+//        selectedSystemOption = new SystemOption();
+//        selectedSystemOption.setCategory("Finance");
+//
+//        getMainTabView().openTab("Financial Administration");
+//
+//        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
+//                getDialogHeight(), getDialogWidth());
+//    }
 
     @Override
     public void doDefaultSearch(

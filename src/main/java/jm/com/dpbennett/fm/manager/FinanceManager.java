@@ -1538,7 +1538,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 }
                 break;
             case "Miscellaneous":
-                getSystemManager().doFinancialSystemOptionSearch(searchText);
+                getSystemManager().doSystemOptionSearch("Finance");
 
                 if (startDate == null) {
                     selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 10);
