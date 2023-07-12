@@ -450,6 +450,14 @@ public final class SystemManager extends GeneralManager implements Serializable 
         user.save(getEntityManager1());
     }
 
+    public void updateSystemOptionValue() {
+        if (selectedSystemOption.getBooleanValue().equals("Yes")) {
+            selectedSystemOption.setOptionValue("true");
+        } else {
+            selectedSystemOption.setOptionValue("false");
+        }
+    }
+
     public Boolean getIsActiveUsersOnly() {
 
         return isActiveUsersOnly;
@@ -769,7 +777,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 //        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
 //                getDialogHeight(), getDialogWidth());
 //    }
-
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -1078,12 +1085,12 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
 
-        valueTypes.add(new SelectItem("String", "String"));
-        valueTypes.add(new SelectItem("Boolean", "Boolean"));
-        valueTypes.add(new SelectItem("Integer", "Integer"));
-        valueTypes.add(new SelectItem("Double", "Double"));
-        valueTypes.add(new SelectItem("Long", "Long"));
-        valueTypes.add(new SelectItem("List<String>", "List<String>"));
+        valueTypes.add(new SelectItem("String", "Text"));
+        valueTypes.add(new SelectItem("Boolean", "Yes/No"));
+        valueTypes.add(new SelectItem("Integer", "Small number"));
+        valueTypes.add(new SelectItem("Double", "Number with decimal point"));
+        valueTypes.add(new SelectItem("Long", "Large number"));
+        valueTypes.add(new SelectItem("List<String>", "List of text"));
 
         return valueTypes;
     }
@@ -1744,6 +1751,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void createNewSystemOption() {
 
         selectedSystemOption = new SystemOption();
+        selectedSystemOption.setOptionValueType("String");
 
         editSystemOption();
     }
@@ -1751,6 +1759,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public void createNewSystemOption(String category) {
 
         selectedSystemOption = new SystemOption();
+        selectedSystemOption.setOptionValueType("String");
         selectedSystemOption.setCategory(category);
 
         editSystemOption();
@@ -1844,6 +1853,12 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 "Logged in");
 
         super.completeLogin();
+    }
+
+    public Boolean isSelectedSystemOptionValueType(String valueType) {
+
+        return valueType.equals(selectedSystemOption.getOptionValueType());
+        
     }
 
 }
