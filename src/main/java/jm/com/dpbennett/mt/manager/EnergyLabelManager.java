@@ -41,7 +41,6 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
-import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -100,19 +99,36 @@ public class EnergyLabelManager extends GeneralManager
         Modules module = Modules.findActiveModuleByName(getEntityManager1(),
                 "energyLabelManager");
         if (module != null) {
-            if (getUser().hasModule("energyLabelManager")) {
-                getMainTabView().openTab(module.getDashboardTitle());
-            }
+            getMainTabView().openTab(module.getDashboardTitle());
         }
 
     }
 
-    public void openReportsTab() {
-        getMainTabView().openTab("Reports");
-    }
-
     public void openEnergyLabelBrowser() {
+        
         getMainTabView().openTab("Label Browser");
+        
+    }
+    
+    public void openComplianceSettingsTab() {
+        
+        getSystemManager().doSystemOptionSearch("Compliance");
+        
+        getMainTabView().openTab("Compliance");
+    }
+    
+    public void openEnergyEfficiencySettingsTab() {
+        
+        getSystemManager().doSystemOptionSearch("Energy Efficiency");
+        
+        getMainTabView().openTab("Energy Efficiency");
+    }
+    
+    public void openLabelPrintSettingsTab() {
+        
+        getSystemManager().doSystemOptionSearch("LabelPrint");
+        
+        getMainTabView().openTab("LabelPrint");
     }
 
     public void openClientsTab() {
@@ -317,10 +333,6 @@ public class EnergyLabelManager extends GeneralManager
         reset();
     }
 
-    public ReportManager getReportManager() {
-        return BeanUtils.findBean("reportManager");
-    }
-
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
@@ -336,8 +348,7 @@ public class EnergyLabelManager extends GeneralManager
         setModuleNames(new String[]{
             "energyLabelManager",
             "clientManager",
-            "systemManager",
-            "reportManager"
+            "systemManager"
         });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
@@ -796,7 +807,7 @@ public class EnergyLabelManager extends GeneralManager
 
             t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
                     new Float(SystemOption.getDouble(em, "jPEGTranscoderKeyQuality")).floatValue());
-            
+
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
                 t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
                         Float.valueOf(SystemOption.getString(em, "aCImageWidth")));
@@ -820,5 +831,5 @@ public class EnergyLabelManager extends GeneralManager
         return null;
 
     }
-    
+
 }
