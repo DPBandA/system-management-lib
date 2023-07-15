@@ -114,9 +114,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
-//    private int selectedSystemOptionTextListItemIndex;
-//    private String selectedSystemOptionTextListItem;
-    private List<SystemOption> selectedSystemOptionTextList;
+//    private List<SystemOption> selectedSystemOptionTextList;
 
     /**
      * Creates a new instance of SystemManager
@@ -125,92 +123,101 @@ public final class SystemManager extends GeneralManager implements Serializable 
         init();
     }
 
-//    public int getSelectedSystemOptionTextListItemIndex() {
-//        return selectedSystemOptionTextListItemIndex;
-//    }
+//    public List<SystemOption> getSelectedSystemOptionTextList() {
 //
-//    public void setSelectedSystemOptionTextListItemIndex(int selectedSystemOptionTextListItemIndex) {
-//        this.selectedSystemOptionTextListItemIndex = selectedSystemOptionTextListItemIndex;
-//    }
-//
-//    public String getSelectedSystemOptionTextListItem() {
-//        if (selectedSystemOptionTextListItem == null) {
-//            selectedSystemOptionTextListItem = "";
-//        }
-//        return selectedSystemOptionTextListItem;
-//    }
-//
-//    public void setSelectedSystemOptionTextListItem(String selectedSystemOptionTextListItem) {
-//        this.selectedSystemOptionTextListItem = selectedSystemOptionTextListItem;
-//    }
-    public List<SystemOption> getSelectedSystemOptionTextList() {
-
-        selectedSystemOptionTextList = new ArrayList<>();
-
-        List<String> selectedSystemOptionValues
-                = (List<String>) SystemOption.getOptionValueObject(
-                        getEntityManager1(), selectedSystemOption.getName());
-
-        for (String selectedSystemOptionValue : selectedSystemOptionValues) {
-            selectedSystemOptionTextList.add(
-                    new SystemOption(
-                            selectedSystemOption.getName(),
-                            selectedSystemOptionValue));
-        }
-
-        return selectedSystemOptionTextList;
-    }
-
-//    public void setSelectedSystemOptionTextList(List<SystemOption> selectedSystemOptionTextList) {
-//
+//        System.out.println("getSelectedSystemOptionTextList() called");
+//        //return selectedSystemOption.getSelectedSystemOptionTextList();
+//        //selectedSystemOptionTextList.clear();
 //        // tk
-//        System.out.println("setSelectedSystemOptionTextList called");
+//        selectedSystemOptionTextList.addAll(selectedSystemOption.getSelectedSystemOptionTextList());
+//
+//        return selectedSystemOptionTextList;
+//    }
+//
+//    public void setSelectedSystemOptionTextList(List<SystemOption> selectedSystemOptionTextList) {
+//        this.selectedSystemOptionTextList = selectedSystemOptionTextList;
+//    }
+
+//    public List<SystemOption> getSelectedSystemOptionTextList() {
+//
+//        //selectedSystemOptionTextList.clear(); // tk
+//        //selectedSystemOptionTextList = new ArrayList<>();  // tk    
+//        List<String> selectedSystemOptionValues
+//                = (List<String>) SystemOption.getOptionValueObject(
+//                        selectedSystemOption);
+//
+//        if (selectedSystemOptionTextList.isEmpty()) {
+//            for (String selectedSystemOptionValue : selectedSystemOptionValues) {
+//                selectedSystemOptionTextList.add(
+//                        new SystemOption(selectedSystemOption.getName(),
+//                                selectedSystemOptionValue)
+//                );
+//            }
+//        }
+//
+//        return selectedSystemOptionTextList;
+//    }
+//    public void setSelectedSystemOptionTextList(List<SystemOption> selectedSystemOptionTextList) {
 //        this.selectedSystemOptionTextList = selectedSystemOptionTextList;
 //    }
     public void onTextListItemCellEdit(CellEditEvent event) {
-
         int index = 0;
         String newSelectedSystemOptionTextList = "";
-        List<String> selectedSystemOptionValues
-                = (List<String>) SystemOption.getOptionValueObject(
-                        getEntityManager1(), selectedSystemOption.getName());
-        // tk
-//        System.out.println("Edited value: "
-//                + selectedSystemOptionTextList.get(event.getRowIndex()));
-//        System.out.println("Text List Item old value: " + event.getOldValue());
-//        System.out.println("Text List Item new value: " + event.getNewValue());
         String oldSystemOptionTextListItem = (String) event.getOldValue();
         String newSystemOptionTextListItem = (String) event.getNewValue();
 
-        for (String value : selectedSystemOptionValues) {
-            if (value.equals(oldSystemOptionTextListItem)) {
-                if (index == 0) {
-                    newSelectedSystemOptionTextList
-                            = newSelectedSystemOptionTextList
-                            + newSystemOptionTextListItem;
-                } else {
-                    newSelectedSystemOptionTextList
-                            = newSelectedSystemOptionTextList
-                            + ";" + newSystemOptionTextListItem;
-                }
-            } else {
-                if (index == 0) {
-                    newSelectedSystemOptionTextList
-                            = newSelectedSystemOptionTextList
-                            + value;
-                } else {
-                    newSelectedSystemOptionTextList
-                            = newSelectedSystemOptionTextList
-                            + ";" + value;
-                }
-            }
+        // tk NB onTextListItemCellEdit is getting called several time so items
+        // are added to selectedSystemOptionTextList several times. 
+        // Fix or use row edit or edit button.
+        System.out.println("list from sysop: " + selectedSystemOption.getSelectedSystemOptionTextList());
+        //selectedSystemOptionTextList.clear();
+//        for (SystemOption systemOption : selectedSystemOptionTextList) {
+//
+//            if (index == 0) {
+//                newSelectedSystemOptionTextList
+//                        = newSelectedSystemOptionTextList
+//                        + systemOption.getOptionValue();
+//            } else {
+//                newSelectedSystemOptionTextList
+//                        = newSelectedSystemOptionTextList
+//                        + ";" + newSystemOptionTextListItem;
+//            }
+//
+//            ++index;
+//        }
+//
+//        System.out.println("edited list 2: " + newSelectedSystemOptionTextList);
 
-            ++index;
-
-        }
-
-        selectedSystemOption.setOptionValue(newSelectedSystemOptionTextList);
-
+//
+//        for (SystemOption option : selectedSystemOptionTextList) {
+//            if (option.getOptionValue().equals(oldSystemOptionTextListItem)) {
+//                if (index == 0) {
+//                    newSelectedSystemOptionTextList
+//                            = newSelectedSystemOptionTextList
+//                            + newSystemOptionTextListItem;
+//                } else {
+//                    newSelectedSystemOptionTextList
+//                            = newSelectedSystemOptionTextList
+//                            + ";" + newSystemOptionTextListItem;
+//                }
+//            } else {
+//                if (index == 0) {
+//                    newSelectedSystemOptionTextList
+//                            = newSelectedSystemOptionTextList
+//                            + option;
+//                } else {
+//                    newSelectedSystemOptionTextList
+//                            = newSelectedSystemOptionTextList
+//                            + ";" + option;
+//                }
+//            }
+//
+//            ++index;
+//
+//        }
+//
+//        selectedSystemOption.setOptionValue(newSelectedSystemOptionTextList);
+        //selectedSystemOption.setOptionValue("yes;no"); // tk
     }
 
     public List<Client> completeActiveClient(String query) {
@@ -1574,10 +1581,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
 
-        // tk
-        selectedSystemOptionTextList = new ArrayList<>();
-//        selectedSystemOptionTextList.add("Yes");
-//        selectedSystemOptionTextList.add("iya!!");
+//        selectedSystemOptionTextList = new ArrayList<>();
+
     }
 
     public List<SystemOption> getFoundSystemOptionsByCategory() {
@@ -1726,6 +1731,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void editSystemOption() {
+
         PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
