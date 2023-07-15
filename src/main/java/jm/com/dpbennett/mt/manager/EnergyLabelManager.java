@@ -40,7 +40,6 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
-import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -129,11 +128,6 @@ public class EnergyLabelManager extends GeneralManager
         getSystemManager().doSystemOptionSearch("LabelPrint");
         
         getMainTabView().openTab("LabelPrint");
-    }
-
-    public void openClientsTab() {
-
-        getMainTabView().openTab("Clients");
     }
 
     public void energyLabelDialogReturn() {
@@ -333,11 +327,6 @@ public class EnergyLabelManager extends GeneralManager
         reset();
     }
 
-    public ClientManager getClientManager() {
-
-        return BeanUtils.findBean("clientManager");
-    }
-
     @Override
     public void reset() {
         super.reset();
@@ -346,9 +335,7 @@ public class EnergyLabelManager extends GeneralManager
         setSearchText("");
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
-            "energyLabelManager",
-            "clientManager",
-            "systemManager"
+            "energyLabelManager"
         });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
