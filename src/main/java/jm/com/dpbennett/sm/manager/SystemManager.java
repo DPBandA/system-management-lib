@@ -114,7 +114,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private List<Email> foundEmails;
     private String emailSearchText;
     private List<Notification> notifications;
-//    private List<SystemOption> selectedSystemOptionTextList;
+    private SystemOption selectedSystemOptionText;
 
     /**
      * Creates a new instance of SystemManager
@@ -123,101 +123,50 @@ public final class SystemManager extends GeneralManager implements Serializable 
         init();
     }
 
-//    public List<SystemOption> getSelectedSystemOptionTextList() {
-//
-//        System.out.println("getSelectedSystemOptionTextList() called");
-//        //return selectedSystemOption.getSelectedSystemOptionTextList();
-//        //selectedSystemOptionTextList.clear();
-//        // tk
-//        selectedSystemOptionTextList.addAll(selectedSystemOption.getSelectedSystemOptionTextList());
-//
-//        return selectedSystemOptionTextList;
-//    }
-//
-//    public void setSelectedSystemOptionTextList(List<SystemOption> selectedSystemOptionTextList) {
-//        this.selectedSystemOptionTextList = selectedSystemOptionTextList;
-//    }
-
-//    public List<SystemOption> getSelectedSystemOptionTextList() {
-//
-//        //selectedSystemOptionTextList.clear(); // tk
-//        //selectedSystemOptionTextList = new ArrayList<>();  // tk    
-//        List<String> selectedSystemOptionValues
-//                = (List<String>) SystemOption.getOptionValueObject(
-//                        selectedSystemOption);
-//
-//        if (selectedSystemOptionTextList.isEmpty()) {
-//            for (String selectedSystemOptionValue : selectedSystemOptionValues) {
-//                selectedSystemOptionTextList.add(
-//                        new SystemOption(selectedSystemOption.getName(),
-//                                selectedSystemOptionValue)
-//                );
-//            }
-//        }
-//
-//        return selectedSystemOptionTextList;
-//    }
-//    public void setSelectedSystemOptionTextList(List<SystemOption> selectedSystemOptionTextList) {
-//        this.selectedSystemOptionTextList = selectedSystemOptionTextList;
-//    }
-    public void onTextListItemCellEdit(CellEditEvent event) {
+    public void removeSelectedSystemOptionText() {
+        
         int index = 0;
-        String newSelectedSystemOptionTextList = "";
-        String oldSystemOptionTextListItem = (String) event.getOldValue();
-        String newSystemOptionTextListItem = (String) event.getNewValue();
+        
+        for (SystemOption systemOption : selectedSystemOption.getTextList()) {
+            if (systemOption.getOptionValue().
+                    equals(selectedSystemOptionText.getOptionValue())) {
+                
+                 selectedSystemOption.getTextList().remove(index);
+                 
+                 break;
+            }
+            
+            ++index;
+        }      
 
-        // tk NB onTextListItemCellEdit is getting called several time so items
-        // are added to selectedSystemOptionTextList several times. 
-        // Fix or use row edit or edit button.
-        System.out.println("list from sysop: " + selectedSystemOption.getSelectedSystemOptionTextList());
-        //selectedSystemOptionTextList.clear();
-//        for (SystemOption systemOption : selectedSystemOptionTextList) {
-//
-//            if (index == 0) {
-//                newSelectedSystemOptionTextList
-//                        = newSelectedSystemOptionTextList
-//                        + systemOption.getOptionValue();
-//            } else {
-//                newSelectedSystemOptionTextList
-//                        = newSelectedSystemOptionTextList
-//                        + ";" + newSystemOptionTextListItem;
-//            }
-//
-//            ++index;
-//        }
-//
-//        System.out.println("edited list 2: " + newSelectedSystemOptionTextList);
+        selectedSystemOption.updateOptionValue();
+    }
 
-//
-//        for (SystemOption option : selectedSystemOptionTextList) {
-//            if (option.getOptionValue().equals(oldSystemOptionTextListItem)) {
-//                if (index == 0) {
-//                    newSelectedSystemOptionTextList
-//                            = newSelectedSystemOptionTextList
-//                            + newSystemOptionTextListItem;
-//                } else {
-//                    newSelectedSystemOptionTextList
-//                            = newSelectedSystemOptionTextList
-//                            + ";" + newSystemOptionTextListItem;
-//                }
-//            } else {
-//                if (index == 0) {
-//                    newSelectedSystemOptionTextList
-//                            = newSelectedSystemOptionTextList
-//                            + option;
-//                } else {
-//                    newSelectedSystemOptionTextList
-//                            = newSelectedSystemOptionTextList
-//                            + ";" + option;
-//                }
-//            }
-//
-//            ++index;
-//
-//        }
-//
-//        selectedSystemOption.setOptionValue(newSelectedSystemOptionTextList);
-        //selectedSystemOption.setOptionValue("yes;no"); // tk
+    public SystemOption getSelectedSystemOptionText() {
+        return selectedSystemOptionText;
+    }
+
+    public void setSelectedSystemOptionText(SystemOption selectedSystemOptionText) {
+        this.selectedSystemOptionText = selectedSystemOptionText;
+    }
+
+    public void onAddSystemOptionText() {
+        selectedSystemOption.getTextList().
+                add(new SystemOption(selectedSystemOption.getName(), "--"));
+
+        selectedSystemOption.updateOptionValue();
+    }
+
+    public void onTextListItemCellEdit(CellEditEvent event) {
+
+        selectedSystemOption.updateOptionValue();
+
+    }
+
+    public void updateOptionValueType() {
+
+        selectedSystemOption.updateOptionValueType();
+
     }
 
     public List<Client> completeActiveClient(String query) {
@@ -887,23 +836,13 @@ public final class SystemManager extends GeneralManager implements Serializable 
                         searchText);
 
                 if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 1);
-                }
-                break;
-            case "Categories":
-                foundCategories = Category.findCategoriesByName(getEntityManager1(),
-                        searchText);
-
-                if (startDate == null) {
                     selectSystemAdminTab(mainTabView, false, "centerTabVar", 2);
                 } else {
                     selectSystemAdminTab(mainTabView, true, "centerTabVar", 2);
                 }
                 break;
-            case "Document Types":
-                foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
+            case "Categories":
+                foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
 
                 if (startDate == null) {
@@ -912,14 +851,24 @@ public final class SystemManager extends GeneralManager implements Serializable 
                     selectSystemAdminTab(mainTabView, true, "centerTabVar", 3);
                 }
                 break;
-            case "Options":
-                foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
+            case "Document Types":
+                foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
 
                 if (startDate == null) {
                     selectSystemAdminTab(mainTabView, false, "centerTabVar", 4);
                 } else {
                     selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
+                }
+                break;
+            case "Settings":
+                foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
+                        searchText);
+
+                if (startDate == null) {
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 9);
+                } else {
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 9);
                 }
                 break;
             case "Authentication":
@@ -942,9 +891,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
                         searchText);
 
                 if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 6);
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
                 } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 6);
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 1);
                 }
                 break;
             case "Attachments":
@@ -952,9 +901,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
                         searchText);
 
                 if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 7);
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 6);
                 } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 7);
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 6);
                 }
                 break;
             default:
@@ -1055,7 +1004,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
                 return dateSearchFields;
-            case "Options":
+            case "Settings":
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
@@ -1580,9 +1529,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
-
-//        selectedSystemOptionTextList = new ArrayList<>();
-
+        
     }
 
     public List<SystemOption> getFoundSystemOptionsByCategory() {
@@ -1690,7 +1637,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         searchTypes.add(new SelectItem("Privileges", "Privileges"));
         searchTypes.add(new SelectItem("Categories", "Categories"));
         searchTypes.add(new SelectItem("Document Types", "Document Types"));
-        searchTypes.add(new SelectItem("Options", "Options"));
+        searchTypes.add(new SelectItem("Settings", "Settings"));
         searchTypes.add(new SelectItem("Authentication", "Authentication"));
         searchTypes.add(new SelectItem("Modules", "Modules"));
         searchTypes.add(new SelectItem("Attachments", "Attachments"));
@@ -1705,7 +1652,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
-                "Options",
+                "Settings",
                 getSystemOptionSearchText(),
                 null,
                 null);
