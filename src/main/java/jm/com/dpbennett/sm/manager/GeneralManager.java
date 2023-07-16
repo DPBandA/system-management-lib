@@ -55,10 +55,6 @@ import org.primefaces.event.TabCloseEvent;
  */
 public class GeneralManager implements Manager, Serializable {
 
-    @PersistenceUnit(unitName = "JMTSPU")
-    private EntityManagerFactory EMF;
-    @PersistenceUnit(unitName = "FINPU")
-    private EntityManagerFactory EMF2;
     private String searchText;
     private String searchType;
     private Dashboard dashboard;
@@ -550,12 +546,12 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public EntityManager getEntityManager1() {
-        return EMF.createEntityManager();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public EntityManager getEntityManager2() {
-        return EMF2.createEntityManager();
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void setManagersUser() {
