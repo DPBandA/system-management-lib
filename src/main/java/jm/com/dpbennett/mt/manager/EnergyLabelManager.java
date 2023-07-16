@@ -301,6 +301,12 @@ public class EnergyLabelManager extends GeneralManager
 
         return "LabelPrint";
     }
+    
+    public String getApplicationFooter() {
+
+        return "LabelPrint, v" + SystemOption.getString(getEntityManager1(), 
+                "LPv");
+    }
 
     /**
      * Gets the SystemManager object as a session bean.
