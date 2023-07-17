@@ -32,6 +32,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Modules;
@@ -104,29 +106,29 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void openEnergyLabelBrowser() {
-        
+
         getMainTabView().openTab("Label Browser");
-        
+
     }
-    
+
     public void openComplianceSettingsTab() {
-        
+
         getSystemManager().doSystemOptionSearch("Compliance");
-        
+
         getMainTabView().openTab("Compliance");
     }
-    
+
     public void openEnergyEfficiencySettingsTab() {
-        
+
         getSystemManager().doSystemOptionSearch("Energy Efficiency");
-        
+
         getMainTabView().openTab("Energy Efficiency");
     }
-    
+
     public void openLabelPrintSettingsTab() {
-        
+
         getSystemManager().doSystemOptionSearch("LabelPrint");
-        
+
         getMainTabView().openTab("LabelPrint");
     }
 
@@ -217,7 +219,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public void okLabel() {
         if (selectedEnergyLabel.getIsDirty()) {
-            selectedEnergyLabel.save(getEntityManager1());
+            selectedEnergyLabel.save(getEntityManager3());
             selectedEnergyLabel.setIsDirty(false);
         }
 
@@ -230,7 +232,7 @@ public class EnergyLabelManager extends GeneralManager
 
         if (selectedEnergyLabel.getIsDirty()) {
 
-            returnMessage = selectedEnergyLabel.save(getEntityManager1());
+            returnMessage = selectedEnergyLabel.save(getEntityManager3());
             if (returnMessage.isSuccess()) {
 
                 selectedEnergyLabel.setIsDirty(false);
@@ -301,10 +303,10 @@ public class EnergyLabelManager extends GeneralManager
 
         return "LabelPrint";
     }
-    
+
     public String getApplicationFooter() {
 
-        return "LabelPrint, v" + SystemOption.getString(getEntityManager1(), 
+        return "LabelPrint, v" + SystemOption.getString(getEntityManager1(),
                 "LPv");
     }
 
@@ -415,7 +417,7 @@ public class EnergyLabelManager extends GeneralManager
                 + " OR r.efficiencyRatio LIKE '%" + searchPattern + "%'";
 
         try {
-            labelsFound = (List<EnergyLabel>) getEntityManager1().createQuery(query).getResultList();
+            labelsFound = (List<EnergyLabel>) getEntityManager3().createQuery(query).getResultList();
         } catch (Exception e) {
             System.out.println(e);
 
@@ -437,7 +439,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void onLabelCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager3(),
                 getFoundEnergyLabels().get(event.getRowIndex()));
     }
 
@@ -450,18 +452,15 @@ public class EnergyLabelManager extends GeneralManager
         foundEnergyLabels = findLabels(getEnergyLabelSearchText());
     }
 
+    public EntityManager getEntityManager3() {
+        
+        return getSystemManager().getEntityManager3();
+    }
+
     @Override
     public EntityManager getEntityManager1() {
 
         return getSystemManager().getEntityManager1();
-
-    }
-
-    @Override
-    public EntityManager getEntityManager2() {
-
-        return getSystemManager().getEntityManager2();
-
     }
 
     @Override

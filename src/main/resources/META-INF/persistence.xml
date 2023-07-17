@@ -42,8 +42,6 @@
         <class>jm.com.dpbennett.business.entity.dm.DocumentSequenceNumber</class>
         <class>jm.com.dpbennett.business.entity.dm.DocumentTracking</class>
         <class>jm.com.dpbennett.business.entity.dm.DocumentType</class>
-        <class>jm.com.dpbennett.business.entity.mt.EnergyLabel</class>
-        <class>jm.com.dpbennett.business.entity.mt.EnergyConsumptionAndEfficiency</class>
         <class>jm.com.dpbennett.business.entity.fi.FoodFactory</class>
         <class>jm.com.dpbennett.business.entity.fi.FoodSample</class>
         <class>jm.com.dpbennett.business.entity.fi.FoodTest</class>
@@ -137,5 +135,15 @@
         <properties>
             <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
-    </persistence-unit>    
+    </persistence-unit>
+    <persistence-unit name="ENERBASEPU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <non-jta-data-source>ENERBASEDS</non-jta-data-source> 
+        <class>jm.com.dpbennett.business.entity.mt.EnergyLabel</class>
+        <class>jm.com.dpbennett.business.entity.mt.EnergyConsumptionAndEfficiency</class>   
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.cache.shared.default" value="false"/>
+        </properties>
+    </persistence-unit>
 </persistence>

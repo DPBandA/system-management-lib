@@ -73,6 +73,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory EMF2;
+    @PersistenceUnit(unitName = "ENERBASEPU")
+    private EntityManagerFactory EMF3;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
@@ -1823,6 +1825,10 @@ public final class SystemManager extends GeneralManager implements Serializable 
     @Override
     public EntityManager getEntityManager2() {
         return EMF2.createEntityManager();
+    }
+    
+    public EntityManager getEntityManager3() {
+        return EMF3.createEntityManager();
     }
 
     public Date getCurrentDate() {
