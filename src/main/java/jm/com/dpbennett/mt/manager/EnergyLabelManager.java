@@ -561,8 +561,19 @@ public class EnergyLabelManager extends GeneralManager
                     renderRating(getSelectedEnergyLabel().getLetterRating(), true);
                     // Annual consumption
                     setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "middle");
-                    // Batch code
-                    setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
+                    // Batch code/serial number
+                    if (SystemOption.getBoolean(em, "useSerialNumber")) {
+                        if (!getSelectedEnergyLabel().getSerialNumber().trim().isEmpty()) {
+                            setElementText("batchCodeLabel", "Serial No.", "");
+                            setElementText("batchCode", getSelectedEnergyLabel().getSerialNumber(), "");
+                        } else {
+                            setElementText("batchCodeLabel", "Batch Code", "");
+                            setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "");
+                        }
+                    } else {
+                        setElementText("batchCodeLabel", "Batch Code", "");
+                        setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "");
+                    }
                     // Efficiency ratio
                     setElementText("efficiencyRatio", getSelectedEnergyLabel().getEfficiencyRatio(), "middle");
                     // Carrier
@@ -593,14 +604,14 @@ public class EnergyLabelManager extends GeneralManager
                             + getSelectedEnergyLabel().getCapacity()
                             + " Litres", "end");
                     // Electrical ratings
-                    String electricalRatings =  
-                            getSelectedEnergyLabel().getRatedVoltage() + "V, "
+                    String electricalRatings
+                            = getSelectedEnergyLabel().getRatedVoltage() + "V, "
                             + getSelectedEnergyLabel().getRatedFrequency() + "Hz";
-                    
+
                     if (!getSelectedEnergyLabel().getRatedCurrent().trim().isEmpty()) {
-                       electricalRatings = electricalRatings + ", "
-                               + getSelectedEnergyLabel().getRatedCurrent() + "A";
-                    }                            
+                        electricalRatings = electricalRatings + ", "
+                                + getSelectedEnergyLabel().getRatedCurrent() + "A";
+                    }
                     setElementText("electricalRatings", electricalRatings, "end");
                     // Type
                     setElementText("type", getSelectedEnergyLabel().getType(), "start");
@@ -643,8 +654,19 @@ public class EnergyLabelManager extends GeneralManager
                                         + annualConsumptionUnitXMulConst
                                         * annualConsumptionUnitXMul));
                     }
-                    // Batch code
-                    setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "middle");
+                    // Batch code/serial number
+                    if (SystemOption.getBoolean(em, "useSerialNumber")) {
+                        if (!getSelectedEnergyLabel().getSerialNumber().trim().isEmpty()) {
+                            setElementText("batchCodeLabel", "Serial No.", "");
+                            setElementText("batchCode", getSelectedEnergyLabel().getSerialNumber(), "");
+                        } else {
+                            setElementText("batchCodeLabel", "Batch Code", "");
+                            setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "");
+                        }
+                    } else {
+                        setElementText("batchCodeLabel", "Batch Code", "");
+                        setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "");
+                    }
                     // QR Code
                     Element qrcode = svgDocument.getElementById("qrcode");
                     try {
