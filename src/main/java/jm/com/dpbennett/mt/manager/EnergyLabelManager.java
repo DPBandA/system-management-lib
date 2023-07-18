@@ -57,6 +57,7 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.w3c.dom.DOMException;
@@ -82,6 +83,16 @@ public class EnergyLabelManager extends GeneralManager
      */
     public EnergyLabelManager() {
         init();
+    }
+
+    public void onLabelDialogTabChange(TabChangeEvent event) {
+        switch (event.getTab().getTitle()) {
+            case "Preview":
+                break;
+            default:
+                break;
+        }
+
     }
 
     public String getEnergyLabelSearchText() {
@@ -453,7 +464,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public EntityManager getEntityManager3() {
-        
+
         return getSystemManager().getEntityManager3();
     }
 
