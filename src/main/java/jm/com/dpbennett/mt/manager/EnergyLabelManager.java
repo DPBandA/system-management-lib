@@ -593,10 +593,15 @@ public class EnergyLabelManager extends GeneralManager
                             + getSelectedEnergyLabel().getCapacity()
                             + " Litres", "end");
                     // Electrical ratings
-                    setElementText("electricalRatings",
+                    String electricalRatings =  
                             getSelectedEnergyLabel().getRatedVoltage() + "V, "
-                            + getSelectedEnergyLabel().getRatedFrequency() + "Hz, "
-                            + getSelectedEnergyLabel().getRatedCurrent() + "A", "end");
+                            + getSelectedEnergyLabel().getRatedFrequency() + "Hz";
+                    
+                    if (!getSelectedEnergyLabel().getRatedCurrent().trim().isEmpty()) {
+                       electricalRatings = electricalRatings + ", "
+                               + getSelectedEnergyLabel().getRatedCurrent() + "A";
+                    }                            
+                    setElementText("electricalRatings", electricalRatings, "end");
                     // Type
                     setElementText("type", getSelectedEnergyLabel().getType(), "start");
                     // Defrost
