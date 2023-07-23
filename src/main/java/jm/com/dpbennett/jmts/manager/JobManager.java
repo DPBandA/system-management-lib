@@ -81,7 +81,6 @@ import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
-import jm.com.dpbennett.lo.manager.LegalDocumentManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -839,10 +838,6 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("humanResourceManager");
     }
 
-    public LegalDocumentManager getLegalDocumentManager() {
-        return BeanUtils.findBean("legalDocumentManager");
-    }
-
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -932,7 +927,6 @@ public class JobManager extends GeneralManager
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
             "jobManager",
-            "legalDocumentManager",
             "clientManager",
             "reportManager",
             "systemManager",
@@ -2636,10 +2630,9 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void setManagersUser() {
+    public void setManagersUser() { // tk check if this necessary
 
         getManager("systemManager").setUser(getUser());
-        getManager("legalDocumentManager").setUser(getUser());
         getManager("clientManager").setUser(getUser());
         getManager("reportManager").setUser(getUser());
         getManager("financeManager").setUser(getUser());
