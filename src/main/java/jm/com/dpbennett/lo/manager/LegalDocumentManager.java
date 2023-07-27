@@ -242,7 +242,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void documentTypeDialogReturn() {
         if (getSystemManager().getSelectedDocumentType().getId() != null) {
-            getCurrentDocument().setType(getSystemManager().getSelectedDocumentType());
+            getCurrentDocument().setDocumentType(getSystemManager().getSelectedDocumentType());
 
             updateDocument();
         }
@@ -328,7 +328,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void editDocumentType(ActionEvent actionEvent) {
 
-        getSystemManager().setSelectedDocumentType(getCurrentDocument().getType());
+        getSystemManager().setSelectedDocumentType(getCurrentDocument().getDocumentType());
         getCurrentDocument().setType(null);
         getSystemManager().openDocumentTypeDialog("/admin/documentTypeDialog");
     }
@@ -367,12 +367,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                         currentDocument.getSequenceNumber(),
                         currentDocument.getYearReceived(),
                         currentDocument.getMonthReceived(),
-                        currentDocument.getType().getId()) == null) {
+                        currentDocument.getDocumentType().getId()) == null) {
 
                     currentDocument.setSequenceNumber(DocumentSequenceNumber.findNextDocumentSequenceNumber(em,
                             currentDocument.getYearReceived(),
                             currentDocument.getMonthReceived(),
-                            currentDocument.getType().getId()));
+                            currentDocument.getDocumentType().getId()));
                 }
 
                 if (currentDocument.getAutoGenerateNumber()) {
@@ -461,7 +461,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         legalDocument.setRequestingDepartment(Department.findDefaultDepartment(em, "--"));
         legalDocument.setSubmittedBy(Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true));
-        legalDocument.setType(DocumentType.findDefaultDocumentType(em, "--"));
+        legalDocument.setDocumentType(DocumentType.findDefaultDocumentType(em, "--"));
         legalDocument.setClassification(Classification.findClassificationByName(em, "--"));
         legalDocument.setDocumentForm("H");
         legalDocument.setNumber(LegalDocument.getLegalDocumentNumber(legalDocument, "ED"));
@@ -509,7 +509,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         if (selectedDocument != null) {
             return LegalDocument.findLegalDocumentsByDateSearchField(em,
-                    getDateSearchPeriod(), "By type", selectedDocument.getType().getName());
+                    getDateSearchPeriod(), "By type", selectedDocument.getDocumentType().getName());
         } else {
             return new ArrayList<>();
         }

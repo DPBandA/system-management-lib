@@ -560,7 +560,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void editInventoryCategory() {
-        getFinanceManager().getSystemManager().setSelectedCategory(getSelectedInventory().getCategory());
+        getFinanceManager().getSystemManager().setSelectedCategory(getSelectedInventory().getInventoryCategory());
 
         getFinanceManager().getSystemManager().editCategory();
     }
@@ -574,7 +574,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void inventoryCategoryDialogReturn() {
         if (getFinanceManager().getSystemManager().getSelectedCategory().getId() != null) {
-            getSelectedInventory().setCategory(getFinanceManager().getSystemManager().getSelectedCategory());
+            getSelectedInventory().setInventoryCategory(getFinanceManager().getSystemManager().getSelectedCategory());
             updateInventory(null);
         }
     }
@@ -596,7 +596,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public Boolean getIsCategoryNameValid() {
         if (selectedInventory.getCategory() != null) {
-            return BusinessEntityUtils.validateName(selectedInventory.getCategory().getName());
+            return BusinessEntityUtils.validateName(selectedInventory.getInventoryCategory().getName());
         }
 
         return false;

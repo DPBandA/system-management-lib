@@ -299,6 +299,7 @@ public class EnergyLabelManager extends GeneralManager
         String costPerKWh_2 = SystemOption.getString(em, "costPerKWh_2");
 
         selectedEnergyLabel.setType(defaultProductType);
+        selectedEnergyLabel.setDefrost("Automatic");
         selectedEnergyLabel.setRatedVoltage(defaultRatedVoltage);
         selectedEnergyLabel.setRatedFrequency(defaultRatedFrequency);
         selectedEnergyLabel.setCostPerKwh(costPerKWh_1);
