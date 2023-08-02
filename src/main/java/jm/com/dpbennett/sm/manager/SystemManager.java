@@ -309,7 +309,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void editEmailTemplate() {
         PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+                getDialogHeight(), getDialogWidth() + 100);
     }
 
     public void saveSelectedEmail() {
