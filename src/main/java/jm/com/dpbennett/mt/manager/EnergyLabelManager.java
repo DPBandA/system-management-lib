@@ -32,8 +32,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Modules;
@@ -284,8 +282,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public void editSelectedEnergyLabel() {
 
-        //PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, 600, 700);
-        PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, true, 400, 800);
+       PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, true, 400, 600);
     }
 
     public void createNewEnergyLabel() {
@@ -386,6 +383,8 @@ public class EnergyLabelManager extends GeneralManager
 
     public List<EnergyLabel> findLabels(String searchPattern) {
 
+        int maxLabelSearchResults = SystemOption.getInteger(
+                getEntityManager1(), "maxLabelSearchResults");
         List<EnergyLabel> labelsFound;
 
         String query = "SELECT r FROM EnergyLabel r WHERE"
@@ -426,10 +425,14 @@ public class EnergyLabelManager extends GeneralManager
                 + " OR r.feature2 LIKE '%" + searchPattern + "%'"
                 + " OR r.letterRating LIKE '%" + searchPattern + "%'"
                 + " OR r.batchCode LIKE '%" + searchPattern + "%'"
+                + " OR r.serialNumber LIKE '%" + searchPattern + "%'"
                 + " OR r.efficiencyRatio LIKE '%" + searchPattern + "%'";
 
         try {
-            labelsFound = (List<EnergyLabel>) getEntityManager3().createQuery(query).getResultList();
+            labelsFound = (List<EnergyLabel>) getEntityManager3()
+                    .createQuery(query)
+                    .setMaxResults(maxLabelSearchResults)
+                    .getResultList();
         } catch (Exception e) {
             System.out.println(e);
 
@@ -619,9 +622,18 @@ public class EnergyLabelManager extends GeneralManager
                     // Defrost
                     setElementText("defrost", "- " + getSelectedEnergyLabel().getDefrost(), "start");
                     // Feature 1
-                    setElementText("feature1", "- " + getSelectedEnergyLabel().getFeature1(), "start");
+                    if (!getSelectedEnergyLabel().getFeature1().trim().isEmpty()) {
+                        setElementText("feature1", "- " + getSelectedEnergyLabel().getFeature1(), "start");
+                    } else {
+                        setElementText("feature1", "", "start");
+                    }
                     // Feature 2
-                    setElementText("feature2", "- " + getSelectedEnergyLabel().getFeature2(), "start");
+                    if (!getSelectedEnergyLabel().getFeature2().trim().isEmpty()) {
+                        setElementText("feature2", "- " + getSelectedEnergyLabel().getFeature2(), "start");
+                    }
+                    else {
+                        setElementText("feature2", "", "start");
+                    }
                     // Letter rating                
                     eraseAllRatingLetters();
                     renderRating(getSelectedEnergyLabel().getLetterRating(), true);
