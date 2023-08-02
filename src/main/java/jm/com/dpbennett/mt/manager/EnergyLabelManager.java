@@ -193,7 +193,7 @@ public class EnergyLabelManager extends GeneralManager
 
     @Override
     public String getApplicationSubheader() {
-        return "Energy Label Generation and Printing";
+        return "Energy label generation and printing";
     }
 
     public List<SelectItem> getEnergyEfficiencyProductTypes() {
