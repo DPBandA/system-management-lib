@@ -83,6 +83,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private String jobSubcategorySearchText;
     private String serviceSearchText;
     private String marketProductSearchText;
+    private String procurementMethodSearchText;
+    private String settingSearchText;
     private List<AccountingCode> foundAccountingCodes;
     private List<Tax> foundTaxes;
     private List<Discount> foundDiscounts;
@@ -105,7 +107,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private Boolean isActiveMarketProductsOnly;
     private List<ProcurementMethod> foundProcurementMethods;
     private ProcurementMethod selectedProcurementMethod;
-    private String procurementMethodSearchText;
     private SystemManager systemManager;
 
     /**
@@ -178,6 +179,14 @@ public class FinanceManager extends GeneralManager implements Serializable {
         this.procurementMethodSearchText = procurementMethodSearchText;
     }
 
+    public String getSettingSearchText() {
+        return settingSearchText;
+    }
+
+    public void setSettingSearchText(String settingSearchText) {
+        this.settingSearchText = settingSearchText;
+    }
+
     public void saveSelectedProcurementMethod() {
 
         selectedProcurementMethod.save(getEntityManager1());
@@ -220,13 +229,23 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doProcurementMethodSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Procurement",
                 getProcurementMethodSearchText(),
+                null,
+                null);
+
+    }
+    
+    public void doSettingSearch() {
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Settings",
+                getSettingSearchText(),
                 null,
                 null);
 
@@ -419,7 +438,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
                 try {
                     pr = em.find(PurchaseRequisition.class,
-                            Long.parseLong(notification.getMessage()));
+                            Long.valueOf(notification.getMessage()));
                 } catch (NumberFormatException e) {
                     System.out.println("PR not found");
                 }
@@ -525,8 +544,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doServiceSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -628,8 +645,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doClassificationSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -752,7 +767,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         searchTypes.add(new SelectItem("Job Subcategories", "Job Subcategories"));
         searchTypes.add(new SelectItem("Services", "Services"));
         searchTypes.add(new SelectItem("Procurement", "Procurement"));
-        searchTypes.add(new SelectItem("Miscellaneous", "Miscellaneous"));
+        searchTypes.add(new SelectItem("Settings", "Settings"));
 
         return searchTypes;
 
@@ -946,8 +961,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doAccountingCodeSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -959,8 +972,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doTaxSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -974,8 +985,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doCurrencySearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -987,8 +996,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doDiscountSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1093,8 +1100,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void doJobCategorySearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1156,8 +1161,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doJobSubcategorySearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1223,8 +1226,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void doSectorSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1328,7 +1329,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         setSearchType("Accounting Codes");
         setSearchText("");
-        setDefaultCommandTarget("@this");
+        setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",
@@ -1340,6 +1341,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         longProcessProgress = 0;
         procurementMethodSearchText = "";
+        settingSearchText = "";
         accountingCodeSearchText = "";
         taxSearchText = "";
         currencySearchText = "";
@@ -1537,8 +1539,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 9);
                 }
                 break;
-            case "Miscellaneous":
-                getSystemManager().doSystemOptionSearch("Finance");
+            case "Settings":               
+                getSystemManager().doSystemOptionSearch("Finance", searchText);
 
                 if (startDate == null) {
                     selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 10);
@@ -1564,7 +1566,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void handleKeepAlive() {
-        
+
         super.updateUserActivity("SMv"
                 + SystemOption.getString(getEntityManager1(), "SMv"),
                 "Logged in");
@@ -1637,7 +1639,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
-            case "Miscellaneous":
+            case "Settings":
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 return dateSearchFields;
@@ -1650,13 +1652,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void setManagersUser() {
-        
+
         getManager("systemManager").setUser(getUser());
         getManager("inventoryManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
 
     }
-    
+
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
@@ -1664,7 +1666,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void completeLogout() {
-        
+
         super.updateUserActivity("FMv"
                 + SystemOption.getString(getEntityManager1(), "FMv"),
                 "Logged out");
@@ -1680,5 +1682,5 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         super.completeLogin();
     }
-    
+
 }

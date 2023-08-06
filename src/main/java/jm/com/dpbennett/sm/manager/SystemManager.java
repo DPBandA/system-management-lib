@@ -807,6 +807,19 @@ public final class SystemManager extends GeneralManager implements Serializable 
         }
 
     }
+    
+    public void doSystemOptionSearch(String category, String searchText) {
+
+        foundSystemOptionsByCategory = SystemOption.findSystemOptions(
+                getEntityManager1(),
+                searchText,
+                category);
+
+        if (foundSystemOptionsByCategory == null) {
+            foundSystemOptionsByCategory = new ArrayList<>();
+        }
+
+    }
 
     @Override
     public void doDefaultSearch(

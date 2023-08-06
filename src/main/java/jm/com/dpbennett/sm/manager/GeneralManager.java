@@ -825,11 +825,9 @@ public class GeneralManager implements Manager, Serializable {
     public void doDefaultCommand() {
 
         switch (defaultCommandTarget) {
-            case "@this":
-                //PrimeFacesUtils.addMessage("Action NOT Taken",
-                //        "No action was taken. Enter search text if you are doing a search.",
-                //        FacesMessage.SEVERITY_INFO);
-                //PrimeFaces.current().ajax().update("appForm:growl3");
+            case "@this": 
+                // NB: This is used when a row or cell in a table is   
+                // selected for editng. It may be deprecated in the future.              
                 break;
             default:
                 doSearch();
