@@ -238,7 +238,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 null);
 
     }
-    
+
     public void doSettingSearch() {
 
         doDefaultSearch(
@@ -821,11 +821,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editTax() {
-        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, getDialogHeight(), getDialogWidth());
+        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, 
+                getDialogHeight(), getDialogWidth());
     }
 
     public void editCurrency() {
-        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true, getDialogHeight(), getDialogWidth());
+        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true,
+                getDialogHeight() - 150, getDialogWidth());
     }
 
     public void editDiscount() {
@@ -1539,7 +1541,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 9);
                 }
                 break;
-            case "Settings":               
+            case "Settings":
                 getSystemManager().doSystemOptionSearch("Finance", searchText);
 
                 if (startDate == null) {
