@@ -1125,6 +1125,23 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         return list;
     }
+    
+    public static List<SelectItem> getStringListWithDisplayNameSelectItems(
+            EntityManager em,
+            String systemOption) {
+
+        ArrayList list = new ArrayList();
+
+        List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
+
+        for (String name : stringList) {
+            String items[] = name.split(",");
+            
+            list.add(new SelectItem(items[1], items[0]));
+        }
+
+        return list;
+    }
 
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
@@ -1150,7 +1167,12 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public List<SelectItem> getPFThemes() {
 
-        return getStringListAsSelectItemsWithCaps(getEntityManager1(), "PFThemes");
+        return getStringListWithDisplayNameSelectItems(getEntityManager1(), "PFThemes");
+    }
+    
+    public List<SelectItem> getUIThemes() {
+
+        return getStringListWithDisplayNameSelectItems(getEntityManager1(), "UIThemes");
     }
 
     public List<SelectItem> getSystemOptionCategories() {
