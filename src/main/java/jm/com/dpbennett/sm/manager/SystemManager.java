@@ -1164,10 +1164,15 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         return values;
     }
+    
+     public List<SelectItem> getPFThemes() {
 
-    public List<SelectItem> getPFThemes() {
+        return getStringListAsSelectItemsWithCaps(getEntityManager1(), "PFThemes");
+    }
 
-        return getStringListWithDisplayNameSelectItems(getEntityManager1(), "PFThemes");
+    public List<SelectItem> getPFThemes2() {
+
+        return getStringListWithDisplayNameSelectItems(getEntityManager1(), "PFThemes2");
     }
     
     public List<SelectItem> getUIThemes() {
