@@ -116,6 +116,12 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
+    
+    public String getApplicationFooter() {
+
+        return "Job Management & Tracking System, v" + SystemOption.getString(getEntityManager1(),
+                "JMTSv");
+    }
 
     public Boolean getEnableJobDialogTab() {
 
@@ -126,7 +132,8 @@ public class JobManager extends GeneralManager
 
     public Boolean getEnableJobDialogCostingTab() {
 
-        return (getCurrentJob().getType().equals("Proforma Invoice"));
+        return (getCurrentJob().getType().equals("Proforma Invoice")
+                || getJobFinanceManager().getEnableOnlyPaymentEditing());
 
     }
 
