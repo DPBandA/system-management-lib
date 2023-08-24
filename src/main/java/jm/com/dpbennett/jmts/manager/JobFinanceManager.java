@@ -2053,6 +2053,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 "enableSubcontractWithCosting");
     }
 
+    public Boolean getUseMulticurrency() {
+        return SystemOption.getBoolean(getEntityManager1(), "useMulticurrency");
+    }
+
     /**
      * Gets the enableOnlyPaymentEditing field. Sets it to false if it is null.
      *
