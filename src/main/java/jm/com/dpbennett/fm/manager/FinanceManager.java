@@ -115,6 +115,18 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public FinanceManager() {
         init();
     }
+    
+     @Override
+    public String getAppShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "FMlogo");
+    }
+
+    @Override
+    public String getLogoURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "FMlogo");
+    }
 
     public Boolean getUseMulticurrency() {
         return SystemOption.getBoolean(getEntityManager1(), "useMulticurrency");
