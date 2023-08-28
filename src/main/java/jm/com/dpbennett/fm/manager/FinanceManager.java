@@ -116,6 +116,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public Boolean getUseMulticurrency() {
+        return SystemOption.getBoolean(getEntityManager1(), "useMulticurrency");
+    }
+
     public SystemManager getSystemManager() {
         if (systemManager == null) {
             systemManager = BeanUtils.findBean("systemManager");
@@ -821,7 +825,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editTax() {
-        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true, 
+        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true,
                 getDialogHeight(), getDialogWidth());
     }
 
