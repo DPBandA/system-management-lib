@@ -19,6 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.jmts.manager;
 
+import com.mysql.cj.Session;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -2534,11 +2535,13 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     BusinessEntityUtils.getDateInMediumDateFormat(
                             getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
 
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+            em.getTransaction().begin(); // tk
+            Connection con = BusinessEntityUtils.getConnection(em);
+//                    BusinessEntityUtils.establishConnection(
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
 
             if (con != null) {
                 try {
@@ -2560,6 +2563,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                             .build();
 
                     setLongProcessProgress(100);
+                    
+                    em.getTransaction().commit(); // tk
 
                     return streamContent;
                 } catch (JRException ex) {
