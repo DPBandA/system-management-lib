@@ -90,6 +90,7 @@ import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.file.UploadedFile;
 
 /**
@@ -2240,9 +2241,18 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedPurchaseReq() {
+        
+        // tk
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .resizable(false)
+                .draggable(false)
+                .modal(false)
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("purchreqDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true,
+//                getDialogHeight(), getDialogWidth());
     }
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
