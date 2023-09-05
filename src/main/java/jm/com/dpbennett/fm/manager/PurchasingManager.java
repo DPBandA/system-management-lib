@@ -628,9 +628,14 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public List<CashPayment> getCashPayments() {
 
         if (cashPayments == null) {
-            cashPayments = CashPayment.
-                    findCashPaymentsByOwnerId(getEntityManager1(),
-                            getSelectedPurchaseRequisition().getId());
+
+            if (getSelectedPurchaseRequisition().getId() != null) {
+                cashPayments = CashPayment.
+                        findCashPaymentsByOwnerId(getEntityManager1(),
+                                getSelectedPurchaseRequisition().getId());
+            } else {
+                cashPayments = new ArrayList<>();
+            }
         }
 
         return cashPayments;
@@ -2241,18 +2246,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedPurchaseReq() {
-        
-        // tk
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .resizable(false)
-                .draggable(false)
-                .modal(false)
-                .build();
 
-        PrimeFaces.current().dialog().openDynamic("purchreqDialog", options, null);
-
-//        PrimeFacesUtils.openDialog(null, "purchreqDialog", true, true, true, true,
-//                getDialogHeight(), getDialogWidth());
+        PrimeFacesUtils.openDialog(null, "purchreqDialog",
+                true, true, true, true,
+                getDialogHeight(), getDialogWidth());
     }
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
