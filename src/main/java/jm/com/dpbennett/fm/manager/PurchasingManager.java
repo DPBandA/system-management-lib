@@ -2246,10 +2246,22 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedPurchaseReq() {
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "purchreqDialog",
-                true, true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("purchreqDialog", options, null);
+
     }
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
