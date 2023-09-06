@@ -1376,8 +1376,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         if (selectedCostComponent.getId() == null && !getEdit()) {
             getSelectedPurchaseRequisition().getCostComponents().add(selectedCostComponent);
         }
-        setEdit(false);
 
+        setEdit(false);
         updateCostComponent(selectedCostComponent);
         updatePurchaseReq(null);
 
@@ -2499,12 +2499,21 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         setEdit(true);
     }
 
-    public void createNewCostComponent(ActionEvent event) {
+    public void createNewCostComponent() {
+
         selectedCostComponent = new CostComponent();
+        
+        selectedCostComponent.setHoursOrQuantity(1.0);
+        selectedCostComponent.setType("Variable");
+        selectedCostComponent.setUnit("each");
+        selectedCostComponent.update();
+
         setEdit(false);
+
     }
 
     public void addNewCostComponent() {
+
         selectedCostComponent = new CostComponent();
         selectedCostComponent.setName("Item");
         selectedCostComponent.setHoursOrQuantity(1.0);
@@ -2520,6 +2529,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 "Click on the pencil icon to edit");
 
         FacesContext.getCurrentInstance().addMessage(null, msg);
+
     }
 
     public void addNewAttachment(ActionEvent event) {
