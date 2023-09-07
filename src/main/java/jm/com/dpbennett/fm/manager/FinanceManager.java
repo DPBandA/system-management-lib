@@ -54,6 +54,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -238,8 +239,21 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editProcurementMethod() {
-        PrimeFacesUtils.openDialog(null, "procurementMethodDialog",
-                true, true, true, getDialogHeight(), 700);
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("procurementMethodDialog", options, null);
+        
     }
 
     public void createNewProcurementMethod() {
