@@ -60,6 +60,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.ToggleEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
 
@@ -126,20 +127,20 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void removeSelectedSystemOptionText() {
-        
+
         int index = 0;
-        
+
         for (SystemOption systemOption : selectedSystemOption.getTextList()) {
             if (systemOption.getOptionValue().
                     equals(selectedSystemOptionText.getOptionValue())) {
-                
-                 selectedSystemOption.getTextList().remove(index);
-                 
-                 break;
+
+                selectedSystemOption.getTextList().remove(index);
+
+                break;
             }
-            
+
             ++index;
-        }      
+        }
 
         selectedSystemOption.updateOptionValue();
     }
@@ -308,8 +309,22 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void editEmailTemplate() {
-        PrimeFacesUtils.openDialog(null, "/admin/emailTemplateDialog", true, true, true,
-                getDialogHeight(), getDialogWidth() + 100);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/emailTemplateDialog", options, null);
+
     }
 
     public void saveSelectedEmail() {
@@ -417,8 +432,22 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void openModulePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "modulePickListDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("modulePickListDialog", options, null);
+
     }
 
     public void addModulePrivileges() {
@@ -451,8 +480,22 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void openPrivilegePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "privilegePickListDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("privilegePickListDialog", options, null);
+
     }
 
     public DualListModel<Privilege> getPrivilegeDualList() {
@@ -577,8 +620,21 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void editUser() {
 
-        PrimeFacesUtils.openDialog(getSelectedUser(), "userDialog", true, true, true,
-                getDialogHeight(), getDialogWidth() + 100);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
+
     }
 
     public User getSelectedUser() {
@@ -807,7 +863,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         }
 
     }
-    
+
     public void doSystemOptionSearch(String category, String searchText) {
 
         foundSystemOptionsByCategory = SystemOption.findSystemOptions(
@@ -1125,7 +1181,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         return list;
     }
-    
+
     public static List<SelectItem> getStringListWithDisplayNameSelectItems(
             EntityManager em,
             String systemOption) {
@@ -1136,7 +1192,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         for (String name : stringList) {
             String items[] = name.split(",");
-            
+
             list.add(new SelectItem(items[1], items[0]));
         }
 
@@ -1164,8 +1220,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         return values;
     }
-    
-     public List<SelectItem> getPFThemes() {
+
+    public List<SelectItem> getPFThemes() {
 
         return getStringListAsSelectItemsWithCaps(getEntityManager1(), "PFThemes");
     }
@@ -1174,7 +1230,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         return getStringListWithDisplayNameSelectItems(getEntityManager1(), "PFThemes2");
     }
-    
+
     public List<SelectItem> getUIThemes() {
 
         return getStringListWithDisplayNameSelectItems(getEntityManager1(), "UIThemes");
@@ -1343,8 +1399,22 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void openDocumentTypeDialog(String url) {
-        PrimeFacesUtils.openDialog(null, url, true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic(url, options, null);
+
     }
 
     public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
@@ -1419,13 +1489,41 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void editPrivilege() {
-        PrimeFacesUtils.openDialog(null, "privilegeDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("privilegeDialog", options, null);
+
     }
 
     public void editNotification() {
-        PrimeFacesUtils.openDialog(null, "notificationDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("notificationDialog", options, null);
+
     }
 
     public void deleteNotification() {
@@ -1503,13 +1601,41 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void editModule() {
-        PrimeFacesUtils.openDialog(null, "moduleDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("moduleDialog", options, null);
+
     }
 
     public void editCategory() {
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("categoryDialog", options, null);
+
     }
 
     public void editDocumentType() {
@@ -1571,7 +1697,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
-        
+
     }
 
     public List<SystemOption> getFoundSystemOptionsByCategory() {
@@ -1720,9 +1846,22 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void editSystemOption() {
+        
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "systemOptionDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("systemOptionDialog", options, null);
+
     }
 
     public void createNewAttachment() {
@@ -1734,13 +1873,41 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void openAttachmentDialog() {
-        PrimeFacesUtils.openDialog(null, "/admin/attachmentDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/attachmentDialog", options, null);
+
     }
 
     public void editLdapContext() {
-        PrimeFacesUtils.openDialog(null, "ldapDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("ldapDialog", options, null);
+
     }
 
     public void createNewLdapContext() {
@@ -1866,7 +2033,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public EntityManager getEntityManager2() {
         return EMF2.createEntityManager();
     }
-    
+
     public EntityManager getEntityManager3() {
         return EMF3.createEntityManager();
     }
