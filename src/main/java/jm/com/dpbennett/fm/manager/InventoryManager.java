@@ -57,6 +57,7 @@ import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -449,7 +450,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventoryProductSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -462,8 +463,22 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void openInventoryProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/ims/inventoryProductDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth() + 20);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/finance/ims/inventoryProductDialog", options, null);
+
     }
 
     public void openInventoryProductBrowser() {
@@ -1071,14 +1086,40 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void editSelectedInventory() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("inventoryDialog", options, null);
+
     }
 
     public void editSelectedInventoryRequisition() {
 
-        PrimeFacesUtils.openDialog(null, "inventoryRequisitionDialog",
-                true, true, true, true, getDialogHeight(), getDialogWidth() + 200);
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("inventoryRequisitionDialog", options, null);
+
     }
 
     public List<Inventory> getFoundInventories() {
@@ -1104,7 +1145,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventorySearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1117,7 +1158,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void doInventoryRequisitionSearch() {
-        
+
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
@@ -1237,12 +1278,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
                 return dateSearchFields;
-                
+
             case "Inventory Requisitions":
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
-                return dateSearchFields;    
+                return dateSearchFields;
             default:
                 break;
         }

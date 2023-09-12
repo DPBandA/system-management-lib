@@ -239,7 +239,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editProcurementMethod() {
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
@@ -247,13 +248,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
-                .resizable(false)
+                .resizable(true)
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("procurementMethodDialog", options, null);
-        
+
     }
 
     public void createNewProcurementMethod() {
@@ -336,8 +337,21 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getSystemManager().setSelectedCategory(new Category());
         getSystemManager().getSelectedCategory().setType("Product");
 
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/categoryDialog", options, null);
+
     }
 
     public void cancelMarketProductEdit() {
@@ -447,8 +461,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void openMarketProductDialog() {
-        PrimeFacesUtils.openDialog(null, "/finance/marketProductDialog", true, true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/finance/marketProductDialog", options, null);
+
     }
 
     public void openMarketProductBrowser() {
@@ -605,7 +633,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editService() {
-        PrimeFacesUtils.openDialog(null, "serviceDialog", true, true, true, getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("serviceDialog", options, null);
+
     }
 
     public List<Classification> getClassifications() {
@@ -625,7 +668,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editClassification() {
-        PrimeFacesUtils.openDialog(null, "classificationDialog", true, true, true, getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("classificationDialog", options, null);
+
     }
 
     public void onClassificationCellEdit(CellEditEvent event) {
@@ -852,22 +910,79 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editAccountingCode() {
-        PrimeFacesUtils.openDialog(null, "accountingCodeDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("accountingCodeDialog", options, null);
+
     }
 
     public void editTax() {
-        PrimeFacesUtils.openDialog(null, "taxDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("taxDialog", options, null);
+
     }
 
     public void editCurrency() {
-        PrimeFacesUtils.openDialog(null, "currencyDialog", true, true, true,
-                getDialogHeight() - 150, getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("currencyDialog", options, null);
+
     }
 
     public void editDiscount() {
-        PrimeFacesUtils.openDialog(null, "discountDialog", true, true, true, getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("discountDialog", options, null);
+
     }
 
     public void onAccountingCodeCellEdit(CellEditEvent event) {
@@ -1167,7 +1282,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editJobCategory() {
-        PrimeFacesUtils.openDialog(null, "jobCategoryDialog", true, true, true, getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("jobCategoryDialog", options, null);
+
     }
 
     public List<JobSubCategory> getFoundJobSubcategories() {
@@ -1229,7 +1359,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editJobSubcategory() {
-        PrimeFacesUtils.openDialog(null, "jobSubcategoryDialog", true, true, true, getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("jobSubcategoryDialog", options, null);
+
     }
 
     public String getSectorSearchText() {
@@ -1294,7 +1439,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void editSector() {
-        PrimeFacesUtils.openDialog(null, "sectorDialog", true, true, true, getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("sectorDialog", options, null);
+
     }
 
     public List<Tax> completeTax(String query) {

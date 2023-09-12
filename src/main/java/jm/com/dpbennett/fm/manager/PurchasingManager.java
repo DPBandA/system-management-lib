@@ -148,8 +148,23 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/cashPaymentDeleteConfirmDialog",
-                true, true, true, getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic(
+                "/finance/purch/cashPaymentDeleteConfirmDialog",
+                options, null);
+
     }
 
     public void deleteCashPayment() {
@@ -673,8 +688,23 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         getSelectedSupplier().setIsNameAndIdEditable(getUser().can("AddSupplier"));
 
-        PrimeFacesUtils.openDialog(null, "/finance/purch/supplierDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic(
+                "/finance/purch/supplierDialog",
+                options, null);
+
     }
 
     public Boolean getIsActiveSuppliersOnly() {
@@ -1389,8 +1419,23 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void editPurchReqGeneralEmail() {
-        PrimeFacesUtils.openDialog(null, "purchaseReqEmailDialog", true, true, true, false,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("purchaseReqEmailDialog",
+                options, null);
+
     }
 
     public void openRequestApprovalEmailDialog() {
@@ -2246,7 +2291,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedPurchaseReq() {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -2514,7 +2559,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void createNewCostComponent() {
 
         selectedCostComponent = new CostComponent();
-        
+
         selectedCostComponent.setHoursOrQuantity(1.0);
         selectedCostComponent.setType("Variable");
         selectedCostComponent.setUnit("each");
@@ -2550,8 +2595,22 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void addAttachment() {
 
-        PrimeFacesUtils.openDialog(null, "/common/attachmentDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/common/attachmentDialog",
+                options, null);
+
     }
 
     public void approveSelectedPurchaseRequisition(ActionEvent event) {
