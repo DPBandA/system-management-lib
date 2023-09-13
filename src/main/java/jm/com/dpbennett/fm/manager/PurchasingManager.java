@@ -692,7 +692,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width("500px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -2608,7 +2608,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/common/attachmentDialog",
+        PrimeFaces.current().dialog().openDynamic("/admin/attachmentDialog",
                 options, null);
 
     }
