@@ -1090,7 +1090,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width("500px")
+                .width("700px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
