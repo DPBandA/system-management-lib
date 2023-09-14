@@ -1909,6 +1909,25 @@ public final class SystemManager extends GeneralManager implements Serializable 
         PrimeFaces.current().dialog().openDynamic("ldapDialog", options, null);
 
     }
+    
+    public void openContactUsDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("contactUsDialog", options, null);
+
+    }
 
     public void createNewLdapContext() {
         selectedLdapContext = new LdapContext();
