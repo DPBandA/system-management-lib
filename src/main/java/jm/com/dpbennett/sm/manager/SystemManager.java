@@ -125,6 +125,11 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public SystemManager() {
         init();
     }
+    
+    public String getCurrentYear() {
+        
+        return "" + BusinessEntityUtils.getCurrentYear();        
+    }
 
     public void removeSelectedSystemOptionText() {
 
