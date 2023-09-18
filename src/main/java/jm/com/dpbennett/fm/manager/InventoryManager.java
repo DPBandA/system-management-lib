@@ -1105,11 +1105,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void editSelectedInventoryRequisition() {
 
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() + 100) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
