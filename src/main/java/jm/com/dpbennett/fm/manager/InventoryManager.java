@@ -333,15 +333,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 getSelectedInventory().getProduct().getCommonName(),
                 getSelectedInventory().getCode(),
                 "Purchase");
+        
+        setEdit(false);
 
-        getSelectedInventory().getAllSortedCostComponents().add(selectedCostComponent);
+//        getSelectedInventory().getAllSortedCostComponents().add(selectedCostComponent);
+//
+//        updateInventory(null);
 
-        updateInventory(null);
-
-        FacesMessage msg = new FacesMessage("New Cost Component Added",
-                "Click on the pencil icon to edit");
-
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+//        FacesMessage msg = new FacesMessage("New Cost Component Added",
+//                "Click on the pencil icon to edit");
+//
+//        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public CostComponent createNewCostComponent(String name, String code, String type) {
