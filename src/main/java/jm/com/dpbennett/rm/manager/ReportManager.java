@@ -134,28 +134,6 @@ public class ReportManager extends GeneralManager implements Serializable {
         return getSystemManager().getMainTabView();
     }
 
-    private EntityManager getLocalEntityManager() {
-        Map props = new HashMap();
-        props.put("javax.persistence.jdbc.driver",
-                (String) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "defaultDatabaseDriver"));
-        props.put("javax.persistence.jdbc.url",
-                (String) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "defaultDatabaseURL"));
-        props.put("javax.persistence.jdbc.user",
-                (String) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "defaultDatabaseUsername"));
-        props.put("javax.persistence.jdbc.password",
-                (String) SystemOption.getOptionValueObject(getEntityManager1(),
-                        "defaultDatabasePassword"));
-
-        EntityManagerFactory emf = Persistence
-                .createEntityManagerFactory("PU", props);
-
-        return emf.createEntityManager();
-
-    }
-
     @Override
     public ArrayList<SelectItem> getDatePeriods() {
         ArrayList<SelectItem> datePeriods = new ArrayList<>();
@@ -817,16 +795,16 @@ public class ReportManager extends GeneralManager implements Serializable {
                     break;
                 case "application/xlsx":
                     if (getSelectedReport().getName().equals("Analytical Services Report")) {
-                        reportFile = getAnalyticalServicesReport(getLocalEntityManager());
+                        reportFile = getAnalyticalServicesReport(getEntityManager1());
                     } else if (getSelectedReport().getName().toUpperCase().contains("COMPLIANCE MONTHLY REPORT")) {
-                        reportFile = getComplianceMonthlyReport(getLocalEntityManager());
+                        reportFile = getComplianceMonthlyReport(getEntityManager1());
                     } else if (getSelectedReport().getName().toUpperCase().contains("MONTHLY REPORT")) {
-                        reportFile = getMonthlyReport(getLocalEntityManager());
+                        reportFile = getMonthlyReport(getEntityManager1());
                     }
                     break;
                 case "application/xls":
                     if (getSelectedReport().getName().toUpperCase().contains("MONTHLY REPORT")) {
-                        reportFile = getMonthlyReport(getLocalEntityManager());
+                        reportFile = getMonthlyReport(getEntityManager1());
                     }
                     break;
                 default:

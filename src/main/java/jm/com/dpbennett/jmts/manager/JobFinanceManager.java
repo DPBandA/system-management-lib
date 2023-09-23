@@ -19,7 +19,6 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.jmts.manager;
 
-import com.mysql.cj.Session;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -119,7 +118,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     private Department unitCostDepartment;
     private UnitCost currentUnitCost;
     private List<UnitCost> unitCosts;
-    private String dialogActionHandlerId;
     private List<Job> jobsWithCostings;
     private Job currentJobWithCosting;
     private Department jobCostDepartment;
