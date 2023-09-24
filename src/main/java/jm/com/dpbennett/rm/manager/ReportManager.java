@@ -89,6 +89,7 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -407,8 +408,22 @@ public class ReportManager extends GeneralManager implements Serializable {
     }
 
     public void editReport() {
-        PrimeFacesUtils.openDialog(null, "reportTemplateDialog", true, true, true,
-                getDialogHeight(), getDialogWidth() + 50);
+        
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 50) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("reportTemplateDialog", options, null);
+ 
     }
 
     public Report getSelectedReport() {
@@ -478,9 +493,22 @@ public class ReportManager extends GeneralManager implements Serializable {
         selectedDatePeriod.initDatePeriod();
 
         setEdit(false);
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "reportDatePeriodDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("reportDatePeriodDialog", options, null);
+
     }
 
     public Boolean getIsNewDatePeriod() {
@@ -490,9 +518,21 @@ public class ReportManager extends GeneralManager implements Serializable {
     public void editDatePeriod() {
 
         setEdit(true);
+        
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "reportDatePeriodDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("reportDatePeriodDialog", options, null);
 
     }
 
