@@ -408,8 +408,8 @@ public class ReportManager extends GeneralManager implements Serializable {
     }
 
     public void editReport() {
-        
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
@@ -423,7 +423,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("reportTemplateDialog", options, null);
- 
+
     }
 
     public Report getSelectedReport() {
@@ -493,12 +493,12 @@ public class ReportManager extends GeneralManager implements Serializable {
         selectedDatePeriod.initDatePeriod();
 
         setEdit(false);
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() - 50) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -518,8 +518,8 @@ public class ReportManager extends GeneralManager implements Serializable {
     public void editDatePeriod() {
 
         setEdit(true);
-        
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
