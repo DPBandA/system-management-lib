@@ -702,12 +702,14 @@ public class ReportManager extends GeneralManager implements Serializable {
 
         try {
 
-            con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+            em.getTransaction().begin();
+            con = BusinessEntityUtils.getConnection(em);
 
+//            con = BusinessEntityUtils.establishConnection(
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
+//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
             if (con != null) {
                 StreamedContent streamContent;
                 byte[] fileBytes;
@@ -721,7 +723,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 // Provide date parameters if required
                 if (selectedReport.getDatePeriodRequired()) {
                     for (int i = 0; i < selectedReport.getDatePeriods().size(); i++) {
-                        System.out.println("date period: " + selectedReport.getDatePeriods().get(i).getDateField());
+                        
                         parameters.put("dateField" + (i + 1),
                                 selectedReport.getDatePeriods().get(i).getDateField());
                         parameters.put("startOfPeriod" + (i + 1),
@@ -806,6 +808,8 @@ public class ReportManager extends GeneralManager implements Serializable {
                 }
 
                 setLongProcessProgress(100);
+
+                em.getTransaction().commit();
 
                 return streamContent;
 
