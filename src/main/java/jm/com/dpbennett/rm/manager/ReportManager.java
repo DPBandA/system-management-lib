@@ -705,11 +705,6 @@ public class ReportManager extends GeneralManager implements Serializable {
             em.getTransaction().begin();
             con = BusinessEntityUtils.getConnection(em);
 
-//            con = BusinessEntityUtils.establishConnection(
-//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-//                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
             if (con != null) {
                 StreamedContent streamContent;
                 byte[] fileBytes;
