@@ -5,23 +5,10 @@
  */
 package jm.com.dpbennett.sm.util;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
 import javax.faces.model.SelectItem;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.hrm.Employee;
-import jm.com.dpbennett.business.entity.sm.SystemOption;
-import jm.com.dpbennett.business.entity.util.ReturnMessage;
 
 /**
  *
@@ -69,13 +56,13 @@ public class Utils {
         return titles;
     }
 
-    public static List getSearchTypes() {
-        ArrayList searchTypes = new ArrayList();
-
-        searchTypes.add(new SelectItem("General", "General"));
-
-        return searchTypes;
-    }
+//    public static List getSearchTypes() {
+//        ArrayList searchTypes = new ArrayList();
+//
+//        searchTypes.add(new SelectItem("General", "General"));
+//
+//        return searchTypes;
+//    }
 
     /*
 
