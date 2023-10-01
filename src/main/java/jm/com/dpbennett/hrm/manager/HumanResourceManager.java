@@ -60,6 +60,7 @@ import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectIte
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 
 /**
@@ -700,34 +701,117 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void editDepartment() {
-        PrimeFacesUtils.openDialog(null, "departmentDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("departmentDialog", options, null);
+
     }
 
     public void editEmployeePosition() {
-        PrimeFacesUtils.openDialog(null, "employeePositionDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("employeePositionDialog", options, null);
+
     }
 
     public void editSubgroup() {
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("subgroupDialog", options, null);
+
     }
 
     public void editDivision() {
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("divisionDialog", options, null);
+
     }
 
     public void editBusiness() {
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("businessDialog", options, null);
+
     }
 
     public void editEmployee() {
 
-        PrimeFacesUtils.openDialog(null, "employeeDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("employeeDialog", options, null);
+
     }
 
     public Employee getSelectedEmployee() {
@@ -833,14 +917,27 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openDepartmentPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "departmentPickListDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("departmentPickListDialog", options, null);
+
     }
 
     public void addSubgroupDepartments() {
         List<Department> source = Department.findAllActiveDepartments(getEntityManager1());
         List<Department> target = selectedSubgroup.getDepartments();
-
         source.removeAll(target);
 
         departmentDualList = new DualListModel<>(source, target);
@@ -866,8 +963,22 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openEmployeePickListDialog() {
-        PrimeFacesUtils.openDialog(null, "employeePickListDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("employeePickListDialog", options, null);
+
     }
 
     public void addDivisionDepartments() {
@@ -893,8 +1004,22 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openSubgroupPickListDialog() {
-        PrimeFacesUtils.openDialog(null, "subgroupPickListDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("subgroupPickListDialog", options, null);
+
     }
 
     public void addBusinessDepartments() {
@@ -912,16 +1037,14 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedBusiness = new Business();
 
-        PrimeFacesUtils.openDialog(null, "businessDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        editBusiness();
     }
 
     public void createNewSubgroup() {
 
         selectedSubgroup = new Subgroup();
 
-        PrimeFacesUtils.openDialog(null, "subgroupDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        editSubgroup();
     }
 
     public void createNewEmployee() {
@@ -935,8 +1058,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         selectedDivision = new Division();
 
-        PrimeFacesUtils.openDialog(null, "divisionDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        editDivision();
     }
 
     public List<BusinessOffice> getBusinessOffices() {
@@ -998,9 +1120,22 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void editSelectedManufacturer() {
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "hr/manufacturer/manufacturerDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("hr/manufacturer/manufacturerDialog", options, null);
+
     }
 
     public String getManufacturerSearchText() {
