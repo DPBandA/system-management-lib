@@ -49,6 +49,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -347,9 +348,22 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void editSelectedClient() {
 
         setClientDialogTitle("Client");
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "clientDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        PrimeFaces.current().dialog().openDynamic("clientDialog", options, null);
+
     }
 
     public void updateClient() {
