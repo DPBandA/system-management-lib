@@ -123,6 +123,7 @@ public class JobManager extends GeneralManager
                 "JMTSv");
     }
 
+    // tk to be edited
     public Boolean getEnableJobDialogTab() {
 
         return (!getJobFinanceManager().getEnableOnlyPaymentEditing()

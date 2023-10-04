@@ -166,8 +166,8 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             // Contact Fax
             parameters.put("contactFax", contactPerson.getMainFaxNumber().toString());
             // Type of Services Needed
-            String services = 
-                    getCurrentJob().getServiceContract().getSelectedService().getName() 
+            String services
+                    = getCurrentJob().getServiceContract().getSelectedService().getName()
                     + " ";
             if (getCurrentJob().getServiceContract().getServiceRequestedTesting()) {
                 services = services + "Testing";
@@ -224,11 +224,8 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             }
             parameters.put("additionalSampleDetails", details);
 
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
 
             if (con != null) {
                 try {
@@ -249,7 +246,8 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
                             .stream(() -> new ByteArrayInputStream(fileBytes))
                             .build();
 
-                    //streamContent = new DefaultStreamedContent(new ByteArrayInputStream(fileBytes), "application/pdf", "Service Contract - " + getCurrentJob().getJobNumber() + ".pdf");
+                    em.getTransaction().commit();
+
                     return streamContent;
                 } catch (JRException ex) {
                     System.out.println(ex);
@@ -276,7 +274,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
         return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
                 "useServiceContractExcel");
     }
-    
+
     public Boolean getUseServiceContractPDF() {
         return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
                 "useServiceContractJRXML");
@@ -521,7 +519,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
     public void setIntendedMarketUSA(Boolean b) {
         getCurrentJob().getServiceContract().setIntendedMarketUSA(b);
     }
-    
+
     // intended martket - Canada
     public Boolean getIntendedMarketCanada() {
         if (getCurrentJob() != null) {
@@ -583,7 +581,6 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
         getCurrentJob().getJobStatusAndTracking().setSamplesCollected(b);
     }
 
-    
     public Boolean getDocumentCollected() {
         if (getCurrentJob() != null) {
             return getCurrentJob().getJobStatusAndTracking().getDocumentCollected();
