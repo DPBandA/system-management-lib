@@ -93,6 +93,7 @@ import jm.com.dpbennett.sm.util.JobDataModel;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -116,18 +117,34 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
+
     public String getApplicationFooter() {
 
         return "Job Management & Tracking System, v" + SystemOption.getString(getEntityManager1(),
                 "JMTSv");
     }
 
-    // tk to be edited
-    public Boolean getEnableJobDialogTab() {
+    public Boolean enableJobDialogTab(String tab) {
 
-        return (!getJobFinanceManager().getEnableOnlyPaymentEditing()
-                && getCurrentJob().getType().equals("Job"));
+        if (tab.equals("General")
+                && (getCurrentJob().getType().equals("Proforma Invoice")
+                || getCurrentJob().getType().equals("Job"))) {
+            return true;
+        } else if (tab.equals("Services")) {
+            return true;
+        } else if (tab.equals("Samples") && getCurrentJob().getType().equals("Job")) {
+            return true;
+        } else if (tab.equals("CostingAndPayment")) {
+            return true;
+        } else if (tab.equals("Grouping") && getCurrentJob().getType().equals("Job")) {
+            return true;
+        } else if (tab.equals("StatusAndTracking") && getCurrentJob().getType().equals("Job")) {
+            return true;
+        } else if (tab.equals("Reporting") && getCurrentJob().getType().equals("Job")) {
+            return true;
+        }
+
+        return false;
 
     }
 
@@ -394,7 +411,22 @@ public class JobManager extends GeneralManager
     }
 
     public void editStatusNote() {
-        PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 400, 575);
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width("575px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("statusNoteDialog", options, null);
+        //PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 400, 575);
     }
 
     public StatusNote getSelectedStatusNote() {
@@ -2693,7 +2725,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void completeLogin() {
-        
+
         super.updateUserActivity("JMTSv"
                 + SystemOption.getString(getEntityManager1(), "JMTSv"),
                 "Logged in");
