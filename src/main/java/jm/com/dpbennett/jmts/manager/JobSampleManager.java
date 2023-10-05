@@ -39,6 +39,7 @@ import jm.com.dpbennett.jmts.JobSampleDataModel;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -63,6 +64,14 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
         jobSampleDialogTabViewActiveIndex = 0;
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
     public Boolean getCancelEdit() {
         return cancelEdit;
     }
@@ -79,7 +88,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
      */
     public List getMethodsOfDisposal() {
         ArrayList methods = new ArrayList();
-        
+
         Integer days
                 = (Integer) SystemOption.getOptionValueObject(getEntityManager1(),
                         "sampleCollectionDays");
@@ -319,12 +328,42 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     public void editJobSample(ActionEvent event) {
         jobSampleDialogTabViewActiveIndex = 0;
         setCancelEdit(false);
-        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDialog", options, null);
+//        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
     }
 
     public void openJobSampleDeleteConfirmDialog(ActionEvent event) {
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 125) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDeleteConfirmDialog", true, true, true, 200, 375);
+        PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDeleteConfirmDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDeleteConfirmDialog", true, true, true, 200, 375);
     }
 
     public void doCopyJobSample() {
@@ -345,7 +384,22 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     }
 
     public void copyJobSample() {
-        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
+        
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDialog", options, null);
+//        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
     }
 
     public void setCopySelectedJobSample(JobSample selectedJobSample) {

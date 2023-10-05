@@ -98,6 +98,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  * This class handles financial matters pertaining to a job.
@@ -143,6 +144,14 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      */
     public JobFinanceManager() {
         init();
+    }
+
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
     }
 
     public String getProformaInvoiceSearchText() {
@@ -226,14 +235,44 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void openProformaInvoiceDialog() {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/proformaInvoiceDialog",
-                true, true, true, true, 400, 850);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 350) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/finance/proformaInvoiceDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/finance/proformaInvoiceDialog",
+//                true, true, true, true, 400, 850);
     }
 
     public void openJobCostEstimateDialog() {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostEstimateDialog",
-                true, true, true, true, 400, 850);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 350) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostEstimateDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostEstimateDialog",
+//                true, true, true, true, 400, 850);
     }
 
     public void proformaDialogReturn() {
@@ -2533,7 +2572,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     BusinessEntityUtils.getDateInMediumDateFormat(
                             getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
 
-            em.getTransaction().begin(); 
+            em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);
 
             if (con != null) {
@@ -2556,8 +2595,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                             .build();
 
                     setLongProcessProgress(100);
-                    
-                    em.getTransaction().commit(); 
+
+                    em.getTransaction().commit();
 
                     return streamContent;
                 } catch (JRException ex) {
@@ -3788,16 +3827,44 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void editCashPayment(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDialog",
-                true, true, true, 400, 500);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
+        PrimeFaces.current().dialog().openDynamic("/job/finance/cashPaymentDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDialog",
+//                true, true, true, 400, 500);
     }
 
     public void openClientCreditStatusDialog(ActionEvent event) {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog",
-                true, true, true, 400, 1000);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 500) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
+        PrimeFaces.current().dialog().openDynamic("/job/finance/clientCreditStatusDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog",
+//                true, true, true, 400, 1000);
     }
 
     public void createNewCostComponent(ActionEvent event) {
@@ -3951,8 +4018,23 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void editJobCosting() {
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog",
-                true, true, true, true, 400, 800);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 300) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostingDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/finance/jobCostingDialog",
+//                true, true, true, true, 400, 800);
     }
 
     public void okClientCreditStatus() {
@@ -4516,8 +4598,24 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public void openCashPaymentDeleteConfirmDialog(ActionEvent event) {
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 125) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDeleteConfirmDialog", true, true, true, 135, 375);
+        PrimeFaces.current().dialog().openDynamic("/job/finance/cashPaymentDeleteConfirmDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/job/finance/cashPaymentDeleteConfirmDialog", 
+//                true, true, true, 135, 375);
     }
 
     public void closeJCashPaymentDeleteConfirmDialog() {
