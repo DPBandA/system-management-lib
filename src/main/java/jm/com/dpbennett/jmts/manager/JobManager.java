@@ -118,6 +118,14 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
     public String getApplicationFooter() {
 
         return "Job Management & Tracking System, v" + SystemOption.getString(getEntityManager1(),
@@ -411,22 +419,22 @@ public class JobManager extends GeneralManager
     }
 
     public void editStatusNote() {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width("575px")
+                .width(getDialogWidth() + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
-                .resizable(true)
+                .resizable(false)
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("statusNoteDialog", options, null);
-        //PrimeFacesUtils.openDialog(null, "statusNoteDialog", true, true, true, 400, 575);
+
     }
 
     public StatusNote getSelectedStatusNote() {
@@ -2164,7 +2172,20 @@ public class JobManager extends GeneralManager
 
     public void editJob() {
 
-        PrimeFacesUtils.openDialog(null, "jobDialog", true, true, true, true, 400, 800);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("jobDialog", options, null);
 
     }
 
