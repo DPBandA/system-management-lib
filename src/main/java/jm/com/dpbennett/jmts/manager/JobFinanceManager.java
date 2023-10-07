@@ -3861,7 +3861,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/finance/clientCreditStatusDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/finance/accpac/clientCreditStatusDialog", options, null);
 
 //        PrimeFacesUtils.openDialog(null, "/job/finance/accpac/clientCreditStatusDialog",
 //                true, true, true, 400, 1000);
