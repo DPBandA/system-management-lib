@@ -157,9 +157,6 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
         selectedJobSample.setDateSampled(new Date());
         jobSampleDialogTabViewActiveIndex = 0;
 
-        //if (event != null) {
-        //    PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
-        //}
         editJobSample(event);
     }
 
@@ -343,11 +340,11 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDialog", options, null);
-//        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
+
     }
 
     public void openJobSampleDeleteConfirmDialog(ActionEvent event) {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -363,7 +360,6 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
 
         PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDeleteConfirmDialog", options, null);
 
-//        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDeleteConfirmDialog", true, true, true, 200, 375);
     }
 
     public void doCopyJobSample() {
@@ -384,8 +380,8 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     }
 
     public void copyJobSample() {
-        
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
@@ -399,7 +395,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDialog", options, null);
-//        PrimeFacesUtils.openDialog(null, "/job/sample/jobSampleDialog", true, true, true, 400, 700);
+
     }
 
     public void setCopySelectedJobSample(JobSample selectedJobSample) {

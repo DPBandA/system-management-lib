@@ -2373,15 +2373,45 @@ public class JobManager extends GeneralManager
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
+        
+         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
+        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
+        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,
