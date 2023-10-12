@@ -117,7 +117,7 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
+
     @Override
     public String getLogoURL() {
         return SystemOption.getString(
@@ -985,6 +985,8 @@ public class JobManager extends GeneralManager
             "reportManager",
             "systemManager",
             "financeManager",
+            "purchasingManager",
+            "inventoryManager",
             "humanResourceManager",
             "purchasingManager"
         });
@@ -2379,8 +2381,8 @@ public class JobManager extends GeneralManager
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
-        
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
@@ -2401,7 +2403,7 @@ public class JobManager extends GeneralManager
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -2735,7 +2737,7 @@ public class JobManager extends GeneralManager
         getManager("financeManager").setUser(getUser());
         getManager("humanResourceManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
-
+        getManager("inventoryManager").setUser(getUser());
     }
 
     @Override
@@ -2748,13 +2750,34 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        Modules module = Modules.findActiveModuleByName(getEntityManager1(),
-                "jobManager");
-        if (module != null) {
-            if (getUser().hasModule("jobManager")) {
+        if (getUser().hasModule("jobManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "jobManager");
+            if (module != null) {
                 getMainTabView().openTab(module.getDashboardTitle());
             }
         }
+        
+        // tk Relook into doing this. Modules may be loaded based on the 
+        // the "Most recent" list of module tabs viewed by the user.
+        if (getUser().hasModule("purchasingManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "purchasingManager");
+            if (module != null) {
+                getMainTabView().openTab(module.getDashboardTitle());
+            }
+        }
+        
+        if (getUser().hasModule("inventoryManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "inventoryManager");
+            if (module != null) {
+                getMainTabView().openTab(module.getDashboardTitle());
+            }
+        }        
 
     }
 
