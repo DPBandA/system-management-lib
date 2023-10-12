@@ -223,13 +223,11 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void openProformaInvoicesTab() {
 
-        //doJobSearch();
         getMainTabView().openTab("Proforma Invoices");
     }
 
     public void openPriceListTab() {
 
-        //doJobSearch();
         getMainTabView().openTab("Price List");
     }
 
@@ -285,13 +283,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         createNewJob();
 
-        getCurrentJob().setType("Proforma Invoice");
-        getCurrentJob().setClassification(Classification.
-                findClassificationByName(getEntityManager1(),
-                        (String) SystemOption.getOptionValueObject(getEntityManager1(),
-                                "defaultJobClassification")));
+        getCurrentJob().setType("Proforma Invoice");       
         getCurrentJob().setAssignedTo(getUser().getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
+        // tk job type field to be used where applicable instead of setting progress to cancelled
         getCurrentJob().getJobStatusAndTracking().setWorkProgress("Cancelled");
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().getJobCostingAndPayment().
@@ -302,6 +297,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 getEntityManager1()));
 
         getJobManager().editJob();
+        
+        openProformaInvoicesTab();
     }
 
     public void openNewCostEstimateDialog() {

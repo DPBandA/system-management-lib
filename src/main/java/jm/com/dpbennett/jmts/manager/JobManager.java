@@ -117,6 +117,12 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
+    
+    @Override
+    public String getLogoURL() {
+        return SystemOption.getString(
+                getEntityManager1(), "JMTSLogo");
+    }
 
     public Integer getDialogHeight() {
         return 400;
@@ -173,8 +179,8 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+        return SystemOption.getString(
+                getEntityManager1(), "JMTSLogo");
     }
 
     private void sendJobEntryEmail(
