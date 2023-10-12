@@ -2729,7 +2729,7 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void setManagersUser() { // tk check if this necessary
+    public void setManagersUser() {
 
         getManager("systemManager").setUser(getUser());
         getManager("clientManager").setUser(getUser());
