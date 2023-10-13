@@ -125,10 +125,10 @@ public final class SystemManager extends GeneralManager implements Serializable 
     public SystemManager() {
         init();
     }
-    
+
     public String getCurrentYear() {
-        
-        return "" + BusinessEntityUtils.getCurrentYear();        
+
+        return "" + BusinessEntityUtils.getCurrentYear();
     }
 
     public void removeSelectedSystemOptionText() {
@@ -937,7 +937,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
                     selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
                 }
                 break;
-            case "Settings":
+            case "System Settings":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
 
@@ -1080,7 +1080,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
                 return dateSearchFields;
-            case "Settings":
+            case "System Settings":
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
@@ -1801,6 +1801,15 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     }
 
+    public void selectTab(
+            int innerTabIndex) {
+
+        getMainTabView().openTab("System Administration");
+
+        PrimeFaces.current().executeScript("PF('" + "centerTabVar" + "').select(" + innerTabIndex + ");");
+
+    }
+
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
 
@@ -1810,7 +1819,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         searchTypes.add(new SelectItem("Privileges", "Privileges"));
         searchTypes.add(new SelectItem("Categories", "Categories"));
         searchTypes.add(new SelectItem("Document Types", "Document Types"));
-        searchTypes.add(new SelectItem("Settings", "Settings"));
+        searchTypes.add(new SelectItem("System Settings", "System Settings"));
         searchTypes.add(new SelectItem("Authentication", "Authentication"));
         searchTypes.add(new SelectItem("Modules", "Modules"));
         searchTypes.add(new SelectItem("Attachments", "Attachments"));
@@ -1825,7 +1834,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
-                "Settings",
+                "System Settings",
                 getSystemOptionSearchText(),
                 null,
                 null);
@@ -1851,8 +1860,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void editSystemOption() {
-        
-         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
@@ -1914,7 +1923,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
         PrimeFaces.current().dialog().openDynamic("ldapDialog", options, null);
 
     }
-    
+
     public void openContactUsDialog() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
