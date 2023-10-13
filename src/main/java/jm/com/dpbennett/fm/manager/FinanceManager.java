@@ -316,6 +316,14 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
+    public void selectTab(int innerTabIndex) {
+
+        getMainTabView().openTab("Financial Administration");
+
+        PrimeFaces.current().executeScript("PF('" + "financialAdminTabVar" + "').select(" + innerTabIndex + ");");
+
+    }
+
     public List<MarketProduct> completeActiveMarketProduct(String query) {
         try {
             return MarketProduct.findActiveMarketProductsByName(
