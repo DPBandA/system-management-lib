@@ -57,6 +57,7 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -81,6 +82,14 @@ public class EnergyLabelManager extends GeneralManager
      */
     public EnergyLabelManager() {
         init();
+    }
+
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 600;
     }
 
     public void onLabelDialogTabChange(TabChangeEvent event) {
@@ -281,8 +290,22 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void editSelectedEnergyLabel() {
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
-       PrimeFacesUtils.openDialog(null, "labelDialog", true, true, true, true, 400, 600);
+        PrimeFaces.current().dialog().openDynamic("labelDialog", options, null);
+        
     }
 
     public void createNewEnergyLabel() {
@@ -630,8 +653,7 @@ public class EnergyLabelManager extends GeneralManager
                     // Feature 2
                     if (!getSelectedEnergyLabel().getFeature2().trim().isEmpty()) {
                         setElementText("feature2", "- " + getSelectedEnergyLabel().getFeature2(), "start");
-                    }
-                    else {
+                    } else {
                         setElementText("feature2", "", "start");
                     }
                     // Letter rating                
