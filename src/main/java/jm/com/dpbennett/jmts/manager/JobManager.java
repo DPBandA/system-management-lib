@@ -988,7 +988,8 @@ public class JobManager extends GeneralManager
             "purchasingManager",
             "inventoryManager",
             "humanResourceManager",
-            "purchasingManager"
+            "purchasingManager",
+            "energyLabelManager"
         });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
@@ -2738,6 +2739,7 @@ public class JobManager extends GeneralManager
         getManager("humanResourceManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
         getManager("inventoryManager").setUser(getUser());
+        getManager("energyLabelManager").setUser(getUser());
     }
 
     @Override
