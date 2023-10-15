@@ -58,6 +58,7 @@ import org.apache.poi.hssf.util.CellRangeAddress;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -260,8 +261,23 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void editClient() {
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true,
+//                getDialogHeight(), getDialogWidth());
     }
 
     public DocumentReport getDocumentReport() {
@@ -317,20 +333,67 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void editDocument() {
         getCurrentDocument().setIsDirty(false);
 
-        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDialog", true, true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/legal/legalDocumentDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDialog", true, true, true, true,
+//                getDialogHeight(), getDialogWidth());
     }
 
     public void deleteDocumentConfirmDialog() {
-        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDeleteConfirmDialog",
-                true, true, true, false, 125, 400);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/legal/legalDocumentDeleteConfirmDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDeleteConfirmDialog",
+//                true, true, true, false, 125, 400);
     }
 
     public void editDocumentType(ActionEvent actionEvent) {
 
         getSystemManager().setSelectedDocumentType(getCurrentDocument().getDocumentType());
-        getCurrentDocument().setType(null);
-        getSystemManager().openDocumentTypeDialog("/admin/documentTypeDialog");
+        getCurrentDocument().setDocumentType(null);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
+
+        //getSystemManager().openDocumentTypeDialog("/admin/documentTypeDialog");
     }
 
     public void editClassification(ActionEvent actionEvent) {
@@ -345,16 +408,45 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void editClassification() {
 
-        PrimeFacesUtils.openDialog(null, "/finance/classificationDialog", true, true, true,
-                getDialogHeight(), getDialogWidth());
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
 
+        PrimeFaces.current().dialog().openDynamic("/finance/classificationDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/finance/classificationDialog", true, true, true,
+//                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewDocumentType(ActionEvent actionEvent) {
         getSystemManager().setSelectedDocumentType(new DocumentType());
 
-        PrimeFacesUtils.openDialog(null, "/admin/documentTypeDialog", true, true, true,
-                275, 400);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
+
+//        PrimeFacesUtils.openDialog(null, "/admin/documentTypeDialog", true, true, true,
+//                275, 400);
     }
 
     public void saveCurrentLegalDocument(ActionEvent actionEvent) {
@@ -795,7 +887,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public void completeLogout() {
-        
+
         super.updateUserActivity("LOv"
                 + SystemOption.getString(getEntityManager1(), "LOv"),
                 "Logged out");
@@ -806,7 +898,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public void completeLogin() {
-        
+
         super.updateUserActivity("LOv"
                 + SystemOption.getString(getEntityManager1(), "LOv"),
                 "Logged in");
