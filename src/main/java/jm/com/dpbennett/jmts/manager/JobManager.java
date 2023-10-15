@@ -652,7 +652,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getApplicationHeader() {
-        return "Job Management & Tracking System";
+        return SystemOption.getString(getEntityManager1(), "JMTSName");
     }
 
     /**
@@ -2652,20 +2652,8 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getApplicationSubheader() {
-        String subHeader;
-
-        subHeader = (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "applicationSubheader");
-
-        if (subHeader != null) {
-            if (subHeader.trim().equals("None")) {
-                return getUser().getEmployee().getDepartment().getName();
-            }
-        } else {
-            subHeader = "";
-        }
-
-        return subHeader;
+       
+        return SystemOption.getString(getEntityManager1(), "JMTSTagLine");
     }
 
     @Override
