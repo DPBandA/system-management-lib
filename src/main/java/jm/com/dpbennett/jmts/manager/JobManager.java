@@ -990,6 +990,7 @@ public class JobManager extends GeneralManager
             "humanResourceManager",
             "purchasingManager",
             "legalDocumentManager",
+            "complianceManager",
             "energyLabelManager"
         });
         setDateSearchPeriod(new DatePeriod("This month", "month",
@@ -2730,6 +2731,7 @@ public class JobManager extends GeneralManager
         getManager("inventoryManager").setUser(getUser());
         getManager("legalDocumentManager").setUser(getUser());
         getManager("energyLabelManager").setUser(getUser());
+        getManager("complianceManager").setUser(getUser());
     }
 
     @Override
