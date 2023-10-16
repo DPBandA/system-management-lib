@@ -34,7 +34,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
@@ -81,6 +80,7 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 
@@ -904,7 +904,22 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void openComplianceSurvey() {
-        PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 800);
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/surveyDialog", options, null);
+      
     }
 
     public void editFactoryInspection() {
