@@ -134,8 +134,9 @@ public class JobManager extends GeneralManager
 
     public String getApplicationFooter() {
 
-        return "Job Management & Tracking System, v" + SystemOption.getString(getEntityManager1(),
-                "JMTSv");
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getEntityManager1(),
+                        "JMTSv");
     }
 
     public Boolean enableJobDialogTab(String tab) {
@@ -653,6 +654,14 @@ public class JobManager extends GeneralManager
     @Override
     public String getApplicationHeader() {
         return SystemOption.getString(getEntityManager1(), "JMTSName");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
+    }
+    
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getEntityManager1(), "organizationWebsite");
     }
 
     /**
@@ -2400,7 +2409,6 @@ public class JobManager extends GeneralManager
 
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public void editJobClient() {
@@ -2422,7 +2430,6 @@ public class JobManager extends GeneralManager
 
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 400, 700);
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,
@@ -2654,7 +2661,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getApplicationSubheader() {
-       
+
         return SystemOption.getString(getEntityManager1(), "JMTSTagLine");
     }
 
@@ -2752,7 +2759,7 @@ public class JobManager extends GeneralManager
                 getMainTabView().openTab(module.getDashboardTitle());
             }
         }
-        
+
         // tk Relook into doing this. Modules may be loaded based on the 
         // the "Most recent" list of module tabs viewed by the user.
         if (getUser().hasModule("purchasingManager")) {
@@ -2763,7 +2770,7 @@ public class JobManager extends GeneralManager
                 getMainTabView().openTab(module.getDashboardTitle());
             }
         }
-        
+
         if (getUser().hasModule("inventoryManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
@@ -2771,7 +2778,7 @@ public class JobManager extends GeneralManager
             if (module != null) {
                 getMainTabView().openTab(module.getDashboardTitle());
             }
-        }        
+        }
 
     }
 

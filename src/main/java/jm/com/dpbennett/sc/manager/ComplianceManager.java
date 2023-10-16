@@ -65,6 +65,7 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 
@@ -123,6 +124,14 @@ public class ComplianceManager extends GeneralManager
         reset();
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
@@ -165,7 +174,22 @@ public class ComplianceManager extends GeneralManager
         getSystemManager().setSelectedCategory(
                 getCurrentProductInspection().getProductCategory());
 
-        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 100) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/categoryDialog", options, null);
+
+        //PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
     }
 
     public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
@@ -405,33 +429,60 @@ public class ComplianceManager extends GeneralManager
             return new ArrayList<>();
         }
     }
+    
+    public void editClient() {
+        
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+        
+    }
 
     public void editConsignee() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getConsignee());
         getClientManager().setClientDialogTitle("Consignee Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editComplainant() {
         getClientManager().setSelectedClient(getCurrentComplaint().getComplainant());
         getClientManager().setClientDialogTitle("Complainant Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editReceivedVia() {
         getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
         getClientManager().setClientDialogTitle("Client Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editBroker() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getBroker());
         getClientManager().setClientDialogTitle("Broker Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editManufacturer() {
@@ -449,50 +500,64 @@ public class ComplianceManager extends GeneralManager
     public void editDistributor() {
         getClientManager().setSelectedClient(getCurrentProductInspection().getDistributor());
         getClientManager().setClientDialogTitle("Distributor Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editRetailOutlet() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getRetailOutlet());
         getClientManager().setClientDialogTitle("Retail Outlet Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewConsignee() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Consignee Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewComplainant() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Complainant Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewReceivedVia() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewBroker() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Broker Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewDistributor() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Distributor Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewManufacturer() {
@@ -504,8 +569,10 @@ public class ComplianceManager extends GeneralManager
     public void createNewRetailOutlet() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Retail Outlet Detail");
+        
+        editClient();
 
-        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void consigneeDialogReturn() {
