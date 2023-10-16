@@ -188,7 +188,7 @@ public class ComplianceManager extends GeneralManager
     public void editMarketProductCategory() {
         getSystemManager().setSelectedCategory(
                 getCurrentProductInspection().getProductCategory());
-        
+
         getSystemManager().editCategory();
 
     }
@@ -430,25 +430,25 @@ public class ComplianceManager extends GeneralManager
             return new ArrayList<>();
         }
     }
-    
+
     public void editClient() {
-        
+
         getClientManager().editSelectedClient();
-         
+
     }
 
     public void editConsignee() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getConsignee());
         getClientManager().setClientDialogTitle("Consignee Detail");
-        
+
         editClient();
-        
+
     }
 
     public void editComplainant() {
         getClientManager().setSelectedClient(getCurrentComplaint().getComplainant());
         getClientManager().setClientDialogTitle("Complainant Detail");
-        
+
         editClient();
 
     }
@@ -456,7 +456,7 @@ public class ComplianceManager extends GeneralManager
     public void editReceivedVia() {
         getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
         getClientManager().setClientDialogTitle("Client Detail");
-        
+
         editClient();
 
     }
@@ -464,7 +464,7 @@ public class ComplianceManager extends GeneralManager
     public void editBroker() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getBroker());
         getClientManager().setClientDialogTitle("Broker Detail");
-        
+
         editClient();
 
     }
@@ -473,7 +473,7 @@ public class ComplianceManager extends GeneralManager
         getHumanResourceManager().setSelectedManufacturer(getCurrentProductInspection().getManufacturer());
 
         getHumanResourceManager().editSelectedManufacturer();
-        
+
     }
 
     public void editFactoryInspectionManufacturer() {
@@ -485,7 +485,7 @@ public class ComplianceManager extends GeneralManager
     public void editDistributor() {
         getClientManager().setSelectedClient(getCurrentProductInspection().getDistributor());
         getClientManager().setClientDialogTitle("Distributor Detail");
-        
+
         editClient();
 
     }
@@ -493,7 +493,7 @@ public class ComplianceManager extends GeneralManager
     public void editRetailOutlet() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getRetailOutlet());
         getClientManager().setClientDialogTitle("Retail Outlet Detail");
-        
+
         editClient();
 
     }
@@ -501,7 +501,7 @@ public class ComplianceManager extends GeneralManager
     public void createNewConsignee() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Consignee Detail");
-        
+
         editClient();
 
     }
@@ -509,7 +509,7 @@ public class ComplianceManager extends GeneralManager
     public void createNewComplainant() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Complainant Detail");
-        
+
         editClient();
 
     }
@@ -517,7 +517,7 @@ public class ComplianceManager extends GeneralManager
     public void createNewReceivedVia() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
-        
+
         editClient();
 
     }
@@ -525,7 +525,7 @@ public class ComplianceManager extends GeneralManager
     public void createNewBroker() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Broker Detail");
-        
+
         editClient();
 
     }
@@ -533,14 +533,14 @@ public class ComplianceManager extends GeneralManager
     public void createNewDistributor() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Distributor Detail");
-        
+
         editClient();
 
     }
 
     public void createNewManufacturer() {
         getHumanResourceManager().createNewManufacturer(true);
-        
+
         getHumanResourceManager().editSelectedManufacturer();
 
     }
@@ -548,7 +548,7 @@ public class ComplianceManager extends GeneralManager
     public void createNewRetailOutlet() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Retail Outlet Detail");
-        
+
         editClient();
 
     }
@@ -904,7 +904,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void openComplianceSurvey() {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -919,23 +919,83 @@ public class ComplianceManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/compliance/surveyDialog", options, null);
-      
+
     }
 
     public void editFactoryInspection() {
-        PrimeFacesUtils.openDialog(null, "/compliance/factoryInspectionDialog", true, true, true, true, 650, 900);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/factoryInspectionDialog", options, null);
+
     }
 
     public void openProductInspectionDialog() {
-        PrimeFacesUtils.openDialog(null, "/compliance/productInspectionDialog", true, true, true, true, 650, 800);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/productInspectionDialog", options, null);
+
     }
 
     public void openComplaintProductInspectionDialog() {
-        PrimeFacesUtils.openDialog(null, "/compliance/complaintProductInspectionDialog", true, true, true, true, 650, 800);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/complaintProductInspectionDialog", options, null);
+
     }
 
     public void openDocumentStandardDialog() {
-        PrimeFacesUtils.openDialog(null, "/compliance/documentStandardDialog", true, true, true, true, 650, 800);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/documentStandardDialog", options, null);
+
     }
 
     public void openSurveysBrowser() {
@@ -961,7 +1021,7 @@ public class ComplianceManager extends GeneralManager
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
-      
+
     }
 
     public void surveyDialogReturn() {
@@ -1485,7 +1545,22 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void openFactoryProductInspectionDialog() {
-        PrimeFacesUtils.openDialog(null, "/compliance/factoryProductInspectionDialog", true, true, true, true, 650, 800);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/factoryProductInspectionDialog", options, null);
+    
     }
 
     public void editFactoryProductInspection() {
