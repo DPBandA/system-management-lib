@@ -1,6 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+Standards Compliance (SC) 
+Copyright (C) 2023  D P Bennett & Associates Limited
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sc.manager;
 
@@ -19,6 +34,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
@@ -65,7 +81,6 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 
@@ -173,23 +188,9 @@ public class ComplianceManager extends GeneralManager
     public void editMarketProductCategory() {
         getSystemManager().setSelectedCategory(
                 getCurrentProductInspection().getProductCategory());
+        
+        getSystemManager().editCategory();
 
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() - 100) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/admin/categoryDialog", options, null);
-
-        //PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
     }
 
     public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
@@ -432,21 +433,8 @@ public class ComplianceManager extends GeneralManager
     
     public void editClient() {
         
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
-        
+        getClientManager().editSelectedClient();
+         
     }
 
     public void editConsignee() {
@@ -454,8 +442,7 @@ public class ComplianceManager extends GeneralManager
         getClientManager().setClientDialogTitle("Consignee Detail");
         
         editClient();
-
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+        
     }
 
     public void editComplainant() {
@@ -464,7 +451,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editReceivedVia() {
@@ -473,7 +459,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editBroker() {
@@ -482,19 +467,19 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editManufacturer() {
         getHumanResourceManager().setSelectedManufacturer(getCurrentProductInspection().getManufacturer());
 
-        PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
+        getHumanResourceManager().editSelectedManufacturer();
+        
     }
 
     public void editFactoryInspectionManufacturer() {
         getHumanResourceManager().setSelectedManufacturer(getCurrentFactoryInspection().getManufacturer());
 
-        PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
+        getHumanResourceManager().editSelectedManufacturer();;
     }
 
     public void editDistributor() {
@@ -503,7 +488,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void editRetailOutlet() {
@@ -512,7 +496,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewConsignee() {
@@ -521,7 +504,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewComplainant() {
@@ -530,7 +512,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewReceivedVia() {
@@ -539,7 +520,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewBroker() {
@@ -548,7 +528,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewDistributor() {
@@ -557,13 +536,13 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void createNewManufacturer() {
         getHumanResourceManager().createNewManufacturer(true);
+        
+        getHumanResourceManager().editSelectedManufacturer();
 
-        PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
 
     public void createNewRetailOutlet() {
@@ -572,7 +551,6 @@ public class ComplianceManager extends GeneralManager
         
         editClient();
 
-        //PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
     public void consigneeDialogReturn() {
@@ -968,6 +946,7 @@ public class ComplianceManager extends GeneralManager
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
+      
     }
 
     public void surveyDialogReturn() {

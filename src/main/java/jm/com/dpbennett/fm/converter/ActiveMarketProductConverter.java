@@ -17,12 +17,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.fm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**

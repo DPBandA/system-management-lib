@@ -362,7 +362,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("clientDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null); 
 
     }
 

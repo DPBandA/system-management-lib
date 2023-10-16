@@ -440,7 +440,7 @@ public class JobManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("statusNoteDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/statusNoteDialog", options, null);
 
     }
 
@@ -2205,7 +2205,7 @@ public class JobManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("jobDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
 
     }
 
@@ -2393,21 +2393,8 @@ public class JobManager extends GeneralManager
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+        
+        getClientManager().editSelectedClient();
 
     }
 
@@ -2415,21 +2402,8 @@ public class JobManager extends GeneralManager
         getClientManager().setSelectedClient(getCurrentJob().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
 
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
-
+        getClientManager().editSelectedClient();
+        
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,
