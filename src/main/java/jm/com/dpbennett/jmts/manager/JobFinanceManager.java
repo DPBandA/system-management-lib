@@ -2744,6 +2744,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      * @return
      */
     public Boolean getCanExportJobCosting() {
+        
         return !(getCurrentJob().getJobCostingAndPayment().getCostingApproved()
                 && getCurrentJob().getJobCostingAndPayment().getCostingCompleted());
     }
