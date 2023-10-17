@@ -62,6 +62,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -177,6 +178,10 @@ public class ComplianceManager extends GeneralManager
     public Boolean getIsMarketProductCategoryNameValid() {
         return BusinessEntityUtils.validateName(
                 getCurrentProductInspection().getProductCategory().getName());
+    }
+
+    public void createNewMarketProduct() {
+        getFinanceManager().createNewMarketProduct();
     }
 
     public void createNewMarketProductCategoryDialogReturn() {
@@ -1018,6 +1023,11 @@ public class ComplianceManager extends GeneralManager
         return BeanUtils.findBean("humanResourceManager");
     }
 
+    public FinanceManager getFinanceManager() {
+
+        return BeanUtils.findBean("financeManager");
+    }
+
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
@@ -1560,7 +1570,7 @@ public class ComplianceManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/compliance/factoryProductInspectionDialog", options, null);
-    
+
     }
 
     public void editFactoryProductInspection() {
@@ -2133,7 +2143,22 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void editComplaint() {
-        PrimeFacesUtils.openDialog(null, "/compliance/complaintDialog", true, true, true, true, 650, 800);
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/complaintDialog", options, null);
+
     }
 
     public Boolean getComplianceSurveyIsValid() {
