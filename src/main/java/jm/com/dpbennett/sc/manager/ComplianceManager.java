@@ -140,6 +140,14 @@ public class ComplianceManager extends GeneralManager
         reset();
     }
 
+    public void openMarketProductBrowser() {
+        getFinanceManager().openMarketProductBrowser();
+    }
+
+    public void openManufacturerBrowser() {
+        getHumanResourceManager().openManufacturerBrowser();
+    }
+
     public Integer getDialogHeight() {
         return 400;
     }

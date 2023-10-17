@@ -2668,11 +2668,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     BusinessEntityUtils.getDateInMediumDateFormat(
                             getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
 
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
 
             if (con != null) {
                 try {
@@ -2694,6 +2691,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                             .build();
 
                     setLongProcessProgress(100);
+                    
+                    em.getTransaction().commit();
 
                     return streamContent;
                 } catch (JRException ex) {
