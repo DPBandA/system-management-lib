@@ -2085,31 +2085,31 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void doSurveySearch() {
-//        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
-//                getUser(),
-//                dateSearchField,
-//                "General",
-//                surveySearchText,
-//                null, // getDatePeriod().getStartDate()
-//                null, // getDatePeriod().getEndDate()
-//                false,
-//                500); // for testing...will be set to 0.
+        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
+                getUser(),
+                "dateAndTimeEntered", // tk be variable
+                "General",
+                surveySearchText,
+                null, // getDatePeriod().getStartDate()
+                null, // getDatePeriod().getEndDate()
+                false,
+                500); // tk to be made system option.
 
-        complianceSurveys = new ArrayList<>(); // tk - remove this code!!!
+     //   complianceSurveys = new ArrayList<>(); // tk - remove this code!!!
 
         openSurveysBrowser();
     }
 
     public void doDefaultSurveySearch() {
-//        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
-//                getUser(),
-//                dateSearchField,
-//                "General",
-//                surveySearchText,
-//                null, //getDatePeriod().getStartDate()
-//                null, // getDatePeriod().getEndDate()
-//                false,
-//                500); // tk for testing...will be set to 0
+        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
+                getUser(),
+                "dateAndTimeEntered", // tk be variable
+                "General",
+                surveySearchText,
+                null, //getDatePeriod().getStartDate()
+                null, // getDatePeriod().getEndDate()
+                false,
+                500); // tk to be made system option.
     }
 
 //    public List<String> completeSearchText(String query) {
