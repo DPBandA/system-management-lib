@@ -209,12 +209,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void deleteDisbursement() {
         deleteDisbursementByProductName(selectedInventoryDisbursement.
-                getInventory().getProduct().getCommonName());
+                getInventory().getProduct().getName());
     }
 
     public void deleteSelectedDisbursement() {
         deleteDisbursementByProductName(selectedInventoryDisbursement.
-                getInventory().getProduct().getCommonName());
+                getInventory().getProduct().getName());
     }
 
     public void deleteDisbursementByProductName(String productName) {
@@ -222,7 +222,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         List<InventoryDisbursement> disbusements = getSelectedInventoryRequisition().getAllSortedInventoryDisbursements();
         int index = 0;
         for (InventoryDisbursement disbursement : disbusements) {
-            if (disbursement.getInventory().getProduct().getCommonName().equals(productName)) {
+            if (disbursement.getInventory().getProduct().getName().equals(productName)) {
                 disbusements.remove(index);
                 updateInventoryRequisition(null);
 
@@ -330,7 +330,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void addNewCostComponent() {
         selectedCostComponent = createNewCostComponent(
-                getSelectedInventory().getProduct().getCommonName(),
+                getSelectedInventory().getProduct().getName(),
                 getSelectedInventory().getCode(),
                 "Purchase");
         
