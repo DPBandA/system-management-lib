@@ -140,6 +140,17 @@ public class ComplianceManager extends GeneralManager
         reset();
     }
 
+    public void editJob() {
+        Job job = Job.findJobByJobNumber(getEntityManager1(), 
+                getCurrentComplianceSurvey().getJobNumber());
+        
+        System.out.println(" editJob() to be implemented...");
+    }
+
+    public void createNewJob() {
+        System.out.println(" createNewJob() to be implemented...");
+    }
+
     public void openMarketProductBrowser() {
         getFinanceManager().openMarketProductBrowser();
     }
@@ -2095,8 +2106,7 @@ public class ComplianceManager extends GeneralManager
                 false,
                 500); // tk to be made system option.
 
-     //   complianceSurveys = new ArrayList<>(); // tk - remove this code!!!
-
+        //   complianceSurveys = new ArrayList<>(); // tk - remove this code!!!
         openSurveysBrowser();
     }
 
