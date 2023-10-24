@@ -17,30 +17,32 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.hrm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.hrm.Employee;
+import jm.com.dpbennett.business.entity.hrm.Department;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author desbenn
  */
-@FacesConverter("activeEmployeeConverter")
-public class ActiveEmployeeConverter extends ConverterAdapter {
-    
+@FacesConverter("activeDepartmentConverter")
+public class ActiveDepartmentConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-                
-        Employee employee = Employee.findActiveEmployeeByName(getEntityManager(), value);
+     
+        Department department = Department.findActiveDepartmentByName(getEntityManager(), value);
 
-        if (value == null) {
-            employee = new Employee("--", "--");
+        if (department == null) {
+            department = new Department(value);
         }
 
-        return employee;
-    }    
+        return department;
+    }
+
 }

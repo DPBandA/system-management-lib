@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2020  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,31 +17,31 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+
+package jm.com.dpbennett.sc.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.hrm.Department;
+import jm.com.dpbennett.business.entity.dm.DocumentStandard;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author desbenn
  */
-@FacesConverter("activeDepartmentConverter")
-public class ActiveDepartmentConverter extends ConverterAdapter {
-
+@FacesConverter("activeDocumentStandardConverter")
+public class ActiveDocumentStandardConverter extends ConverterAdapter {
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-     
-        Department department = Department.findActiveDepartmentByName(getEntityManager(), value);
+    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
+      
+       DocumentStandard documentStandard = DocumentStandard.findActiveDocumentStandardByName(getEntityManager(), submittedValue, Boolean.FALSE);
 
-        if (department == null) {
-            department = new Department(value);
-        }
-
-        return department;
-    }
-
+        if (documentStandard == null) {
+            documentStandard = new DocumentStandard(submittedValue);
+        } 
+        
+        return documentStandard;
+    }   
 }

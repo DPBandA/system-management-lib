@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2017  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,30 +17,31 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.hrm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.cm.Client;
+import jm.com.dpbennett.business.entity.hrm.Employee;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author desbenn
  */
-@FacesConverter("activeClientConverter")
-public class ActiveClientConverter extends ConverterAdapter {
+@FacesConverter("activeEmployeeConverter")
+public class ActiveEmployeeConverter extends ConverterAdapter {
+    
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-      
-       Client client = Client.findActiveClientByName(getEntityManager(), submittedValue, Boolean.FALSE);
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+                
+        Employee employee = Employee.findActiveEmployeeByName(getEntityManager(), value);
 
-        if (client == null) {
-            client = new Client(submittedValue);
-        } 
-        
-        return client;
-    }   
+        if (value == null) {
+            employee = new Employee("--", "--");
+        }
+
+        return employee;
+    }    
 }
