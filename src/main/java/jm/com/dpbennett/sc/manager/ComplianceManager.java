@@ -64,6 +64,7 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
+import jm.com.dpbennett.jmts.manager.JobManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -141,10 +142,13 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void editJob() {
-        Job job = Job.findJobByJobNumber(getEntityManager1(), 
+        Job job = Job.findJobByJobNumber(getEntityManager1(),
                 getCurrentComplianceSurvey().getJobNumber());
-        
-        System.out.println(" editJob() to be implemented...");
+
+        if (job != null) {
+            getJobManager().setEditCurrentJob(job);
+            getJobManager().editJob();
+        }
     }
 
     public void createNewJob() {
@@ -1050,6 +1054,12 @@ public class ComplianceManager extends GeneralManager
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
+
+    }
+    
+     public JobManager getJobManager() {
+
+        return BeanUtils.findBean("jobManager");
 
     }
 
