@@ -151,8 +151,21 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public void createNewJob() {
+    public void createNewJob() { // tk
         System.out.println(" createNewJob() to be implemented...");
+    }
+    
+    public void jobDialogReturn() {
+        if (getJobManager().getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("appForm:growl3");
+            getJobManager().getCurrentJob().setIsDirty(false);
+        }
+        else {
+            getCurrentComplianceSurvey().
+                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+            // tk set the survey as dirty here.
+        }
     }
 
     public void openMarketProductBrowser() {
