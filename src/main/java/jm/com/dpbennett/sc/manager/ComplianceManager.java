@@ -131,6 +131,7 @@ public class ComplianceManager extends GeneralManager
     private Boolean isActiveMarketProductsOnly;
     private Boolean edit;
     private SystemManager systemManager;
+    private String formToUpdateWithJobNumber;
 
     public ComplianceManager() {
         init();
@@ -163,7 +164,7 @@ public class ComplianceManager extends GeneralManager
         if (getJobManager().getCurrentJob().getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved", 
                     "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update(":ComplianceSurveyDialogForm:compliance_survey_growl");
+            PrimeFaces.current().ajax().update("appForm:growl3");
             getJobManager().getCurrentJob().setIsDirty(false);
         }
         else {
