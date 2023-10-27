@@ -3071,6 +3071,8 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void factoryInspectionDialogReturn() {
+        doFactoryInspectionSearch();
+        
         if (currentFactoryInspection.getIsDirty()) {
             PrimeFacesUtils.addMessage("Factory inspection was NOT saved",
                     "The recently edited factory inspection was not saved", FacesMessage.SEVERITY_WARN);
