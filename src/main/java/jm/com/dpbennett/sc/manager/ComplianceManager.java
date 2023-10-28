@@ -184,8 +184,23 @@ public class ComplianceManager extends GeneralManager
         else {
             getCurrentComplaint().
                     setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-            updateSurvey();
+            updateComplaint();
             PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
+        }
+    }
+    
+    public void factoryInspectionJobDialogReturn() {
+        if (getJobManager().getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Job was NOT saved", 
+                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("appForm:growl3");
+            getJobManager().getCurrentJob().setIsDirty(false);
+        }
+        else {
+            getCurrentFactoryInspection().
+                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+            updateFactoryInspection();
+            PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
         }
     }
 
