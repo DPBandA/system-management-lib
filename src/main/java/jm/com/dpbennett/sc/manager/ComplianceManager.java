@@ -131,7 +131,6 @@ public class ComplianceManager extends GeneralManager
     private Boolean isActiveMarketProductsOnly;
     private Boolean edit;
     private SystemManager systemManager;
-    private String formToUpdateWithJobNumber;
 
     public ComplianceManager() {
         init();
@@ -160,7 +159,7 @@ public class ComplianceManager extends GeneralManager
         getJobManager().editJob();
     }
     
-    public void jobDialogReturn() {
+    public void surveyJobDialogReturn() {
         if (getJobManager().getCurrentJob().getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved", 
                     "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
@@ -172,6 +171,21 @@ public class ComplianceManager extends GeneralManager
                     setJobNumber(getJobManager().getCurrentJob().getJobNumber());
             updateSurvey();
             PrimeFaces.current().ajax().update(":ComplianceSurveyDialogForm:topToolbar,generalPanelGrid,complianceSurveyTabView");
+        }
+    }
+    
+    public void complaintJobDialogReturn() {
+        if (getJobManager().getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Job was NOT saved", 
+                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("appForm:growl3");
+            getJobManager().getCurrentJob().setIsDirty(false);
+        }
+        else {
+            getCurrentComplaint().
+                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+            updateSurvey();
+            PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
         }
     }
 
