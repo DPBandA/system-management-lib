@@ -97,7 +97,6 @@ public class ComplianceManager extends GeneralManager
     private ProductInspection currentProductInspection;
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
-    private MarketProduct currentMarketProduct;
     private Complaint currentComplaint;
     private FactoryInspection currentFactoryInspection;
     private FactoryInspectionComponent currentFactoryInspectionComponent;
@@ -282,12 +281,6 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public void editMarketProduct() {
-        setCurrentMarketProduct(getCurrentProductInspection().getMarketProduct());
-
-        //openMarketProductDialog();
-    }
-
     public Boolean getIsMarketProductNameValid() {
         return BusinessEntityUtils.validateName(
                 getCurrentProductInspection().getMarketProduct().getName());
@@ -299,12 +292,27 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void createNewMarketProduct() {
-        getFinanceManager().createNewMarketProduct();
+
+        getFinanceManager().setSelectedMarketProduct(new MarketProduct());
+
+        getFinanceManager().editSelectedMarketProduct();
     }
 
-    public void createNewMarketProductCategoryDialogReturn() {
-        if (getSystemManager().getSelectedCategory().getId() != null) {
-            getCurrentProductInspection().setProductCategory(getSystemManager().getSelectedCategory());
+    public void editMarketProduct() {
+
+        getFinanceManager().
+                setSelectedMarketProduct(getCurrentProductInspection().
+                        getMarketProduct());
+
+        getFinanceManager().editSelectedMarketProduct();
+    }
+
+    public void marketProductDialogReturn() {
+        if (getFinanceManager().getSelectedMarketProduct().getId() != null) {
+            getCurrentProductInspection().
+                    setMarketProduct(getFinanceManager().getSelectedMarketProduct());
+        } else {
+            // tk display that market product not saved in growl.
         }
     }
 
@@ -314,6 +322,16 @@ public class ComplianceManager extends GeneralManager
 
         getSystemManager().editCategory();
 
+    }
+
+    public void createNewMarketProductCategory() {
+        getFinanceManager().createNewMarketProductCategory();
+    }
+
+    public void createNewMarketProductCategoryDialogReturn() {
+        if (getSystemManager().getSelectedCategory().getId() != null) {
+            getCurrentProductInspection().setProductCategory(getSystemManager().getSelectedCategory());
+        }
     }
 
     public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
@@ -428,14 +446,13 @@ public class ComplianceManager extends GeneralManager
         this.factoryInspectionSearchText = factoryInspectionSearchText;
     }
 
-    public MarketProduct getCurrentMarketProduct() {
-        return currentMarketProduct;
-    }
-
-    public void setCurrentMarketProduct(MarketProduct currentMarketProduct) {
-        this.currentMarketProduct = currentMarketProduct;
-    }
-
+//    public MarketProduct getCurrentMarketProduct() {
+//        return currentMarketProduct;
+//    }
+//
+//    public void setCurrentMarketProduct(MarketProduct currentMarketProduct) {
+//        this.currentMarketProduct = currentMarketProduct;
+//    }
     public String getMarketProductSearchText() {
         return marketProductSearchText;
     }
@@ -2293,6 +2310,11 @@ public class ComplianceManager extends GeneralManager
         return !getCurrentProductInspection().getImageURL().isEmpty();
     }
 
+    // tk to be implemented? 
+    public Boolean getMarketProductImageIsValid() {
+        return false;
+    }
+
     // tk
     public StreamedContent getCurrentProductInspectionImageDownload() {
         StreamedContent streamedFile = null;
@@ -3034,10 +3056,6 @@ public class ComplianceManager extends GeneralManager
 
     public void editCurrentDocumentStandard() {
         openDocumentStandardDialog();
-    }
-
-    public void editCurrentMarketProduct() {
-        // openMarketProductDialog();
     }
 
     public void editCurrentProductInspection() {
