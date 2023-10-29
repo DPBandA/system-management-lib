@@ -141,69 +141,115 @@ public class ComplianceManager extends GeneralManager
         reset();
     }
 
-    public void editJob() {
-        Job job = Job.findJobByJobNumber(getEntityManager1(),
-                getCurrentComplianceSurvey().getJobNumber());
-
-        if (job != null) {
-            getJobManager().setEditCurrentJob(job);
-            getJobManager().editJob();
-        }
-    }
-
     public void createNewJob() {
-        
+
         getJobManager().createJob(getEntityManager1(), false, false);
         getJobManager().getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
         getJobManager().editJob();
     }
-    
-    public void surveyJobDialogReturn() {
-        if (getJobManager().getCurrentJob().getIsDirty()) {
-            PrimeFacesUtils.addMessage("Job was NOT saved", 
-                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
-            getJobManager().getCurrentJob().setIsDirty(false);
+
+    private String getDialogJobNumber(String dialog) {
+
+        switch (dialog) {
+            case "Complaint":
+                return getCurrentComplaint().getJobNumber();
+            case "Survey":
+                return getCurrentComplianceSurvey().getJobNumber();
+            case "FactoryInspection":
+                return getCurrentFactoryInspection().getJobNumber();
         }
-        else {
-            getCurrentComplianceSurvey().
-                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-            updateSurvey();
-            PrimeFaces.current().ajax().update(":ComplianceSurveyDialogForm:topToolbar,generalPanelGrid,complianceSurveyTabView");
-        }
+
+        return "";
     }
-    
-    public void complaintJobDialogReturn() {
-        if (getJobManager().getCurrentJob().getIsDirty()) {
-            PrimeFacesUtils.addMessage("Job was NOT saved", 
-                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
-            getJobManager().getCurrentJob().setIsDirty(false);
-        }
-        else {
-            getCurrentComplaint().
-                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-            updateComplaint();
-            PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
-        }
-    }
-    
-    public void factoryInspectionJobDialogReturn() {
-        if (getJobManager().getCurrentJob().getIsDirty()) {
-            PrimeFacesUtils.addMessage("Job was NOT saved", 
-                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
-            getJobManager().getCurrentJob().setIsDirty(false);
-        }
-        else {
-            getCurrentFactoryInspection().
-                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-            updateFactoryInspection();
-            PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
+
+    private void updateDialogJobNumber(String dialog) {
+        switch (dialog) {
+            case "Complaint":
+                getCurrentComplaint().
+                        setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+                updateComplaint();
+                PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
+            case "Survey":
+                getCurrentComplianceSurvey().
+                        setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+                updateSurvey();
+                PrimeFaces.current().ajax().update(":ComplianceSurveyDialogForm:topToolbar,generalPanelGrid,complianceSurveyTabView");
+            case "FactoryInspection":
+                getCurrentFactoryInspection().
+                        setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+                updateFactoryInspection();
+                PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
         }
     }
 
+    public void editJob(String dialog) {
+        Job job = Job.findJobByJobNumber(getEntityManager1(),
+                getDialogJobNumber(dialog));
+
+        if (job != null) {
+            getJobManager().setEditCurrentJob(job);
+            getJobManager().editJob();
+        } else {
+            PrimeFacesUtils.addMessage("Job NOT found!",
+                    "The job was not found", FacesMessage.SEVERITY_ERROR);
+            //PrimeFaces.current().ajax().update("appForm:growl3");
+            //getJobManager().getCurrentJob().setIsDirty(false);
+        }
+    }
+
+    public void jobDialogReturn(String dialog) {
+        if (getJobManager().getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Job was NOT saved",
+                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+            //PrimeFaces.current().ajax().update("appForm:growl3");
+            //getJobManager().getCurrentJob().setIsDirty(false);
+        } else {
+            updateDialogJobNumber(dialog);
+        }
+    }
+
+//    public void editFactoryInspectionJob() {
+//        Job job = Job.findJobByJobNumber(getEntityManager1(),
+//                getCurrentFactoryInspection().getJobNumber());
+//
+//        if (job != null) {
+//            getJobManager().setEditCurrentJob(job);
+//            getJobManager().editJob();
+//        } else {
+//            PrimeFacesUtils.addMessage("Job NOT found!",
+//                    "The job was not found", FacesMessage.SEVERITY_ERROR);
+//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            getJobManager().getCurrentJob().setIsDirty(false);
+//        }
+//    }
+//    public void complaintJobDialogReturn() {
+//        if (getJobManager().getCurrentJob().getIsDirty()) {
+//            PrimeFacesUtils.addMessage("Job was NOT saved",
+//                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            getJobManager().getCurrentJob().setIsDirty(false);
+//        } else {
+//            getCurrentComplaint().
+//                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+//            updateComplaint();
+//            PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
+//        }
+//    }
+//
+//    public void factoryInspectionJobDialogReturn() {
+//        if (getJobManager().getCurrentJob().getIsDirty()) {
+//            PrimeFacesUtils.addMessage("Job was NOT saved",
+//                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            getJobManager().getCurrentJob().setIsDirty(false);
+//        } else {
+//            getCurrentFactoryInspection().
+//                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
+//            updateFactoryInspection();
+//            PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
+//        }
+//    }
     public void openMarketProductBrowser() {
         getFinanceManager().openMarketProductBrowser();
     }
@@ -1105,8 +1151,8 @@ public class ComplianceManager extends GeneralManager
         return BeanUtils.findBean("clientManager");
 
     }
-    
-     public JobManager getJobManager() {
+
+    public JobManager getJobManager() {
 
         return BeanUtils.findBean("jobManager");
 
@@ -1118,7 +1164,7 @@ public class ComplianceManager extends GeneralManager
         if (currentComplianceSurvey.getIsDirty()) {
             PrimeFacesUtils.addMessage("Survey was NOT saved",
                     "The recently edited survey was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            //PrimeFaces.current().ajax().update("appForm:growl3");
         }
     }
 
@@ -1128,7 +1174,7 @@ public class ComplianceManager extends GeneralManager
         if (currentComplaint.getIsDirty()) {
             PrimeFacesUtils.addMessage("Complaint was NOT saved",
                     "The recently edited complaint was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            //PrimeFaces.current().ajax().update("appForm:growl3");
         }
     }
 
@@ -3102,11 +3148,11 @@ public class ComplianceManager extends GeneralManager
 
     public void factoryInspectionDialogReturn() {
         doFactoryInspectionSearch();
-        
+
         if (currentFactoryInspection.getIsDirty()) {
             PrimeFacesUtils.addMessage("Factory inspection was NOT saved",
                     "The recently edited factory inspection was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            //PrimeFaces.current().ajax().update("appForm:growl3");
         }
     }
 
