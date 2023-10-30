@@ -312,7 +312,8 @@ public class ComplianceManager extends GeneralManager
             getCurrentProductInspection().
                     setMarketProduct(getFinanceManager().getSelectedMarketProduct());
         } else {
-            // tk display that market product not saved in growl.
+            PrimeFacesUtils.addMessage("Market product was NOT saved",
+                    "The recently edited market product was not saved", FacesMessage.SEVERITY_WARN);
         }
     }
 
@@ -446,13 +447,6 @@ public class ComplianceManager extends GeneralManager
         this.factoryInspectionSearchText = factoryInspectionSearchText;
     }
 
-//    public MarketProduct getCurrentMarketProduct() {
-//        return currentMarketProduct;
-//    }
-//
-//    public void setCurrentMarketProduct(MarketProduct currentMarketProduct) {
-//        this.currentMarketProduct = currentMarketProduct;
-//    }
     public String getMarketProductSearchText() {
         return marketProductSearchText;
     }
@@ -923,7 +917,7 @@ public class ComplianceManager extends GeneralManager
         marketProductSearchText = "";
         factoryInspectionSearchText = "";
 
-        setSearchType("Surveys"); // tk determine from search types
+        setSearchType("Surveys");
         setSearchText("");
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
@@ -1181,7 +1175,6 @@ public class ComplianceManager extends GeneralManager
         if (currentComplianceSurvey.getIsDirty()) {
             PrimeFacesUtils.addMessage("Survey was NOT saved",
                     "The recently edited survey was not saved", FacesMessage.SEVERITY_WARN);
-            //PrimeFaces.current().ajax().update("appForm:growl3");
         }
     }
 
@@ -1191,7 +1184,7 @@ public class ComplianceManager extends GeneralManager
         if (currentComplaint.getIsDirty()) {
             PrimeFacesUtils.addMessage("Complaint was NOT saved",
                     "The recently edited complaint was not saved", FacesMessage.SEVERITY_WARN);
-            //PrimeFaces.current().ajax().update("appForm:growl3");
+
         }
     }
 
@@ -1235,8 +1228,6 @@ public class ComplianceManager extends GeneralManager
                         .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage()))
                         .contentType("image/png")
                         .build();
-
-                //return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage()), "image/png");
             } else {
                 return null;
             }
@@ -1253,8 +1244,6 @@ public class ComplianceManager extends GeneralManager
                         .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage()))
                         .contentType("image/png")
                         .build();
-
-                //return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage()), "image/png");
             } else {
                 return null;
             }
@@ -1270,8 +1259,6 @@ public class ComplianceManager extends GeneralManager
                         .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage()))
                         .contentType("image/png")
                         .build();
-
-                //return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage()), "image/png");
             } else {
                 return null;
             }
@@ -1288,8 +1275,6 @@ public class ComplianceManager extends GeneralManager
                         .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage()))
                         .contentType("image/png")
                         .build();
-
-                //return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage()), "image/png");
             } else {
                 return null;
             }
@@ -1306,8 +1291,6 @@ public class ComplianceManager extends GeneralManager
                         .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage()))
                         .contentType("image/png")
                         .build();
-
-                //return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage()), "image/png");
             } else {
                 return null;
             }
@@ -1541,8 +1524,7 @@ public class ComplianceManager extends GeneralManager
 
     public void updateMarketProductForProductInspection(SelectEvent<MarketProduct> event) {
 
-        // Update category, brand etc from market product field.
-        if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
+         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
             getCurrentProductInspection().setProductCategory(
                     getCurrentProductInspection().getMarketProduct().getCategories().
                             get(0));
@@ -1587,7 +1569,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void updateCIF() {
-        // Calculate SCF
+     
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
                 getEntityManager1(), "defaultPercentageOfCIF");
 
@@ -1663,8 +1645,7 @@ public class ComplianceManager extends GeneralManager
 
     public void updateDailyReportStartDate() {
         currentComplianceDailyReport.setEndOfPeriod(currentComplianceDailyReport.getStartOfPeriod());
-        //endOfPeriod = startOfPeriod;
-        //setDirty(true);
+
     }
 
     public void updateCountryOfConsignment() {
@@ -1735,26 +1716,6 @@ public class ComplianceManager extends GeneralManager
 
     public void setCurrentComplianceSurvey(ComplianceSurvey currentComplianceSurvey) {
         this.currentComplianceSurvey = currentComplianceSurvey;
-    }
-
-    // tk
-    public List<String> completeManufacturerName(String query) {
-        try {
-            EntityManager em = getEntityManager1();
-
-            List<String> names = new ArrayList<>();
-            List<Manufacturer> manufacturers = Manufacturer.findManufacturersBySearchPattern(em, query);
-            for (Manufacturer manufacturer : manufacturers) {
-                names.add(manufacturer.getName());
-            }
-
-            return names;
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
     }
 
     public List<Address> completeManufacturerAddress(String query) {
@@ -1834,16 +1795,13 @@ public class ComplianceManager extends GeneralManager
 
         try {
 
-            // Ensure inspector is not null
-            Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
+               Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
             if (inspector != null) {
                 currentComplianceSurvey.setInspector(inspector);
             } else {
                 currentComplianceSurvey.setInspector(Employee.findDefaultEmployee(em, "--", "--", true));
             }
 
-            // Validate fields required for port of entry detention if one was issued
-            // NB: This should be in validation code.
             if (currentComplianceSurvey.getRequestForDetentionIssuedForPortOfEntry()) {
                 if (!validatePortOfEntryDetentionData(em)) {
                     return;
@@ -1854,11 +1812,7 @@ public class ComplianceManager extends GeneralManager
                 currentComplianceSurvey.setDateEdited(new Date());
                 currentComplianceSurvey.setEditedBy(getUser().getEmployee());
             }
-            //em.getTransaction().begin();
-
-            // Now save survey            
-            //Long id = BusinessEntityUtils.saveBusinessEntity(em, currentComplianceSurvey);
-            //em.getTransaction().commit();
+  
             ReturnMessage message = currentComplianceSurvey.save(em);
 
             if (!message.isSuccess()) {
@@ -1866,7 +1820,7 @@ public class ComplianceManager extends GeneralManager
                         "An error occured while saving this survey",
                         FacesMessage.SEVERITY_ERROR);
             } else {
-                //isNewComplianceSurvey = false;
+              
                 currentComplianceSurvey.setIsDirty(false);
                 PrimeFacesUtils.addMessage("Survey Saved!",
                         "This survey was saved",
@@ -1931,7 +1885,6 @@ public class ComplianceManager extends GeneralManager
                 getCurrentComplaint().setEnteredBy(getUser().getEmployee());
             }
 
-            // Now save complaint  
             ReturnMessage message = getCurrentComplaint().save(em);
 
             if (!message.isSuccess()) {
@@ -2048,7 +2001,6 @@ public class ComplianceManager extends GeneralManager
                 currentFactoryInspection.getProductInspections().add(currentProductInspection);
             }
 
-            //currentFactoryInspection.setIsDirty(true);
             PrimeFacesUtils.closeDialog(null);
 
         } catch (Exception e) {
@@ -2220,7 +2172,7 @@ public class ComplianceManager extends GeneralManager
     public void doSurveySearch() {
         complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
                 getUser(),
-                "dateAndTimeEntered", // tk be variable
+                "dateAndTimeEntered",
                 "General",
                 surveySearchText,
                 null, // getDatePeriod().getStartDate()
@@ -2228,14 +2180,13 @@ public class ComplianceManager extends GeneralManager
                 false,
                 500); // tk to be made system option.
 
-        //   complianceSurveys = new ArrayList<>(); // tk - remove this code!!!
-        openSurveysBrowser();
+         openSurveysBrowser();
     }
 
     public void doDefaultSurveySearch() {
         complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
                 getUser(),
-                "dateAndTimeEntered", // tk be variable
+                "dateAndTimeEntered",
                 "General",
                 surveySearchText,
                 null, //getDatePeriod().getStartDate()
@@ -2244,18 +2195,7 @@ public class ComplianceManager extends GeneralManager
                 500); // tk to be made system option.
     }
 
-//    public List<String> completeSearchText(String query) {
-//        List<String> suggestions = new ArrayList<>();
-//
-//        // NB: This is only an example implementation
-//        // based on the current code based, the following code is never called
-//        if (searchType.equals("?")) {
-//            // add suggestion strings to the suggestions list
-//        }
-//
-//        return suggestions;
-//    }
-    // tk
+
     public void handleProductPhotoFileUpload(FileUploadEvent event) {
         FileOutputStream fout;
         UploadedFile upLoadedFile = event.getFile();
