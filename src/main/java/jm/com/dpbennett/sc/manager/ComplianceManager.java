@@ -358,6 +358,8 @@ public class ComplianceManager extends GeneralManager
         }
 
         setEdit(false);
+        
+        PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
 
     }
 

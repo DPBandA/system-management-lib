@@ -48,6 +48,8 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.fm.manager.FinanceManager;
+import jm.com.dpbennett.sc.manager.ComplianceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.validator.AddressValidator;
 import jm.com.dpbennett.sm.validator.ContactValidator;
@@ -190,6 +192,19 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
+    }
+    
+    public FinanceManager getFinanceManager() {
+        return BeanUtils.findBean("financeManager");
+    }
+    
+    public ComplianceManager getComplianceManager() {
+        return BeanUtils.findBean("complianceManager");
+    }
+    
+    public Boolean getRenderProductFields() {
+        
+        return getFinanceManager() != null;
     }
 
     public static String getDepartmentFullCode(
