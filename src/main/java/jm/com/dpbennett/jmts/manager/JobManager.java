@@ -659,7 +659,7 @@ public class JobManager extends GeneralManager
     public String getCopyrightOrganization() {
         return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
     }
-    
+
     public String getOrganizationWebsite() {
         return SystemOption.getString(getEntityManager1(), "organizationWebsite");
     }
@@ -2393,7 +2393,7 @@ public class JobManager extends GeneralManager
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
-        
+
         getClientManager().editSelectedClient();
 
     }
@@ -2403,7 +2403,7 @@ public class JobManager extends GeneralManager
         getClientManager().setClientDialogTitle("Client Detail");
 
         getClientManager().editSelectedClient();
-        
+
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,
@@ -2725,6 +2725,8 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
+        // tk Relook into doing this. Modules may be loaded based on the 
+        // the "Most recent" list of module tabs viewed by the user.
         if (getUser().hasModule("jobManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
@@ -2734,8 +2736,6 @@ public class JobManager extends GeneralManager
             }
         }
 
-        // tk Relook into doing this. Modules may be loaded based on the 
-        // the "Most recent" list of module tabs viewed by the user.
         if (getUser().hasModule("purchasingManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
@@ -2751,6 +2751,15 @@ public class JobManager extends GeneralManager
                     "inventoryManager");
             if (module != null) {
                 getMainTabView().openTab(module.getDashboardTitle());
+            }
+        }
+
+        if (getUser().hasModule("complianceManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "complianceManager");
+            if (module != null) {
+                getMainTabView().openTab(module.getMainViewTitle());
             }
         }
 
