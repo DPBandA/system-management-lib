@@ -1,6 +1,6 @@
 /*
 Financial Management (FM) 
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2023  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -32,26 +32,27 @@ import org.primefaces.model.TreeNode;
  * @author Desmond Bennett
  */
 public class AccountingManager extends GeneralManager implements Serializable {
-    
-     private TreeNode<FinancialAccount> chartOfAccounts;
+
+    private TreeNode<FinancialAccount> chartOfAccounts;
     private List<SortMeta> sortBy;
     private FinancialAccount selectedFinancialAccount;
 
     public AccountingManager() {
         init();
     }
-    
-     @Override
+
+    @Override
     public final void init() {
         chartOfAccounts = createAccounts();
-    }  
-    
+    }
+
     // tk sample accounts
     private TreeNode createAccounts() {
         TreeNode<FinancialAccount> chart = new DefaultTreeNode(new FinancialAccount("Bank", "Bank account", 230.0), null);
 
-        TreeNode backup1 = new DefaultTreeNode("document", new FinancialAccount("backup-1.zip", "10kb",300.0), chart);
+        TreeNode backup1 = new DefaultTreeNode("document", new FinancialAccount("backup-1.zip", "10kb", 300.0), chart);
         TreeNode applications = new DefaultTreeNode("document", new FinancialAccount("Applications", "100kb", 100.0), backup1);
+
         return chart;
     }
 
@@ -79,5 +80,4 @@ public class AccountingManager extends GeneralManager implements Serializable {
         this.selectedFinancialAccount = selectedFinancialAccount;
     }
 
-    
 }
