@@ -1404,6 +1404,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
             // TYPE OF SERVICE(S) NEEDED
             // Gather services. 
+            job.getServiceContract().setJob(job);
             String services = job.getServiceContract().getSelectedService().getName() + " ";
             dataCellStyle = getDefaultCellStyle(wb);
             dataCellStyle.setBorderLeft((short) 1);
@@ -1412,6 +1413,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
             dataCellStyle.setWrapText(true);
             // NB: Gathering services like this will no longer be necessary
+            /*
             if (job.getServiceContract().getServiceRequestedTesting()) {
                 services = services + "Testing ";
             }
@@ -1436,6 +1438,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
                     services = services + " " + job.getServiceContract().getServiceRequestedOtherText();
                 }
             }
+            */
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AD21",
                     services,
