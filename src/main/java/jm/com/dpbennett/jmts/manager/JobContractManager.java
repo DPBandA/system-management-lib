@@ -165,10 +165,13 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             parameters.put("contactPhone", contactPerson.getMainPhoneNumber().toString());
             // Contact Fax
             parameters.put("contactFax", contactPerson.getMainFaxNumber().toString());
+            
             // Type of Services Needed
+            getCurrentJob().getServiceContract().setJob(getCurrentJob());
             String services
                     = getCurrentJob().getServiceContract().getSelectedService().getName()
                     + " ";
+            /*
             if (getCurrentJob().getServiceContract().getServiceRequestedTesting()) {
                 services = services + "Testing";
             }
@@ -193,7 +196,9 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
                     services = services + " " + getCurrentJob().getServiceContract().getServiceRequestedOtherText();
                 }
             }
+            */
             parameters.put("typeOfServicesNeeded", services);
+            
             // Fax/Email Report?
             if (getCurrentJob().getServiceContract().getAdditionalServiceFaxResults()) {
                 parameters.put("emailReport", "Yes");
@@ -340,8 +345,10 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
             em = getEntityManager1();
 
-            String filePath = (String) SystemOption.getOptionValueObject(em, "serviceContract");
-            ByteArrayInputStream stream = createServiceContractExcelFileInputStream(em, getUser(), getCurrentJob().getId(), filePath);
+            String filePath = 
+                    (String) SystemOption.getOptionValueObject(em, "serviceContract");
+            ByteArrayInputStream stream = 
+                    createServiceContractExcelFileInputStream(em, getUser(), filePath);
 
             DefaultStreamedContent dsc = DefaultStreamedContent.builder()
                     .contentType("application/xls")
@@ -1022,13 +1029,11 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
     public ByteArrayInputStream createServiceContractExcelFileInputStream(
             EntityManager em,
             User user,
-            Long jobId,
             String filePath) {
         try {
 
-            Job job = Job.findJobById(em, jobId);
-
-            Client client = job.getClient();
+           
+            Client client = getCurrentJob().getClient();
 
             File file = new File(filePath);
 
@@ -1404,8 +1409,8 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
             // TYPE OF SERVICE(S) NEEDED
             // Gather services. 
-            job.getServiceContract().setJob(job);
-            String services = job.getServiceContract().getSelectedService().getName() + " ";
+            getCurrentJob().getServiceContract().setJob(getCurrentJob());
+            String services = getCurrentJob().getServiceContract().getSelectedService().getName() + " ";
             dataCellStyle = getDefaultCellStyle(wb);
             dataCellStyle.setBorderLeft((short) 1);
             dataCellStyle.setFont(defaultFont);
@@ -1451,7 +1456,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             dataCellStyle.setFont(defaultFont);
             dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
             dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_BOTTOM);
-            if (job.getServiceContract().getAdditionalServiceFaxResults()) {
+            if (getCurrentJob().getServiceContract().getAdditionalServiceFaxResults()) {
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "AN21",
                         "Yes",
@@ -1464,7 +1469,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             }
 
             // Expedite?
-            if (job.getServiceContract().getAdditionalServiceUrgent()) {
+            if (getCurrentJob().getServiceContract().getAdditionalServiceUrgent()) {
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "AN23",
                         "Yes",
@@ -1502,8 +1507,8 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
             // DESCRIPTION OF SUBMITTED SAMPLE(S)
             int samplesStartngRow = 32;
-            if (job.getJobSamples().size() > 0) {
-                for (JobSample jobSample : job.getJobSamples()) {
+            if (getCurrentJob().getJobSamples().size() > 0) {
+                for (JobSample jobSample : getCurrentJob().getJobSamples()) {
                     dataCellStyle = getDefaultCellStyle(wb);
                     dataCellStyle.setBorderLeft((short) 1);
                     dataCellStyle.setFont(samplesRefFont);
@@ -1627,10 +1632,10 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             dataCellStyle.setFont(defaultFont);
             dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
             dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-            if (job.getJobSamples().isEmpty()) {
+            if (getCurrentJob().getJobSamples().isEmpty()) {
                 details = "Not applicable";
             } else {
-                for (JobSample jobSample : job.getJobSamples()) {
+                for (JobSample jobSample : getCurrentJob().getJobSamples()) {
                     if (!jobSample.getDescription().isEmpty()) {
                         details = details + " (" + jobSample.getReference() + ") "
                                 + jobSample.getDescription();

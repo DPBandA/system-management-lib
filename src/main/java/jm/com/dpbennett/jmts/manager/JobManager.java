@@ -1199,7 +1199,8 @@ public class JobManager extends GeneralManager
 
         try {
 
-            serviceContractStreamContent = getJobContractManager().getServiceContractStreamContent();
+            serviceContractStreamContent = 
+                    getJobContractManager().getServiceContractStreamContent();
 
         } catch (Exception e) {
             System.out.println(e);

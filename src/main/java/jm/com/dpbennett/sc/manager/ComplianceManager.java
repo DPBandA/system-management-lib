@@ -785,7 +785,7 @@ public class ComplianceManager extends GeneralManager
 
         List<String> names = new ArrayList<>();
 
-        List<DocumentStandard> standards = DocumentStandard.findAllDocumentStandards(em);
+        List<DocumentStandard> standards = DocumentStandard.findAll(em);
         for (DocumentStandard documentStandard : standards) {
             names.add(documentStandard.getName());
         }
@@ -2180,7 +2180,7 @@ public class ComplianceManager extends GeneralManager
                 null, // getDatePeriod().getStartDate()
                 null, // getDatePeriod().getEndDate()
                 false,
-                500); // tk to be made system option.
+                25); // tk to be made system option.
 
          openSurveysBrowser();
     }
@@ -2194,7 +2194,7 @@ public class ComplianceManager extends GeneralManager
                 null, //getDatePeriod().getStartDate()
                 null, // getDatePeriod().getEndDate()
                 false,
-                500); // tk to be made system option.
+                25); // tk to be made system option.
     }
 
 
@@ -2905,7 +2905,9 @@ public class ComplianceManager extends GeneralManager
 
     public List<DocumentStandard> completeActiveDocumentStandard(String query) {
         try {
-            return DocumentStandard.findActiveDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), query);
+            return DocumentStandard.findActive(
+                    getEntityManager1(), query, 
+                    25); // tk to be made system option.
 
         } catch (Exception e) {
             System.out.println(e);
@@ -2959,7 +2961,9 @@ public class ComplianceManager extends GeneralManager
     public List<DocumentStandard> getDocumentStandards() {
 
         if (documentStandards == null) {
-            documentStandards = DocumentStandard.findAllActiveDocumentStandards(getEntityManager1());
+            documentStandards = 
+                    DocumentStandard.findAllActive(getEntityManager1(), 
+                            25); // tk to be made system option
         }
 
         return documentStandards;
@@ -2968,9 +2972,11 @@ public class ComplianceManager extends GeneralManager
     public void doDocumentStandardSearch() {
 
         if (getIsActiveDocumentStandardsOnly()) {
-            documentStandards = DocumentStandard.findActiveDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
+            documentStandards = 
+                    DocumentStandard.findActive(getEntityManager1(), standardSearchText, 25);
         } else {
-            documentStandards = DocumentStandard.findDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
+            documentStandards = 
+                    DocumentStandard.find(getEntityManager1(), standardSearchText, 25);
         }
 
     }
