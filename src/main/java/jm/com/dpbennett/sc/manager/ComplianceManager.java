@@ -943,6 +943,7 @@ public class ComplianceManager extends GeneralManager
         if (factoryInspections == null) {
             doFactoryInspectionSearch();
         }
+        
         return factoryInspections;
     }
 
@@ -1392,7 +1393,8 @@ public class ComplianceManager extends GeneralManager
     public List<Complaint> getComplaints() {
 
         if (complaints == null) {
-            complaints = Complaint.findAllComplaints(getEntityManager1());
+           
+            doComplaintSearch();
         }
 
         return complaints;
@@ -2989,7 +2991,7 @@ public class ComplianceManager extends GeneralManager
                 "dateReceived",
                 "General",
                 complaintSearchText,
-                null, null);
+                null, null, 25);
 
     }
 
@@ -3129,7 +3131,8 @@ public class ComplianceManager extends GeneralManager
                 null,
                 "General",
                 factoryInspectionSearchText,
-                null, null);
+                null, null, 
+                25); // tk to be made system option
     }
 
     @Override

@@ -19,6 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.jmts.manager;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -183,6 +184,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public List<Job> getJobSearchResultList() {
+        if (jobSearchResultList == null) {
+            jobSearchResultList = new ArrayList<>();
+        }
+
         return jobSearchResultList;
     }
 
@@ -283,7 +288,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         createNewJob();
 
-        getCurrentJob().setType("Proforma Invoice");       
+        getCurrentJob().setType("Proforma Invoice");
         getCurrentJob().setAssignedTo(getUser().getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
         // tk job type field to be used where applicable instead of setting progress to cancelled
@@ -297,7 +302,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 getEntityManager1()));
 
         getJobManager().editJob();
-        
+
         openProformaInvoicesTab();
     }
 
@@ -2691,7 +2696,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                             .build();
 
                     setLongProcessProgress(100);
-                    
+
                     em.getTransaction().commit();
 
                     return streamContent;
@@ -2744,7 +2749,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      * @return
      */
     public Boolean getCanExportJobCosting() {
-        
+
         return !(getCurrentJob().getJobCostingAndPayment().getCostingApproved()
                 && getCurrentJob().getJobCostingAndPayment().getCostingCompleted());
     }
@@ -4054,11 +4059,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void doJobSearch() {
 
-        if (getUser().getId() != null) {
-            jobSearchResultList = findJobs(0);
-        } else {
-            jobSearchResultList = new ArrayList<>();
-        }
+        jobSearchResultList = findJobs(25);
 
     }
 
@@ -4067,7 +4068,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 getUser(),
                 getJobManager().getDateSearchPeriod(),
                 getJobManager().getSearchType(),
-                getProformaInvoiceSearchText(),
+                getJobManager().getSearchText(),
                 maxResults, true);
     }
 

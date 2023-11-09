@@ -905,35 +905,6 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("purchasingManager");
     }
 
-//    public SelectItem[] getAuthorizedSearchTypes() {
-//
-//        EntityManager em = getEntityManager1();
-//        
-//
-//        if (getUser(em).can("EditJob")
-//                || getUser(em).can("EnterJob")
-//                || getUser(em).can("EditInvoicingAndPayment")
-//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
-//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditJob()
-//                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()) {
-//            return new SelectItem[]{
-//                new SelectItem("General", "General"),
-//                new SelectItem("My jobs", "My jobs"),
-//                new SelectItem("My department's jobs", "My department's jobs"),
-//                new SelectItem("Parent jobs only", "Parent jobs only"),
-//                new SelectItem("Unapproved job costings", "Unapproved job costings"),
-//                new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"),
-//                new SelectItem("Incomplete jobs", "Incomplete jobs"),
-//                new SelectItem("Invoiced jobs", "Invoiced jobs")};
-//
-//        } else {
-//
-//            return new SelectItem[]{
-//                new SelectItem("My jobs", "My jobs"),
-//                new SelectItem("My department's jobs", "My department's jobs")};
-//        }
-//
-//    }
     public ArrayList<SelectItem> getAuthorizedSearchTypes() {
 
         EntityManager em = getEntityManager1();
@@ -954,11 +925,15 @@ public class JobManager extends GeneralManager
             searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
             searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
             searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
+            searchTypes.add(new SelectItem("My dept's proforma invoices",
+                    "My dept's proforma invoices"));
 
         } else {
 
             searchTypes.add(new SelectItem("My jobs", "My jobs"));
             searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
+            searchTypes.add(new SelectItem("My dept's proforma invoices",
+                    "My dept's proforma invoices"));
 
         }
 
@@ -985,7 +960,7 @@ public class JobManager extends GeneralManager
     public void reset() {
         super.reset();
 
-        setSearchType("My jobs");
+        setSearchType("My department's jobs");
         setSearchText("");
         setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
@@ -1199,8 +1174,8 @@ public class JobManager extends GeneralManager
 
         try {
 
-            serviceContractStreamContent = 
-                    getJobContractManager().getServiceContractStreamContent();
+            serviceContractStreamContent
+                    = getJobContractManager().getServiceContractStreamContent();
 
         } catch (Exception e) {
             System.out.println(e);
@@ -2092,6 +2067,13 @@ public class JobManager extends GeneralManager
             case "Invoiced jobs":
                 search();
                 break;
+            case "My dept's proforma invoices":
+                getJobFinanceManager().openProformaInvoicesTab();
+                //getMainTabView().openTab("Proforma Invoices");
+                getJobFinanceManager().doJobSearch();
+                //findJobs(25);
+                //search();
+                break;
             default:
                 break;
         }
@@ -2673,8 +2655,11 @@ public class JobManager extends GeneralManager
             case "Unapproved job costings":
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
-            case "Invoiced jobs":
+            case "Invoiced jobs":  
                 dateSearchFields = DateUtils.getDateSearchFields();
+                break;
+            case "My dept's proforma invoices":
+                dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
                 break;
             default:
                 break;
