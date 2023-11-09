@@ -2069,10 +2069,7 @@ public class JobManager extends GeneralManager
                 break;
             case "My dept's proforma invoices":
                 getJobFinanceManager().openProformaInvoicesTab();
-                //getMainTabView().openTab("Proforma Invoices");
                 getJobFinanceManager().doJobSearch();
-                //findJobs(25);
-                //search();
                 break;
             default:
                 break;

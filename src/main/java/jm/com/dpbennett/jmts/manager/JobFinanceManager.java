@@ -184,6 +184,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public List<Job> getJobSearchResultList() {
+
         if (jobSearchResultList == null) {
             jobSearchResultList = new ArrayList<>();
         }
@@ -2067,9 +2068,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         isActiveJobCostingAndPaymentsOnly = true;
         jobCostingAndPaymentSearchText = "";
         selectedJobCostingTemplate = "";
-        searchType = "General";
+        searchType = "My dept's proforma invoices";
         searchText = "";
-        jobSearchResultList = new ArrayList<>();
         dateSearchPeriod = new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false);
         dateSearchPeriod.initDatePeriod();
@@ -4070,6 +4070,16 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 getJobManager().getSearchType(),
                 getJobManager().getSearchText(),
                 maxResults, true);
+    }
+
+    public List<Job> findJobs() {
+        return Job.findJobsByDateSearchField(getEntityManager1(),
+                getUser(),
+                getJobManager().getDateSearchPeriod(),
+                getSearchType(),
+                getProformaInvoiceSearchText(),
+                25, // tk make system option
+                true);
     }
 
     public List<JobCostingAndPayment> completeJobCostingAndPaymentName(String query) {
