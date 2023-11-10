@@ -852,15 +852,13 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public ByteArrayInputStream getCostingsFileInputStreamAsZip() {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        EntityManager em = getEntityManager1();
 
         // Get costing data
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(getEntityManager1(), "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(getEntityManager1(), "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(getEntityManager1(), "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(getEntityManager1(), "defaultDatabasePassword"));
 
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
             // Get costing data
             Job reportData[] = getJobManager().getSelectedJobs();
             for (Job selectedJob : reportData) {
@@ -919,6 +917,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             }
 
             zos.close();
+
+            em.getTransaction().commit();
 
             return new ByteArrayInputStream(baos.toByteArray());
 

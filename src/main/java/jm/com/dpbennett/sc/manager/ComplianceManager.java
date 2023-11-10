@@ -358,7 +358,7 @@ public class ComplianceManager extends GeneralManager
         }
 
         setEdit(false);
-        
+
         PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
 
     }
@@ -943,7 +943,7 @@ public class ComplianceManager extends GeneralManager
         if (factoryInspections == null) {
             doFactoryInspectionSearch();
         }
-        
+
         return factoryInspections;
     }
 
@@ -1393,7 +1393,7 @@ public class ComplianceManager extends GeneralManager
     public List<Complaint> getComplaints() {
 
         if (complaints == null) {
-           
+
             doComplaintSearch();
         }
 
@@ -1528,7 +1528,7 @@ public class ComplianceManager extends GeneralManager
 
     public void updateMarketProductForProductInspection(SelectEvent<MarketProduct> event) {
 
-         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
+        if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
             getCurrentProductInspection().setProductCategory(
                     getCurrentProductInspection().getMarketProduct().getCategories().
                             get(0));
@@ -1573,7 +1573,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void updateCIF() {
-     
+
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
                 getEntityManager1(), "defaultPercentageOfCIF");
 
@@ -1799,7 +1799,7 @@ public class ComplianceManager extends GeneralManager
 
         try {
 
-               Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
+            Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
             if (inspector != null) {
                 currentComplianceSurvey.setInspector(inspector);
             } else {
@@ -1816,7 +1816,7 @@ public class ComplianceManager extends GeneralManager
                 currentComplianceSurvey.setDateEdited(new Date());
                 currentComplianceSurvey.setEditedBy(getUser().getEmployee());
             }
-  
+
             ReturnMessage message = currentComplianceSurvey.save(em);
 
             if (!message.isSuccess()) {
@@ -1824,7 +1824,7 @@ public class ComplianceManager extends GeneralManager
                         "An error occured while saving this survey",
                         FacesMessage.SEVERITY_ERROR);
             } else {
-              
+
                 currentComplianceSurvey.setIsDirty(false);
                 PrimeFacesUtils.addMessage("Survey Saved!",
                         "This survey was saved",
@@ -2184,7 +2184,7 @@ public class ComplianceManager extends GeneralManager
                 false,
                 25); // tk to be made system option.
 
-         openSurveysBrowser();
+        openSurveysBrowser();
     }
 
     public void doDefaultSurveySearch() {
@@ -2198,7 +2198,6 @@ public class ComplianceManager extends GeneralManager
                 false,
                 25); // tk to be made system option.
     }
-
 
     public void handleProductPhotoFileUpload(FileUploadEvent event) {
         FileOutputStream fout;
@@ -2726,11 +2725,10 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getId() != null) {
             try {
-                Connection con = BusinessEntityUtils.establishConnection(
-                        (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                        (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                        (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                        (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+
+                em.getTransaction().begin();
+                Connection con = BusinessEntityUtils.getConnection(em);
+
                 if (con != null) {
                     StreamedContent streamContent;
 
@@ -2755,7 +2753,8 @@ public class ComplianceManager extends GeneralManager
                             .name(fileName)
                             .build();
 
-                    //streamContent = new DefaultStreamedContent(new ByteArrayInputStream(fileBytes), "application/pdf", fileName);
+                    em.getTransaction().commit();
+
                     return streamContent;
                 } else {
                     return null;
@@ -2908,7 +2907,7 @@ public class ComplianceManager extends GeneralManager
     public List<DocumentStandard> completeActiveDocumentStandard(String query) {
         try {
             return DocumentStandard.findActive(
-                    getEntityManager1(), query, 
+                    getEntityManager1(), query,
                     25); // tk to be made system option.
 
         } catch (Exception e) {
@@ -2963,8 +2962,8 @@ public class ComplianceManager extends GeneralManager
     public List<DocumentStandard> getDocumentStandards() {
 
         if (documentStandards == null) {
-            documentStandards = 
-                    DocumentStandard.findAllActive(getEntityManager1(), 
+            documentStandards
+                    = DocumentStandard.findAllActive(getEntityManager1(),
                             25); // tk to be made system option
         }
 
@@ -2974,11 +2973,11 @@ public class ComplianceManager extends GeneralManager
     public void doDocumentStandardSearch() {
 
         if (getIsActiveDocumentStandardsOnly()) {
-            documentStandards = 
-                    DocumentStandard.findActive(getEntityManager1(), standardSearchText, 25);
+            documentStandards
+                    = DocumentStandard.findActive(getEntityManager1(), standardSearchText, 25);
         } else {
-            documentStandards = 
-                    DocumentStandard.find(getEntityManager1(), standardSearchText, 25);
+            documentStandards
+                    = DocumentStandard.find(getEntityManager1(), standardSearchText, 25);
         }
 
     }
@@ -3131,7 +3130,7 @@ public class ComplianceManager extends GeneralManager
                 null,
                 "General",
                 factoryInspectionSearchText,
-                null, null, 
+                null, null,
                 25); // tk to be made system option
     }
 

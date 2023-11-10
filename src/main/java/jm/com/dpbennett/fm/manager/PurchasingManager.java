@@ -1869,11 +1869,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                             .getProcurementOfficer().getLastName());
             parameters.put("totalCost", getSelectedPurchaseRequisition().getTotalCost());
 
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
 
             if (con != null) {
                 try {
@@ -1894,6 +1891,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                             .name("Purchase Order - " + getSelectedPurchaseRequisition().getPurchaseOrderNumber() + ".pdf")
                             .stream(() -> new ByteArrayInputStream(fileBytes))
                             .build();
+
+                    em.getTransaction().commit();
 
                     return streamedContent;
 

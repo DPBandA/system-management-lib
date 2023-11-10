@@ -71,11 +71,9 @@ public class JobCostingExport {
         selectedJobs[0] = Job.findJobById(em, 345052L);
 
         try {
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
 
             for (Job selectedJob : selectedJobs) {
                 parameters.put("jobId", selectedJob.getId());
@@ -128,6 +126,9 @@ public class JobCostingExport {
 
                     zipFile(fileBytes, zos);
                     zos.close();
+                    
+                    em.getTransaction().commit();
+                    
                     ///streamContent = new DefaultStreamedContent(new ByteArrayInputStream(fileBytes), "application/pdf", "Job Costing - " + selectedJob.getJobNumber() + ".pdf");
                     //return streamContent;
                 } catch (JRException ex) {
@@ -145,14 +146,14 @@ public class JobCostingExport {
     }
 
     private static void zipFile(byte[] fileBytes, ZipOutputStream zos) {
-      
+
         try {
 
             // Each file in the zipped archive is represented by a ZipEntry 
             // Only source file name is needed 
             ZipEntry ze = new ZipEntry("costing.pdf");
             zos.putNextEntry(ze);
-           
+
             zos.write(fileBytes);
         } catch (IOException e) {
             // TODO Auto-generated catch block

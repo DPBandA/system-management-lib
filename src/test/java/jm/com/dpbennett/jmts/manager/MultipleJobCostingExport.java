@@ -68,11 +68,9 @@ public class MultipleJobCostingExport {
         selectedJobs[1] = Job.findJobById(em, 345052L);
 
         try {
-            Connection con = BusinessEntityUtils.establishConnection(
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
-                    (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
+
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
 
             String zipFilename = "Job Costings - {append date with underscore}.zip"; // append date
             File zipFile = new File(zipFilename);
@@ -112,8 +110,8 @@ public class MultipleJobCostingExport {
 
                 try {
                     String costingFilename
-                            = "Job Costing - " + 
-                            selectedJob.getJobNumber().replace("/", "_") 
+                            = "Job Costing - "
+                            + selectedJob.getJobNumber().replace("/", "_")
                             + index + ".pdf";
 
                     // Compile job costing
@@ -127,19 +125,20 @@ public class MultipleJobCostingExport {
 
                     FileUtils.zipFile(costingFilename, costingFileBytes, zos);
                     ++index; // tk
-                   
 
                 } catch (Exception ex) {
                     System.out.println(ex);
 
                 }
             }
-            
+
             zos.close();
+
+            em.getTransaction().commit();
 
         } catch (Exception e) {
             System.out.println(e);
 
         }
-    }   
+    }
 }
