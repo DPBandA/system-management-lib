@@ -4059,7 +4059,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void doJobSearch() {
 
-        jobSearchResultList = findJobs(25);
+        jobSearchResultList = findJobs(0);
 
     }
 
@@ -4078,7 +4078,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 getJobManager().getDateSearchPeriod(),
                 getSearchType(),
                 getProformaInvoiceSearchText(),
-                25, // tk make system option
+                0, // tk make system option
                 true);
     }
 

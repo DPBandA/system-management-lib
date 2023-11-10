@@ -169,7 +169,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             // Type of Services Needed
             getCurrentJob().getServiceContract().setJob(getCurrentJob());
             String services
-                    = getCurrentJob().getServiceContract().getSelectedService().getName()
+                    = getCurrentJob().getServiceContract().getSelectedServiceForContract().getName()
                     + " ";
             /*
             if (getCurrentJob().getServiceContract().getServiceRequestedTesting()) {
@@ -1410,7 +1410,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             // TYPE OF SERVICE(S) NEEDED
             // Gather services. 
             getCurrentJob().getServiceContract().setJob(getCurrentJob());
-            String services = getCurrentJob().getServiceContract().getSelectedService().getName() + " ";
+            String services = getCurrentJob().getServiceContract().getSelectedServiceForContract().getName() + " ";
             dataCellStyle = getDefaultCellStyle(wb);
             dataCellStyle.setBorderLeft((short) 1);
             dataCellStyle.setFont(defaultFont);
