@@ -470,7 +470,7 @@ public class JobManager extends GeneralManager
         selectedStatusNote.setEntityId(getCurrentJob().getId());
         selectedStatusNote.setCreatedBy(getUser().getEmployee());
         selectedStatusNote.setDateCreated(new Date());
-        selectedStatusNote.setHeader("Enter a status note below:");
+        selectedStatusNote.setHeader("Enter a status note below");
 
         editStatusNote();
     }
