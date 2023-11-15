@@ -126,6 +126,11 @@ public final class SystemManager extends GeneralManager implements Serializable 
         init();
     }
 
+    public String getAdassaStoreShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "AdassaStoreLogo");
+    }
+
     public String getCurrentYear() {
 
         return "" + BusinessEntityUtils.getCurrentYear();
