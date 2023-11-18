@@ -58,6 +58,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.model.DialogFrameworkOptions;
+import org.primefaces.model.ResponsiveOption;
 
 /**
  *
@@ -81,12 +82,21 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private List<MarketProduct> foundInventoryProducts;
     private Boolean isActiveInventoryProductsOnly;
     private FinanceManager financeManager;
+    private List<ResponsiveOption> responsiveOptions;
 
     /**
      * Creates a new instance of InventoryManager
      */
     public InventoryManager() {
         init();
+    }
+
+    public List<ResponsiveOption> getResponsiveOptions() {
+        return responsiveOptions;
+    }
+
+    public void setResponsiveOptions(List<ResponsiveOption> responsiveOptions) {
+        this.responsiveOptions = responsiveOptions;
     }
 
     public String getInventoryRequisitionSearchText() {
@@ -333,13 +343,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 getSelectedInventory().getProduct().getName(),
                 getSelectedInventory().getCode(),
                 "Purchase");
-        
+
         setEdit(false);
 
 //        getSelectedInventory().getAllSortedCostComponents().add(selectedCostComponent);
 //
 //        updateInventory(null);
-
 //        FacesMessage msg = new FacesMessage("New Cost Component Added",
 //                "Click on the pencil icon to edit");
 //
@@ -1131,6 +1140,15 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return foundInventories;
     }
 
+    // tk
+    public List<Inventory> getFoundProducts() {
+        foundInventories = Inventory.find(
+                getEntityManager1(),
+                "", 0);
+
+        return foundInventories;
+    }
+
     public void setFoundInventories(List<Inventory> foundInventories) {
         this.foundInventories = foundInventories;
     }
@@ -1242,6 +1260,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
         inventoryRequisitionSearchText = "";
         inventorySearchText = "";
         isActiveInventoryProductsOnly = true;
+
+        responsiveOptions = new ArrayList<>();
+        responsiveOptions.add(new ResponsiveOption("1024px", 3, 3));
+        responsiveOptions.add(new ResponsiveOption("768px", 2, 2));
+        responsiveOptions.add(new ResponsiveOption("560px", 1, 1));
     }
 
     @Override
