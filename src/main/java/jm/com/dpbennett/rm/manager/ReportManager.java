@@ -2043,6 +2043,10 @@ public class ReportManager extends GeneralManager implements Serializable {
             ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, row, 6,
                     (String) rowData[6],
                     "java.lang.String", stringCellStyle);
+            // Id
+            ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, row, 6,
+                    (String) rowData[7],
+                    "java.lang.Long", stringCellStyle);
 
             row++;
         }
