@@ -1786,9 +1786,6 @@ public class ReportManager extends GeneralManager implements Serializable {
             XSSFSheet montegoBay = wb.getSheet("Montego Bay");
             montegoBay.setForceFormulaRecalculation(true);
 
-            XSSFSheet valuations = wb.getSheet("Analyses");
-            valuations.setForceFormulaRecalculation(true);
-
             getComplianceSurveyData(em, departmentId, wb);
             getComplaintData(em, departmentId, wb);
             getFactoryInspectionData(em, departmentId, wb);
