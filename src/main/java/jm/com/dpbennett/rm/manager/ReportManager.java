@@ -714,7 +714,7 @@ public class ReportManager extends GeneralManager implements Serializable {
                 // Provide date parameters if required
                 if (selectedReport.getDatePeriodRequired()) {
                     for (int i = 0; i < selectedReport.getDatePeriods().size(); i++) {
-                        
+
                         parameters.put("dateField" + (i + 1),
                                 selectedReport.getDatePeriods().get(i).getDateField());
                         parameters.put("startOfPeriod" + (i + 1),
@@ -2044,9 +2044,13 @@ public class ReportManager extends GeneralManager implements Serializable {
                     (String) rowData[6],
                     "java.lang.String", stringCellStyle);
             // Id
-            ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, row, 6,
-                    (String) rowData[7],
+            ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, row, 7,
+                    (Long) rowData[7],
                     "java.lang.Long", stringCellStyle);
+            // Work progress
+            ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, row, 8,
+                    (String) rowData[8],
+                    "java.lang.String", stringCellStyle);
 
             row++;
         }
