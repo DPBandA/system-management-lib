@@ -217,14 +217,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
         setEdit(true);
     }
 
-    public void deleteDisbursement() {
-        deleteDisbursementByProductName(selectedInventoryDisbursement.
-                getInventory().getProduct().getName());
-    }
-
     public void deleteSelectedDisbursement() {
+      
         deleteDisbursementByProductName(selectedInventoryDisbursement.
                 getInventory().getProduct().getName());
+
     }
 
     public void deleteDisbursementByProductName(String productName) {
