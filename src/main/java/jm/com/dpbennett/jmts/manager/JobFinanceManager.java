@@ -2528,12 +2528,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         this.longProcessProgress = longProcessProgress;
     }
 
-    /**
-     * Gets the filled Jasper Report Job Costing form as StreamedContent object.
-     *
-     * @param em
-     * @return
-     */
     public StreamedContent getJobCostingAnalysisFile(EntityManager em) {
 
         HashMap parameters = new HashMap();
@@ -2714,12 +2708,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     }
 
-    /**
-     * Gets the Jasper Report Job Costing file as a StreamedContent object
-     * within a "long process" server activity.
-     *
-     * @return
-     */
     public StreamedContent getJobCostingFile() {
         EntityManager em;
 

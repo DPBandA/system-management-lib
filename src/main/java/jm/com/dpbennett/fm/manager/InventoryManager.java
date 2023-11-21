@@ -19,9 +19,12 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.fm.manager;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -56,9 +59,17 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.ResponsiveOption;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -83,12 +94,109 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private Boolean isActiveInventoryProductsOnly;
     private FinanceManager financeManager;
     private List<ResponsiveOption> responsiveOptions;
+    private StreamedContent inventoryRequisitionFile;
 
     /**
      * Creates a new instance of InventoryManager
      */
     public InventoryManager() {
         init();
+    }
+    
+    public Boolean getCanExportInventoryRequisitionForm() {
+        // tk
+        return true;
+    }
+    
+    public StreamedContent getInventoryRequisitionFile() {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            inventoryRequisitionFile = getInventoryRequisitionFile(em);
+
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return inventoryRequisitionFile;
+    }
+    
+    public StreamedContent getInventoryRequisitionFile(EntityManager em) {
+
+        HashMap parameters = new HashMap();
+
+        try {
+            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
+            parameters.put("logoURL", logoURL);
+//            parameters.put("jobId", getCurrentJob().getId());
+//            parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(getCurrentJob().getContact()));
+//            parameters.put("customerAddress", getCurrentJob().getBillingAddress().toString());
+//            parameters.put("contactNumbers", getCurrentJob().getContact().getMainPhoneNumber().getLocalNumber());
+//            parameters.put("jobDescription", getCurrentJob().getJobDescription());
+//            parameters.put("totalCost", getCurrentJob().getJobCostingAndPayment().getTotalJobCostingsAmount());
+//            parameters.put("depositReceiptNumbers", getCurrentJob().getJobCostingAndPayment().getReceiptNumbers());
+//            parameters.put("discount", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValue());
+//            parameters.put("discountType", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValueType());
+//            parameters.put("deposit", getCurrentJob().getJobCostingAndPayment().getTotalPayment());
+//            parameters.put("amountDue", getCurrentJob().getJobCostingAndPayment().getAmountDue());
+//            parameters.put("totalTax", getTotalTax(getCurrentJob()));
+//            parameters.put("totalTaxLabel", getCurrentJob().getJobCostingAndPayment().getTotalTaxLabel());
+//            parameters.put("grandTotalCostLabel", getCurrentJob().getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
+//            parameters.put("grandTotalCost", getCurrentJob().getJobCostingAndPayment().getTotalCost());
+//            if (getCurrentJob().getJobCostingAndPayment().getCostingPreparedBy() != null) {
+//                parameters.put("preparedBy",
+//                        getCurrentJob().getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
+//                        + getCurrentJob().getJobCostingAndPayment().getCostingPreparedBy().getLastName());
+//            }
+//            if (getCurrentJob().getJobCostingAndPayment().getCostingApprovedBy() != null) {
+//                parameters.put("approvedBy",
+//                        getCurrentJob().getJobCostingAndPayment().getCostingApprovedBy().getFirstName() + " "
+//                        + getCurrentJob().getJobCostingAndPayment().getCostingApprovedBy().getLastName());
+//            }
+//            parameters.put("approvalDate",
+//                    BusinessEntityUtils.getDateInMediumDateFormat(
+//                            getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
+
+            em.getTransaction().begin();
+            Connection con = BusinessEntityUtils.getConnection(em);
+
+            if (con != null) {
+                try {
+                    StreamedContent streamContent;
+                    // Compile report
+                    JasperReport jasperReport
+                            = JasperCompileManager.
+                                    compileReport((String) SystemOption.getOptionValueObject(em, "jobCosting"));
+
+                    // Generate report
+                    JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
+
+                    byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
+
+                    streamContent = DefaultStreamedContent.builder()
+                            .stream(() -> new ByteArrayInputStream(fileBytes))
+                            .contentType("application/pdf")
+                            .name("Stores Requisition - " + BusinessEntityUtils.getNow() + ".pdf")
+                            .build();
+
+                    em.getTransaction().commit();
+
+                    return streamContent;
+                } catch (JRException ex) {
+                    System.out.println(ex);
+                    return null;
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+
     }
 
     public List<ResponsiveOption> getResponsiveOptions() {
