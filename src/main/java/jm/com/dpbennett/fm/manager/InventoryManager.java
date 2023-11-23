@@ -95,6 +95,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private FinanceManager financeManager;
     private List<ResponsiveOption> responsiveOptions;
     private StreamedContent inventoryRequisitionFile;
+    private BannerView bannerView;
 
     /**
      * Creates a new instance of InventoryManager
@@ -102,7 +103,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public InventoryManager() {
         init();
     }
-    
+
+    // tk
+    public BannerView getBannerView() {
+        return bannerView;
+    }
+
+    // tk
+    public void setBannerView(BannerView bannerView) {
+        this.bannerView = bannerView;
+    }
+        
     public Boolean getCanExportInventoryRequisitionForm() {
         // tk
         return true;
@@ -1370,6 +1381,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
         responsiveOptions.add(new ResponsiveOption("1024px", 3, 3));
         responsiveOptions.add(new ResponsiveOption("768px", 2, 2));
         responsiveOptions.add(new ResponsiveOption("560px", 1, 1));
+        
+        // tk
+        bannerView =new BannerView();
     }
 
     @Override
