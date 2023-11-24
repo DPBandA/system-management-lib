@@ -31,20 +31,23 @@ public class BannerView {
         banners = new ArrayList<>();
         banners.add(new Banner("https://ae01.alicdn.com/kf/Sec5f132be3ba4cf08462cadfb67ee37ef.jpg", 
                 "https://ae01.alicdn.com/kf/Sec5f132be3ba4cf08462cadfb67ee37ef.jpg",
-                "Description for Image 1", 
-                "Title 1", "https://s.click.aliexpress.com/e/_DliYUYX?bz=500*500"));
+                "AliExpress Black Friday Sale", 
+                "AliExpress Black Friday Sale", "https://s.click.aliexpress.com/e/_DliYUYX?bz=500*500"));
         banners.add(new Banner("https://ae01.alicdn.com/kf/Sa909d6794c4a40b7a718743270123f07y.jpg", 
                 "https://ae01.alicdn.com/kf/Sa909d6794c4a40b7a718743270123f07y.jpg",
-                "Description for Image 2", 
-                "Title 2", "https://s.click.aliexpress.com/e/_DebjDV5?bz=500*500"));
+                "AliExpress Black Friday Sale", 
+                "AliExpress Black Friday Sale", 
+                "https://s.click.aliexpress.com/e/_DebjDV5?bz=500*500"));
         banners.add(new Banner("https://ae01.alicdn.com/kf/Sdde88a6d77df41fdbb576c9472fadf1fn.jpg", 
                 "https://ae01.alicdn.com/kf/Sdde88a6d77df41fdbb576c9472fadf1fn.jpg",
-                "Description for Image 3", 
-                "Title 3", "https://s.click.aliexpress.com/e/_DB8DfIR?bz=500*500"));
+                "AliExpress Black Friday Sale", 
+                "AliExpress Black Friday Sale", 
+                "https://s.click.aliexpress.com/e/_DB8DfIR?bz=500*500"));
         banners.add(new Banner("https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg", 
                 "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
-                "Description for Image 3", 
-                "Title 3", "https://s.click.aliexpress.com/e/_Dm0H5iP?bz=300*250"));
+                "AliExpress Black Friday Sale", 
+                "AliExpress Black Friday Sale", 
+                "https://s.click.aliexpress.com/e/_Dm0H5iP?bz=300*250"));
 
         responsiveOptions1 = new ArrayList<>();
         responsiveOptions1.add(new ResponsiveOption("1024px", 5));
