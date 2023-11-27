@@ -1456,9 +1456,15 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         switch (searchType) {
             case "Inventory":
-                foundInventories = Inventory.find(
-                        getEntityManager1(),
-                        searchText, 0);
+                if (getActiveInventoryOnly()) {
+                    foundInventories = Inventory.findActive(
+                            getEntityManager1(),
+                            searchText, 0);
+                } else {
+                    foundInventories = Inventory.find(
+                            getEntityManager1(),
+                            searchText, 0);
+                }
 
                 if (startDate != null) {
                     openInventoryTab();
@@ -1472,6 +1478,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     foundInventoryProducts = MarketProduct.findMarketProductsByNameAndType(
                             getEntityManager1(), searchText, "Inventory");
                 }
+
                 if (startDate != null) {
                     openInventoryProductBrowser();
                 }
