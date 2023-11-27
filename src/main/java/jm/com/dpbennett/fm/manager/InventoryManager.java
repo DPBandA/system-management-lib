@@ -81,17 +81,19 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private InventoryRequisition selectedInventoryRequisition;
     private MarketProduct selectedInventoryProduct;
     private CostComponent selectedCostComponent;
-    private List<Inventory> selectedInventories;
     private List<InventoryRequisition> selectedInventoryRequisitions;
     private InventoryDisbursement selectedInventoryDisbursement;
     private Boolean edit;
     private String inventoryProductSearchText;
     private String inventoryRequisitionSearchText;
     private String inventorySearchText;
+    private List<Inventory> selectedInventories;
     private List<Inventory> foundInventories;
+    private List<Inventory> foundActiveInventories;
     private List<InventoryRequisition> foundInventoryRequisitions;
     private List<MarketProduct> foundInventoryProducts;
-    private Boolean isActiveInventoryProductsOnly;
+    private Boolean activeInventoryOnly;
+    private Boolean activeInventoryProductsOnly;
     private FinanceManager financeManager;
     private List<ResponsiveOption> responsiveOptions;
     private StreamedContent inventoryRequisitionFile;
@@ -104,6 +106,14 @@ public class InventoryManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public Boolean getActiveInventoryProductsOnly() {
+        return activeInventoryProductsOnly;
+    }
+
+    public void setActiveInventoryProductsOnly(Boolean activeInventoryProductsOnly) {
+        this.activeInventoryProductsOnly = activeInventoryProductsOnly;
+    }
+
     // tk
     public BannerView getBannerView() {
         return bannerView;
@@ -113,12 +123,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void setBannerView(BannerView bannerView) {
         this.bannerView = bannerView;
     }
-        
+
     public Boolean getCanExportInventoryRequisitionForm() {
         // tk
         return true;
     }
-    
+
     public StreamedContent getInventoryRequisitionFile() {
         EntityManager em;
 
@@ -127,14 +137,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
             inventoryRequisitionFile = getInventoryRequisitionFile(em);
 
-
         } catch (Exception e) {
             System.out.println(e);
         }
 
         return inventoryRequisitionFile;
     }
-    
+
     public StreamedContent getInventoryRequisitionFile(EntityManager em) {
 
         HashMap parameters = new HashMap();
@@ -337,7 +346,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void deleteSelectedDisbursement() {
-      
+
         deleteDisbursementByProductName(selectedInventoryDisbursement.
                 getInventory().getProduct().getName());
 
@@ -515,8 +524,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
         }
     }
 
-    public void setIsActiveInventoryProductsOnly(Boolean isActiveInventoryProductsOnly) {
-        this.isActiveInventoryProductsOnly = isActiveInventoryProductsOnly;
+    public Boolean getActiveInventoryOnly() {
+        return activeInventoryOnly;
+    }
+
+    public void setActiveInventoryOnly(Boolean activeInventoryOnly) {
+        this.activeInventoryOnly = activeInventoryOnly;
     }
 
     public MarketProduct getSelectedInventoryProduct() {
@@ -533,10 +546,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void setInventoryProductSearchText(String inventoryProductSearchText) {
         this.inventoryProductSearchText = inventoryProductSearchText;
-    }
-
-    public Boolean getIsActiveInventoryProductsOnly() {
-        return isActiveInventoryProductsOnly;
     }
 
     public void createNewInventoryProductInDialog() {
@@ -1375,15 +1384,16 @@ public class InventoryManager extends GeneralManager implements Serializable {
         inventoryProductSearchText = "";
         inventoryRequisitionSearchText = "";
         inventorySearchText = "";
-        isActiveInventoryProductsOnly = true;
+        activeInventoryOnly = true;
+        activeInventoryProductsOnly = true;
 
         responsiveOptions = new ArrayList<>();
         responsiveOptions.add(new ResponsiveOption("1024px", 3, 3));
         responsiveOptions.add(new ResponsiveOption("768px", 2, 2));
         responsiveOptions.add(new ResponsiveOption("560px", 1, 1));
-        
+
         // tk
-        bannerView =new BannerView();
+        bannerView = new BannerView();
     }
 
     @Override
@@ -1455,7 +1465,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 }
                 break;
             case "Inventory Products":
-                if (getIsActiveInventoryProductsOnly()) {
+                if (getActiveInventoryProductsOnly()) {
                     foundInventoryProducts = MarketProduct.findActiveMarketProductsByNameAndType(
                             getEntityManager1(), searchText, "Inventory");
                 } else {
