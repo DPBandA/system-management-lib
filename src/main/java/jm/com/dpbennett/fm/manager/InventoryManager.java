@@ -1445,6 +1445,16 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return dateSearchFields;
     }
 
+    public List<Inventory> getFoundActiveInventories() {
+        if (foundActiveInventories == null) {
+            foundActiveInventories = Inventory.findActive(
+                    getEntityManager1(),
+                    "", 0);
+        }
+        
+        return foundActiveInventories;
+    }
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
