@@ -111,6 +111,26 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 "showInventoryMarketingTab");
     }
 
+    public String getAmazonAffiliateURL() {
+        return SystemOption.getString(getEntityManager1(),
+                "amazonAffiliateURL");
+    }
+
+    public String getAmazonBanner() {
+        return SystemOption.getString(getEntityManager1(),
+                "amazonBanner");
+    }
+
+    public String getAliExpressAffiliateURL() {
+        return SystemOption.getString(getEntityManager1(),
+                "aliExpressAffiliateURL");
+    }
+
+    public String getAliExpressBanner() {
+        return SystemOption.getString(getEntityManager1(),
+                "aliExpressBanner");
+    }
+
     public Boolean getActiveInventoryProductsOnly() {
         return activeInventoryProductsOnly;
     }
