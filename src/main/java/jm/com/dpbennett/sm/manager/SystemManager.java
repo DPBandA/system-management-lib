@@ -130,6 +130,11 @@ public final class SystemManager extends GeneralManager implements Serializable 
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "AdassaStoreLogo");
     }
+    
+     public String getDPBAShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "DPBALogo");
+    }
 
     public String getCurrentYear() {
 

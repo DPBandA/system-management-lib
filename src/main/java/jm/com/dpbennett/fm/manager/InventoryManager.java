@@ -106,6 +106,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public Boolean getShowInventoryMarketingTab() {
+        return SystemOption.getBoolean(getEntityManager1(),
+                "showInventoryMarketingTab");
+    }
+
     public Boolean getActiveInventoryProductsOnly() {
         return activeInventoryProductsOnly;
     }
@@ -1451,7 +1456,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     getEntityManager1(),
                     "", 0);
         }
-        
+
         return foundActiveInventories;
     }
 
