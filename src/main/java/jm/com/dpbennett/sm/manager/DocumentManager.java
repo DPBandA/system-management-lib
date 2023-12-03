@@ -20,10 +20,14 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sm.manager;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.faces.event.ActionEvent;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.dm.Post;
+import jm.com.dpbennett.business.entity.hrm.User;
+import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DialogFrameworkOptions;
 
@@ -37,9 +41,72 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     private String postSearchText;
     private List<Post> foundPosts;
     private Post selectedPost;
+    private SystemManager systemManager;
 
     public DocumentManager() {
         init();
+    }
+
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+    }
+
+    public Boolean getIsNewPost() {
+        return getSelectedPost().getId() == null;
+    }
+
+    public void cancelPostEdit() {
+        getSelectedPost().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void okPost() {
+
+        try {
+
+            // Update tracking
+            if (getIsNewPost()) {
+                getSelectedPost().setDateEntered(new Date());
+                getSelectedPost().setDateEdited(new Date());
+
+                if (getUser() != null) {
+                    getSelectedPost().setEditedBy(getUser().getEmployee());
+                }
+            }
+
+            // Do save
+            if (getSelectedPost().getIsDirty()) {
+                getSelectedPost().setDateEdited(new Date());
+                if (getUser() != null) {
+                    getSelectedPost().setEditedBy(getUser().getEmployee());
+                }
+                getSelectedPost().save(getEntityManager1());
+                getSelectedPost().setIsDirty(false);
+            }
+
+            PrimeFaces.current().dialog().closeDynamic(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public SystemManager getSystemManager() {
+
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+
+        return systemManager;
+    }
+
+    @Override
+    public EntityManager getEntityManager1() {
+
+        return getSystemManager().getEntityManager1();
     }
 
     public Boolean getIsActivePostsOnly() {
@@ -59,6 +126,11 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     }
 
     public List<Post> getFoundPosts() {
+        if (foundPosts == null) {
+            foundPosts = Post.findActive(getEntityManager1(), "", 25);
+            //tk add system option for max results.
+        }
+
         return foundPosts;
     }
 
@@ -82,7 +154,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         return 500;
     }
 
-    public void editPost() {
+    public void editSelectedPost() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -102,16 +174,15 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     }
 
     public void createNewPost() {
-        
+
         // tk
         System.out.println("Creating new post...");
 
         selectedPost = new Post();
+        selectedPost.setIsDirty(true);
 
         //openPostDialog();
-
         //openPostsTab();
-
     }
 
     public void doPostSearch() {
@@ -124,6 +195,10 @@ public final class DocumentManager extends GeneralManager implements Serializabl
             //foundPosts = Post.find(getEntityManager1(), getPostSearchText());
         }
 
+    }
+
+    public int getNumberOfPosts() {
+        return getFoundPosts().size();
     }
 
     public void closeDialog(ActionEvent actionEvent) {
