@@ -62,6 +62,10 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
+    
+    public void updatePost() {
+        getSelectedPost().setIsDirty(true);
+    }
 
     public void okPost() {
 
@@ -175,14 +179,11 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
     public void createNewPost() {
 
-        // tk
-        System.out.println("Creating new post...");
-
         selectedPost = new Post();
         selectedPost.setIsDirty(true);
 
-        //openPostDialog();
-        //openPostsTab();
+        editSelectedPost();
+        
     }
 
     public void doPostSearch() {
@@ -190,9 +191,9 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         setDefaultCommandTarget("@this");
 
         if (getIsActivePostsOnly()) {
-            //foundPosts = Post.findActive(getEntityManager1(), getPostSearchText());
+            foundPosts = Post.findActive(getEntityManager1(), getPostSearchText(), 100);
         } else {
-            //foundPosts = Post.find(getEntityManager1(), getPostSearchText());
+            foundPosts = Post.find(getEntityManager1(), getPostSearchText(), 100);
         }
 
     }
