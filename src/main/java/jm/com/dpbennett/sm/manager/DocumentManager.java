@@ -62,7 +62,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void updatePost() {
         getSelectedPost().setIsDirty(true);
     }
@@ -183,7 +183,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         selectedPost.setIsDirty(true);
 
         editSelectedPost();
-        
+
     }
 
     public void doPostSearch() {
@@ -217,6 +217,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         super.reset();
 
         isActivePostsOnly = true;
+        postSearchText = "";
         setSearchType("Posts");
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
