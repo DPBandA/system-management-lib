@@ -24,15 +24,16 @@ public class TestFirebaseAuth {
     @Test
     public void TestFirebaseAuth1() throws FileNotFoundException, IOException {
       FileInputStream serviceAccount = 
-              new FileInputStream("C:\\Projects\\system-management-lib\\google-services.json");
+              new FileInputStream("C:\\Projects\\system-management-lib\\jmts-5302b-firebase-adminsdk-ki76l-13aa781e6f.json");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
             .setDatabaseUrl("https://jmts-5302b-default-rtdb.firebaseio.com")
             .build();
 
-        FirebaseApp.initializeApp(options);
+        FirebaseApp defaultApp = FirebaseApp.initializeApp(options);
         
+        System.out.println("The default App: " + defaultApp.getName());
      
    }
 
