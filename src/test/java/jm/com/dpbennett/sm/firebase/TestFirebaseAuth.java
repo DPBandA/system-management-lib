@@ -24,7 +24,7 @@ public class TestFirebaseAuth {
     @Test
     public void TestFirebaseAuth1() throws FileNotFoundException, IOException {
       FileInputStream serviceAccount = 
-              new FileInputStream("C:\\Projects\\system-management-lib\\jmts-5302b-firebase-adminsdk-ki76l-13aa781e6f.json");
+              new FileInputStream("/path/to/file");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
