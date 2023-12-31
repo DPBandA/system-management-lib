@@ -32,24 +32,24 @@ import org.junit.Test;
  */
 public class EntityTest {
 
-    @Test
-    public void creatEntity() {
-        HashMap prop = new HashMap();
-
-        prop.put("javax.persistence.jdbc.user",
-                "");
-        prop.put("javax.persistence.jdbc.password",
-                ""); // REMOVE PWD WHEN DONE AND SET SKIP TEST TRUE
-        prop.put("javax.persistence.jdbc.url",
-                "jdbc:mysql://172.16.0.39:3306/jmts");
-        prop.put("javax.persistence.jdbc.driver",
-                "com.mysql.jdbc.Driver");
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
-        EntityManager em = emf.createEntityManager();
-
-        StatusNote s = new StatusNote();
-
-    }
+//    @Test
+//    public void creatEntity() {
+//        HashMap prop = new HashMap();
+//
+//        prop.put("javax.persistence.jdbc.user",
+//                "");
+//        prop.put("javax.persistence.jdbc.password",
+//                ""); // REMOVE PWD WHEN DONE AND SET SKIP TEST TRUE
+//        prop.put("javax.persistence.jdbc.url",
+//                "jdbc:mysql://172.16.0.39:3306/jmts");
+//        prop.put("javax.persistence.jdbc.driver",
+//                "com.mysql.jdbc.Driver");
+//
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
+//        EntityManager em = emf.createEntityManager();
+//
+//        StatusNote s = new StatusNote();
+//
+//    }
 
 }

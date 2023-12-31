@@ -34,36 +34,36 @@ import org.junit.Test;
 public class HumanResourceManagerTest {
 
     
-    @Test
-    public void getDepartmentFullCode() {
-        HashMap prop = new HashMap();
-
-        prop.put("javax.persistence.jdbc.user",
-                "root");
-        prop.put("javax.persistence.jdbc.password",
-                ""); // TK REMOVE PWD WHEN DONE AND DISABLE TESTING.
-        prop.put("javax.persistence.jdbc.url",
-                "jdbc:mysql://172.16.0.10:3306/jmtstest");
-        prop.put("javax.persistence.jdbc.driver",
-                "com.mysql.jdbc.Driver");
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
-        EntityManager em = emf.createEntityManager();
-
-        User u = User.findActiveJobManagerUserByEmployeeId(em, 261L);
-        Department dept = Department.findDepartmentByName(em, "Metallurgy");
-        if ((u != null) && (dept != null)) {
-             if (u.isMemberOf(em, dept))    {
-                 System.out.println("Member of " + dept.getName());
-             } 
-             else {
-                 System.out.println("NOT member of " + dept.getName());
-             }
-        }
-        else {
-            System.out.println("User/department not found!");
-        }
-
-    }
+//    @Test
+//    public void getDepartmentFullCode() {
+//        HashMap prop = new HashMap();
+//
+//        prop.put("javax.persistence.jdbc.user",
+//                "root");
+//        prop.put("javax.persistence.jdbc.password",
+//                ""); // TK REMOVE PWD WHEN DONE AND DISABLE TESTING.
+//        prop.put("javax.persistence.jdbc.url",
+//                "jdbc:mysql://172.16.0.10:3306/jmtstest");
+//        prop.put("javax.persistence.jdbc.driver",
+//                "com.mysql.jdbc.Driver");
+//
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
+//        EntityManager em = emf.createEntityManager();
+//
+//        User u = User.findActiveJobManagerUserByEmployeeId(em, 261L);
+//        Department dept = Department.findDepartmentByName(em, "Metallurgy");
+//        if ((u != null) && (dept != null)) {
+//             if (u.isMemberOf(em, dept))    {
+//                 System.out.println("Member of " + dept.getName());
+//             } 
+//             else {
+//                 System.out.println("NOT member of " + dept.getName());
+//             }
+//        }
+//        else {
+//            System.out.println("User/department not found!");
+//        }
+//
+//    }
     
 }

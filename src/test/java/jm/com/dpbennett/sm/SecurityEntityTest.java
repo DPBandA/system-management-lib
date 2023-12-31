@@ -33,53 +33,53 @@ import javax.naming.ldap.InitialLdapContext;
  */
 public class SecurityEntityTest {
 
-    @Test
-    public void testLDAP() {
-        try {
-           
-            String username = "dbennett";
-            // tk to be made system options
-            String searchControlsReturningAttributes = "uid";
-            String securityPrincipalPrefix = "uid=";
-            String usernameSuffix = ",";
-            String distinguishedNameString = "dc=dpbennett,dc=com,dc=jm"; // DN - use domainName as in database instead?
-            // tk end system options
-            
-            String initialContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
-            String securityAuthentication = "simple";
-            String securityPrincipal = securityPrincipalPrefix + 
-                    username + 
-                    usernameSuffix 
-                    + distinguishedNameString; // tk should be distinguishedName in database not domainName?
-            String securityCredentials = "";
-            String providerUrl = "ldap://dpbennett.com.jm:389";
-            Hashtable env = new Hashtable();
-
-            env.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
-            env.put(Context.SECURITY_AUTHENTICATION, securityAuthentication);
-            env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
-            env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
-            env.put(Context.PROVIDER_URL, providerUrl);
-
-            InitialLdapContext ctx = new InitialLdapContext(env, null);
-
-            SearchControls constraints = new SearchControls();
-            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String[] attrIDs = {searchControlsReturningAttributes};
-
-            constraints.setReturningAttributes(attrIDs);
-
-            //String ctxName = "dc=dpbennett,dc=com,dc=jm"; // tk should be distinguishedName in database?
-            NamingEnumeration answer = ctx.search(distinguishedNameString, "SAMAccountName=" + username, constraints);
-
-            if (!answer.hasMore()) { // Assuming only one match
-                System.out.println("User found!");
-            }
-        } catch (NamingException ex) {
-            System.out.println("Naming exception!: " + ex);
-
-        }
-
-    }
+//    @Test
+//    public void testLDAP() {
+//        try {
+//           
+//            String username = "dbennett";
+//            // tk to be made system options
+//            String searchControlsReturningAttributes = "uid";
+//            String securityPrincipalPrefix = "uid=";
+//            String usernameSuffix = ",";
+//            String distinguishedNameString = "dc=dpbennett,dc=com,dc=jm"; // DN - use domainName as in database instead?
+//            // tk end system options
+//            
+//            String initialContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
+//            String securityAuthentication = "simple";
+//            String securityPrincipal = securityPrincipalPrefix + 
+//                    username + 
+//                    usernameSuffix 
+//                    + distinguishedNameString; // tk should be distinguishedName in database not domainName?
+//            String securityCredentials = "";
+//            String providerUrl = "ldap://dpbennett.com.jm:389";
+//            Hashtable env = new Hashtable();
+//
+//            env.put(Context.INITIAL_CONTEXT_FACTORY, initialContextFactory);
+//            env.put(Context.SECURITY_AUTHENTICATION, securityAuthentication);
+//            env.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
+//            env.put(Context.SECURITY_CREDENTIALS, securityCredentials);
+//            env.put(Context.PROVIDER_URL, providerUrl);
+//
+//            InitialLdapContext ctx = new InitialLdapContext(env, null);
+//
+//            SearchControls constraints = new SearchControls();
+//            constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+//            String[] attrIDs = {searchControlsReturningAttributes};
+//
+//            constraints.setReturningAttributes(attrIDs);
+//
+//            //String ctxName = "dc=dpbennett,dc=com,dc=jm"; // tk should be distinguishedName in database?
+//            NamingEnumeration answer = ctx.search(distinguishedNameString, "SAMAccountName=" + username, constraints);
+//
+//            if (!answer.hasMore()) { // Assuming only one match
+//                System.out.println("User found!");
+//            }
+//        } catch (NamingException ex) {
+//            System.out.println("Naming exception!: " + ex);
+//
+//        }
+//
+//    }
 
 }

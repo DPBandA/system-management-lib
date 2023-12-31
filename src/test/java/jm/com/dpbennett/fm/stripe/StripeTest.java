@@ -17,16 +17,16 @@ import org.junit.Test;
 public class StripeTest {
 
   
-    @Test
-    public void testStripe() {
-        System.out.println("Hello Stripe!");
-        
-        Stripe.apiKey = "sk_test_51IdfUQGCbrRYfT2gOdvWJFrKI8qU2oZ0jGaahLhiB6ZJ3CrrJzGrhyQmiC1re6I5jd7CwQELcxJFbYv8Si9mn7TF007wjcKqaA"; 
-        try {
-            Customer cus = Customer.retrieve("cus_Mqg7eRrw2R3Aod");
-            System.out.println("Name: " + cus.getName());
-        } catch (StripeException ex) {
-            System.out.println(ex);
-        }
-    }
+//    @Test
+//    public void testStripe() {
+//        System.out.println("Hello Stripe!");
+//        
+//        Stripe.apiKey = "sk_test_51IdfUQGCbrRYfT2gOdvWJFrKI8qU2oZ0jGaahLhiB6ZJ3CrrJzGrhyQmiC1re6I5jd7CwQELcxJFbYv8Si9mn7TF007wjcKqaA"; 
+//        try {
+//            Customer cus = Customer.retrieve("cus_Mqg7eRrw2R3Aod");
+//            System.out.println("Name: " + cus.getName());
+//        } catch (StripeException ex) {
+//            System.out.println(ex);
+//        }
+//    }
 }

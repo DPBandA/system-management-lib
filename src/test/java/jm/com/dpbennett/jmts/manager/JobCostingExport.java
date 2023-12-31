@@ -50,115 +50,115 @@ import org.junit.Test;
  */
 public class JobCostingExport {
 
-    @Test
-    public void exportJobCostings() {
-        HashMap prop = new HashMap();
-        HashMap parameters = new HashMap();
-        Job[] selectedJobs = {null};
-
-        prop.put("javax.persistence.jdbc.user",
-                "root");
-        prop.put("javax.persistence.jdbc.password",
-                "bsj0001");
-        prop.put("javax.persistence.jdbc.url",
-                "jdbc:mysql://172.16.0.10:3306/jmtstest");
-        prop.put("javax.persistence.jdbc.driver",
-                "com.mysql.jdbc.Driver");
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
-        EntityManager em = emf.createEntityManager();
-
-        selectedJobs[0] = Job.findJobById(em, 345052L);
-
-        try {
-
-            em.getTransaction().begin();
-            Connection con = BusinessEntityUtils.getConnection(em);
-
-            for (Job selectedJob : selectedJobs) {
-                parameters.put("jobId", selectedJob.getId());
-                parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(selectedJob.getContact()));
-                parameters.put("customerAddress", selectedJob.getBillingAddress().toString());
-                parameters.put("contactNumbers", selectedJob.getContact().getMainPhoneNumber().getLocalNumber());
-                parameters.put("jobDescription", selectedJob.getJobDescription());
-                parameters.put("totalCost", selectedJob.getJobCostingAndPayment().getTotalJobCostingsAmount());
-                parameters.put("depositReceiptNumbers", selectedJob.getJobCostingAndPayment().getReceiptNumbers());
-                parameters.put("discount", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValue());
-                parameters.put("discountType", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValueType());
-                parameters.put("deposit", selectedJob.getJobCostingAndPayment().getTotalPayment());
-                parameters.put("amountDue", selectedJob.getJobCostingAndPayment().getAmountDue());
-                parameters.put("totalTax", selectedJob.getJobCostingAndPayment().getTotalTax());
-                parameters.put("totalTaxLabel", selectedJob.getJobCostingAndPayment().getTotalTaxLabel());
-                parameters.put("grandTotalCostLabel", selectedJob.getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
-                parameters.put("grandTotalCost", selectedJob.getJobCostingAndPayment().getTotalCost());
-                if (selectedJob.getJobCostingAndPayment().getCostingPreparedBy() != null) {
-                    parameters.put("preparedBy",
-                            selectedJob.getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
-                            + selectedJob.getJobCostingAndPayment().getCostingPreparedBy().getLastName());
-                }
-                if (selectedJob.getJobCostingAndPayment().getCostingApprovedBy() != null) {
-                    parameters.put("approvedBy",
-                            selectedJob.getJobCostingAndPayment().getCostingApprovedBy().getFirstName() + " "
-                            + selectedJob.getJobCostingAndPayment().getCostingApprovedBy().getLastName());
-                }
-                parameters.put("approvalDate",
-                        BusinessEntityUtils.getDateInMediumDateFormat(
-                                selectedJob.getJobStatusAndTracking().getDateCostingApproved()));
-
-                //if (con != null) {
-                try {
-                    //StreamedContent streamContent;
-                    // Compile report
-                    ZipOutputStream zos;
-                    // Creating ZipOutputStream for writing to zip file
-                    File zipFile = new File("costing.zip");
-                    FileOutputStream fos = new FileOutputStream(zipFile);
-                    zos = new ZipOutputStream(fos);
-
-                    JasperReport jasperReport
-                            = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(em, "jobCosting"));
-
-                    // Generate report
-                    JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
-
-                    byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
-
-                    zipFile(fileBytes, zos);
-                    zos.close();
-                    
-                    em.getTransaction().commit();
-                    
-                    ///streamContent = new DefaultStreamedContent(new ByteArrayInputStream(fileBytes), "application/pdf", "Job Costing - " + selectedJob.getJobNumber() + ".pdf");
-                    //return streamContent;
-                } catch (JRException ex) {
-                    System.out.println(ex);
-
-                }
-
-                // }
-            }
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-        }
-    }
-
-    private static void zipFile(byte[] fileBytes, ZipOutputStream zos) {
-
-        try {
-
-            // Each file in the zipped archive is represented by a ZipEntry 
-            // Only source file name is needed 
-            ZipEntry ze = new ZipEntry("costing.pdf");
-            zos.putNextEntry(ze);
-
-            zos.write(fileBytes);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+//    @Test
+//    public void exportJobCostings() {
+//        HashMap prop = new HashMap();
+//        HashMap parameters = new HashMap();
+//        Job[] selectedJobs = {null};
+//
+//        prop.put("javax.persistence.jdbc.user",
+//                "root");
+//        prop.put("javax.persistence.jdbc.password",
+//                "");
+//        prop.put("javax.persistence.jdbc.url",
+//                "jdbc:mysql://172.16.0.10:3306/jmtstest");
+//        prop.put("javax.persistence.jdbc.driver",
+//                "com.mysql.jdbc.Driver");
+//
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
+//        EntityManager em = emf.createEntityManager();
+//
+//        selectedJobs[0] = Job.findJobById(em, 345052L);
+//
+//        try {
+//
+//            em.getTransaction().begin();
+//            Connection con = BusinessEntityUtils.getConnection(em);
+//
+//            for (Job selectedJob : selectedJobs) {
+//                parameters.put("jobId", selectedJob.getId());
+//                parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(selectedJob.getContact()));
+//                parameters.put("customerAddress", selectedJob.getBillingAddress().toString());
+//                parameters.put("contactNumbers", selectedJob.getContact().getMainPhoneNumber().getLocalNumber());
+//                parameters.put("jobDescription", selectedJob.getJobDescription());
+//                parameters.put("totalCost", selectedJob.getJobCostingAndPayment().getTotalJobCostingsAmount());
+//                parameters.put("depositReceiptNumbers", selectedJob.getJobCostingAndPayment().getReceiptNumbers());
+//                parameters.put("discount", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValue());
+//                parameters.put("discountType", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValueType());
+//                parameters.put("deposit", selectedJob.getJobCostingAndPayment().getTotalPayment());
+//                parameters.put("amountDue", selectedJob.getJobCostingAndPayment().getAmountDue());
+//                parameters.put("totalTax", selectedJob.getJobCostingAndPayment().getTotalTax());
+//                parameters.put("totalTaxLabel", selectedJob.getJobCostingAndPayment().getTotalTaxLabel());
+//                parameters.put("grandTotalCostLabel", selectedJob.getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
+//                parameters.put("grandTotalCost", selectedJob.getJobCostingAndPayment().getTotalCost());
+//                if (selectedJob.getJobCostingAndPayment().getCostingPreparedBy() != null) {
+//                    parameters.put("preparedBy",
+//                            selectedJob.getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
+//                            + selectedJob.getJobCostingAndPayment().getCostingPreparedBy().getLastName());
+//                }
+//                if (selectedJob.getJobCostingAndPayment().getCostingApprovedBy() != null) {
+//                    parameters.put("approvedBy",
+//                            selectedJob.getJobCostingAndPayment().getCostingApprovedBy().getFirstName() + " "
+//                            + selectedJob.getJobCostingAndPayment().getCostingApprovedBy().getLastName());
+//                }
+//                parameters.put("approvalDate",
+//                        BusinessEntityUtils.getDateInMediumDateFormat(
+//                                selectedJob.getJobStatusAndTracking().getDateCostingApproved()));
+//
+//                //if (con != null) {
+//                try {
+//                    //StreamedContent streamContent;
+//                    // Compile report
+//                    ZipOutputStream zos;
+//                    // Creating ZipOutputStream for writing to zip file
+//                    File zipFile = new File("costing.zip");
+//                    FileOutputStream fos = new FileOutputStream(zipFile);
+//                    zos = new ZipOutputStream(fos);
+//
+//                    JasperReport jasperReport
+//                            = JasperCompileManager.
+//                                    compileReport((String) SystemOption.getOptionValueObject(em, "jobCosting"));
+//
+//                    // Generate report
+//                    JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
+//
+//                    byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
+//
+//                    zipFile(fileBytes, zos);
+//                    zos.close();
+//                    
+//                    em.getTransaction().commit();
+//                    
+//                    ///streamContent = new DefaultStreamedContent(new ByteArrayInputStream(fileBytes), "application/pdf", "Job Costing - " + selectedJob.getJobNumber() + ".pdf");
+//                    //return streamContent;
+//                } catch (JRException ex) {
+//                    System.out.println(ex);
+//
+//                }
+//
+//                // }
+//            }
+//
+//        } catch (Exception e) {
+//            System.out.println(e);
+//
+//        }
+//    }
+//
+//    private static void zipFile(byte[] fileBytes, ZipOutputStream zos) {
+//
+//        try {
+//
+//            // Each file in the zipped archive is represented by a ZipEntry 
+//            // Only source file name is needed 
+//            ZipEntry ze = new ZipEntry("costing.pdf");
+//            zos.putNextEntry(ze);
+//
+//            zos.write(fileBytes);
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//    }
 
 }

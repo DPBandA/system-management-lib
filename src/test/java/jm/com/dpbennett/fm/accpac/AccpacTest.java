@@ -19,8 +19,8 @@ import org.junit.Test;
 public class AccpacTest {
 
   
-    @Test
-    public void testDocument() {
+//    @Test
+//    public void testDocument() {
 //        HashMap prop = new HashMap();
 //
 //        prop.put("javax.persistence.jdbc.user",
@@ -40,5 +40,5 @@ public class AccpacTest {
 //        doc.setIdCust("C01");
 //        doc.save(em);
 
-    }
+//    }
 }

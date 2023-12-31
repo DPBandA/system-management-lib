@@ -39,26 +39,26 @@ public class AccpacTest {
 //
 //    }
     
-    @Test
-    public void testDocument() {
-        HashMap prop = new HashMap();
-
-        prop.put("javax.persistence.jdbc.user",
-                "root");
-        prop.put("javax.persistence.jdbc.password",
-                ""); // TK REMOVE PWD WHEN DONE
-        prop.put("javax.persistence.jdbc.url",
-                "jdbc:mysql://localhost:3306/accpac");
-        prop.put("javax.persistence.jdbc.driver",
-                "com.mysql.jdbc.Driver");
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("AccPacLocalPU", prop);
-        EntityManager em = emf.createEntityManager();
-        
-        AccPacDocument doc = new AccPacDocument();
-        doc.setIdInvc("INV01");
-        doc.setIdCust("C01");
-        doc.save(em);
-
-    }
+//    @Test
+//    public void testDocument() {
+//        HashMap prop = new HashMap();
+//
+//        prop.put("javax.persistence.jdbc.user",
+//                "root");
+//        prop.put("javax.persistence.jdbc.password",
+//                ""); // TK REMOVE PWD WHEN DONE
+//        prop.put("javax.persistence.jdbc.url",
+//                "jdbc:mysql://localhost:3306/accpac");
+//        prop.put("javax.persistence.jdbc.driver",
+//                "com.mysql.jdbc.Driver");
+//
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("AccPacLocalPU", prop);
+//        EntityManager em = emf.createEntityManager();
+//        
+//        AccPacDocument doc = new AccPacDocument();
+//        doc.setIdInvc("INV01");
+//        doc.setIdCust("C01");
+//        doc.save(em);
+//
+//    }
 }
