@@ -947,14 +947,24 @@ public final class SystemManager extends GeneralManager implements Serializable 
                     selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
                 }
                 break;
+//            case "Posts":
+//                foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
+//                        searchText);
+//
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 9);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 9);
+//                }
+//                break;    
             case "System Settings":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
 
                 if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 9);
+                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 10);
                 } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 9);
+                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 10);
                 }
                 break;
             case "Authentication":

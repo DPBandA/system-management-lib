@@ -119,7 +119,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     
     @Override
     public void initMainTabView() {
-        super.initMainTabView();
+        //super.initMainTabView();
+        getMainTabView().reset(getUser());
         
         getMainTabView().openTab("Inventory Requisitions");
     }
