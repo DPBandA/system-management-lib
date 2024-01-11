@@ -177,7 +177,7 @@ public class JobManager extends GeneralManager
 
         return systemManager;
     }
-
+    
     @Override
     public String getAppShortcutIconURL() {
         return SystemOption.getString(
@@ -1006,6 +1006,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public EntityManager getEntityManager1() {
+        
         return getSystemManager().getEntityManager1();
     }
 
@@ -1297,6 +1298,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public EntityManager getEntityManager2() {
+        
         return getSystemManager().getEntityManager2();
     }
 
@@ -2652,7 +2654,7 @@ public class JobManager extends GeneralManager
             case "Unapproved job costings":
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
-            case "Invoiced jobs":  
+            case "Invoiced jobs":
                 dateSearchFields = DateUtils.getDateSearchFields();
                 break;
             case "My dept's proforma invoices":

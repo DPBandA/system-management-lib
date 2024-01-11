@@ -824,15 +824,17 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void doDefaultCommand() {
 
-        switch (defaultCommandTarget) {
-            case "@this": 
-                // NB: This is used when a row or cell in a table is   
-                // selected for editng. It may be deprecated in the future.              
-                break;
-            default:
-                doSearch();
-                break;
-        }
+//        switch (defaultCommandTarget) {
+//            case "@this": 
+//                // NB: This is used when a row or cell in a table is   
+//                // selected for editng. It may be deprecated in the future.              
+//                break;
+//            default:
+//                doSearch();
+//                break;
+//        }
+
+        doSearch();
 
     }
 

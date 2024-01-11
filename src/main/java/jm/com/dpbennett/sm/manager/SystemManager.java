@@ -59,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
@@ -126,12 +127,21 @@ public final class SystemManager extends GeneralManager implements Serializable 
         init();
     }
 
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+        
+        // tk set the search type?
+        setTabTitle(event.getTab().getTitle());
+        System.out.println("Tab: " + getTabTitle());
+
+    }
+
     public String getAdassaStoreShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "AdassaStoreLogo");
     }
-    
-     public String getDPBAShortcutIconURL() {
+
+    public String getDPBAShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "DPBALogo");
     }
@@ -1719,6 +1729,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
         setSearchType("Users");
+        setDefaultCommandTarget("@this");
+        setModuleNames(new String[]{
+            "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
