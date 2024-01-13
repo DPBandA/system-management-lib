@@ -97,7 +97,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
     private List<Notification> foundNotifications;
     private List<Privilege> foundActivePrivileges;
     private List<Modules> foundActiveModules;
+    private List<Modules> filteredFoundActiveModules;
     private List<User> foundUsers;
+    private List<User> filteredFoundUsers;
     private List<Attachment> foundAttachments;
     private SystemOption selectedSystemOption;
     private DualListModel<Privilege> privilegeDualList;
@@ -125,15 +127,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
      */
     public SystemManager() {
         init();
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-        
-        // tk set the search type?
-        setTabTitle(event.getTab().getTitle());
-        System.out.println("Tab: " + getTabTitle());
-
     }
 
     public String getAdassaStoreShortcutIconURL() {
@@ -240,10 +233,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         } catch (Exception e) {
             return new ArrayList<>();
         }
-    }
-
-    public void onRowSelect() {
-        setDefaultCommandTarget("@this");
     }
 
     public Integer getDialogHeight() {
@@ -368,8 +357,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doEmailSearch() {
 
-        setDefaultCommandTarget("@this");
-
         if (getIsActiveEmailsOnly()) {
             foundEmails = Email.findActiveEmails(getEntityManager1(), getEmailSearchText());
         } else {
@@ -425,7 +412,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void addUserModules() {
-        List<Modules> source = Modules.findAllActiveModules(getEntityManager1());
+        List<Modules> source = Modules.findAllActiveModules(getEntityManager1(), 0);
         List<Modules> target = selectedUser.getActiveModules();
 
         source.removeAll(target);
@@ -578,8 +565,9 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public List<User> getFoundUsers() {
         if (foundUsers == null) {
-            foundUsers = User.findAllActiveJobManagerUsers(getEntityManager1());
+            doUserSearch();
         }
+
         return foundUsers;
     }
 
@@ -601,8 +589,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doUserSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -613,9 +599,29 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     }
 
-    public void doAttachmentSearch() {
+    public void doUserFilter() {
 
-        setDefaultCommandTarget("@this");
+        foundUsers = new ArrayList<>();
+
+        for (User filteredFoundUser : filteredFoundUsers) {
+            if (filteredFoundUser != null) {
+                if (filteredFoundUser.getUsername().contains(getUserSearchText())
+                        || filteredFoundUser.getPFThemeName().contains(getUserSearchText())
+                        || filteredFoundUser.getActivity().contains(getUserSearchText())
+                        || filteredFoundUser.getEmployee().toString().contains(getUserSearchText())
+                        || filteredFoundUser.getJobTableViewPreference().contains(getUserSearchText())) {
+                    foundUsers.add(filteredFoundUser);
+                }
+            }
+        }
+
+        if (foundUsers.isEmpty()) {
+            doUserSearch();
+        }
+
+    }
+
+    public void doAttachmentSearch() {
 
         doDefaultSearch(
                 getMainTabView(),
@@ -718,8 +724,12 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public List<String> completeUser(String query) {
 
+        int maxResult = SystemOption.getInteger(getEntityManager1(),
+                "maxSearchResults");
+
         try {
-            List<User> users = User.findJobManagerUsersByUsername(getEntityManager1(), query);
+            List<User> users = User.findJobManagerUsersByUsername(
+                    getEntityManager1(), query, maxResult);
             List<String> suggestions = new ArrayList<>();
             if (users != null) {
                 if (!users.isEmpty()) {
@@ -730,6 +740,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
             }
 
             return suggestions;
+
         } catch (Exception e) {
             System.out.println(e);
 
@@ -911,15 +922,20 @@ public final class SystemManager extends GeneralManager implements Serializable 
             Date startDate,
             Date endDate) {
 
+        int maxResult = SystemOption.getInteger(getEntityManager1(),
+                "maxSearchResults");
+
         switch (searchType) {
             case "Users":
                 if (getIsActiveUsersOnly()) {
                     foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(),
-                            searchText);
+                            searchText, maxResult);
                 } else {
                     foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
-                            searchText);
+                            searchText, maxResult);
                 }
+
+                filteredFoundUsers = new ArrayList<User>(foundUsers);
 
                 if (startDate == null) {
                     selectSystemAdminTab(mainTabView, false, "centerTabVar", 0);
@@ -993,8 +1009,11 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 }
                 break;
             case "Modules":
-                foundActiveModules = Modules.findActiveModules(getEntityManager1(),
-                        searchText);
+                foundActiveModules = Modules.findActiveModules(
+                        getEntityManager1(),
+                        searchText, maxResult);
+                
+                filteredFoundActiveModules = new ArrayList<Modules>(foundActiveModules);
 
                 if (startDate == null) {
                     selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
@@ -1361,7 +1380,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public List<Modules> getFoundActiveModules() {
         if (foundActiveModules == null) {
-            foundActiveModules = Modules.findActiveModules(getEntityManager1(), "");
+      
+            doActiveModuleSearch();
         }
 
         return foundActiveModules;
@@ -1372,8 +1392,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doDocumentTypeSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1387,8 +1405,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doCategorySearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1400,14 +1416,10 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doNotificationSearch() {
 
-        setDefaultCommandTarget("@this");
-
         foundNotifications = Notification.findNotificationsByName(getEntityManager1(), getNotificationSearchText());
     }
 
     public void doActivePrivilegeSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1421,8 +1433,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doActiveModuleSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1430,6 +1440,29 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 getModuleSearchText(),
                 null,
                 null);
+
+    }
+
+    public void doActiveModuleFilter() {
+
+        foundActiveModules = new ArrayList<>();
+
+        for (Modules filteredFoundModule : filteredFoundActiveModules) {
+            if (filteredFoundModule != null) {
+                if (filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
+                        || filteredFoundModule.getMainViewTitle().contains(getModuleSearchText())
+                        || filteredFoundModule.getDescription().contains(getModuleSearchText())
+                        || filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
+                        || filteredFoundModule.getName().contains(getModuleSearchText())) {
+                    
+                    foundActiveModules.add(filteredFoundModule);
+                }
+            }
+        }
+
+        if (foundActiveModules.isEmpty()) {
+            doActiveModuleSearch();
+        }
 
     }
 
@@ -1713,6 +1746,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
         foundLdapContexts = null;
         foundSystemOptions = null;
         foundSystemOptionsByCategory = new ArrayList<>();
+        filteredFoundUsers = new ArrayList<>();
+        filteredFoundActiveModules = new ArrayList<>();
         foundLdapContexts = null;
         systemOptionSearchText = "";
         ldapSearchText = "";
@@ -1729,7 +1764,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
         setSearchType("Users");
-        setDefaultCommandTarget("@this");
         setModuleNames(new String[]{
             "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
@@ -1862,8 +1896,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public void doSystemOptionSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1875,8 +1907,6 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void doLdapContextSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
