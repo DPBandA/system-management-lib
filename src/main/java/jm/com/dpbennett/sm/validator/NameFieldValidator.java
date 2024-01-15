@@ -56,25 +56,25 @@ public class NameFieldValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "billingAddress":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Billing address Required", "Please enter a billing address");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Billing address Required", "Please enter a valid billing address");
             case "firstName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "First name Required", "Please enter the first name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "First name Required", "Please enter a valid first name");
             case "lastName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Last name Required", "Please enter the last name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Last name Required", "Please enter a valid last name");
             case "user":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Username Required", "Please enter a username");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Username Required", "Please enter a valid username");
             case "jobDescription":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Description Required", "Please enter a description");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Description Required", "Please enter a valid description");
             case "businessOffice":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Business Office", "Please enter a valid business office");
             case "departmentName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Name Required", "Please enter a department name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Name Required", "Please enter a valid department name");
             case "departmentCode":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Code Required", "Please enter a department code");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Code Required", "Please enter a valid department code");
             case "departmentHead":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Head Required", "Please enter the name of the department's head");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Head Required", "Please enter a valid name for the department's head");
             case "departmentActingHead":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Acting/Deputy Head Required", "Please enter the name of the department's acting/deputy head");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Department Acting/Deputy Head Required", "Please enter a valid name for the department's acting/deputy head");
             case "trn":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A");
             case "instructions":
@@ -82,31 +82,31 @@ public class NameFieldValidator implements Validator {
             case "description":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Description Required", "Please enter a valid description");
             case "classificationName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Classification Name Required", "Please enter a classification name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Classification Name Required", "Please enter a valid classification name");
             case "classificationCategory":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Classification Category Required", "Please enter a classification category");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Classification Category Required", "Please enter a valid classification category");
             case "classificationDescription":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Classification Description Required", "Please enter a classification description");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Classification Description Required", "Please enter a valid classification description");
             case "jobCategoryName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Category Name Required", "Please enter a category name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Category Name Required", "Please enter a valid category name");
             case "jobCategoryDescription":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Category Description Required", "Please enter a category description");
             case "jobSubcategoryName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Subcategory Name Required", "Please enter a subcategory name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Subcategory Name Required", "Please enter a valid subcategory name");
             case "jobSubcategoryDescription":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Subcategory Description Required", "Please enter a subcategory description");
             case "sectorName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Sector Name Required", "Please enter a sector name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Sector Name Required", "Please enter a valid sector name");
             case "sectorDescription":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Sector Description Required", "Please enter a sector description");
             case "ldapName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "LDAP Name Required", "Please enter an LDAP name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "LDAP Name Required", "Please enter a valid LDAP name");
             case "ldapDomainName":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "LDAP Domain Name Required", "Please enter an LDAP domain name");
             case "ldapProviderUrl":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "LDAP URL Required", "Please enter an LDAP URL");
             case "costComponentName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Cost Component Name Required", "Please enter a cost component name");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Cost Component Name Required", "Please enter a valid cost component name");
             case "costComponentHoursOrQuantity":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Cost Component Hours/Quantity", "Please enter valid hours/quantity");
             case "costComponentRate":
@@ -119,7 +119,7 @@ public class NameFieldValidator implements Validator {
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Discount Amount", "Please enter a valid discount amount");
             default:
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Valid Field Value Required",
-                        "The characters \", ', &, !, `, : and ; are not allowed");
+                        "The characters ,, #, @, $, %, ^, *, +, =, \", ', &, !, `, : and ; are not allowed");
         }
     }
 }
