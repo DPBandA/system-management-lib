@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -31,30 +31,22 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
  *
  * @author desbenn
  */
-@FacesValidator("accountingCodeValidator")
-public class AccountingCodeValidator implements Validator {
+@FacesValidator("identifierValidator")
+public class IdentifierValidator implements Validator {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
-        if (!BusinessEntityUtils.validateAccountingCode(value.toString().trim())) {
-            throw new ValidatorException(getMessage(component.getId()));
+        if (!BusinessEntityUtils.validateIdentifier(value.toString().trim())) {
+            throw new ValidatorException(getMessage());
         }
     }
-    
-    private FacesMessage getMessage(String componentId) {
-        switch(componentId) {
-            case "accountingCodeName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Name Required", "Please enter a name.");            
-            case "accountingCodeAccount":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Account Required", "Please enter an account.");                
-            case "accountingCodeType":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Type Required", "Please enter a type.");               
-            case "accountingCodeDescription":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Description Required", "Please enter a description.");      
-            default:
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", 
-                        "Please enter a valid field value.");
-        }
+
+    private FacesMessage getMessage() {
+
+        return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                "Valid Field Required", 
+                "The character ' is not allowed in the field value.");
+
     }
 }

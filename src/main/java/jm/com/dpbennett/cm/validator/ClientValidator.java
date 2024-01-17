@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -40,8 +40,8 @@ public class ClientValidator implements Validator {
         // Check that name does not already exist if this is a new client
         Boolean isNewClient = (Boolean) component.getAttributes().get("isNewClient");
         
-        // Check for valid names
-        if (!BusinessEntityUtils.validateText(value.toString().trim())) {
+        // Check for valid name
+        if (!BusinessEntityUtils.validateClientName(value.toString().trim())) {
             throw new ValidatorException(getMessage(component.getId()));
         }
 

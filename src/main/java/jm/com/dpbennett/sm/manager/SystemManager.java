@@ -1205,7 +1205,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public List<SelectItem> getTypesOfBusinessList() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "typesOfBusinessList ");
+        return getStringListAsSelectItems(getEntityManager1(), "typesOfBusinessList");
     }
 
     public static List<SelectItem> getStringListAsSelectItems(EntityManager em,

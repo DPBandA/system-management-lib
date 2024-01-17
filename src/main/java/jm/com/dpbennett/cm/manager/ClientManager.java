@@ -342,7 +342,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public Integer getDialogWidth() {
-        return 600;
+        return 700;
     }
 
     public void editSelectedClient() {

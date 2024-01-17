@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -37,7 +37,7 @@ public class CurrencyValidator implements Validator {
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
-        if (!BusinessEntityUtils.validateText(value.toString().trim())) {
+        if (!BusinessEntityUtils.validateIdentifier(value.toString().trim())) {
             throw new ValidatorException(getMessage(component.getId()));
         }
     }
