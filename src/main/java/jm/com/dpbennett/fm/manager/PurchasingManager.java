@@ -1519,7 +1519,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public Boolean getIsSupplierNameValid() {
         if (selectedPurchaseRequisition.getSupplier() != null) {
-            return BusinessEntityUtils.validateName(selectedPurchaseRequisition.getSupplier().getName());
+            return BusinessEntityUtils.validateIdentifier(selectedPurchaseRequisition.getSupplier().getName());
         }
 
         return false;

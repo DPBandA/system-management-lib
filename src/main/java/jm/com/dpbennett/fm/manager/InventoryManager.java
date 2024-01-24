@@ -49,6 +49,7 @@ import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.business.entity.fm.InventoryDisbursement;
 import jm.com.dpbennett.business.entity.fm.InventoryRequisition;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
@@ -99,11 +100,42 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private StreamedContent inventoryRequisitionFile;
     private BannerView bannerView;
 
-    /**
-     * Creates a new instance of InventoryManager
-     */
     public InventoryManager() {
         init();
+    }
+
+    public List<Employee> completeActiveEmployee(String query) {
+        EntityManager em;
+
+        try {
+
+            em = getEntityManager1();
+            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+
+            if (employees != null) {
+                return employees;
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Department> completeActiveDepartment(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
+
+            return departments;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public Boolean getShowInventoryMarketingTab() {
@@ -214,7 +246,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(em, "jobCosting"));
+                                    compileReport((String) SystemOption.getOptionValueObject(em,
+                                            "storesRequisition"));
 
                     // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
@@ -713,7 +746,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public Boolean getIsInventoryProductNameValid() {
-        return BusinessEntityUtils.validateName(
+        return BusinessEntityUtils.validateIdentifier(
                 getSelectedInventory().getProduct().getName());
     }
 
@@ -764,7 +797,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public Boolean getIsSupplierNameValid() {
         if (selectedInventory.getSupplier() != null) {
-            return BusinessEntityUtils.validateName(selectedInventory.getSupplier().getName());
+            return BusinessEntityUtils.validateIdentifier(selectedInventory.getSupplier().getName());
         }
 
         return false;
@@ -772,7 +805,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public Boolean getIsCategoryNameValid() {
         if (selectedInventory.getCategory() != null) {
-            return BusinessEntityUtils.validateName(selectedInventory.getInventoryCategory().getName());
+            return BusinessEntityUtils.validateIdentifier(selectedInventory.getInventoryCategory().getName());
         }
 
         return false;

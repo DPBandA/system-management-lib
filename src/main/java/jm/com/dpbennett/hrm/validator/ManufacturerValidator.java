@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2020  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -37,9 +37,9 @@ public class ManufacturerValidator implements Validator {
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
-        if (value != null) // Check for valid names
+        if (value != null)
         {
-            if (!BusinessEntityUtils.validateText(value.toString().trim())) {
+            if (!BusinessEntityUtils.validateIdentifier(value.toString().trim())) {
                 throw new ValidatorException(getMessage(component.getId()));
             }
         } else {
@@ -51,7 +51,8 @@ public class ManufacturerValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "manufacturerName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name", "Please enter a valid name.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name",
+                        "The character ' is not allowed in the field value.");
             default:
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
         }

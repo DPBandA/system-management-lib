@@ -282,12 +282,12 @@ public class ComplianceManager extends GeneralManager
     }
 
     public Boolean getIsMarketProductNameValid() {
-        return BusinessEntityUtils.validateName(
+        return BusinessEntityUtils.validateIdentifier(
                 getCurrentProductInspection().getMarketProduct().getName());
     }
 
     public Boolean getIsMarketProductCategoryNameValid() {
-        return BusinessEntityUtils.validateName(
+        return BusinessEntityUtils.validateIdentifier(
                 getCurrentProductInspection().getProductCategory().getName());
     }
 
@@ -749,35 +749,35 @@ public class ComplianceManager extends GeneralManager
     }
 
     public Boolean getIsConsigneeNameValid() {
-        return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
+        return BusinessEntityUtils.validateIdentifier(currentComplianceSurvey.getConsignee().getName());
     }
 
     public Boolean getIsComplainantNameValid() {
-        return BusinessEntityUtils.validateName(currentComplaint.getComplainant().getName());
+        return BusinessEntityUtils.validateIdentifier(currentComplaint.getComplainant().getName());
     }
 
     public Boolean getIsReceivedViaNameValid() {
-        return BusinessEntityUtils.validateName(currentComplaint.getReceivedVia().getName());
+        return BusinessEntityUtils.validateIdentifier(currentComplaint.getReceivedVia().getName());
     }
 
     public Boolean getIsBrokerNameValid() {
-        return BusinessEntityUtils.validateName(currentComplianceSurvey.getBroker().getName());
+        return BusinessEntityUtils.validateIdentifier(currentComplianceSurvey.getBroker().getName());
     }
 
     public Boolean getIsManufacturerNameValid() {
-        return BusinessEntityUtils.validateName(currentProductInspection.getManufacturer().getName());
+        return BusinessEntityUtils.validateIdentifier(currentProductInspection.getManufacturer().getName());
     }
 
     public Boolean getIsFactoryInspectionManufacturerNameValid() {
-        return BusinessEntityUtils.validateName(currentFactoryInspection.getManufacturer().getName());
+        return BusinessEntityUtils.validateIdentifier(currentFactoryInspection.getManufacturer().getName());
     }
 
     public Boolean getIsDistributorNameValid() {
-        return BusinessEntityUtils.validateName(currentProductInspection.getDistributor().getName());
+        return BusinessEntityUtils.validateIdentifier(currentProductInspection.getDistributor().getName());
     }
 
     public Boolean getIsRetailOutletNameValid() {
-        return BusinessEntityUtils.validateName(currentComplianceSurvey.getRetailOutlet().getName());
+        return BusinessEntityUtils.validateIdentifier(currentComplianceSurvey.getRetailOutlet().getName());
     }
 
     public List<String> getAllDocumentStandardNames() {

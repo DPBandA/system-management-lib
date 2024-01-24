@@ -39,9 +39,9 @@ public class ClientValidator implements Validator {
 
         // Check that name does not already exist if this is a new client
         Boolean isNewClient = (Boolean) component.getAttributes().get("isNewClient");
-        
+
         // Check for valid name
-        if (!BusinessEntityUtils.validateClientName(value.toString().trim())) {
+        if (!BusinessEntityUtils.validateIdentifier(value.toString().trim())) {
             throw new ValidatorException(getMessage(component.getId()));
         }
 
@@ -50,9 +50,10 @@ public class ClientValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "clientName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name", "Please enter a valid name.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name",
+                        "The character ' is not allowed in the field value.");
             case "trn":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A.");            
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A.");
             default:
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
         }

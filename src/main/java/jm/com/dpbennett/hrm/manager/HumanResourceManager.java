@@ -1,6 +1,6 @@
 /*
 Human Resource Management (HRM) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -132,7 +132,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public Integer getDialogWidth() {
-        return 600;
+        return 700;
     }
 
     public List<SelectItem> getManufacturerStatuses() {
