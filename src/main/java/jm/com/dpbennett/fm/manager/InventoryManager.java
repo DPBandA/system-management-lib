@@ -1,6 +1,6 @@
 /*
 Inventory Management
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -52,6 +52,7 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -102,6 +103,40 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public InventoryManager() {
         init();
+    }
+
+    public void prepareInventoryRequisition() {
+
+        if (getSelectedInventoryRequisition().getPrepared()) {
+            getSelectedInventoryRequisition().setDateEdited(new Date());
+            getSelectedInventoryRequisition().setEditedBy(getUser().getEmployee());
+        }
+
+        updateInventoryRequisition(null);
+
+    }
+
+    public void approveInventoryRequisition() {
+
+        if (getSelectedInventoryRequisition().getPrepared()
+                && getSelectedInventoryRequisition().getApproved()) {
+            getSelectedInventoryRequisition().setDateRequisitionApproved(new Date());
+            getSelectedInventoryRequisition().setRequisitionApprovedBy(getUser().getEmployee());
+        } else {
+            getSelectedInventoryRequisition().setDateRequisitionApproved(null);
+            getSelectedInventoryRequisition().setRequisitionApprovedBy(null);
+        }
+
+        updateInventoryRequisition(null);
+
+    }
+
+    public Boolean getCanPrepareInventoryRequisition() {
+        return !getSelectedInventoryRequisition().getApproved();
+    }
+
+    public Boolean getCanApproveInventoryRequisition() {
+        return getSelectedInventoryRequisition().getPrepared();
     }
 
     public List<Employee> completeActiveEmployee(String query) {
@@ -208,7 +243,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         try {
             String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
             parameters.put("logoURL", logoURL);
-//            parameters.put("jobId", getCurrentJob().getId());
+            parameters.put("reqId", getSelectedInventoryRequisition().getId());
 //            parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(getCurrentJob().getContact()));
 //            parameters.put("customerAddress", getCurrentJob().getBillingAddress().toString());
 //            parameters.put("contactNumbers", getCurrentJob().getContact().getMainPhoneNumber().getLocalNumber());
@@ -1402,6 +1437,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         selectedInventoryRequisition.setEditedBy(getUser().getEmployee());
         selectedInventoryRequisition.setDateEntered(new Date());
         selectedInventoryRequisition.setDateEdited(new Date());
+        selectedInventoryRequisition.setDateOfRequisition(new Date());
 
         openInventoryRequisitionTab();
 
