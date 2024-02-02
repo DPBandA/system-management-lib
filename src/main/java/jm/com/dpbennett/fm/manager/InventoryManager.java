@@ -241,36 +241,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
         HashMap parameters = new HashMap();
 
         try {
-            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
-            parameters.put("logoURL", logoURL);
+
             parameters.put("reqId", getSelectedInventoryRequisition().getId());
-//            parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(getCurrentJob().getContact()));
-//            parameters.put("customerAddress", getCurrentJob().getBillingAddress().toString());
-//            parameters.put("contactNumbers", getCurrentJob().getContact().getMainPhoneNumber().getLocalNumber());
-//            parameters.put("jobDescription", getCurrentJob().getJobDescription());
-//            parameters.put("totalCost", getCurrentJob().getJobCostingAndPayment().getTotalJobCostingsAmount());
-//            parameters.put("depositReceiptNumbers", getCurrentJob().getJobCostingAndPayment().getReceiptNumbers());
-//            parameters.put("discount", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValue());
-//            parameters.put("discountType", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValueType());
-//            parameters.put("deposit", getCurrentJob().getJobCostingAndPayment().getTotalPayment());
-//            parameters.put("amountDue", getCurrentJob().getJobCostingAndPayment().getAmountDue());
-//            parameters.put("totalTax", getTotalTax(getCurrentJob()));
-//            parameters.put("totalTaxLabel", getCurrentJob().getJobCostingAndPayment().getTotalTaxLabel());
-//            parameters.put("grandTotalCostLabel", getCurrentJob().getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
-//            parameters.put("grandTotalCost", getCurrentJob().getJobCostingAndPayment().getTotalCost());
-//            if (getCurrentJob().getJobCostingAndPayment().getCostingPreparedBy() != null) {
-//                parameters.put("preparedBy",
-//                        getCurrentJob().getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
-//                        + getCurrentJob().getJobCostingAndPayment().getCostingPreparedBy().getLastName());
-//            }
-//            if (getCurrentJob().getJobCostingAndPayment().getCostingApprovedBy() != null) {
-//                parameters.put("approvedBy",
-//                        getCurrentJob().getJobCostingAndPayment().getCostingApprovedBy().getFirstName() + " "
-//                        + getCurrentJob().getJobCostingAndPayment().getCostingApprovedBy().getLastName());
-//            }
-//            parameters.put("approvalDate",
-//                    BusinessEntityUtils.getDateInMediumDateFormat(
-//                            getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
+
+            if (getSelectedInventoryRequisition().getRequisitionApprovedBy() != null) {
+                parameters.put("approvedBy",
+                        getSelectedInventoryRequisition().getRequisitionApprovedBy().getFirstName() + " "
+                        + getSelectedInventoryRequisition().getRequisitionApprovedBy().getLastName());
+            }
+            parameters.put("approvalDate",
+                    BusinessEntityUtils.getDateInMediumDateFormat(
+                            getSelectedInventoryRequisition().getDateRequisitionApproved()));
 
             em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);
@@ -367,16 +348,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void addNewDisbursement() {
+        
         selectedInventoryDisbursement = new InventoryDisbursement();
+        
+        setEdit(false);
 
-        getSelectedInventoryRequisition().getAllSortedInventoryDisbursements().add(selectedInventoryDisbursement);
-
-        updateInventoryRequisition(null);
-
-        FacesMessage msg = new FacesMessage("New  Disbursement Added",
-                "Click on the pencil icon to edit");
-
-        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public InventoryRequisition getSelectedInventoryRequisition() {
@@ -472,8 +448,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
         if (selectedInventoryDisbursement.getId() == null && !getEdit()) {
             getSelectedInventoryRequisition().getInventoryDisbursements().add(selectedInventoryDisbursement);
         }
+        
         setEdit(false);
-
         updateDisbursement(selectedInventoryDisbursement);
         updateInventoryRequisition(null);
 
