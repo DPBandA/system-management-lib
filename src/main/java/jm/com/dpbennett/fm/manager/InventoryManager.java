@@ -540,13 +540,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         setEdit(false);
 
-//        getSelectedInventory().getAllSortedCostComponents().add(selectedCostComponent);
-//
-//        updateInventory(null);
-//        FacesMessage msg = new FacesMessage("New Cost Component Added",
-//                "Click on the pencil icon to edit");
-//
-//        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public CostComponent createNewCostComponent(String name, String code, String type) {

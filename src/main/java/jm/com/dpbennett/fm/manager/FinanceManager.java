@@ -1,6 +1,6 @@
 /*
 Financial Management (FM) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -119,10 +119,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
     
     @Override
     public void initMainTabView() {
+        
         //super.initMainTabView();
+        
         getMainTabView().reset(getUser());
         
         getMainTabView().openTab("Inventory Requisitions");
+        
+        getMainTabView().openTab("Inventory");
+        
     }
 
     public String getApplicationFooter() {
