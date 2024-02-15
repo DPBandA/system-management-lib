@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -59,7 +59,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
@@ -127,6 +126,18 @@ public final class SystemManager extends GeneralManager implements Serializable 
      */
     public SystemManager() {
         init();
+    }
+
+    @Override
+    public String getAppShortcutIconURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "appShortcutIconURL");
+    }
+
+    @Override
+    public String getLogoURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getEntityManager1(), "logoURL");
     }
 
     public String getAdassaStoreShortcutIconURL() {
@@ -754,6 +765,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+        selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
 
         editUser();
     }
@@ -799,7 +811,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
         if (!LdapContext.updateUser(context, selectedUser)) {
 
-            // tk The format of the default password is to be made a system option.
+            // tk Set the password to the confirmed password instead
+            // if the "update LDAP setting" was checked.
             selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
 
             return LdapContext.addUser(em, context, selectedUser);
@@ -823,6 +836,17 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void saveUserSecurityProfile(ActionEvent actionEvent) {
+        
+        if (getUser().getName().trim().isEmpty()) {
+
+            PrimeFacesUtils.addMessage(
+                    "Username Required",
+                    "A username is required",
+                    FacesMessage.SEVERITY_ERROR);
+
+            return;
+        }
+        
         if (getUser().getNewPassword().trim().isEmpty()
                 && getUser().getConfirmedNewPassword().trim().isEmpty()) {
 
@@ -1012,7 +1036,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
                 foundActiveModules = Modules.findActiveModules(
                         getEntityManager1(),
                         searchText, maxResult);
-                
+
                 filteredFoundActiveModules = new ArrayList<Modules>(foundActiveModules);
 
                 if (startDate == null) {
@@ -1380,7 +1404,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
     public List<Modules> getFoundActiveModules() {
         if (foundActiveModules == null) {
-      
+
             doActiveModuleSearch();
         }
 
@@ -1454,7 +1478,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
                         || filteredFoundModule.getDescription().contains(getModuleSearchText())
                         || filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
                         || filteredFoundModule.getName().contains(getModuleSearchText())) {
-                    
+
                     foundActiveModules.add(filteredFoundModule);
                 }
             }
