@@ -128,6 +128,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
         
         getMainTabView().openTab("Inventory");
         
+        getMainTabView().openTab("Purchase Requisitions");
+        
     }
 
     public String getApplicationFooter() {
