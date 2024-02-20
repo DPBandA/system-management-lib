@@ -39,7 +39,7 @@ public class ManufacturerValidator implements Validator {
 
         if (value != null)
         {
-            if (!BusinessEntityUtils.validateIdentifier(value.toString().trim())) {
+            if (!BusinessEntityUtils.validateText(value.toString().trim())) {
                 throw new ValidatorException(getMessage(component.getId()));
             }
         } else {

@@ -225,7 +225,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public Boolean getIsClientNameValid() {
-        return BusinessEntityUtils.validateIdentifier(getCurrentDocument().getExternalClient().getName());
+        return BusinessEntityUtils.validateText(getCurrentDocument().getExternalClient().getName());
     }
 
     public void editExternalClient() {

@@ -750,7 +750,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public Boolean getIsInventoryProductNameValid() {
-        return BusinessEntityUtils.validateIdentifier(
+        return BusinessEntityUtils.validateText(
                 getSelectedInventory().getProduct().getName());
     }
 
@@ -801,7 +801,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public Boolean getIsSupplierNameValid() {
         if (selectedInventory.getSupplier() != null) {
-            return BusinessEntityUtils.validateIdentifier(selectedInventory.getSupplier().getName());
+            return BusinessEntityUtils.validateText(selectedInventory.getSupplier().getName());
         }
 
         return false;
@@ -809,7 +809,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public Boolean getIsCategoryNameValid() {
         if (selectedInventory.getCategory() != null) {
-            return BusinessEntityUtils.validateIdentifier(selectedInventory.getInventoryCategory().getName());
+            return BusinessEntityUtils.validateText(selectedInventory.getInventoryCategory().getName());
         }
 
         return false;

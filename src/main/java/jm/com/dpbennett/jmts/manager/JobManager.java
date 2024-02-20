@@ -1847,7 +1847,7 @@ public class JobManager extends GeneralManager
     }
 
     public Boolean getIsClientNameValid() {
-        return BusinessEntityUtils.validateIdentifier(currentJob.getClient().getName());
+        return BusinessEntityUtils.validateText(currentJob.getClient().getName());
     }
 
     public Boolean getIsBillingAddressNameValid() {
