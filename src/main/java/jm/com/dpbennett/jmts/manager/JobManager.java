@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -113,9 +113,21 @@ public class JobManager extends GeneralManager
     private AccPacCustomer accPacCustomer;
     private StatusNote selectedStatusNote;
     private SystemManager systemManager;
+    private String searchText;
+    private String searchType;
 
     public JobManager() {
         init();
+    }
+
+    @Override
+    public String getSearchText() {
+        return searchText;
+    }
+
+    @Override
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
     }
 
     @Override
@@ -177,7 +189,7 @@ public class JobManager extends GeneralManager
 
         return systemManager;
     }
-    
+
     @Override
     public String getAppShortcutIconURL() {
         return SystemOption.getString(
@@ -1006,7 +1018,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public EntityManager getEntityManager1() {
-        
+
         return getSystemManager().getEntityManager1();
     }
 
@@ -1298,7 +1310,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public EntityManager getEntityManager2() {
-        
+
         return getSystemManager().getEntityManager2();
     }
 
@@ -2049,6 +2061,16 @@ public class JobManager extends GeneralManager
                 maxResults, false);
     }
 
+    public void doDefaultSearch() {
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
+    }
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -2082,7 +2104,7 @@ public class JobManager extends GeneralManager
     public void search() {
 
         doJobSearch();
-        openJobBrowser();
+        //openJobBrowser();
 
     }
 
@@ -2602,13 +2624,22 @@ public class JobManager extends GeneralManager
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
-        SelectItemGroup group = new SelectItemGroup("Jobs & Costings");
+        SelectItemGroup group = new SelectItemGroup("Job Search Types");
 
         group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
     }
-
+    
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
+        
+        groupedSearchTypes.add(getSearchTypesGroup());
+        
+        return groupedSearchTypes;
+    }
+    
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
 
@@ -2638,6 +2669,20 @@ public class JobManager extends GeneralManager
             notification.setActive(false);
             notification.save(em);
         }
+    }
+    
+     @Override
+    public String getSearchType() {
+        return searchType;
+    }
+
+    @Override
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
+    
+    public ArrayList<SelectItem> getDateSearchFields() {
+        return getDateSearchFields(getSearchType());
     }
 
     @Override
