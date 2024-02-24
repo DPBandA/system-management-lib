@@ -133,22 +133,41 @@ public final class SystemManager extends GeneralManager {
     public void onMainViewTabChange(TabChangeEvent event) {
 
         setTabTitle(event.getTab().getTitle());
-        
-        // tk
-        System.out.println("Tab " + getTabTitle());
+
         switch (getTabTitle()) {
             case "Users":
-                // tk set user search default command target
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
-                //setActiveNavigationTabIndex(0);
-                System.out.println("User search target: " + getDefaultCommandTarget());
                 break;
             case "Modules":
-                // tk set user search default command target
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:moduleSearchButton");
-                //setActiveNavigationTabIndex(1);
-                System.out.println("Module search target: " + getDefaultCommandTarget());
-                break;    
+                break;
+            case "Privileges":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:privilegeSearchButton");
+                break;
+            case "Categories":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:categorySearchButton");
+                break;
+            case "Document Types":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:documentTypeSearchButton");
+                break;
+            case "Authentication":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:ldapSearchButton");
+                break;
+            case "Attachments":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:attachmentSearchButton");
+                break;
+            case "Email Templates":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:emailTemplateSearchButton");
+                break;
+            case "Notifications":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:notificationSearchButton");
+                break;
+            case "Post":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:postSearchButton");
+                break;  
+            case "System Settings":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:systemOptionSearchButton");
+                break;      
             default:
                 break;
         }
@@ -1023,16 +1042,6 @@ public final class SystemManager extends GeneralManager {
                     selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
                 }
                 break;
-//            case "Posts":
-//                foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
-//                        searchText);
-//
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 9);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 9);
-//                }
-//                break;    
             case "System Settings":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
@@ -1946,7 +1955,7 @@ public final class SystemManager extends GeneralManager {
         return searchTypes;
     }
 
-    public void doSystemOptionSearch() {
+    public void doSystemSettingSearch() {
 
         doDefaultSearch(
                 getMainTabView(),
