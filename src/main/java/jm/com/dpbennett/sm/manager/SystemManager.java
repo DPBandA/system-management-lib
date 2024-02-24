@@ -59,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
@@ -68,7 +69,7 @@ import org.primefaces.model.file.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public final class SystemManager extends GeneralManager implements Serializable {
+public final class SystemManager extends GeneralManager {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF;
@@ -126,6 +127,32 @@ public final class SystemManager extends GeneralManager implements Serializable 
      */
     public SystemManager() {
         init();
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        setTabTitle(event.getTab().getTitle());
+        
+        // tk
+        System.out.println("Tab " + getTabTitle());
+        switch (getTabTitle()) {
+            case "Users":
+                // tk set user search default command target
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+                //setActiveNavigationTabIndex(0);
+                System.out.println("User search target: " + getDefaultCommandTarget());
+                break;
+            case "Modules":
+                // tk set user search default command target
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:moduleSearchButton");
+                //setActiveNavigationTabIndex(1);
+                System.out.println("Module search target: " + getDefaultCommandTarget());
+                break;    
+            default:
+                break;
+        }
+
     }
 
     @Override
@@ -836,7 +863,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
     }
 
     public void saveUserSecurityProfile(ActionEvent actionEvent) {
-        
+
         if (getUser().getName().trim().isEmpty()) {
 
             PrimeFacesUtils.addMessage(
@@ -846,7 +873,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
 
             return;
         }
-        
+
         if (getUser().getNewPassword().trim().isEmpty()
                 && getUser().getConfirmedNewPassword().trim().isEmpty()) {
 
@@ -959,8 +986,7 @@ public final class SystemManager extends GeneralManager implements Serializable 
                             searchText, maxResult);
                 }
 
-                filteredFoundUsers = new ArrayList<User>(foundUsers);
-
+                //filteredFoundUsers = new ArrayList<User>(foundUsers);
                 if (startDate == null) {
                     selectSystemAdminTab(mainTabView, false, "centerTabVar", 0);
                 } else {
@@ -1793,6 +1819,8 @@ public final class SystemManager extends GeneralManager implements Serializable 
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
+        setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+        setTabTitle("Users");
 
     }
 
