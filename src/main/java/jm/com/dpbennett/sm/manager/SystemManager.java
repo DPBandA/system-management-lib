@@ -24,7 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -129,48 +128,89 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getEntityManager1(), "organizationWebsite");
+    }
+
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getEntityManager1(),
+                        "JMTSv");
+    }
+
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Users":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+                return true;
+            case "System Administration":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+                return true;    
+            case "Modules":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:moduleSearchButton");
+                return true;
+            case "Privileges":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:privilegeSearchButton");
+                return true;
+            case "Categories":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:categorySearchButton");
+                return true;
+            case "Document Types":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:documentTypeSearchButton");
+                return true;
+            case "Authentication":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:ldapSearchButton");
+                return true;
+            case "Attachments":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:attachmentSearchButton");
+                return true;
+            case "Email Templates":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:emailTemplateSearchButton");
+                return true;
+            case "Notifications":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:notificationSearchButton");
+                return true;
+            case "Posts":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:postSearchButton");
+                return true;
+            case "System Settings":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:systemOptionSearchButton");
+                return true;
+            case "Report Templates":
+                setDefaultCommandTarget(":appForm:mainTabView:reportTemplateSearchButton");
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
         setTabTitle(event.getTab().getTitle());
 
-        switch (getTabTitle()) {
-            case "Users":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
-                break;
-            case "Modules":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:moduleSearchButton");
-                break;
-            case "Privileges":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:privilegeSearchButton");
-                break;
-            case "Categories":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:categorySearchButton");
-                break;
-            case "Document Types":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:documentTypeSearchButton");
-                break;
-            case "Authentication":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:ldapSearchButton");
-                break;
-            case "Attachments":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:attachmentSearchButton");
-                break;
-            case "Email Templates":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:emailTemplateSearchButton");
-                break;
-            case "Notifications":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:notificationSearchButton");
-                break;
-            case "Post":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:postSearchButton");
-                break;  
-            case "System Settings":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:systemOptionSearchButton");
-                break;      
-            default:
-                break;
+        for (Modules module : getUser().getActiveModules()) {
+            Manager manager = getManager(module.getName());
+            if (manager != null) {
+                if (manager.handleTabChange(getTabTitle())) {
+
+                    return;
+                }
+            }
         }
+
+    }
+
+    public void onCentreViewTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
 
     }
 
@@ -1006,51 +1046,51 @@ public final class SystemManager extends GeneralManager {
                 }
 
                 //filteredFoundUsers = new ArrayList<User>(foundUsers);
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 0);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 0);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 0);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 0);
+//                }
                 break;
             case "Privileges":
                 foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 2);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 2);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 2);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 2);
+//                }
                 break;
             case "Categories":
                 foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 3);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 3);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 3);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 3);
+//                }
                 break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 4);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 4);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
+//                }
                 break;
             case "System Settings":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 10);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 10);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 10);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 10);
+//                }
                 break;
             case "Authentication":
                 if (getIsActiveLdapsOnly()) {
@@ -1061,11 +1101,11 @@ public final class SystemManager extends GeneralManager {
                             searchText);
                 }
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 5);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 5);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 5);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 5);
+//                }
                 break;
             case "Modules":
                 foundActiveModules = Modules.findActiveModules(
@@ -1074,21 +1114,21 @@ public final class SystemManager extends GeneralManager {
 
                 filteredFoundActiveModules = new ArrayList<Modules>(foundActiveModules);
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 1);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 1);
+//                }
                 break;
             case "Attachments":
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
-                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 6);
-                } else {
-                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 6);
-                }
+//                if (startDate == null) {
+//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 6);
+//                } else {
+//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 6);
+//                }
                 break;
             default:
                 break;
@@ -1980,7 +2020,11 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void openSystemBrowser() {
+        
+        setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+        
         getMainTabView().openTab("System Administration");
+        
     }
 
     public void editSystemOption() {

@@ -1,6 +1,6 @@
 /*
 Report Management (RM) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -54,6 +54,7 @@ import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.ComplianceSurvey;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
@@ -91,7 +92,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  *
  * @author Desmond Bennett
  */
-public class ReportManager extends GeneralManager implements Serializable {
+public class ReportManager extends GeneralManager {
 
     private String columnsToExclude;
     private Integer longProcessProgress;
@@ -106,6 +107,18 @@ public class ReportManager extends GeneralManager implements Serializable {
 
     public ReportManager() {
         init();
+    }
+    
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+               
+        switch (tabTitle) {
+            case "Report Templates":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:reportTemplateSearchButton");
+                return true;
+            default:
+                return false;
+        }
     }
 
     public Integer getDialogHeight() {
@@ -310,6 +323,9 @@ public class ReportManager extends GeneralManager implements Serializable {
     }
 
     public void openReportTemplatesTab() {
+        
+        getSystemManager().setDocumentTypeSearchText(":appForm:mainTabView:reportTemplateSearchButton");
+        
         getMainTabView().openTab("Report Templates");
     }
 
@@ -403,7 +419,7 @@ public class ReportManager extends GeneralManager implements Serializable {
 
     }
 
-    public void editReport() {
+    public void editReportTemplate() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -419,6 +435,25 @@ public class ReportManager extends GeneralManager implements Serializable {
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("reportTemplateDialog", options, null);
+
+    }
+    
+    public void openReportDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 50) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("reportDialog", options, null);
 
     }
 
@@ -479,7 +514,7 @@ public class ReportManager extends GeneralManager implements Serializable {
 
         getMainTabView().openTab("Report Templates");
 
-        editReport();
+        editReportTemplate();
     }
 
     public void createNewDatePeriod() {
@@ -576,9 +611,33 @@ public class ReportManager extends GeneralManager implements Serializable {
         reportCategory = "Job";
 
     }
+    
+    @Override
+    public void initMainTabView() {
 
-    public void closeReportsTab() {
-        getMainTabView().closeTab("Reports");
+        getMainTabView().reset(getUser());
+        
+        if (getUser().hasModule("systemManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "systemManager");
+            if (module != null) {
+                getMainTabView().openTab("System Administration");
+            }
+        }
+
+        if (getUser().hasModule("reportManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "reportManager");
+            if (module != null) {
+                getMainTabView().openTab("Report Templates");
+            }
+        }
+    }
+
+    public void closeReportDialog() {
+        closeDialog(null);
     }
 
     @Override

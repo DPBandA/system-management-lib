@@ -854,4 +854,9 @@ public class GeneralManager implements Manager, Serializable {
 
     }
 
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+        return false;
+    }
+
 }
