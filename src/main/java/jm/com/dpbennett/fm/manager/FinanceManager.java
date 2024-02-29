@@ -116,20 +116,73 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public FinanceManager() {
         init();
     }
-    
+
     @Override
     public void initMainTabView() {
-        
-        //super.initMainTabView();
-        
+
         getMainTabView().reset(getUser());
-        
-        getMainTabView().openTab("Inventory Requisitions");
-        
-        getMainTabView().openTab("Inventory");
-        
+
+        getMainTabView().openTab("Financial Administration");
+
+        getMainTabView().openTab("Suppliers");
+
         getMainTabView().openTab("Purchase Requisitions");
-        
+
+        getMainTabView().openTab("Inventory Products");
+
+        getMainTabView().openTab("Market Products");
+
+        getMainTabView().openTab("Inventory Requisitions");
+
+        getMainTabView().openTab("Inventory");
+
+        getMainTabView().openTab("System Administration");
+
+    }
+
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Financial Administration":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                return true;
+            case "Accounting Codes":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                return true;
+            case "Currencies":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:currencySearchButton");
+                return true;
+            case "Discounts":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:discountSearchButton");
+                return true;
+            case "Taxes":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:taxSearchButton");
+                return true;
+            case "Classifications":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:classificationSearchButton");
+                return true;
+            case "Sectors":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:sectorSearchButton");
+                return true;
+            case "Job Categories":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:jobCategorySearchButton");
+                return true;
+            case "Job Subcategories":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:jobSubCategorySearchButton");
+                return true;
+            case "Services":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:serviceSearchButton");
+                return true;
+            case "Procurement":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:procurementMethodSearchButton");
+                return true;
+            case "Settings":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:settingSearchButton");
+                return true;
+            default:
+                return false;
+        }
     }
 
     public String getApplicationFooter() {
@@ -188,7 +241,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void onRowSelect() {
-        setDefaultCommandTarget("@this");
+        getSystemManager().setDefaultCommandTarget("@this");
     }
 
     public Integer getDialogHeight() {
@@ -801,6 +854,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
         editClassification();
     }
 
+    public void doSupplierSearch() {
+        getPurchasingManager().doSupplierSearch();
+    }
+
+    public void doPurchaseReqSearch() {
+
+        getPurchasingManager().doPurchaseReqSearch();
+    }
+
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -867,6 +929,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void openFinancialAdministration() {
         getMainTabView().openTab("Financial Administration");
+
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1550,7 +1614,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         setSearchType("Accounting Codes");
         setSearchText("");
-        setDefaultCommandTarget("doSearch");
+        getSystemManager().
+                setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",

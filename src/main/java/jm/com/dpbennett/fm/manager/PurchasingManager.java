@@ -321,6 +321,18 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.uploadedFile = uploadedFile;
     }
 
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Suppliers":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:supplierSearchButton");
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public void handleFileUpload(FileUploadEvent event) {
         try {
 
@@ -730,7 +742,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void doSupplierSearch() {
+
         doSupplierSearch(supplierSearchText);
+
     }
 
     public void doSupplierSearch(String supplierSearchText) {
@@ -787,6 +801,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void openSuppliersTab() {
         getMainTabView().openTab("Suppliers");
+
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:supplierSearchButton");
     }
 
     public Boolean getCanExportPurchaseReqForm() {
@@ -994,7 +1010,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        // tk
         String PRBidQuotesNote
                 = SystemOption.getString(em,
                         "PRBidQuotesNote");
@@ -1485,7 +1500,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             for (Employee toEmployee : getToEmployees()) {
 
-                // tk display growl if successful
                 if (MailUtils.postMail(null,
                         getUser().getEmployee().getInternet().getEmail1(),
                         toEmployee.getInternet().getEmail1(),
@@ -1503,7 +1517,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 }
             }
         } catch (Exception e) {
-            // tk display growl
+            // tk display growlin the future
             System.out.println("Error sending PR email(s): " + e);
         }
 
@@ -2319,10 +2333,14 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.foundPurchaseReqs = foundPurchaseReqs;
     }
 
-//    public void doPurchaseReqSearch() {
-//
-//        EntityManager em = getEntityManager1();
-//
+    // see JMTS for how search is done for jobs
+    public void doPurchaseReqSearch() {
+
+        EntityManager em = getEntityManager1();
+
+        // tk
+        System.out.println("Doing PR search...");
+
 //        if (!purchaseReqSearchText.isEmpty()) {
 //            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
 //                    dateSearchPeriod.getDateField(), searchType, purchaseReqSearchText.trim(),
@@ -2334,18 +2352,23 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 //                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
 //                    searchDepartmentId);
 //        }
-//    }
-//    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
-//            String searchType, String searchText, Long searchDepartmentId) {
-//
+    }
+
+    // see JMTS for how search is done for jobs
+    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
+            String searchType, String searchText, Long searchDepartmentId) {
+
 //        this.dateSearchPeriod = dateSearchPeriod;
 //        this.searchType = searchType;
-//        this.purchaseReqSearchText = searchText;
-//        this.searchDepartmentId = searchDepartmentId;
-//
-//        doPurchaseReqSearch();
-//
-//    }
+        this.purchaseReqSearchText = searchText;
+        this.searchDepartmentId = searchDepartmentId;
+
+        // tk
+        System.out.println("Doing PR search...");
+        doPurchaseReqSearch();
+
+    }
+
     public String getPurchaseReqSearchText() {
         return purchaseReqSearchText;
     }

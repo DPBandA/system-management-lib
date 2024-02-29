@@ -193,17 +193,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
-    
+
     public FinanceManager getFinanceManager() {
         return BeanUtils.findBean("financeManager");
     }
-    
+
     public ComplianceManager getComplianceManager() {
         return BeanUtils.findBean("complianceManager");
     }
-    
+
     public Boolean getRenderProductFields() {
-        
+
         return getFinanceManager() != null;
     }
 
@@ -699,6 +699,9 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void openHumanResourceBrowser() {
 
         getMainTabView().openTab("Human Resource");
+
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
+
     }
 
     public void selectHumanResourceTab(
@@ -1135,7 +1138,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void editSelectedManufacturer() {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -1615,6 +1618,39 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
             notification.setActive(false);
             notification.save(em);
+        }
+    }
+
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Human Resource":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
+                return true;
+            case "Employees":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
+                return true;
+            case "Positions":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeePositionSearchButton");
+                return true;
+            case "Departments":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:departmentSearchButton");
+                return true;   
+            case "Divisions":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:divisionSearchButton");
+                return true;
+            case "Subgroups":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:subgroupSearchButton");
+                return true;
+            case "Organizations":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessSearchButton");
+                return true; 
+            case "Manufacturers":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
+                return true;     
+            default:
+                return false;
         }
     }
 

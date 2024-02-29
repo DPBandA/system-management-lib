@@ -147,12 +147,12 @@ public final class SystemManager extends GeneralManager {
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
+            case "System Administration":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+                return true;
             case "Users":
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
                 return true;
-            case "System Administration":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
-                return true;    
             case "Modules":
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:moduleSearchButton");
                 return true;
@@ -200,6 +200,8 @@ public final class SystemManager extends GeneralManager {
             Manager manager = getManager(module.getName());
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
+                    // tk
+                    System.out.println("Default cmd: " + getDefaultCommandTarget());
 
                     return;
                 }
@@ -211,7 +213,6 @@ public final class SystemManager extends GeneralManager {
     public void onCentreViewTabChange(TabChangeEvent event) {
 
         onMainViewTabChange(event);
-
     }
 
     @Override
@@ -2020,11 +2021,11 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void openSystemBrowser() {
-        
+
         setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
-        
+
         getMainTabView().openTab("System Administration");
-        
+
     }
 
     public void editSystemOption() {

@@ -168,6 +168,20 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void openClientsTab() {
 
         getMainTabView().openTab("Clients");
+
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:clientSearchButton");
+    }
+    
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Clients":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:clientSearchButton");
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -348,7 +362,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void editSelectedClient() {
 
         setClientDialogTitle("Client");
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -362,7 +376,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null); 
+        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
 
@@ -781,7 +795,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     @Override
     public void handleKeepAlive() {
-        
+
         super.updateUserActivity("CMv"
                 + SystemOption.getString(getEntityManager1(), "CMv"),
                 "Logged in");
@@ -808,7 +822,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 "Logged in");
 
         super.completeLogin();
-        
+
     }
 
 }

@@ -121,6 +121,18 @@ public class JobManager extends GeneralManager
     }
 
     @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Job Browser":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
     public String getSearchText() {
         return searchText;
     }
@@ -1047,6 +1059,8 @@ public class JobManager extends GeneralManager
         if (getSearchType().equals("Unapproved job costings")) {
             getUser().setJobTableViewPreference("Job Costings");
         }
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
         getMainTabView().openTab("Job Browser");
 
@@ -2630,16 +2644,16 @@ public class JobManager extends GeneralManager
 
         return group;
     }
-    
+
     @Override
     public ArrayList<SelectItem> getGroupedSearchTypes() {
         ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
-        
+
         groupedSearchTypes.add(getSearchTypesGroup());
-        
+
         return groupedSearchTypes;
     }
-    
+
     @Override
     public ArrayList<SelectItem> getSearchTypes() {
 
@@ -2670,8 +2684,8 @@ public class JobManager extends GeneralManager
             notification.save(em);
         }
     }
-    
-     @Override
+
+    @Override
     public String getSearchType() {
         return searchType;
     }
@@ -2680,7 +2694,7 @@ public class JobManager extends GeneralManager
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
-    
+
     public ArrayList<SelectItem> getDateSearchFields() {
         return getDateSearchFields(getSearchType());
     }
