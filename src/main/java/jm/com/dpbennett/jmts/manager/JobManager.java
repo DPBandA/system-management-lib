@@ -1059,7 +1059,7 @@ public class JobManager extends GeneralManager
         if (getSearchType().equals("Unapproved job costings")) {
             getUser().setJobTableViewPreference("Job Costings");
         }
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
         getMainTabView().openTab("Job Browser");
@@ -2769,17 +2769,27 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        // tk Relook into doing this. Modules may be loaded based on the 
-        // the "Most recent" list of module tabs viewed by the user.
+        // Jobs
         if (getUser().hasModule("jobManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "jobManager");
             if (module != null) {
-                getMainTabView().openTab(module.getDashboardTitle());
+                getMainTabView().openTab(module.getMainViewTitle());
             }
         }
 
+        // Clients
+        if (getUser().hasModule("clientManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "clientManager");
+            if (module != null) {
+                getMainTabView().openTab(module.getMainViewTitle());
+            }
+        }
+
+        // Procurement
         if (getUser().hasModule("purchasingManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
@@ -2789,19 +2799,42 @@ public class JobManager extends GeneralManager
             }
         }
 
+        // Inventory
         if (getUser().hasModule("inventoryManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "inventoryManager");
             if (module != null) {
                 getMainTabView().openTab(module.getDashboardTitle());
+                getMainTabView().openTab("Inventory Requisitions");
             }
         }
 
+        // Legal
+        if (getUser().hasModule("legalDocumentManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "legalDocumentManager");
+            if (module != null) {
+                getMainTabView().openTab(module.getMainViewTitle());
+            }
+        }
+
+        // Compliance
         if (getUser().hasModule("complianceManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "complianceManager");
+            if (module != null) {
+                getMainTabView().openTab(module.getMainViewTitle());
+            }
+        }
+        
+        // LabelPrint
+        if (getUser().hasModule("energyLabelManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "energyLabelManager");
             if (module != null) {
                 getMainTabView().openTab(module.getMainViewTitle());
             }
