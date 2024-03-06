@@ -123,21 +123,18 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getMainTabView().reset(getUser());
 
         //getMainTabView().openTab("Financial Administration");
-
         getMainTabView().openTab("Purchase Requisitions");
 
         getMainTabView().openTab("Inventory Products");
 
         //getMainTabView().openTab("Market Products");
-
         getMainTabView().openTab("Inventory");
-        
+
         getMainTabView().openTab("Inventory Requisitions");
-        
+
         getMainTabView().openTab("Suppliers");
 
         //getMainTabView().openTab("System Administration");
-
     }
 
     @Override
@@ -1967,6 +1964,38 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 "Logged in");
 
         super.completeLogin();
+    }
+
+    public ArrayList<SelectItem> getPurchReqSearchTypes() {
+        ArrayList purchReqSearchTypes = new ArrayList();
+
+        if (getUser().getEmployee().isProcurementOfficer()) {
+            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
+            purchReqSearchTypes.add(new SelectItem("All requisitions", "All requisitions"));
+        } else {
+            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
+        }
+
+        return purchReqSearchTypes;
+
+    }
+
+    public ArrayList<SelectItem> getPurchReqDateSearchFields() {
+        ArrayList dateSearchFields = new ArrayList();
+
+        dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
+        dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
+        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
+        dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
+        dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
+        dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
+        dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
+        dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
+        dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
+        dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
+
+        return dateSearchFields;
     }
 
 }

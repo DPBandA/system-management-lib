@@ -328,6 +328,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             case "Suppliers":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:supplierSearchButton");
                 return true;
+            case "Purchase Requisitions":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
+                return true;    
             default:
                 return false;
         }
@@ -1431,6 +1434,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void openPurchaseReqsTab() {
         getMainTabView().openTab("Purchase Requisitions");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
     }
 
     public void editPurchReqGeneralEmail() {
@@ -2447,7 +2452,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         setSearchType("Purchase requisitions");
         setSearchText("");
-        setDefaultCommandTarget("@this");
+        setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",
