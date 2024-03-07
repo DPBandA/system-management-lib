@@ -1046,52 +1046,26 @@ public final class SystemManager extends GeneralManager {
                             searchText, maxResult);
                 }
 
-                //filteredFoundUsers = new ArrayList<User>(foundUsers);
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 0);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 0);
-//                }
                 break;
             case "Privileges":
                 foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 2);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 2);
-//                }
                 break;
             case "Categories":
                 foundCategories = Category.findCategoriesByName(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 3);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 3);
-//                }
                 break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 4);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 4);
-//                }
                 break;
             case "System Settings":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 10);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 10);
-//                }
                 break;
             case "Authentication":
                 if (getIsActiveLdapsOnly()) {
@@ -1102,11 +1076,6 @@ public final class SystemManager extends GeneralManager {
                             searchText);
                 }
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 5);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 5);
-//                }
                 break;
             case "Modules":
                 foundActiveModules = Modules.findActiveModules(
@@ -1115,21 +1084,11 @@ public final class SystemManager extends GeneralManager {
 
                 filteredFoundActiveModules = new ArrayList<Modules>(foundActiveModules);
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 1);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 1);
-//                }
                 break;
             case "Attachments":
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText);
 
-//                if (startDate == null) {
-//                    selectSystemAdminTab(mainTabView, false, "centerTabVar", 6);
-//                } else {
-//                    selectSystemAdminTab(mainTabView, true, "centerTabVar", 6);
-//                }
                 break;
             default:
                 break;

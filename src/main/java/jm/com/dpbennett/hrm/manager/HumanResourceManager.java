@@ -453,7 +453,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         setSearchType("Employees");
         setSearchText("");
-        setDefaultCommandTarget("@this");
         setModuleNames(new String[]{
             "systemManager",
             "humanResourceManager"});
@@ -617,8 +616,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void doDepartmentSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -630,8 +627,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void doEmployeePositionSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -645,8 +640,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void doSubgroupSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -657,8 +650,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void doDivisionSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -671,8 +662,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void doBusinessSearch() {
 
-        setDefaultCommandTarget("@this");
-
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -683,8 +672,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void doEmployeeSearch() {
-
-        setDefaultCommandTarget("@this");
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1473,13 +1460,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                             searchText);
                 }
 
-                if (startDate != null) {
-                    setEmployeeSearchText(searchText);
-                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 0);
-                }
-
-                setDefaultCommandTarget("doSearch");
-
                 break;
             case "Employee Positions":
                 if (getIsActiveEmployeePositionsOnly()) {
@@ -1489,13 +1469,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                     foundEmployeePositions = EmployeePosition.findEmployeePositionsByTitle(getEntityManager1(),
                             searchText);
                 }
-
-                if (startDate != null) {
-                    setEmployeePositionSearchText(searchText);
-                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 1);
-                }
-
-                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Departments":
@@ -1507,13 +1480,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                             searchText);
                 }
 
-                if (startDate != null) {
-                    setDepartmentSearchText(searchText);
-                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 2);
-                }
-
-                setDefaultCommandTarget("doSearch");
-
                 break;
             case "Subgroups":
                 if (getIsActiveSubgroupsOnly()) {
@@ -1522,13 +1488,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                     foundSubgroups = Subgroup.findAllByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate != null) {
-                    setSubgroupSearchText(searchText);
-                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 3);
-                }
-
-                setDefaultCommandTarget("doSearch");
-
                 break;
             case "Divisions":
                 if (getIsActiveDivisionsOnly()) {
@@ -1536,13 +1495,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 } else {
                     foundDivisions = Division.findAllByName(getEntityManager1(), searchText);
                 }
-
-                if (startDate != null) {
-                    setDivisionSearchText(searchText);
-                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 4);
-                }
-
-                setDefaultCommandTarget("doSearch");
 
                 break;
             case "Organizations":
@@ -1553,13 +1505,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                     foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
                             searchText);
                 }
-
-                if (startDate != null) {
-                    setBusinessSearchText(searchText);
-                    selectHumanResourceTab(mainTabView, true, "humanResourceTabVar", 5);
-                }
-
-                setDefaultCommandTarget("doSearch");
 
                 break;
 

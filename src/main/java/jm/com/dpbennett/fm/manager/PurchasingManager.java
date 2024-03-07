@@ -330,7 +330,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 return true;
             case "Purchase Requisitions":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
-                return true;    
+                return true;
             default:
                 return false;
         }
@@ -341,7 +341,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             OutputStream outputStream;
 
-            // Save file
             String uploadedFilePath = SystemOption.getOptionValueObject(getEntityManager1(),
                     "purchReqUploadFolder")
                     + event.getFile().getFileName();
@@ -1434,7 +1433,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void openPurchaseReqsTab() {
         getMainTabView().openTab("Purchase Requisitions");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
     }
 
@@ -1522,7 +1521,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 }
             }
         } catch (Exception e) {
-            // tk display growlin the future
+           
             System.out.println("Error sending PR email(s): " + e);
         }
 
@@ -2330,6 +2329,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
         if (foundPurchaseReqs == null) {
             //doPurchaseReqSearch();
+            foundPurchaseReqs = new ArrayList<>();
         }
         return foundPurchaseReqs;
     }
@@ -2338,39 +2338,16 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.foundPurchaseReqs = foundPurchaseReqs;
     }
 
-    // see JMTS for how search is done for jobs
-    public void doPurchaseReqSearch() {
-
-        EntityManager em = getEntityManager1();
-
-        // tk
-        System.out.println("Doing PR search...");
-
-//        if (!purchaseReqSearchText.isEmpty()) {
-//            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
-//                    dateSearchPeriod.getDateField(), searchType, purchaseReqSearchText.trim(),
-//                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-//                    searchDepartmentId);
-//        } else {
-//            foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(em,
-//                    dateSearchPeriod.getDateField(), searchType, "",
-//                    dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-//                    searchDepartmentId);
-//        }
-    }
-
-    // see JMTS for how search is done for jobs
     public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
             String searchType, String searchText, Long searchDepartmentId) {
 
-//        this.dateSearchPeriod = dateSearchPeriod;
-//        this.searchType = searchType;
-        this.purchaseReqSearchText = searchText;
-        this.searchDepartmentId = searchDepartmentId;
-
-        // tk
-        System.out.println("Doing PR search...");
-        doPurchaseReqSearch();
+        foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+                getEntityManager1(),
+                dateSearchPeriod.getDateField(),
+                searchType,
+                searchText,
+                dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
+                searchDepartmentId);
 
     }
 
@@ -2384,7 +2361,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void approvePurchaseReqs() {
 
-        // Approve all selected PRs.
         for (PurchaseRequisition purchaseRequisition : selectedPurchaseRequisitions) {
             approvePurchaseRequisition(purchaseRequisition);
         }
@@ -2395,7 +2371,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void recommendPurchaseReqs() {
 
-        // Recommend all selected PRs.
         for (PurchaseRequisition purchaseRequisition : selectedPurchaseRequisitions) {
             recommendPurchaseRequisition(purchaseRequisition);
         }
@@ -2879,8 +2854,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         switch (searchType) {
             case "Purchase requisitions":
-                //doPurchaseReqSearch(dateSearchPeriod, searchType, searchText, null);
-                //if (!searchText.isEmpty()) {
+
                 foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
                         getEntityManager1(),
                         dateSearchField,
@@ -2889,16 +2863,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         startDate,
                         endDate,
                         searchDepartmentId);
-//                } else {
-//                    foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
-//                            getEntityManager1(),
-//                            dateSearchPeriod.getDateField(), 
-//                            searchType, 
-//                            "",
-//                            dateSearchPeriod.getStartDate(), 
-//                            dateSearchPeriod.getEndDate(),
-//                            searchDepartmentId);
-//                }
+
                 openPurchaseReqsTab();
                 break;
             case "Suppliers":

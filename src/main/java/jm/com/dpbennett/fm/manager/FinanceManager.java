@@ -211,32 +211,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return systemManager;
     }
 
-    public void createNewMarketProductInDialog() {
-        //currentMarketProduct = new MarketProduct();
-
-        //openMarketProductDialog();
-    }
-
-    // tk
-    public ArrayList<String> completeMarketProduct(String query) {
-        EntityManager em;
-        ArrayList<MarketProduct> products = new ArrayList<>(); // tk
-
-        try {
-            em = getEntityManager1();
-
-//            ArrayList<MarketProduct> products
-//                    = new ArrayList<>(MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(em, query));
-            ArrayList<String> productsList = (ArrayList<String>) (ArrayList<?>) products;
-
-            return productsList;
-
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
     public void onRowSelect() {
         getSystemManager().setDefaultCommandTarget("@this");
     }
@@ -855,9 +829,31 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getPurchasingManager().doSupplierSearch();
     }
 
+    public String getPurchaseReqSearchText() {
+        return getPurchasingManager().getPurchaseReqSearchText();
+    }
+
+    public void setPurchaseReqSearchText(String purchaseReqSearchText) {
+        getPurchasingManager().setPurchaseReqSearchText(purchaseReqSearchText);
+    }
+
     public void doPurchaseReqSearch() {
 
-        getPurchasingManager().doPurchaseReqSearch();
+        if (getSearchType().equals("My dept. requisitions")) {
+            getPurchasingManager().
+                    doPurchaseReqSearch(
+                            getDateSearchPeriod(),
+                            getSearchType(),
+                            getPurchaseReqSearchText(),
+                            getUser().getEmployee().getDepartment().getId());
+        } else if (getSearchType().equals("All requisitions")) {
+            getPurchasingManager().
+                    doPurchaseReqSearch(
+                            getDateSearchPeriod(),
+                            getSearchType(),
+                            getPurchaseReqSearchText(),
+                            null);
+        }
     }
 
     public PurchasingManager getPurchasingManager() {
@@ -1612,7 +1608,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setSearchType("Accounting Codes");
         setSearchText("");
         getSystemManager().
-                setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",
@@ -1653,30 +1649,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return getSystemManager().getEntityManager1();
     }
 
-    // tk not used so to be deleted
-    public Integer getLongProcessProgress() {
-        if (longProcessProgress == null) {
-            longProcessProgress = 0;
-        } else {
-            if (longProcessProgress < 10) {
-                // this is to ensure that this method does not make the progress
-                // complete as this is done elsewhere.
-                longProcessProgress = longProcessProgress + 1;
-            }
-        }
-
-        return longProcessProgress;
-    }
-
-    // tk not used so to be deleted
-    public void onLongProcessComplete() {
-        longProcessProgress = 0;
-    }
-
-    public void setLongProcessProgress(Integer longProcessProgress) {
-        this.longProcessProgress = longProcessProgress;
-    }
-
     @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
@@ -1702,20 +1674,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 0);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 0);
-                }
                 break;
             case "Currencies":
                 foundCurrencies = Currency.findAllByName(getEntityManager1(), searchText);
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 1);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 1);
-                }
                 break;
             case "Discounts":
                 if (getIsActiveDiscountsOnly()) {
@@ -1726,11 +1688,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 2);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 2);
-                }
                 break;
             case "Taxes":
                 if (getIsActiveTaxesOnly()) {
@@ -1741,11 +1698,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 3);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 3);
-                }
                 break;
             case "Classifications":
                 if (getIsActiveClassificationsOnly()) {
@@ -1754,11 +1706,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundClassifications = Classification.findClassificationsByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 4);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 4);
-                }
                 break;
             case "Sectors":
                 if (getIsActiveSectorsOnly()) {
@@ -1767,11 +1714,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundSectors = Sector.findSectorsByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 5);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 5);
-                }
                 break;
             case "Job Categories":
                 if (getIsActiveJobCategoriesOnly()) {
@@ -1780,11 +1722,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundJobCategories = JobCategory.findJobCategoriesByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 6);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 6);
-                }
                 break;
             case "Job Subcategories":
                 if (getIsActiveJobSubcategoriesOnly()) {
@@ -1793,11 +1730,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundJobSubcategories = JobSubCategory.findJobSubcategoriesByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 7);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 7);
-                }
                 break;
             case "Services":
                 if (getIsActiveServicesOnly()) {
@@ -1806,30 +1738,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     foundServices = Service.findAllByName(getEntityManager1(), searchText);
                 }
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 8);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 8);
-                }
                 break;
             case "Procurement":
                 foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
                         searchText);
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 9);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 9);
-                }
                 break;
             case "Settings":
                 getSystemManager().doSystemOptionSearch("Finance", searchText);
 
-                if (startDate == null) {
-                    selectFinancialAdminTab(mainTabView, false, "financialAdminTabVar", 10);
-                } else {
-                    selectFinancialAdminTab(mainTabView, true, "financialAdminTabVar", 10);
-                }
                 break;
             default:
                 break;
@@ -1970,8 +1887,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
         ArrayList purchReqSearchTypes = new ArrayList();
 
         if (getUser().getEmployee().isProcurementOfficer()) {
-            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
             purchReqSearchTypes.add(new SelectItem("All requisitions", "All requisitions"));
+            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
         } else {
             purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
         }
