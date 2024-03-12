@@ -128,6 +128,38 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public void createNewUserRegistration() {
+
+        EntityManager em = getEntityManager1();
+
+        selectedUser = new User();
+        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+        selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
+        
+        // tk add modules and privileges.
+
+        openRegistrationDialog();
+    }
+
+    public void openRegistrationDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("registrationDialog", options, null);
+
+    }
+
     public String getCopyrightOrganization() {
         return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
     }
@@ -200,8 +232,6 @@ public final class SystemManager extends GeneralManager {
             Manager manager = getManager(module.getName());
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
-                    // tk
-                    System.out.println("Default cmd: " + getDefaultCommandTarget());
 
                     return;
                 }
@@ -890,6 +920,40 @@ public final class SystemManager extends GeneralManager {
             PrimeFaces.current().dialog().closeDynamic(null);
         }
 
+    }
+
+    public void registerSelectedUser(ActionEvent actionEvent) {
+
+        // tk
+        PrimeFacesUtils.addMessage(
+                "Registering Using",
+                "User registration to be implemented",
+                FacesMessage.SEVERITY_INFO);
+
+//        if (!selectedUser.saveUnique(getEntityManager1()).isSuccess()) {
+//            PrimeFacesUtils.addMessage(
+//                    "User Exists",
+//                    "The user already exists!",
+//                    FacesMessage.SEVERITY_ERROR);
+//
+//            return;
+//        }
+//
+//        if (SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser")) {
+//            if (updateLDAPUser()) {
+//
+//                PrimeFaces.current().dialog().closeDynamic(null);
+//            } else {
+//
+//                PrimeFacesUtils.addMessage(
+//                        "User Detail NOT Saved",
+//                        "The user detail was NOT saved!",
+//                        FacesMessage.SEVERITY_ERROR);
+//
+//            }
+//        } else {
+//            PrimeFaces.current().dialog().closeDynamic(null);
+//        }
     }
 
     public boolean updateLDAPUser() {

@@ -42,7 +42,6 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import org.primefaces.PrimeFaces;
 import java.util.Objects;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItemGroup;
 import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.fm.Inventory;
@@ -52,10 +51,10 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
-import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.FinancialUtils;
@@ -103,6 +102,28 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public InventoryManager() {
         init();
+    }
+
+    public SystemManager getSystemManager() {
+        return BeanUtils.findBean("systemManager");
+    }
+
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Inventory Products":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryProductSearchButton");
+                return true;
+            case "Inventory":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventorySearchButton");
+                return true;
+            case "Inventory Requisitions":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryRequisitionSearchButton");
+                return true;           
+            default:
+                return false;
+        }
     }
 
     public void prepareInventoryRequisition() {
@@ -348,9 +369,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void addNewDisbursement() {
-        
+
         selectedInventoryDisbursement = new InventoryDisbursement();
-        
+
         setEdit(false);
 
     }
@@ -448,7 +469,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         if (selectedInventoryDisbursement.getId() == null && !getEdit()) {
             getSelectedInventoryRequisition().getInventoryDisbursements().add(selectedInventoryDisbursement);
         }
-        
+
         setEdit(false);
         updateDisbursement(selectedInventoryDisbursement);
         updateInventoryRequisition(null);
@@ -682,6 +703,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void openInventoryProductBrowser() {
 
         getFinanceManager().getMainTabView().openTab("Inventory Products");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryProductSearchButton");
     }
 
     public void createNewInventoryProduct() {
@@ -886,10 +909,14 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void openInventoryTab() {
         getMainTabView().openTab("Inventory");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventorySearchButton");
     }
 
     public void openInventoryRequisitionTab() {
         getMainTabView().openTab("Inventory Requisitions");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryRequisitionSearchButton");
     }
 
     public void updateCost() {
@@ -1407,6 +1434,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         selectedInventoryRequisition.setDateEntered(new Date());
         selectedInventoryRequisition.setDateEdited(new Date());
         selectedInventoryRequisition.setDateOfRequisition(new Date());
+        selectedInventoryRequisition.setWorkProgress("Ongoing");
 
         openInventoryRequisitionTab();
 

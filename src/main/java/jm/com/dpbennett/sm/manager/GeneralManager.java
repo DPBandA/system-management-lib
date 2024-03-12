@@ -31,8 +31,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
@@ -71,12 +69,24 @@ public class GeneralManager implements Manager, Serializable {
     private Boolean userLoggedIn;
     private String defaultCommandTarget;
     private String tabTitle;
+    private String registrationMessage;
+    private String confirmedPassword;
 
     /**
      * Creates a new instance of SystemManager
      */
     public GeneralManager() {
         init();
+    }
+
+    @Override
+    public String getRegistrationMessage() {
+        return registrationMessage;
+    }
+
+    @Override
+    public void setRegistrationMessage(String registrationMessage) {
+        this.registrationMessage = registrationMessage;
     }
 
     public String getTabTitle() {
@@ -513,7 +523,8 @@ public class GeneralManager implements Manager, Serializable {
         username = "";
         loginAttempts = 0;
         userLoggedIn = false;
-        logonMessage = "Please provide your login details below:";
+        logonMessage = "Please provide your login details below";
+        registrationMessage= "Please provide your registration details below";
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
@@ -629,12 +640,13 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getUsername() {
+        
         return username;
     }
 
     @Override
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.trim();
     }
 
     @Override
@@ -857,6 +869,23 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public boolean handleTabChange(String tabTitle) {
         return false;
+    }
+
+    @Override
+    public String getConfirmedPassword() {
+        
+        return confirmedPassword;
+    }
+
+    @Override
+    public void setConfirmedPassword(String confirmedPassword) {
+        this.confirmedPassword = confirmedPassword;
+    }
+
+    @Override
+    public void register() {
+        // tk
+        System.out.println("Registering...");
     }
 
 }

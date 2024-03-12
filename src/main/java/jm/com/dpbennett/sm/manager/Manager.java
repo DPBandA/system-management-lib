@@ -70,6 +70,8 @@ public interface Manager {
 
     public void login(EntityManager em);
 
+    public void register();
+
     public void logout();
 
     public Integer getLoginAttempts();
@@ -83,6 +85,10 @@ public interface Manager {
     public String getPassword();
 
     public void setPassword(String password);
+
+    public String getConfirmedPassword();
+
+    public void setConfirmedPassword(String confirmedPassword);
 
     public String getUsername();
 
@@ -104,6 +110,10 @@ public interface Manager {
     public String getLogonMessage();
 
     public void setLogonMessage(String logonMessage);
+
+    public String getRegistrationMessage();
+
+    public void setRegistrationMessage(String registrationMessage);
 
     public void initSearchPanel();
 
@@ -160,7 +170,7 @@ public interface Manager {
     public MainTabView getMainTabView();
 
     public void handleSelectedNotification(Notification notification);
-    
+
     public boolean handleTabChange(String tabTitle);
 
 }

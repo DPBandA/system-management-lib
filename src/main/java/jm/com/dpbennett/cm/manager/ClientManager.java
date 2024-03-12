@@ -1,6 +1,6 @@
 /*
 Client Management 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -210,7 +210,6 @@ public class ClientManager extends GeneralManager implements Serializable {
         selectedContact = null;
         selectedAddress = null;
         clientSearchText = "";
-
     }
 
     public Client getSelectedClient() {
@@ -379,7 +378,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
-
+    
     public void updateClient() {
         setIsDirty(true);
     }

@@ -2393,11 +2393,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
