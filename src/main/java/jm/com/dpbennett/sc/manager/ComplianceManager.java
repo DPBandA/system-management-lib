@@ -1,6 +1,6 @@
 /*
 Standards Compliance (SC) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -168,8 +168,8 @@ public class ComplianceManager extends GeneralManager
 
                 return true;
                 
-            case "Factory Inpections":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInpectionSearchButton");
+            case "Factory Inspections":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
 
                 return true;    
 
@@ -295,6 +295,8 @@ public class ComplianceManager extends GeneralManager
 
     public void openManufacturerBrowser() {
         getHumanResourceManager().openManufacturerBrowser();
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
     }
 
     public Integer getDialogHeight() {
@@ -1192,6 +1194,8 @@ public class ComplianceManager extends GeneralManager
     public void openComplaintsBrowser() {
 
         getMainTabView().openTab("Complaint Browser");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:complaintSearchButton");
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -2978,6 +2982,8 @@ public class ComplianceManager extends GeneralManager
     public void openFactoryInspectionBrowser() {
 
         getMainTabView().openTab("Factory Inspections");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
     }
 
     public DocumentStandard getCurrentDocumentStandard() {

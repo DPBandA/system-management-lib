@@ -1,6 +1,6 @@
 /*
 LabelPrint 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -84,6 +84,20 @@ public class EnergyLabelManager extends GeneralManager
         init();
     }
 
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Label Browser":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
+
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
     public Integer getDialogHeight() {
         return 400;
     }
@@ -126,6 +140,8 @@ public class EnergyLabelManager extends GeneralManager
     public void openEnergyLabelBrowser() {
 
         getMainTabView().openTab("Label Browser");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
 
     }
 
@@ -290,7 +306,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void editSelectedEnergyLabel() {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -305,7 +321,7 @@ public class EnergyLabelManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("labelDialog", options, null);
-        
+
     }
 
     public void createNewEnergyLabel() {
@@ -373,7 +389,7 @@ public class EnergyLabelManager extends GeneralManager
 
         setSearchType("Energy labels");
         setSearchText("");
-        setDefaultCommandTarget("doSearch");
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
         setModuleNames(new String[]{
             "energyLabelManager"
         });

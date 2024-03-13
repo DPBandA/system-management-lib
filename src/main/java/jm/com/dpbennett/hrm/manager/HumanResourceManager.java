@@ -167,6 +167,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void openManufacturerBrowser() {
         getMainTabView().openTab("Manufacturers");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
     }
 
     public List<Manufacturer> completeManufacturer(String query) {
@@ -1593,7 +1595,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 return true; 
             case "Manufacturers":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
-                return true;     
+                return true;
             default:
                 return false;
         }
