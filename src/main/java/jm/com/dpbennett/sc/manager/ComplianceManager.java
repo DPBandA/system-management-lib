@@ -54,7 +54,6 @@ import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
-import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -138,6 +137,45 @@ public class ComplianceManager extends GeneralManager
     @Override
     public final void init() {
         reset();
+    }
+    
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Survey Browser":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:surveySearchButton");
+
+                return true;
+                
+            case "Standard Browser":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:standardSearchButton");
+
+                return true;
+                
+            case "Complaint Browser":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:complaintSearchButton");
+
+                return true;
+            
+            case "Market Products":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
+
+                return true;
+                
+            case "Manufacturers":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
+
+                return true;
+                
+            case "Factory Inpections":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInpectionSearchButton");
+
+                return true;    
+
+            default:
+                return false;
+        }
     }
 
     public void createNewJob() {
@@ -251,6 +289,8 @@ public class ComplianceManager extends GeneralManager
 //    }
     public void openMarketProductBrowser() {
         getFinanceManager().openMarketProductBrowser();
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
     }
 
     public void openManufacturerBrowser() {
@@ -1138,11 +1178,15 @@ public class ComplianceManager extends GeneralManager
     public void openSurveysBrowser() {
 
         getMainTabView().openTab("Survey Browser");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:surveySearchButton");
     }
 
     public void openStandardsBrowser() {
 
         getMainTabView().openTab("Standard Browser");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:standardSearchButton");
     }
 
     public void openComplaintsBrowser() {
@@ -2196,7 +2240,7 @@ public class ComplianceManager extends GeneralManager
                 null, //getDatePeriod().getStartDate()
                 null, // getDatePeriod().getEndDate()
                 false,
-                25); // tk to be made system option.
+                105); // tk to be made system option.
     }
 
     public void handleProductPhotoFileUpload(FileUploadEvent event) {
@@ -2974,10 +3018,10 @@ public class ComplianceManager extends GeneralManager
 
         if (getIsActiveDocumentStandardsOnly()) {
             documentStandards
-                    = DocumentStandard.findActive(getEntityManager1(), standardSearchText, 25);
+                    = DocumentStandard.findActive(getEntityManager1(), standardSearchText, 105);
         } else {
             documentStandards
-                    = DocumentStandard.find(getEntityManager1(), standardSearchText, 25);
+                    = DocumentStandard.find(getEntityManager1(), standardSearchText, 105);
         }
 
     }

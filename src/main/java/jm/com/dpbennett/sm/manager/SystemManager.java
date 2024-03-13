@@ -135,9 +135,8 @@ public final class SystemManager extends GeneralManager {
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
-        
-        // tk add modules and privileges.
 
+        // tk add modules and privileges.
         openRegistrationDialog();
     }
 
@@ -232,7 +231,7 @@ public final class SystemManager extends GeneralManager {
             Manager manager = getManager(module.getName());
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
-
+                   
                     return;
                 }
             }

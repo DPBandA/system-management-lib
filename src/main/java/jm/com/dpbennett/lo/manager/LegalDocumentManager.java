@@ -1,6 +1,6 @@
 /*
 Legal Office (LO) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -70,16 +70,47 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     private LegalDocument selectedDocument;
     private LegalDocument currentDocument;
     private DocumentReport documentReport;
+    private String searchText;
+    private String searchType;
 
     public LegalDocumentManager() {
         init();
     }
 
-    /**
-     * Get application header.
-     *
-     * @return
-     */
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Document Browser":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:legalDocumentSearchButton");
+
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public String getSearchText() {
+        return searchText;
+    }
+
+    @Override
+    public void setSearchText(String searchText) {
+        this.searchText = searchText;
+    }
+
+    @Override
+    public String getSearchType() {
+        return searchType;
+    }
+
+    @Override
+    public void setSearchType(String searchType) {
+        this.searchType = searchType;
+    }
+
     @Override
     public String getApplicationHeader() {
         return "Legal Office";
@@ -169,16 +200,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     }
 
-//    public List getLegalDocumentDateSearchFields() {
-//        ArrayList dateFields = new ArrayList();
-//
-//        // add items
-//        dateFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
-//        dateFields.add(new SelectItem("dateReceived", "Date received"));
-//        dateFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
-//
-//        return dateFields;
-//    }
     @Override
     public final void init() {
         reset();
@@ -276,8 +297,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
-//        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true,
-//                getDialogHeight(), getDialogWidth());
     }
 
     public DocumentReport getDocumentReport() {
@@ -316,7 +335,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         em.flush();
         em.getTransaction().commit();
 
-        // Do search to update search list.
         doLegalDocumentSearch();
 
         closeDialog(null);
@@ -348,8 +366,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         PrimeFaces.current().dialog().openDynamic("/legal/legalDocumentDialog", options, null);
 
-//        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDialog", true, true, true, true,
-//                getDialogHeight(), getDialogWidth());
     }
 
     public void deleteDocumentConfirmDialog() {
@@ -369,8 +385,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         PrimeFaces.current().dialog().openDynamic("/legal/legalDocumentDeleteConfirmDialog", options, null);
 
-//        PrimeFacesUtils.openDialog(null, "/legal/legalDocumentDeleteConfirmDialog",
-//                true, true, true, false, 125, 400);
     }
 
     public void editDocumentType(ActionEvent actionEvent) {
@@ -393,7 +407,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
 
-        //getSystemManager().openDocumentTypeDialog("/admin/documentTypeDialog");
     }
 
     public void editClassification(ActionEvent actionEvent) {
@@ -423,8 +436,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         PrimeFaces.current().dialog().openDynamic("/finance/classificationDialog", options, null);
 
-//        PrimeFacesUtils.openDialog(null, "/finance/classificationDialog", true, true, true,
-//                getDialogHeight(), getDialogWidth());
     }
 
     public void createNewDocumentType(ActionEvent actionEvent) {
@@ -445,8 +456,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
 
-//        PrimeFacesUtils.openDialog(null, "/admin/documentTypeDialog", true, true, true,
-//                275, 400);
     }
 
     public void saveCurrentLegalDocument(ActionEvent actionEvent) {
@@ -471,7 +480,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                     currentDocument.setNumber(LegalDocument.getLegalDocumentNumber(currentDocument, "ED"));
                 }
 
-                // Do save, set clean and dismiss dialog
                 currentDocument.setEditedBy(getUser().getEmployee());
                 if (currentDocument.save(em).isSuccess()) {
                     currentDocument.setIsDirty(false);
@@ -479,7 +487,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
                 PrimeFaces.current().dialog().closeDynamic(null);
 
-                // Redo search
                 doLegalDocumentSearch();
 
             } catch (Exception e) {
@@ -533,6 +540,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void openDocumentBrowser() {
         getMainTabView().openTab("Document Browser");
+        
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:legalDocumentSearchButton");
     }
 
     public LegalDocument createNewLegalDocument(EntityManager em,
@@ -626,8 +635,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                 getDateSearchPeriod().getDateField(),
                 "Legal Documents",
                 getSearchText(),
-                null,
-                null);
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
 
     }
 
@@ -656,18 +665,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         }
     }
 
-    // tk needed? temove?
-//    public void doLegalDocumentSearch(
-//            DatePeriod dateSearchPeriod,
-//            String searchType,
-//            String searchText) {
-//
-//        setDateSearchPeriod(dateSearchPeriod);
-//        setSearchType(searchType);
-//        setSearchText(searchText);
-//
-//        doLegalDocumentSearch();
-//    }
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
@@ -855,6 +852,11 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         }
 
         return dateSearchFields;
+    }
+
+    public ArrayList<SelectItem> getDateSearchFields() {
+
+        return getDateSearchFields("Legal Documents");
     }
 
     @Override

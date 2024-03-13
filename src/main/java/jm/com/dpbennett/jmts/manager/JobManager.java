@@ -126,7 +126,9 @@ public class JobManager extends GeneralManager
         switch (tabTitle) {
             case "Job Browser":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+
                 return true;
+
             default:
                 return false;
         }
@@ -986,7 +988,6 @@ public class JobManager extends GeneralManager
 
         setSearchType("My department's jobs");
         setSearchText("");
-        setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
             "jobManager",
             "clientManager",
@@ -1008,6 +1009,7 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
     }
 
@@ -2770,56 +2772,51 @@ public class JobManager extends GeneralManager
         getMainTabView().reset(getUser());
 
         // Jobs
-        if (getUser().hasModule("jobManager")) {
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    "jobManager");
-            if (module != null) {
-                getMainTabView().openTab(module.getMainViewTitle());
-            }
-        }
-
+//        if (getUser().hasModule("jobManager")) {
+//            Modules module = Modules.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "jobManager");
+//            if (module != null) {
+//                getMainTabView().openTab(module.getMainViewTitle());
+//            }
+//        }
         // Clients
-        if (getUser().hasModule("clientManager")) {
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    "clientManager");
-            if (module != null) {
-                getMainTabView().openTab(module.getMainViewTitle());
-            }
-        }
-
+//        if (getUser().hasModule("clientManager")) {
+//            Modules module = Modules.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "clientManager");
+//            if (module != null) {
+//                getMainTabView().openTab(module.getMainViewTitle());
+//            }
+//        }
         // Procurement
-        if (getUser().hasModule("purchasingManager")) {
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    "purchasingManager");
-            if (module != null) {
-                getMainTabView().openTab(module.getDashboardTitle());
-            }
-        }
-
+//        if (getUser().hasModule("purchasingManager")) {
+//            Modules module = Modules.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "purchasingManager");
+//            if (module != null) {
+//                getMainTabView().openTab(module.getDashboardTitle());
+//            }
+//        }
         // Inventory
-        if (getUser().hasModule("inventoryManager")) {
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    "inventoryManager");
-            if (module != null) {
-                getMainTabView().openTab(module.getDashboardTitle());
-                getMainTabView().openTab("Inventory Requisitions");
-            }
-        }
-
+//        if (getUser().hasModule("inventoryManager")) {
+//            Modules module = Modules.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "inventoryManager");
+//            if (module != null) {
+//                getMainTabView().openTab(module.getDashboardTitle());
+//                getMainTabView().openTab("Inventory Requisitions");
+//            }
+//        }
         // Legal
-        if (getUser().hasModule("legalDocumentManager")) {
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    "legalDocumentManager");
-            if (module != null) {
-                getMainTabView().openTab(module.getMainViewTitle());
-            }
-        }
-
+//        if (getUser().hasModule("legalDocumentManager")) {
+//            Modules module = Modules.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "legalDocumentManager");
+//            if (module != null) {
+//                getMainTabView().openTab(module.getMainViewTitle());
+//            }
+//        }
         // Compliance
         if (getUser().hasModule("complianceManager")) {
             Modules module = Modules.findActiveModuleByName(
@@ -2829,7 +2826,22 @@ public class JobManager extends GeneralManager
                 getMainTabView().openTab(module.getMainViewTitle());
             }
         }
-        
+
+        //tk open tabs for submodules of JMTS for development and testing
+        if (getUser().hasModule("jobManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "jobManager");
+            if (module != null) {
+                getMainTabView().openTab("Survey Browser");
+                getMainTabView().openTab("Standard Browser");
+                getMainTabView().openTab("Complaint Browser");
+                getMainTabView().openTab("Market Products");
+                getMainTabView().openTab("Manufacturers");
+                getMainTabView().openTab("Factory Inspections");
+            }
+        }
+
         // LabelPrint
         if (getUser().hasModule("energyLabelManager")) {
             Modules module = Modules.findActiveModuleByName(
@@ -2839,6 +2851,8 @@ public class JobManager extends GeneralManager
                 getMainTabView().openTab(module.getMainViewTitle());
             }
         }
+
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
     }
 
