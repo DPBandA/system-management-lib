@@ -136,7 +136,6 @@ public final class SystemManager extends GeneralManager {
         selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
 
-        // tk add modules and privileges.
         openRegistrationDialog();
     }
 
@@ -892,7 +891,7 @@ public final class SystemManager extends GeneralManager {
     public void handleUserDialogReturn() {
     }
 
-    public void saveSelectedUser(ActionEvent actionEvent) {
+    public void saveSelectedUser() {
 
         if (!getSelectedUser().saveUnique(getEntityManager1()).isSuccess()) {
             PrimeFacesUtils.addMessage(
@@ -911,7 +910,7 @@ public final class SystemManager extends GeneralManager {
 
                 PrimeFacesUtils.addMessage(
                         "User Detail NOT Saved",
-                        "The user detail was NOT saved!",
+                        "The user's security detail was NOT saved! Ensure that the password is confirmed.",
                         FacesMessage.SEVERITY_ERROR);
 
             }
@@ -924,35 +923,8 @@ public final class SystemManager extends GeneralManager {
     public void registerSelectedUser(ActionEvent actionEvent) {
 
         // tk
-        PrimeFacesUtils.addMessage(
-                "Registering Using",
-                "User registration to be implemented",
-                FacesMessage.SEVERITY_INFO);
-
-//        if (!selectedUser.saveUnique(getEntityManager1()).isSuccess()) {
-//            PrimeFacesUtils.addMessage(
-//                    "User Exists",
-//                    "The user already exists!",
-//                    FacesMessage.SEVERITY_ERROR);
-//
-//            return;
-//        }
-//
-//        if (SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser")) {
-//            if (updateLDAPUser()) {
-//
-//                PrimeFaces.current().dialog().closeDynamic(null);
-//            } else {
-//
-//                PrimeFacesUtils.addMessage(
-//                        "User Detail NOT Saved",
-//                        "The user detail was NOT saved!",
-//                        FacesMessage.SEVERITY_ERROR);
-//
-//            }
-//        } else {
-//            PrimeFaces.current().dialog().closeDynamic(null);
-//        }
+        System.out.println("Impl. user reg: maybe save user can be used here");
+        
     }
 
     public boolean updateLDAPUser() {
@@ -960,14 +932,21 @@ public final class SystemManager extends GeneralManager {
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
-
-            // tk Set the password to the confirmed password instead
+           
+            // Try to add a new LDAP user if it can't be updated
             // NB: LdapContext.addUser() needs a password to add the user
-            selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
-
-            return LdapContext.addUser(em, context, selectedUser);
+            if (checkMatchingUserPasswords(selectedUser)) {
+                selectedUser.setPassword(selectedUser.getNewPassword());
+                
+                System.out.println("Will attempt to add user");
+                return LdapContext.addUser(em, context, selectedUser);
+            }
+            else {
+                return false;
+            }
+            
         }
-
+     
         return true;
     }
 
@@ -985,31 +964,36 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
     }
 
-    public void saveUserSecurityProfile(ActionEvent actionEvent) {
+    public void saveUserSecurityProfile() {
+        saveUserSecurityProfile(getUser());
+    }
 
-        if (getUser().getName().trim().isEmpty()) {
+    public boolean checkMatchingUserPasswords(User user) {
+
+        if (user.getNewPassword().trim().isEmpty()
+                || user.getConfirmedNewPassword().trim().isEmpty()) {
+
+            return false;
+        }
+
+        return user.getNewPassword().equals(user.getConfirmedNewPassword());
+    }
+
+    public void saveUserSecurityProfile(User user) {
+
+        EntityManager em = getEntityManager1();
+
+        if (user.getName().trim().isEmpty()) {
 
             PrimeFacesUtils.addMessage(
                     "Username Required",
-                    "A username is required",
+                    "A valid username is required",
                     FacesMessage.SEVERITY_ERROR);
 
             return;
         }
 
-        if (getUser().getNewPassword().trim().isEmpty()
-                && getUser().getConfirmedNewPassword().trim().isEmpty()) {
-
-            PrimeFacesUtils.addMessage(
-                    "No New Password",
-                    "A new password was not entered",
-                    FacesMessage.SEVERITY_ERROR);
-
-            return;
-        }
-
-        if (!getUser().getNewPassword().trim().
-                equals(getUser().getConfirmedNewPassword().trim())) {
+        if (!checkMatchingUserPasswords(user)) {
 
             PrimeFacesUtils.addMessage(
                     "No Match",
@@ -1019,113 +1003,38 @@ public final class SystemManager extends GeneralManager {
             return;
         }
 
-        if (getUser().getNewPassword().trim().
-                equals(getUser().getConfirmedNewPassword().trim())) {
+        LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
-            EntityManager em = getEntityManager1();
+        if (ldap != null) {
+            if (LdapContext.updateUserPassword(
+                    em,
+                    ldap,
+                    user.getUsername(),
+                    user.getNewPassword().trim())) {
 
-            LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
-
-            if (ldap != null) {
-                if (LdapContext.updateUserPassword(
-                        em,
-                        ldap,
-                        getUser().getUsername(),
-                        getUser().getNewPassword().trim())) {
-
-                    PrimeFacesUtils.addMessage(
-                            "Password Changed",
-                            "Your password was changed",
-                            FacesMessage.SEVERITY_INFO);
-                } else {
-                    PrimeFacesUtils.addMessage(
-                            "Password NOT Changed",
-                            "Your password was NOT changed!",
-                            FacesMessage.SEVERITY_ERROR);
-                }
+                PrimeFacesUtils.addMessage(
+                        "Password Changed",
+                        "Your password was changed",
+                        FacesMessage.SEVERITY_INFO);
             } else {
                 PrimeFacesUtils.addMessage(
                         "Password NOT Changed",
-                        "The authentication server could not be accessed. Your password was NOT changed!",
+                        "Your password was NOT changed!",
                         FacesMessage.SEVERITY_ERROR);
-            }
-        }
-
-    }
-
-    public void saveSelectedUserSecurityProfile(ActionEvent actionEvent) {
-
-        if (getSelectedUser().getUpdateLDAPUser()) {
-            if (getSelectedUser().getName().trim().isEmpty()) {
-
-                PrimeFacesUtils.addMessage(
-                        "Username Required",
-                        "A username is required",
-                        FacesMessage.SEVERITY_ERROR);
-
-                return;
-            }
-
-            if (getSelectedUser().getNewPassword().trim().isEmpty()
-                    && getSelectedUser().getConfirmedNewPassword().trim().isEmpty()) {
-
-                PrimeFacesUtils.addMessage(
-                        "No New Password",
-                        "A new password was not entered",
-                        FacesMessage.SEVERITY_ERROR);
-
-                return;
-            }
-
-            if (!getSelectedUser().getNewPassword().trim().
-                    equals(getSelectedUser().getConfirmedNewPassword().trim())) {
-
-                PrimeFacesUtils.addMessage(
-                        "No Match",
-                        "Passwords do NOT match",
-                        FacesMessage.SEVERITY_ERROR);
-
-                return;
-            }
-
-            if (getSelectedUser().getNewPassword().trim().
-                    equals(getSelectedUser().getConfirmedNewPassword().trim())) {
-
-                EntityManager em = getEntityManager1();
-
-                LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
-
-                if (ldap != null) {
-                    if (LdapContext.updateUserPassword(
-                            em,
-                            ldap,
-                            getSelectedUser().getUsername(),
-                            getSelectedUser().getNewPassword().trim())) {
-
-                        PrimeFacesUtils.addMessage(
-                                "Password Changed",
-                                "Your password was changed",
-                                FacesMessage.SEVERITY_INFO);
-                    } else {
-                        PrimeFacesUtils.addMessage(
-                                "Password NOT Changed",
-                                "Your password was NOT changed!",
-                                FacesMessage.SEVERITY_ERROR);
-                    }
-                } else {
-                    PrimeFacesUtils.addMessage(
-                            "Password NOT Changed",
-                            "The authentication server could not be accessed. Your password was NOT changed!",
-                            FacesMessage.SEVERITY_ERROR);
-                }
             }
         } else {
             PrimeFacesUtils.addMessage(
-                    "Security Profile NOT Updated",
-                    "The user's security profile was NOT selected to be updated",
-                    FacesMessage.SEVERITY_WARN);
-            
+                    "Password NOT Changed",
+                    "The authentication server could not be accessed. Your password was NOT changed!",
+                    FacesMessage.SEVERITY_ERROR);
         }
+       
+
+    }
+
+    public void saveSelectedUserSecurityProfile() {
+
+        saveUserSecurityProfile(getSelectedUser());
 
     }
 
