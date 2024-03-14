@@ -231,7 +231,7 @@ public final class SystemManager extends GeneralManager {
             Manager manager = getManager(module.getName());
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
-                   
+
                     return;
                 }
             }
@@ -894,7 +894,7 @@ public final class SystemManager extends GeneralManager {
 
     public void saveSelectedUser(ActionEvent actionEvent) {
 
-        if (!selectedUser.saveUnique(getEntityManager1()).isSuccess()) {
+        if (!getSelectedUser().saveUnique(getEntityManager1()).isSuccess()) {
             PrimeFacesUtils.addMessage(
                     "User Exists",
                     "The user already exists!",
@@ -903,7 +903,7 @@ public final class SystemManager extends GeneralManager {
             return;
         }
 
-        if (SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser")) {
+        if (getSelectedUser().getUpdateLDAPUser()) {
             if (updateLDAPUser()) {
 
                 PrimeFaces.current().dialog().closeDynamic(null);
@@ -962,7 +962,7 @@ public final class SystemManager extends GeneralManager {
         if (!LdapContext.updateUser(context, selectedUser)) {
 
             // tk Set the password to the confirmed password instead
-            // if the "update LDAP setting" was checked.
+            // NB: LdapContext.addUser() needs a password to add the user
             selectedUser.setPassword("@" + selectedUser.getUsername() + "00@");
 
             return LdapContext.addUser(em, context, selectedUser);
@@ -1049,6 +1049,82 @@ public final class SystemManager extends GeneralManager {
                         "The authentication server could not be accessed. Your password was NOT changed!",
                         FacesMessage.SEVERITY_ERROR);
             }
+        }
+
+    }
+
+    public void saveSelectedUserSecurityProfile(ActionEvent actionEvent) {
+
+        if (getSelectedUser().getUpdateLDAPUser()) {
+            if (getSelectedUser().getName().trim().isEmpty()) {
+
+                PrimeFacesUtils.addMessage(
+                        "Username Required",
+                        "A username is required",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            if (getSelectedUser().getNewPassword().trim().isEmpty()
+                    && getSelectedUser().getConfirmedNewPassword().trim().isEmpty()) {
+
+                PrimeFacesUtils.addMessage(
+                        "No New Password",
+                        "A new password was not entered",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            if (!getSelectedUser().getNewPassword().trim().
+                    equals(getSelectedUser().getConfirmedNewPassword().trim())) {
+
+                PrimeFacesUtils.addMessage(
+                        "No Match",
+                        "Passwords do NOT match",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            if (getSelectedUser().getNewPassword().trim().
+                    equals(getSelectedUser().getConfirmedNewPassword().trim())) {
+
+                EntityManager em = getEntityManager1();
+
+                LdapContext ldap = LdapContext.findActiveLdapContextByName(em, "LDAP");
+
+                if (ldap != null) {
+                    if (LdapContext.updateUserPassword(
+                            em,
+                            ldap,
+                            getSelectedUser().getUsername(),
+                            getSelectedUser().getNewPassword().trim())) {
+
+                        PrimeFacesUtils.addMessage(
+                                "Password Changed",
+                                "Your password was changed",
+                                FacesMessage.SEVERITY_INFO);
+                    } else {
+                        PrimeFacesUtils.addMessage(
+                                "Password NOT Changed",
+                                "Your password was NOT changed!",
+                                FacesMessage.SEVERITY_ERROR);
+                    }
+                } else {
+                    PrimeFacesUtils.addMessage(
+                            "Password NOT Changed",
+                            "The authentication server could not be accessed. Your password was NOT changed!",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+        } else {
+            PrimeFacesUtils.addMessage(
+                    "Security Profile NOT Updated",
+                    "The user's security profile was NOT selected to be updated",
+                    FacesMessage.SEVERITY_WARN);
+            
         }
 
     }
