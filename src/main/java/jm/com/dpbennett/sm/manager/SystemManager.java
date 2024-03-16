@@ -128,6 +128,16 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public List<SystemOption> getSelectedUserSystemOptions() {
+        
+        if (getSelectedUser().getId() != null) {
+            return SystemOption.findByOwnerId(getEntityManager1(),
+                    getSelectedUser().getId());
+        }
+
+        return new ArrayList<>();
+    }
+
     public void createNewUserRegistration() {
 
         EntityManager em = getEntityManager1();
@@ -924,7 +934,7 @@ public final class SystemManager extends GeneralManager {
 
         // tk
         System.out.println("Impl. user reg: maybe save user can be used here");
-        
+
     }
 
     public boolean updateLDAPUser() {
@@ -932,21 +942,20 @@ public final class SystemManager extends GeneralManager {
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
-           
+
             // Try to add a new LDAP user if it can't be updated
             // NB: LdapContext.addUser() needs a password to add the user
             if (checkMatchingUserPasswords(selectedUser)) {
                 selectedUser.setPassword(selectedUser.getNewPassword());
-                
+
                 System.out.println("Will attempt to add user");
                 return LdapContext.addUser(em, context, selectedUser);
-            }
-            else {
+            } else {
                 return false;
             }
-            
+
         }
-     
+
         return true;
     }
 
@@ -1028,7 +1037,6 @@ public final class SystemManager extends GeneralManager {
                     "The authentication server could not be accessed. Your password was NOT changed!",
                     FacesMessage.SEVERITY_ERROR);
         }
-       
 
     }
 
@@ -1752,11 +1760,6 @@ public final class SystemManager extends GeneralManager {
         this.notifications = notifications;
     }
 
-    /**
-     * Get active notifications based on a sub-list.
-     *
-     * @return
-     */
     public List<Notification> getActiveNotifications() {
         List<Notification> myActiveNotifications = Notification.findActiveNotificationsByOwnerId(
                 getEntityManager1(),
