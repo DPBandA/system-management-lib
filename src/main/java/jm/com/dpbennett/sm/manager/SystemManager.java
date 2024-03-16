@@ -84,6 +84,7 @@ public final class SystemManager extends GeneralManager {
     private String ldapSearchText;
     private String documentTypeSearchText;
     private String categorySearchText;
+    private String countrySearchText;
     private String notificationSearchText;
     private String privilegeSearchText;
     private String moduleSearchText;
@@ -93,6 +94,7 @@ public final class SystemManager extends GeneralManager {
     private List<LdapContext> foundLdapContexts;
     private List<DocumentType> foundDocumentTypes;
     private List<Category> foundCategories;
+    private List<Country> foundCountries;
     private List<Notification> foundNotifications;
     private List<Privilege> foundActivePrivileges;
     private List<Modules> foundActiveModules;
@@ -106,6 +108,7 @@ public final class SystemManager extends GeneralManager {
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
+    private Country selectedCountry;
     private Privilege selectedPrivilege;
     private Notification selectedNotification;
     private Modules selectedModule;
@@ -128,8 +131,24 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public String getCountrySearchText() {
+        return countrySearchText;
+    }
+
+    public void setCountrySearchText(String countrySearchText) {
+        this.countrySearchText = countrySearchText;
+    }
+
+    public Country getSelectedCountry() {
+        return selectedCountry;
+    }
+
+    public void setSelectedCountry(Country selectedCountry) {
+        this.selectedCountry = selectedCountry;
+    }
+    
     public List<SystemOption> getSelectedUserSystemOptions() {
-        
+
         if (getSelectedUser().getId() != null) {
             return SystemOption.findByOwnerId(getEntityManager1(),
                     getSelectedUser().getId());
@@ -202,6 +221,9 @@ public final class SystemManager extends GeneralManager {
             case "Categories":
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:categorySearchButton");
                 return true;
+            case "Countries":
+                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:countrySearchButton");
+                return true;    
             case "Document Types":
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:documentTypeSearchButton");
                 return true;
@@ -1113,6 +1135,11 @@ public final class SystemManager extends GeneralManager {
                         searchText);
 
                 break;
+            case "Countries":
+                foundCountries = Country.findCountriesByName(getEntityManager1(),
+                        searchText);
+
+                break;
             case "Document Types":
                 foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
                         searchText);
@@ -1481,6 +1508,18 @@ public final class SystemManager extends GeneralManager {
         this.foundCategories = foundCategories;
     }
 
+    public List<Country> getFoundCountries() {
+        if (foundCountries == null) {
+            foundCountries = Country.findAllCountries(getEntityManager1());
+        }
+
+        return foundCountries;
+    }
+
+    public void setFoundCountries(List<Country> foundCountries) {
+        this.foundCountries = foundCountries;
+    }
+
     public List<Privilege> getFoundActivePrivileges() {
         if (foundActivePrivileges == null) {
             foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(), "");
@@ -1525,6 +1564,17 @@ public final class SystemManager extends GeneralManager {
                 getDateSearchPeriod().getDateField(),
                 "Categories",
                 getCategorySearchText(),
+                null,
+                null);
+    }
+    
+    public void doCountrySearch() {
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Countries",
+                getCountrySearchText(),
                 null,
                 null);
     }
@@ -1625,6 +1675,13 @@ public final class SystemManager extends GeneralManager {
 
     }
 
+    public void createNewCountry() {
+        selectedCountry = new Country();
+
+        editCountry();
+
+    }
+
     public void createNewNotification() {
         selectedNotification = new Notification();
         selectedNotification.setOwnerId(getUser().getId());
@@ -1646,6 +1703,13 @@ public final class SystemManager extends GeneralManager {
     public void saveSelectedCategory() {
 
         selectedCategory.save(getEntityManager1());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void saveSelectedCountry() {
+
+        selectedCountry.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -1816,6 +1880,25 @@ public final class SystemManager extends GeneralManager {
 
     }
 
+    public void editCountry() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("countryDialog", options, null);
+
+    }
+
     public void editDocumentType() {
         openDocumentTypeDialog("documentTypeDialog");
     }
@@ -1863,6 +1946,7 @@ public final class SystemManager extends GeneralManager {
         ldapSearchText = "";
         documentTypeSearchText = "";
         categorySearchText = "";
+        countrySearchText = "";
         notificationSearchText = "";
         privilegeSearchText = "";
         moduleSearchText = "";
@@ -2207,6 +2291,15 @@ public final class SystemManager extends GeneralManager {
 
         PrimeFaces.current().dialog().closeDynamic(null);
 
+    }
+
+    public void createNewSelectedUserSystemOption() {
+        // tk
+        selectedSystemOption = new SystemOption();
+        selectedSystemOption.setOptionValueType("String");
+        selectedSystemOption.setOwnerId(getSelectedUser().getId());
+
+        editSystemOption();
     }
 
     public void createNewSystemOption() {
