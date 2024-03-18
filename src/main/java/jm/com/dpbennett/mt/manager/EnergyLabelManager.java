@@ -262,11 +262,8 @@ public class EnergyLabelManager extends GeneralManager
 
     public void saveEnergyLabel() {
 
-        ReturnMessage returnMessage;
-
-        if (selectedEnergyLabel.getIsDirty()) {
-
-            returnMessage = selectedEnergyLabel.save(getEntityManager3());
+            ReturnMessage returnMessage = selectedEnergyLabel.save(getEntityManager3());
+            
             if (returnMessage.isSuccess()) {
 
                 selectedEnergyLabel.setIsDirty(false);
@@ -281,8 +278,6 @@ public class EnergyLabelManager extends GeneralManager
                         FacesMessage.SEVERITY_ERROR);
 
             }
-
-        }
 
     }
 
