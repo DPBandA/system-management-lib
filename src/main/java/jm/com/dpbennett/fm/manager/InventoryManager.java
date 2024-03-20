@@ -761,9 +761,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<Inventory> completeInventoryItem(String query) {
         try {
-            return Inventory.findAllByName(
+            return Inventory.findActive(
                     getEntityManager1(),
-                    query);
+                    query, 100); // tk
 
         } catch (Exception e) {
             System.out.println(e);
@@ -927,6 +927,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void updateInventory(AjaxBehaviorEvent event) {
         getSelectedInventory().setIsDirty(true);
         getSelectedInventory().setEditStatus("(edited)");
+        getSelectedInventory().setName(getSelectedInventory().getProduct().getName());
 
         getSelectedInventory().addAction(BusinessEntity.Action.EDIT);
 
@@ -1567,9 +1568,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
                             searchText, 0);
                 }
 
-                if (startDate != null) {
-                    openInventoryTab();
-                }
+//                if (startDate != null) {
+//                    openInventoryTab();
+//                }
                 break;
             case "Inventory Products":
                 if (getActiveInventoryProductsOnly()) {
@@ -1580,17 +1581,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
                             getEntityManager1(), searchText, "Inventory");
                 }
 
-                if (startDate != null) {
-                    openInventoryProductBrowser();
-                }
+//                if (startDate != null) {
+//                    openInventoryProductBrowser();
+//                }
                 break;
             case "Inventory Requisitions":
                 foundInventoryRequisitions = InventoryRequisition.find(
                         getEntityManager1(),
                         searchText, 0);
-                if (startDate != null) {
-                    openInventoryRequisitionTab();
-                }
+//                if (startDate != null) {
+//                    openInventoryRequisitionTab();
+//                }
                 break;
             default:
                 break;

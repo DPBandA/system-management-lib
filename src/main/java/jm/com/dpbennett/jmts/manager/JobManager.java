@@ -2841,6 +2841,7 @@ public class JobManager extends GeneralManager
                     getEntityManager1(),
                     "inventoryManager");
             if (module != null) {
+                // tk open inventory products here.
                 getInventoryManager().openInventoryTab();
                 getInventoryManager().openInventoryRequisitionTab();
             }
