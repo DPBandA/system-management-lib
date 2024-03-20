@@ -657,8 +657,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                         searchType,
                         searchText);
 
-                openDocumentBrowser();
-
                 break;
             default:
                 break;

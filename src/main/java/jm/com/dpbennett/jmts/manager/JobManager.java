@@ -78,10 +78,14 @@ import static jm.com.dpbennett.business.entity.util.NumberUtils.formatAsCurrency
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
+import jm.com.dpbennett.fm.manager.InventoryManager;
 import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
+import jm.com.dpbennett.lo.manager.LegalDocumentManager;
+import jm.com.dpbennett.mt.manager.EnergyLabelManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
+import jm.com.dpbennett.sc.manager.ComplianceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import org.primefaces.PrimeFaces;
@@ -929,6 +933,22 @@ public class JobManager extends GeneralManager
 
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
+    }
+
+    public InventoryManager getInventoryManager() {
+        return BeanUtils.findBean("inventoryManager");
+    }
+
+    public LegalDocumentManager getLegalDocumentManager() {
+        return BeanUtils.findBean("legalDocumentManager");
+    }
+    
+    public EnergyLabelManager getEnergyLabelManager() {
+        return BeanUtils.findBean("energyLabelManager");
+    }
+
+    public ComplianceManager getComplianceManager() {
+        return BeanUtils.findBean("complianceManager");
     }
 
     public ArrayList<SelectItem> getAuthorizedSearchTypes() {
@@ -2329,6 +2349,10 @@ public class JobManager extends GeneralManager
         setIsDirty(true);
     }
 
+    public void updateJobSearch() {
+        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+    }
+
     public void updateBillingAddress() {
         setIsDirty(true);
     }
@@ -2771,74 +2795,64 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        // Jobs
-//        if (getUser().hasModule("jobManager")) {
-//            Modules module = Modules.findActiveModuleByName(
-//                    getEntityManager1(),
-//                    "jobManager");
-//            if (module != null) {
-//                getMainTabView().openTab(module.getMainViewTitle());
-//            }
-//        }
-        // Clients
-//        if (getUser().hasModule("clientManager")) {
-//            Modules module = Modules.findActiveModuleByName(
-//                    getEntityManager1(),
-//                    "clientManager");
-//            if (module != null) {
-//                getMainTabView().openTab(module.getMainViewTitle());
-//            }
-//        }
-        // Procurement
-//        if (getUser().hasModule("purchasingManager")) {
-//            Modules module = Modules.findActiveModuleByName(
-//                    getEntityManager1(),
-//                    "purchasingManager");
-//            if (module != null) {
-//                getMainTabView().openTab(module.getDashboardTitle());
-//            }
-//        }
-        // Inventory
-//        if (getUser().hasModule("inventoryManager")) {
-//            Modules module = Modules.findActiveModuleByName(
-//                    getEntityManager1(),
-//                    "inventoryManager");
-//            if (module != null) {
-//                getMainTabView().openTab(module.getDashboardTitle());
-//                getMainTabView().openTab("Inventory Requisitions");
-//            }
-//        }
-        // Legal
-//        if (getUser().hasModule("legalDocumentManager")) {
-//            Modules module = Modules.findActiveModuleByName(
-//                    getEntityManager1(),
-//                    "legalDocumentManager");
-//            if (module != null) {
-//                getMainTabView().openTab(module.getMainViewTitle());
-//            }
-//        }
         // Compliance
         if (getUser().hasModule("complianceManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "complianceManager");
             if (module != null) {
-                getMainTabView().openTab(module.getMainViewTitle());
+                getComplianceManager().openSurveysBrowser();
             }
         }
 
-        //tk open tabs for submodules of JMTS for development and testing
+        // Jobs
         if (getUser().hasModule("jobManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "jobManager");
             if (module != null) {
-                getMainTabView().openTab("Survey Browser");
-                getMainTabView().openTab("Standard Browser");
-                getMainTabView().openTab("Complaint Browser");
-                getMainTabView().openTab("Market Products");
-                getMainTabView().openTab("Manufacturers");
-                getMainTabView().openTab("Factory Inspections");
+                openJobBrowser();
+            }
+        }
+
+        // Clients
+        if (getUser().hasModule("clientManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "clientManager");
+            if (module != null) {
+                getClientManager().openClientsTab();
+            }
+        }
+
+        // Procurement
+        if (getUser().hasModule("purchasingManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "purchasingManager");
+            if (module != null) {
+                getPurchasingManager().openPurchaseReqsTab();
+            }
+        }
+
+        // Inventory
+        if (getUser().hasModule("inventoryManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "inventoryManager");
+            if (module != null) {
+                getInventoryManager().openInventoryTab();
+                getInventoryManager().openInventoryRequisitionTab();
+            }
+        }
+
+        // Legal
+        if (getUser().hasModule("legalDocumentManager")) {
+            Modules module = Modules.findActiveModuleByName(
+                    getEntityManager1(),
+                    "legalDocumentManager");
+            if (module != null) {
+                getLegalDocumentManager().openDocumentBrowser();
             }
         }
 
@@ -2848,11 +2862,9 @@ public class JobManager extends GeneralManager
                     getEntityManager1(),
                     "energyLabelManager");
             if (module != null) {
-                getMainTabView().openTab(module.getMainViewTitle());
+                getEnergyLabelManager().openEnergyLabelBrowser();
             }
         }
-
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
     }
 
