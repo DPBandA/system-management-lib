@@ -218,7 +218,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void updateAllForms() {
-        PrimeFaces.current().ajax().update("appForm");
+        PrimeFaces.current().ajax().update(":appForm");
     }
 
     @Override

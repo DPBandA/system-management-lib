@@ -942,7 +942,7 @@ public class JobManager extends GeneralManager
     public LegalDocumentManager getLegalDocumentManager() {
         return BeanUtils.findBean("legalDocumentManager");
     }
-    
+
     public EnergyLabelManager getEnergyLabelManager() {
         return BeanUtils.findBean("energyLabelManager");
     }
@@ -2790,8 +2790,44 @@ public class JobManager extends GeneralManager
         return getSystemManager().getMainTabView();
     }
 
+    private void openModuleMainTab(String moduleName) {
+
+        if (moduleName != null) {
+            switch (moduleName) {
+                case "complianceManager":
+                    getComplianceManager().openSurveysBrowser();
+                    break;
+                case "jobManager":
+                    openJobBrowser();
+                    break;
+                case "clientManager":
+                    getClientManager().openClientsTab();
+                    break;
+                case "purchasingManager":
+                    getPurchasingManager().openPurchaseReqsTab();
+                    break;
+                case "inventoryManager":
+                    getInventoryManager().openInventoryProductBrowser();
+                    getInventoryManager().openInventoryTab();
+                    getInventoryManager().openInventoryRequisitionTab();
+                    break;
+                case "legalDocumentManager":
+                    getLegalDocumentManager().openDocumentBrowser();
+                    break;
+                case "energyLabelManager":
+                    getEnergyLabelManager().openEnergyLabelBrowser();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     @Override
     public void initMainTabView() {
+
+        String firstModule;
+        firstModule = null;
 
         getMainTabView().reset(getUser());
 
@@ -2801,37 +2837,51 @@ public class JobManager extends GeneralManager
                     getEntityManager1(),
                     "complianceManager");
             if (module != null) {
-                getComplianceManager().openSurveysBrowser();
+                openModuleMainTab("complianceManager");
+
+                if (firstModule == null) {
+                    firstModule = "complianceManager";
+                }
+
             }
         }
-
         // Jobs
         if (getUser().hasModule("jobManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "jobManager");
             if (module != null) {
-                openJobBrowser();
+                openModuleMainTab("jobManager");
+
+                if (firstModule == null) {
+                    firstModule = "jobManager";
+                }
             }
         }
-
         // Clients
         if (getUser().hasModule("clientManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "clientManager");
             if (module != null) {
-                getClientManager().openClientsTab();
+                openModuleMainTab("clientManager");
+
+                if (firstModule == null) {
+                    firstModule = "clientManager";
+                }
             }
         }
-
         // Procurement
         if (getUser().hasModule("purchasingManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "purchasingManager");
             if (module != null) {
-                getPurchasingManager().openPurchaseReqsTab();
+                openModuleMainTab("purchasingManager");
+
+                if (firstModule == null) {
+                    firstModule = "purchasingManager";
+                }
             }
         }
 
@@ -2841,9 +2891,11 @@ public class JobManager extends GeneralManager
                     getEntityManager1(),
                     "inventoryManager");
             if (module != null) {
-                // tk open inventory products here.
-                getInventoryManager().openInventoryTab();
-                getInventoryManager().openInventoryRequisitionTab();
+                openModuleMainTab("inventoryManager");
+
+                if (firstModule == null) {
+                    firstModule = "inventoryManager";
+                }
             }
         }
 
@@ -2853,20 +2905,28 @@ public class JobManager extends GeneralManager
                     getEntityManager1(),
                     "legalDocumentManager");
             if (module != null) {
-                getLegalDocumentManager().openDocumentBrowser();
+                openModuleMainTab("legalDocumentManager");
+
+                if (firstModule == null) {
+                    firstModule = "legalDocumentManager";
+                }
             }
         }
-
         // LabelPrint
         if (getUser().hasModule("energyLabelManager")) {
             Modules module = Modules.findActiveModuleByName(
                     getEntityManager1(),
                     "energyLabelManager");
             if (module != null) {
-                getEnergyLabelManager().openEnergyLabelBrowser();
+                openModuleMainTab("energyLabelManager");
+
+                if (firstModule == null) {
+                    firstModule = "energyLabelManager";
+                }
             }
         }
-
+        
+        openModuleMainTab(firstModule);
     }
 
     @Override
@@ -2894,11 +2954,18 @@ public class JobManager extends GeneralManager
     @Override
     public void completeLogin() {
 
-        super.updateUserActivity("JMTSv"
-                + SystemOption.getString(getEntityManager1(), "JMTSv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            super.updateUserActivity("JMTSv"
+                    + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                    "Logged in");
+            getUser().save(getEntityManager1());
+        }
 
-        super.completeLogin();
+        setManagersUser();
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
 
     }
 
