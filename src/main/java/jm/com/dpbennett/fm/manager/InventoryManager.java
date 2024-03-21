@@ -120,7 +120,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 return true;
             case "Inventory Requisitions":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryRequisitionSearchButton");
-                return true;           
+                return true;
             default:
                 return false;
         }
@@ -703,7 +703,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void openInventoryProductBrowser() {
 
         getFinanceManager().getMainTabView().openTab("Inventory Products");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryProductSearchButton");
     }
 
@@ -909,13 +909,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void openInventoryTab() {
         getMainTabView().openTab("Inventory");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventorySearchButton");
     }
 
     public void openInventoryRequisitionTab() {
         getMainTabView().openTab("Inventory Requisitions");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryRequisitionSearchButton");
     }
 
@@ -1013,11 +1013,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                         + "\nDetail: " + returnMessage.getDetail(),
                         em);
             }
-        } else {
-            PrimeFacesUtils.addMessage("Already Saved",
-                    "This inventory was not saved because it was not modified or it was recently saved",
-                    FacesMessage.SEVERITY_INFO);
-        }
+        } 
 
     }
 
@@ -1043,6 +1039,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 inventoryRequisition.setEditStatus(" ");
 
                 processInventoryRequisitionActions(inventoryRequisition);
+                
             } else {
                 PrimeFacesUtils.addMessage(returnMessage.getHeader(),
                         returnMessage.getMessage(),
@@ -1056,11 +1053,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                         + "\nDetail: " + returnMessage.getDetail(),
                         em);
             }
-        } else {
-            PrimeFacesUtils.addMessage("Already Saved",
-                    "This inventory requisition was not saved because it was not modified or it was recently saved",
-                    FacesMessage.SEVERITY_INFO);
-        }
+        } 
 
     }
 

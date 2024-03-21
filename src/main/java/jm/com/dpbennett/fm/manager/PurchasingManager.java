@@ -706,7 +706,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width("500px")
+                .width("600px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -2042,11 +2042,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         + "\nDetail: " + returnMessage.getDetail(),
                         em);
             }
-        } else {
-            PrimeFacesUtils.addMessage("Already Saved",
-                    "This purchase requisition was not saved because it was not modified or it was recently saved",
-                    FacesMessage.SEVERITY_INFO);
-        }
+        } 
 
     }
 
