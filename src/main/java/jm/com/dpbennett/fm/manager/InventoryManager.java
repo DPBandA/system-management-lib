@@ -928,6 +928,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
         getSelectedInventory().setIsDirty(true);
         getSelectedInventory().setEditStatus("(edited)");
         getSelectedInventory().setName(getSelectedInventory().getProduct().getName());
+        
+        if (!getSelectedInventory().getProduct().getCategories().isEmpty()) {
+            getSelectedInventory().
+                    setInventoryCategory(getSelectedInventory().getProduct().getCategories().get(0));
+        }
 
         getSelectedInventory().addAction(BusinessEntity.Action.EDIT);
 
