@@ -716,7 +716,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .build();
 
         PrimeFaces.current().dialog().openDynamic(
-                "supplierDialog",
+                "/finance/purch/supplierDialog",
                 options, null);
 
     }

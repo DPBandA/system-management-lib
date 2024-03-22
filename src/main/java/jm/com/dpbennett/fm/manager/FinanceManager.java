@@ -55,6 +55,9 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DialogFrameworkOptions;
+import org.primefaces.model.dashboard.DashboardModel;
+import org.primefaces.model.dashboard.DefaultDashboardModel;
+import org.primefaces.model.dashboard.DefaultDashboardWidget;
 
 /**
  *
@@ -62,7 +65,6 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class FinanceManager extends GeneralManager implements Serializable {
 
-    private Integer longProcessProgress;
     private AccountingCode selectedAccountingCode;
     private Tax selectedTax;
     private Discount selectedDiscount;
@@ -109,6 +111,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private List<ProcurementMethod> foundProcurementMethods;
     private ProcurementMethod selectedProcurementMethod;
     private SystemManager systemManager;
+    private static final String RESPONSIVE_CLASS = "col-12 lg:col-6 xl:col-6";
+    private DashboardModel tasksModel;
 
     /**
      * Creates a new instance of FinanceManager.
@@ -123,6 +127,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getMainTabView().reset(getUser());
 
         //getMainTabView().openTab("Financial Administration");
+        
+        //getMainTabView().openTab("Tasks");
+        
         getMainTabView().openTab("Purchase Requisitions");
 
         getMainTabView().openTab("Inventory Products");
@@ -1618,7 +1625,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
 
-        longProcessProgress = 0;
         procurementMethodSearchText = "";
         settingSearchText = "";
         accountingCodeSearchText = "";
@@ -1641,9 +1647,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
         isActiveServicesOnly = true;
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
-
+        
+        tasksModel = new DefaultDashboardModel();
+        tasksModel.addWidget(new DefaultDashboardWidget("pmTasks", RESPONSIVE_CLASS));
+        tasksModel.addWidget(new DefaultDashboardWidget("inventoryTasks", RESPONSIVE_CLASS));
+        //tasksModel.addWidget(new DefaultDashboardWidget("financeTasks", RESPONSIVE_CLASS));
+      
     }
 
+    public DashboardModel getTasksModel() {
+        return tasksModel;
+    }
+
+    public void setTasksModel(DashboardModel tasksModel) {
+        this.tasksModel = tasksModel;
+    }
+    
     @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();

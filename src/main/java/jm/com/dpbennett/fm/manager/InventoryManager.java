@@ -928,7 +928,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         getSelectedInventory().setIsDirty(true);
         getSelectedInventory().setEditStatus("(edited)");
         getSelectedInventory().setName(getSelectedInventory().getProduct().getName());
-        
+
         if (!getSelectedInventory().getProduct().getCategories().isEmpty()) {
             getSelectedInventory().
                     setInventoryCategory(getSelectedInventory().getProduct().getCategories().get(0));
@@ -1018,7 +1018,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                         + "\nDetail: " + returnMessage.getDetail(),
                         em);
             }
-        } 
+        }
 
     }
 
@@ -1034,37 +1034,33 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        if (inventoryRequisition.getIsDirty()) {
-            ReturnMessage returnMessage;
+        ReturnMessage returnMessage = inventoryRequisition.prepareAndSave(em, getUser());
 
-            returnMessage = inventoryRequisition.prepareAndSave(em, getUser());
+        if (returnMessage.isSuccess()) {
+            PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
+            inventoryRequisition.setEditStatus(" ");
 
-            if (returnMessage.isSuccess()) {
-                PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
-                inventoryRequisition.setEditStatus(" ");
+            processInventoryRequisitionActions(inventoryRequisition);
 
-                processInventoryRequisitionActions(inventoryRequisition);
-                
-            } else {
-                PrimeFacesUtils.addMessage(returnMessage.getHeader(),
-                        returnMessage.getMessage(),
-                        FacesMessage.SEVERITY_ERROR);
+        } else {
+            PrimeFacesUtils.addMessage(returnMessage.getHeader(),
+                    returnMessage.getMessage(),
+                    FacesMessage.SEVERITY_ERROR);
 
-                MailUtils.sendErrorEmail("An error occurred while saving an inventory requisition! - "
-                        + returnMessage.getHeader(),
-                        "Inventory Requisition: " + inventoryRequisition.getCode()
-                        + "\nJMTS User: " + getUser().getUsername()
-                        + "\nDate/time: " + new Date()
-                        + "\nDetail: " + returnMessage.getDetail(),
-                        em);
-            }
-        } 
+            MailUtils.sendErrorEmail("An error occurred while saving an inventory requisition! - "
+                    + returnMessage.getHeader(),
+                    "Inventory Requisition: " + inventoryRequisition.getCode()
+                    + "\nJMTS User: " + getUser().getUsername()
+                    + "\nDate/time: " + new Date()
+                    + "\nDetail: " + returnMessage.getDetail(),
+                    em);
+        }
 
     }
 
     public void saveSelectedInventoryRequisition() {
         saveInventoryRequisition(getSelectedInventoryRequisition(),
-                "Saved", "Inventory was saved");
+                "Saved", "Inventory Requisition was saved");
     }
 
     private void notifyUserReInventory(EntityManager em,
