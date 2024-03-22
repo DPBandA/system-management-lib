@@ -1521,7 +1521,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 }
             }
         } catch (Exception e) {
-           
+
             System.out.println("Error sending PR email(s): " + e);
         }
 
@@ -2019,30 +2019,26 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        if (purchaseRequisition.getIsDirty()) {
-            ReturnMessage returnMessage;
+        ReturnMessage returnMessage = purchaseRequisition.prepareAndSave(em, getUser());
 
-            returnMessage = purchaseRequisition.prepareAndSave(em, getUser());
+        if (returnMessage.isSuccess()) {
+            PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
+            purchaseRequisition.setEditStatus(" ");
 
-            if (returnMessage.isSuccess()) {
-                PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
-                purchaseRequisition.setEditStatus(" ");
+            processPRActions(purchaseRequisition, getUser());
+        } else {
+            PrimeFacesUtils.addMessage(returnMessage.getHeader(),
+                    returnMessage.getMessage(),
+                    FacesMessage.SEVERITY_ERROR);
 
-                processPRActions(purchaseRequisition, getUser());
-            } else {
-                PrimeFacesUtils.addMessage(returnMessage.getHeader(),
-                        returnMessage.getMessage(),
-                        FacesMessage.SEVERITY_ERROR);
-
-                MailUtils.sendErrorEmail("An error occurred while saving a purchase requisition! - "
-                        + returnMessage.getHeader(),
-                        "Purchase requisition number: " + purchaseRequisition.getNumber()
-                        + "\nJMTS User: " + getUser().getUsername()
-                        + "\nDate/time: " + new Date()
-                        + "\nDetail: " + returnMessage.getDetail(),
-                        em);
-            }
-        } 
+            MailUtils.sendErrorEmail("An error occurred while saving a purchase requisition! - "
+                    + returnMessage.getHeader(),
+                    "Purchase requisition number: " + purchaseRequisition.getNumber()
+                    + "\nJMTS User: " + getUser().getUsername()
+                    + "\nDate/time: " + new Date()
+                    + "\nDetail: " + returnMessage.getDetail(),
+                    em);
+        }
 
     }
 
@@ -2720,9 +2716,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
 
-        // Do not allow originator to recommend
         if (purchaseRequisition.getOriginator().
-                equals(getUser().getEmployee())) {
+                equals(getUser().getEmployee()) && !getUser().can("RecommendPurchaseRequisition")) {
 
             PrimeFacesUtils.addMessage("Cannot Recommend",
                     "The originator cannot recommend approval of this purchase requisition",
