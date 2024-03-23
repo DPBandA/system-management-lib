@@ -995,29 +995,25 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        if (inventory.getIsDirty()) {
-            ReturnMessage returnMessage;
+        ReturnMessage returnMessage = inventory.prepareAndSave(em, getUser());
 
-            returnMessage = inventory.prepareAndSave(em, getUser());
+        if (returnMessage.isSuccess()) {
+            PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
+            inventory.setEditStatus(" ");
 
-            if (returnMessage.isSuccess()) {
-                PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);
-                inventory.setEditStatus(" ");
+            processInventoryActions(inventory);
+        } else {
+            PrimeFacesUtils.addMessage(returnMessage.getHeader(),
+                    returnMessage.getMessage(),
+                    FacesMessage.SEVERITY_ERROR);
 
-                processInventoryActions(inventory);
-            } else {
-                PrimeFacesUtils.addMessage(returnMessage.getHeader(),
-                        returnMessage.getMessage(),
-                        FacesMessage.SEVERITY_ERROR);
-
-                MailUtils.sendErrorEmail("An error occurred while saving an inventory! - "
-                        + returnMessage.getHeader(),
-                        "Inventory: " + inventory.getProduct().getName()
-                        + "\nJMTS User: " + getUser().getUsername()
-                        + "\nDate/time: " + new Date()
-                        + "\nDetail: " + returnMessage.getDetail(),
-                        em);
-            }
+            MailUtils.sendErrorEmail("An error occurred while saving an inventory! - "
+                    + returnMessage.getHeader(),
+                    "Inventory: " + inventory.getProduct().getName()
+                    + "\nJMTS User: " + getUser().getUsername()
+                    + "\nDate/time: " + new Date()
+                    + "\nDetail: " + returnMessage.getDetail(),
+                    em);
         }
 
     }

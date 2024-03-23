@@ -128,9 +128,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         //getMainTabView().openTab("Financial Administration");
         
-        //getMainTabView().openTab("Tasks");
+        getMainTabView().openTab("Dashboard");
         
-        getMainTabView().openTab("Purchase Requisitions");
+        //getMainTabView().openTab("Purchase Requisitions");
 
         getMainTabView().openTab("Inventory Products");
 
@@ -139,7 +139,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         getMainTabView().openTab("Inventory Requisitions");
 
-        getMainTabView().openTab("Suppliers");
+        //getMainTabView().openTab("Suppliers");
 
         //getMainTabView().openTab("System Administration");
     }
