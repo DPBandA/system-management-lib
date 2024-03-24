@@ -112,7 +112,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private ProcurementMethod selectedProcurementMethod;
     private SystemManager systemManager;
     private static final String RESPONSIVE_CLASS = "col-12 lg:col-6 xl:col-6";
-    private DashboardModel tasksModel;
+    private DashboardModel dashboardModel;
 
     /**
      * Creates a new instance of FinanceManager.
@@ -126,9 +126,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         getMainTabView().reset(getUser());
 
+        // tk use open*() after checking for module access or privilege.
+        
         //getMainTabView().openTab("Financial Administration");
         
-        getMainTabView().openTab("Dashboard");
+        //getMainTabView().openTab("Dashboard");
         
         //getMainTabView().openTab("Purchase Requisitions");
 
@@ -1648,19 +1650,18 @@ public class FinanceManager extends GeneralManager implements Serializable {
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
         
-        tasksModel = new DefaultDashboardModel();
-        tasksModel.addWidget(new DefaultDashboardWidget("pmTasks", RESPONSIVE_CLASS));
-        tasksModel.addWidget(new DefaultDashboardWidget("inventoryTasks", RESPONSIVE_CLASS));
-        //tasksModel.addWidget(new DefaultDashboardWidget("financeTasks", RESPONSIVE_CLASS));
+        dashboardModel = new DefaultDashboardModel();
+        dashboardModel.addWidget(new DefaultDashboardWidget("procurementTasks", RESPONSIVE_CLASS));
+        dashboardModel.addWidget(new DefaultDashboardWidget("inventoryTasks", RESPONSIVE_CLASS));
       
     }
 
-    public DashboardModel getTasksModel() {
-        return tasksModel;
+    public DashboardModel getDashboardModel() {
+        return dashboardModel;
     }
 
-    public void setTasksModel(DashboardModel tasksModel) {
-        this.tasksModel = tasksModel;
+    public void setDashboardModel(DashboardModel dashboardModel) {
+        this.dashboardModel = dashboardModel;
     }
     
     @Override
