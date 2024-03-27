@@ -107,6 +107,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     private Boolean edit;
     private String purchaseReqSearchText;
     private List<PurchaseRequisition> foundPurchaseReqs;
+    private List<PurchaseRequisition> procurementTasks;
     private Long searchDepartmentId;
     private List<Employee> toEmployees;
     private String purchaseReqEmailSubject;
@@ -126,6 +127,39 @@ public class PurchasingManager extends GeneralManager implements Serializable {
      */
     public PurchasingManager() {
         init();
+    }
+
+    public List<PurchaseRequisition> getProcurementTasks() {
+
+        EntityManager em = getEntityManager1();
+        procurementTasks = new ArrayList<>();
+        List<PurchaseRequisition> activePRs
+                = PurchaseRequisition.findAllActive(em, 5);
+
+        for (PurchaseRequisition activePR : activePRs) {
+
+            // tk check that the PR is not already in the list before adding it.
+            // Add the orginator's PRs
+            if (activePR.getOriginator().equals(getUser().getEmployee())) {
+                procurementTasks.add(activePR);
+
+                //break;
+            } else {
+                // Add PRs for persons with various positions
+                List<String> PRApproverPositions = (List<String>) SystemOption.
+                        getOptionValueObject(em, "PRApproverPositions");
+                for (String position : PRApproverPositions) {
+                    if (getUser().getEmployee().hasEmploymentPosition(position)) {
+                        procurementTasks.add(activePR);
+
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        return procurementTasks;
     }
 
     public Integer getDialogHeight() {
@@ -2286,11 +2320,14 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     FacesMessage.SEVERITY_WARN);
             PrimeFaces.current().ajax().update("appForm:growl3");
 
-        } else {
+        }
+        /*
+        else {
             if (!getPurchaseReqSearchText().isEmpty()) {
-                //doPurchaseReqSearch();
+                doPurchaseReqSearch();
             }
         }
+         */
     }
 
     public void createNewPurhaseReqSupplier() {
@@ -2320,7 +2357,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public List<PurchaseRequisition> getFoundPurchaseReqs() {
         if (foundPurchaseReqs == null) {
-            //doPurchaseReqSearch();
+
             foundPurchaseReqs = new ArrayList<>();
         }
         return foundPurchaseReqs;

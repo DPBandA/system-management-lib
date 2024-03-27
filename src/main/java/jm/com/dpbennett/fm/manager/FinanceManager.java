@@ -120,23 +120,30 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public FinanceManager() {
         init();
     }
+    
+     public void openDashboardTab() {
+        
+         getMainTabView().openTab("Dashboard");
+         
+    }
 
     @Override
     public void initMainTabView() {
 
         getMainTabView().reset(getUser());
 
-        // tk use open*() after checking for module access or privilege.
+        // tk use open*() after checking for module access or privilege as is done in JMTS.
         
         //getMainTabView().openTab("Financial Administration");
         
-        //getMainTabView().openTab("Dashboard");
+        //openDashboardTab();        
         
         //getMainTabView().openTab("Purchase Requisitions");
 
-        getMainTabView().openTab("Inventory Products");
+        //getMainTabView().openTab("Inventory Products");
 
         //getMainTabView().openTab("Market Products");
+        
         getMainTabView().openTab("Inventory");
 
         getMainTabView().openTab("Inventory Requisitions");

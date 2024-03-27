@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.manager;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.sql.Connection;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,6 +93,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     private List<Inventory> foundInventories;
     private List<Inventory> foundActiveInventories;
     private List<InventoryRequisition> foundInventoryRequisitions;
+    private List<InventoryRequisition> inventoryTasks;
     private List<MarketProduct> foundInventoryProducts;
     private Boolean activeInventoryOnly;
     private Boolean activeInventoryProductsOnly;
@@ -102,6 +104,30 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public InventoryManager() {
         init();
+    }
+
+    public List<InventoryRequisition> getInventoryTasks() {
+
+        EntityManager em = getEntityManager1();
+        inventoryTasks = new ArrayList<>();
+        List<InventoryRequisition> activeIRs
+                = InventoryRequisition.findAllActive(em, 5);
+
+        for (InventoryRequisition activeIR : activeIRs) {
+            if (getUser().getEmployee().equals(activeIR.getContactPerson())
+                    || getUser().getEmployee().equals(activeIR.getRequisitionApprovedBy())
+                    || getUser().getEmployee().equals(activeIR.getInventoryReceivedBy())
+                    || getUser().getEmployee().equals(activeIR.getRequisitionBy())
+                    || getUser().getEmployee().equals(activeIR.getEnteredBy())
+                    || getUser().getEmployee().equals(activeIR.getEditedBy())
+                    || getUser().getEmployee().equals(activeIR.getInventoryIssuedBy())) {
+                
+                inventoryTasks.add(activeIR);
+
+            }
+        }
+
+        return inventoryTasks;
     }
 
     public SystemManager getSystemManager() {
@@ -461,6 +487,28 @@ public class InventoryManager extends GeneralManager implements Serializable {
         updateDisbursement(getSelectedInventoryDisbursement());
     }
 
+    public void updateSelectedDisbursementInventoryItem() {
+
+        Double unitPrice = 0.0;
+
+        getSelectedInventoryDisbursement()
+                .setDescription(getSelectedInventoryDisbursement().getInventory().getName() + ".");
+
+        // tk Get unit price based on method of disbursement
+        
+        // Get based on LIFO
+        List<CostComponent> cc = getSelectedInventoryDisbursement().
+                getInventory().getAllSortedCostComponents();
+        if (!cc.isEmpty()) {
+            unitPrice = cc.get(cc.size() - 1).getRate();
+            getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+        } else {
+            getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+        }
+
+        updateDisbursement(getSelectedInventoryDisbursement());
+    }
+
     public void cancelDisbursementEdit() {
         selectedInventoryDisbursement.setIsDirty(false);
     }
@@ -763,7 +811,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         try {
             return Inventory.findActive(
                     getEntityManager1(),
-                    query, 100); // tk
+                    query, 105); // tk set max results from system option.
 
         } catch (Exception e) {
             System.out.println(e);
