@@ -397,7 +397,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void addNewDisbursement() {
 
         selectedInventoryDisbursement = new InventoryDisbursement();
-
+        
+        selectedInventoryDisbursement.updateCostComponent();
+        
         setEdit(false);
 
     }
