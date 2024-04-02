@@ -2830,6 +2830,9 @@ public class JobManager extends GeneralManager
         firstModule = null;
 
         getMainTabView().reset(getUser());
+        
+        // tk to be replaced by JMTS dashboard tab.
+        getFinanceManager().openDashboardTab();
 
         // Compliance
         if (getUser().hasModule("complianceManager")) {
