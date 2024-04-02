@@ -43,6 +43,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import org.primefaces.PrimeFaces;
 import java.util.Objects;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItemGroup;
 import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.fm.Inventory;
@@ -121,7 +122,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     || getUser().getEmployee().equals(activeIR.getEnteredBy())
                     || getUser().getEmployee().equals(activeIR.getEditedBy())
                     || getUser().getEmployee().equals(activeIR.getInventoryIssuedBy())) {
-                
+
                 inventoryTasks.add(activeIR);
 
             }
@@ -397,9 +398,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void addNewDisbursement() {
 
         selectedInventoryDisbursement = new InventoryDisbursement();
-        
+
         selectedInventoryDisbursement.updateCostComponent();
-        
+
         setEdit(false);
 
     }
@@ -489,6 +490,25 @@ public class InventoryManager extends GeneralManager implements Serializable {
         updateDisbursement(getSelectedInventoryDisbursement());
     }
 
+    public void updateSelectedDisbursementQuantitySupplied(AjaxBehaviorEvent event) {
+
+        // tk
+        System.out.println("ajax: " + event);
+//        System.out.println("New val: " + event.getNewValue());
+
+        updateDisbursement(getSelectedInventoryDisbursement());
+    }
+
+    public void updateSelectedDisbursementQuantitySupplied(ValueChangeEvent event) {
+        // tk
+        System.out.println("Old val: " + event.getOldValue());
+        System.out.println("New val: " + event.getNewValue());
+        
+        PrimeFacesUtils.addMessage("S. Qty",
+                    "Old val: " + event.getOldValue() + " New val: " + event.getNewValue(),
+                    FacesMessage.SEVERITY_WARN);
+    }
+
     public void updateSelectedDisbursementInventoryItem() {
 
         Double unitPrice = 0.0;
@@ -497,7 +517,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .setDescription(getSelectedInventoryDisbursement().getInventory().getName() + ".");
 
         // tk Get unit price based on method of disbursement
-        
         // Get based on LIFO
         List<CostComponent> cc = getSelectedInventoryDisbursement().
                 getInventory().getAllSortedCostComponents();
@@ -509,6 +528,14 @@ public class InventoryManager extends GeneralManager implements Serializable {
         }
 
         updateDisbursement(getSelectedInventoryDisbursement());
+    }
+
+    public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
+
+        inventoryDisbursement.update();
+
+        inventoryDisbursement.setIsDirty(true);
+
     }
 
     public void cancelDisbursementEdit() {
@@ -525,14 +552,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
         updateInventoryRequisition(null);
 
         PrimeFaces.current().executeScript("PF('inventoryDisbursementDialog').hide();");
-    }
-
-    public void updateDisbursement(InventoryDisbursement inventoryDisbursement) {
-
-        inventoryDisbursement.update();
-
-        inventoryDisbursement.setIsDirty(true);
-
     }
 
     public void updateCostType() {
