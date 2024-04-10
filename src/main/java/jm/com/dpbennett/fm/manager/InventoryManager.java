@@ -492,21 +492,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void updateSelectedDisbursementQuantitySupplied(AjaxBehaviorEvent event) {
 
-        // tk
-        System.out.println("ajax: " + event);
-//        System.out.println("New val: " + event.getNewValue());
-
         updateDisbursement(getSelectedInventoryDisbursement());
-    }
-
-    public void updateSelectedDisbursementQuantitySupplied(ValueChangeEvent event) {
-        // tk
-        System.out.println("Old val: " + event.getOldValue());
-        System.out.println("New val: " + event.getNewValue());
-        
-        PrimeFacesUtils.addMessage("S. Qty",
-                    "Old val: " + event.getOldValue() + " New val: " + event.getNewValue(),
-                    FacesMessage.SEVERITY_WARN);
     }
 
     public void updateSelectedDisbursementInventoryItem() {
@@ -516,15 +502,36 @@ public class InventoryManager extends GeneralManager implements Serializable {
         getSelectedInventoryDisbursement()
                 .setDescription(getSelectedInventoryDisbursement().getInventory().getName() + ".");
 
-        // tk Get unit price based on method of disbursement
-        // Get based on LIFO
         List<CostComponent> cc = getSelectedInventoryDisbursement().
-                getInventory().getAllSortedCostComponents();
-        if (!cc.isEmpty()) {
-            unitPrice = cc.get(cc.size() - 1).getRate();
-            getSelectedInventoryDisbursement().setUnitCost(unitPrice);
-        } else {
-            getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                getInventory().getAllCostComponentsSortedByCostDate();
+
+        switch (getSelectedInventoryDisbursement().
+                getInventory().getDisbursementMethod()) {
+
+            case "FIFO":
+                if (!cc.isEmpty()) {
+                    unitPrice = cc.get(0).getRate();
+                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                } else {
+                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                }
+                break;
+            case "LIFO":
+                if (!cc.isEmpty()) {
+                    unitPrice = cc.get(cc.size() - 1).getRate();
+                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                } else {
+                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                }
+                break;
+            default:
+                if (!cc.isEmpty()) {
+                    unitPrice = cc.get(0).getRate();
+                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                } else {
+                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
+                }
+                break;
         }
 
         updateDisbursement(getSelectedInventoryDisbursement());
@@ -1473,12 +1480,21 @@ public class InventoryManager extends GeneralManager implements Serializable {
         doInventoryRequisitionSearch();
     }
 
+    public List<SelectItem> getInventoryDisbursementMethods() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "inventoryDisbursementMethods");
+    }
+
     public void createNewInventory() {
 
         selectedInventory = new Inventory();
         selectedInventory.setType("None");
         selectedInventory.setDateAcquired(new Date());
         selectedInventory.setMeasurementUnit("each");
+        selectedInventory.setDisbursementMethod(SystemOption.getString(
+                getEntityManager1(),
+                "defaultInventoryDisbursementMethod"));
 
         openInventoryTab();
 
