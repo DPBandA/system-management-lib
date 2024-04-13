@@ -22,7 +22,6 @@ package jm.com.dpbennett.fm.manager;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import org.primefaces.PrimeFaces;
 import java.util.Objects;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItemGroup;
 import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.fm.Inventory;
@@ -105,6 +103,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public InventoryManager() {
         init();
+    }
+    
+    public List<SelectItem> getInventoryLocations() {
+
+        return getStringListAsSelectItems(getEntityManager1(), "inventoryLocations");
     }
 
     public List<InventoryRequisition> getInventoryTasks() {
@@ -508,14 +511,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
         switch (getSelectedInventoryDisbursement().
                 getInventory().getDisbursementMethod()) {
 
-            case "FIFO":
-                if (!cc.isEmpty()) {
-                    unitPrice = cc.get(0).getRate();
-                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
-                } else {
-                    getSelectedInventoryDisbursement().setUnitCost(unitPrice);
-                }
-                break;
             case "LIFO":
                 if (!cc.isEmpty()) {
                     unitPrice = cc.get(cc.size() - 1).getRate();
@@ -524,6 +519,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     getSelectedInventoryDisbursement().setUnitCost(unitPrice);
                 }
                 break;
+            case "FIFO":
             default:
                 if (!cc.isEmpty()) {
                     unitPrice = cc.get(0).getRate();

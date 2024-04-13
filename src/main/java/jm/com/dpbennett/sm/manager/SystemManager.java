@@ -146,7 +146,7 @@ public final class SystemManager extends GeneralManager {
     public void setSelectedCountry(Country selectedCountry) {
         this.selectedCountry = selectedCountry;
     }
-    
+
     public List<SystemOption> getSelectedUserSystemOptions() {
 
         if (getSelectedUser().getId() != null) {
@@ -223,7 +223,7 @@ public final class SystemManager extends GeneralManager {
                 return true;
             case "Countries":
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:countrySearchButton");
-                return true;    
+                return true;
             case "Document Types":
                 setDefaultCommandTarget(":appForm:mainTabView:centerTabView:documentTypeSearchButton");
                 return true;
@@ -1357,8 +1357,10 @@ public final class SystemManager extends GeneralManager {
 
         List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
 
-        for (String name : stringList) {
-            list.add(new SelectItem(name, name));
+        if (stringList != null) {
+            for (String name : stringList) {
+                list.add(new SelectItem(name, name));
+            }
         }
 
         return list;
@@ -1567,7 +1569,7 @@ public final class SystemManager extends GeneralManager {
                 null,
                 null);
     }
-    
+
     public void doCountrySearch() {
 
         doDefaultSearch(
@@ -1706,7 +1708,7 @@ public final class SystemManager extends GeneralManager {
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void saveSelectedCountry() {
 
         selectedCountry.save(getEntityManager1());
