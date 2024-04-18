@@ -66,29 +66,23 @@ import java.util.Calendar;
 import java.util.Objects;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItemGroup;
-import javax.naming.ldap.LdapContext;
 import jm.com.dpbennett.business.entity.fm.CashPayment;
 import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Division;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
-import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.file.UploadedFile;
@@ -1335,12 +1329,16 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             Employee approver) {
 
         // Check if the PR was recommended
-        if (!purchaseRequisition.hasRecommender()) {
-            return false;
-        }
-
+        // NB: This is always true for now until it is decided if this check is 
+        // to be done any at all.
+        //if (!purchaseRequisition.hasRecommender()) {
+        //    return false;
+        //}
+        
+        // Add approver if user has TEAM LEADER position
         if ((purchaseRequisition.getApprover1() == null)
-                && (purchaseRequisition.getRecommender1() == null)) {
+                && (purchaseRequisition.getRecommender1() == null)
+                && (approver.hasEmploymentPosition("Team Leader"))) {
 
             purchaseRequisition.setApprover1(approver);
             purchaseRequisition.setApprovalOrRecommendationDate1(new Date());
@@ -1349,8 +1347,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+        
+        // Add approver if user has DIVISIONAL MANAGER position
         if ((purchaseRequisition.getApprover2() == null)
-                && (purchaseRequisition.getRecommender2() == null)) {
+                && (purchaseRequisition.getRecommender2() == null)
+                && (approver.hasEmploymentPosition("Divisional Manager"))) {
 
             purchaseRequisition.setApprover2(approver);
             purchaseRequisition.setApprovalOrRecommendationDate2(new Date());
@@ -1359,8 +1360,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+        
+        // Add approver if user has DIVISIONAL DIRECTOR position
         if ((purchaseRequisition.getApprover3() == null)
-                && (purchaseRequisition.getRecommender3() == null)) {
+                && (purchaseRequisition.getRecommender3() == null)
+                && (approver.hasEmploymentPosition("Divisional Director"))) {
 
             purchaseRequisition.setApprover3(approver);
             purchaseRequisition.setApprovalOrRecommendationDate3(new Date());
@@ -1369,8 +1373,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+        
+        // Add approver if user has FINANCE MANAGER position
         if ((purchaseRequisition.getApprover4() == null)
-                && (purchaseRequisition.getRecommender4() == null)) {
+                && (purchaseRequisition.getRecommender4() == null)
+                && (approver.hasEmploymentPosition("Finance Manager"))) {
 
             purchaseRequisition.setApprover4(approver);
             purchaseRequisition.setApprovalOrRecommendationDate4(new Date());
@@ -1379,8 +1386,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+        
+        // Add approver if user has EXECUTIVE DIRECTOR position
         if ((purchaseRequisition.getApprover5() == null)
-                && (purchaseRequisition.getRecommender5() == null)) {
+                && (purchaseRequisition.getRecommender5() == null)
+                && (approver.hasEmploymentPosition("Executive Director"))) {
 
             purchaseRequisition.setApprover5(approver);
             purchaseRequisition.setApprovalOrRecommendationDate5(new Date());
@@ -1397,8 +1407,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public Boolean addRecommender(PurchaseRequisition purchaseRequisition,
             Employee recommender) {
 
+        // Add recommender if user has TEAM LEADER position
         if ((purchaseRequisition.getRecommender1() == null)
-                && (purchaseRequisition.getApprover1() == null)) {
+                && (purchaseRequisition.getApprover1() == null)
+                && (recommender.hasEmploymentPosition("Team Leader"))) {
 
             purchaseRequisition.setRecommender1(recommender);
             purchaseRequisition.setApprovalOrRecommendationDate1(new Date());
@@ -1407,8 +1419,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+
+        // Add recommender if user has DIVISIONAL MANAGER position
         if ((purchaseRequisition.getRecommender2() == null)
-                && (purchaseRequisition.getApprover2() == null)) {
+                && (purchaseRequisition.getApprover2() == null)
+                && (recommender.hasEmploymentPosition("Divisional Manager"))) {
 
             purchaseRequisition.setRecommender2(recommender);
             purchaseRequisition.setApprovalOrRecommendationDate2(new Date());
@@ -1417,8 +1432,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+
+        // Add recommender if user has DIVISIONAL DIRECTOR position
         if ((purchaseRequisition.getRecommender3() == null)
-                && (purchaseRequisition.getApprover3() == null)) {
+                && (purchaseRequisition.getApprover3() == null)
+                && (recommender.hasEmploymentPosition("Divisional Director"))) {
 
             purchaseRequisition.setRecommender3(recommender);
             purchaseRequisition.setApprovalOrRecommendationDate3(new Date());
@@ -1427,8 +1445,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+
+        // Add recommender if user has FINANCE MANAGER position
         if ((purchaseRequisition.getRecommender4() == null)
-                && (purchaseRequisition.getApprover4() == null)) {
+                && (purchaseRequisition.getApprover4() == null)
+                && (recommender.hasEmploymentPosition("Finance Manager"))) {
 
             purchaseRequisition.setRecommender4(recommender);
             purchaseRequisition.setApprovalOrRecommendationDate4(new Date());
@@ -1437,8 +1458,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
+
+        // Add recommender if user has EXECUTIVE DIRECTOR position
         if ((purchaseRequisition.getRecommender5() == null)
-                && (purchaseRequisition.getApprover5() == null)) {
+                && (purchaseRequisition.getApprover5() == null)
+                && (recommender.hasEmploymentPosition("Executive Director"))) {
 
             purchaseRequisition.setRecommender5(recommender);
             purchaseRequisition.setApprovalOrRecommendationDate5(new Date());
@@ -1677,66 +1701,47 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             // Set recommenders, recommendation dates and recommenders' position
             if (getSelectedPurchaseRequisition().getRecommender1() != null) {
-                parameters.put("approverOrRecommenderTitle1",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getRecommender1().getPositions()).
-                                getTitle());
-                parameters.put("recommender1",
+                parameters.put("teamLeaderRecommendation",
                         getSelectedPurchaseRequisition().getRecommender1().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getRecommender1().getLastName());
-                parameters.put("approvalOrRecommendationDate1",
+                parameters.put("teamLeaderApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate1()));
 
             }
+            
             if (getSelectedPurchaseRequisition().getRecommender2() != null) {
-                parameters.put("approverOrRecommenderTitle2",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getRecommender2().getPositions()).
-                                getTitle());
-                parameters.put("recommender2",
+                parameters.put("divisionalManagerRecommendation",
                         getSelectedPurchaseRequisition().getRecommender2().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getRecommender2().getLastName());
-                parameters.put("approvalOrRecommendationDate2",
+                parameters.put("divisionalManagerApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate2()));
 
             }
             if (getSelectedPurchaseRequisition().getRecommender3() != null) {
-                parameters.put("approverOrRecommenderTitle3",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getRecommender3().getPositions()).
-                                getTitle());
-                parameters.put("recommender3",
+                parameters.put("divisionalDirectorRecommendation",
                         getSelectedPurchaseRequisition().getRecommender3().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getRecommender3().getLastName());
-                parameters.put("approvalOrRecommendationDate3",
+                parameters.put("divisionalDirectorApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate3()));
 
             }
             if (getSelectedPurchaseRequisition().getRecommender4() != null) {
-                parameters.put("approverOrRecommenderTitle4",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getRecommender4().getPositions()).
-                                getTitle());
-                parameters.put("recommender4",
+                parameters.put("financeManagerRecommendation",
                         getSelectedPurchaseRequisition().getRecommender4().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getRecommender4().getLastName());
-                parameters.put("approvalOrRecommendationDate4",
+                parameters.put("financeManagerApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate4()));
 
             }
             if (getSelectedPurchaseRequisition().getRecommender5() != null) {
-                parameters.put("approverOrRecommenderTitle5",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getRecommender5().getPositions()).
-                                getTitle());
-                parameters.put("recommender5",
+                parameters.put("executiveDirectorRecommendation",
                         getSelectedPurchaseRequisition().getRecommender5().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getRecommender5().getLastName());
-                parameters.put("approvalOrRecommendationDate5",
+                parameters.put("executiveDirectorApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate5()));
 
@@ -1744,63 +1749,43 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             // Set approvers, approval dates and approvers' position
             if (getSelectedPurchaseRequisition().getApprover1() != null) {
-                parameters.put("approverOrRecommenderTitle1",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getApprover1().getPositions()).
-                                getTitle());
-                parameters.put("approver1",
+                parameters.put("teamLeaderApproval",
                         getSelectedPurchaseRequisition().getApprover1().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getApprover1().getLastName());
-                parameters.put("approvalOrRecommendationDate1",
+                parameters.put("teamLeaderApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate1()));
 
             }
             if (getSelectedPurchaseRequisition().getApprover2() != null) {
-                parameters.put("approverOrRecommenderTitle2",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getApprover2().getPositions()).
-                                getTitle());
-                parameters.put("approver2",
+                parameters.put("divisionalManagerApproval",
                         getSelectedPurchaseRequisition().getApprover2().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getApprover2().getLastName());
-                parameters.put("approvalOrRecommendationDate2",
+                parameters.put("divisionalManagerApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().getApprovalOrRecommendationDate2()));
 
             }
             if (getSelectedPurchaseRequisition().getApprover3() != null) {
-                parameters.put("approverOrRecommenderTitle3",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getApprover3().getPositions()).
-                                getTitle());
-                parameters.put("approver3",
+                parameters.put("divisionalDirectorApproval",
                         getSelectedPurchaseRequisition().getApprover3().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getApprover3().getLastName());
-                parameters.put("approvalOrRecommendationDate3",
+                parameters.put("divisionalDirectorApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().getApprovalOrRecommendationDate3()));
 
             }
             if (getSelectedPurchaseRequisition().getApprover4() != null) {
-                parameters.put("approverOrRecommenderTitle4",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getApprover4().getPositions()).
-                                getTitle());
-                parameters.put("approver4",
+                parameters.put("financeManagerApproval",
                         getSelectedPurchaseRequisition().getApprover4().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getApprover4().getLastName());
-                parameters.put("approvalOrRecommendationDate4",
+                parameters.put("financeManagerApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().getApprovalOrRecommendationDate4()));
 
             }
             if (getSelectedPurchaseRequisition().getApprover5() != null) {
-                parameters.put("approverOrRecommenderTitle5",
-                        getApprovalOrRecommendationPosition(getSelectedPurchaseRequisition(),
-                                getSelectedPurchaseRequisition().getApprover5().getPositions()).
-                                getTitle());
-                parameters.put("approver5",
+                parameters.put("executiveDirectorApproval",
                         getSelectedPurchaseRequisition().getApprover5().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getApprover5().getLastName());
-                parameters.put("approvalOrRecommendationDate5",
+                parameters.put("executiveDirectorApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().getApprovalOrRecommendationDate5()));
 
             }
@@ -2753,6 +2738,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
 
+        // Check if originator can recommend
         if (purchaseRequisition.getOriginator().
                 equals(getUser().getEmployee()) && !getUser().can("RecommendPurchaseRequisition")) {
 
@@ -2770,7 +2756,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             if (!addRecommender(purchaseRequisition, getUser().getEmployee())) {
                 PrimeFacesUtils.addMessage("Not Recommended",
-                        "The maximum number of recommenders was reached for this purchase requisition",
+                        "The maximum number of recommenders was reached for this purchase requisition " 
+                                + "or you do not have the privilege to recommend purchase requisitions.",
                         FacesMessage.SEVERITY_ERROR);
 
                 return;

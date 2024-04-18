@@ -383,7 +383,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public Integer getDialogWidth() {
-        return 600;
+        return 650;
     }
 
     public String getScrollPanelHeight() {
@@ -1417,7 +1417,26 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return foundInventories;
     }
 
-    // tk
+    public Double getFoundInventoriesTotalQuantity() {
+        Double totalQuantity = 0.0;
+        
+        for (Inventory foundInventory : foundInventories) {
+            totalQuantity = totalQuantity + foundInventory.getTotalCostComponentQuantities();
+        }
+        
+        return totalQuantity;
+    }
+    
+    public Double getFoundInventoriesTotalCost() {
+        Double totalCost = 0.0;
+        
+        for (Inventory foundInventory : foundInventories) {
+            totalCost = totalCost + foundInventory.getTotalCostComponentCosts();
+        }
+        
+        return totalCost;
+    }
+        
     public List<Inventory> getFoundProducts() {
         foundInventories = Inventory.find(
                 getEntityManager1(),

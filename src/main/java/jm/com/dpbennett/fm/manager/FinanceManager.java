@@ -139,15 +139,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
         
         //openDashboardTab();        
         
-        //getMainTabView().openTab("Purchase Requisitions");
+        getMainTabView().openTab("Purchase Requisitions");
         
         getMainTabView().openTab("Inventory Requisitions");
 
-        getMainTabView().openTab("Inventory Products");
+        //getMainTabView().openTab("Inventory Products");
 
         //getMainTabView().openTab("Market Products");
         
-        getMainTabView().openTab("Inventory");
+        //getMainTabView().openTab("Inventory");
 
         //getMainTabView().openTab("Suppliers");
 
@@ -1914,7 +1914,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public ArrayList<SelectItem> getPurchReqSearchTypes() {
         ArrayList purchReqSearchTypes = new ArrayList();
 
-        if (getUser().getEmployee().isProcurementOfficer()) {
+        if (getUser().can("AccessAllPurchaseRequisitions")) {
             purchReqSearchTypes.add(new SelectItem("All requisitions", "All requisitions"));
             purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
         } else {
