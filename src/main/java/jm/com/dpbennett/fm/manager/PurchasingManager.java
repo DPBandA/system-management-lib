@@ -1119,12 +1119,13 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     = (Integer) SystemOption.getOptionValueObject(em,
                             "requiredPRApprovals");
 
-            if (!(getSelectedPurchaseRequisition().getApprovals() >= requiredApprovals)
+            if (!((getSelectedPurchaseRequisition().getApprovals() + 
+                    getSelectedPurchaseRequisition().getRecommendations()) >= requiredApprovals)
                     && getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")) {
 
                 PrimeFacesUtils.addMessage("Purchase Requisition Not Completed",
                         "This purchase requisition requires " + requiredApprovals
-                        + " approvals before it can be marked as completed",
+                        + " approvals/recommendations before it can be marked as completed",
                         FacesMessage.SEVERITY_WARN);
 
                 return false;
