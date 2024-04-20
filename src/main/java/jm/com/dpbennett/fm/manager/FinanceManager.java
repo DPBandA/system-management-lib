@@ -38,6 +38,8 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.fm.Sector;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.hrm.Department;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
@@ -120,11 +122,45 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public FinanceManager() {
         init();
     }
-    
-     public void openDashboardTab() {
-        
-         getMainTabView().openTab("Dashboard");
-         
+
+    public void openDashboardTab() {
+
+        getMainTabView().openTab("Dashboard");
+
+    }
+
+    public List<Employee> completeActiveEmployee(String query) {
+        EntityManager em;
+
+        try {
+
+            em = getEntityManager1();
+            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+
+            if (employees != null) {
+                return employees;
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Department> completeActiveDepartment(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
+
+            return departments;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -134,23 +170,16 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         // tk 
         // Use open*() after checking for module access or privilege as is done in JMTS.
-        
         //getMainTabView().openTab("Financial Administration");
-        
         //openDashboardTab();        
-        
         getMainTabView().openTab("Purchase Requisitions");
-        
+
         getMainTabView().openTab("Inventory Requisitions");
 
         //getMainTabView().openTab("Inventory Products");
-
         //getMainTabView().openTab("Market Products");
-        
         //getMainTabView().openTab("Inventory");
-
         //getMainTabView().openTab("Suppliers");
-
         //getMainTabView().openTab("System Administration");
     }
 
@@ -1657,11 +1686,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
         isActiveServicesOnly = true;
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
-        
+
         dashboardModel = new DefaultDashboardModel();
         dashboardModel.addWidget(new DefaultDashboardWidget("procurementTasks", RESPONSIVE_CLASS));
         dashboardModel.addWidget(new DefaultDashboardWidget("inventoryTasks", RESPONSIVE_CLASS));
-      
+
     }
 
     public DashboardModel getDashboardModel() {
@@ -1671,7 +1700,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void setDashboardModel(DashboardModel dashboardModel) {
         this.dashboardModel = dashboardModel;
     }
-    
+
     @Override
     public EntityManager getEntityManager1() {
         return getSystemManager().getEntityManager1();

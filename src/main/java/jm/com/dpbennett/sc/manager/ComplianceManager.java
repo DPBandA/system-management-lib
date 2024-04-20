@@ -316,7 +316,7 @@ public class ComplianceManager extends GeneralManager
     public void sendErrorEmail(String subject, String message) {
         try {
             // send error message to developer's email            
-            MailUtils.postMail(null, null, null, subject, message,
+            MailUtils.postMail(null, null, "Job Manager", null, subject, message,
                     "text/plain", getEntityManager1());
         } catch (Exception ex) {
             System.out.println(ex);

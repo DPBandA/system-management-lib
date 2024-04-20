@@ -756,7 +756,10 @@ public class GeneralManager implements Manager, Serializable {
                 // Send email to system administrator alert if activated
                 if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
                         "developerEmailAlertActivated")) {
-                    MailUtils.postMail(null, null, null,
+                    MailUtils.postMail(null, 
+                            null, 
+                            "Job Manager",
+                            null,
                             "Failed user login",
                             "Username: " + username + "\nDate/Time: " + new Date(),
                             "text/plain",

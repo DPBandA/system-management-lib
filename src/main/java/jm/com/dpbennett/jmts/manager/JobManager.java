@@ -236,6 +236,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
+                    "Job Manager",
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -287,6 +288,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
+                    "Job Manager",
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -330,6 +332,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
+                    "Job Manager",
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -372,6 +375,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
+                    "Job Manager",
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -1982,6 +1986,7 @@ public class JobManager extends GeneralManager
             // send error message to developer's email            
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
+                    "Job Manager",
                     SystemOption.getString(em, "softwareDeveloperEmailAddress"),
                     subject, message,
                     "text/plain", getEntityManager1());
