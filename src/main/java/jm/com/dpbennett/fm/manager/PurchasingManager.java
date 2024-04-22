@@ -1693,6 +1693,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     + getSelectedPurchaseRequisition()
                             .getOriginator().getLastName());
             parameters.put("priorityCode", getSelectedPurchaseRequisition().getPriorityCode());
+            parameters.put("terms", getSelectedPurchaseRequisition().getTerms());
             parameters.put("requisitionDate",
                     BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                             getRequisitionDate()));
@@ -1956,9 +1957,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void updatePurchaseReq(AjaxBehaviorEvent event) {
         getSelectedPurchaseRequisition().setIsDirty(true);
         getSelectedPurchaseRequisition().setEditStatus("(edited)");
-        getSelectedPurchaseRequisition().setPurchaseOrderNumber(
-                getSelectedPurchaseRequisition().getNumber());
-
+        
         getSelectedPurchaseRequisition().addAction(BusinessEntity.Action.EDIT);
 
     }

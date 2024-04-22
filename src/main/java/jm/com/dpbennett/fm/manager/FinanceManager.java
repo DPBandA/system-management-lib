@@ -129,40 +129,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    public List<Employee> completeActiveEmployee(String query) {
-        EntityManager em;
-
-        try {
-
-            em = getEntityManager1();
-            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
-
-            if (employees != null) {
-                return employees;
-            } else {
-                return new ArrayList<>();
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Department> completeActiveDepartment(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
-
-            return departments;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
     @Override
     public void initMainTabView() {
 
