@@ -104,7 +104,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public InventoryManager() {
         init();
     }
-    
+
     public List<SelectItem> getInventoryLocations() {
 
         return getStringListAsSelectItems(getEntityManager1(), "inventoryLocations");
@@ -167,10 +167,23 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     }
 
+    public void receiveInventory() {
+
+        if (getSelectedInventoryRequisition().getReceived()) {
+            getSelectedInventoryRequisition().setDateInventoryReceived(new Date());
+            getSelectedInventoryRequisition().setInventoryReceivedBy(getUser().getEmployee());
+        } else {
+            getSelectedInventoryRequisition().setDateInventoryReceived(null);
+            getSelectedInventoryRequisition().setInventoryReceivedBy(null);
+        }
+
+        updateInventoryRequisition(null);
+
+    }
+
     public void approveInventoryRequisition() {
 
-        if (getSelectedInventoryRequisition().getPrepared()
-                && getSelectedInventoryRequisition().getApproved()) {
+        if (getSelectedInventoryRequisition().getApproved()) {
             getSelectedInventoryRequisition().setDateRequisitionApproved(new Date());
             getSelectedInventoryRequisition().setRequisitionApprovedBy(getUser().getEmployee());
         } else {
@@ -1386,24 +1399,24 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public Double getFoundInventoriesTotalQuantity() {
         Double totalQuantity = 0.0;
-        
+
         for (Inventory foundInventory : foundInventories) {
             totalQuantity = totalQuantity + foundInventory.getTotalCostComponentQuantities();
         }
-        
+
         return totalQuantity;
     }
-    
+
     public Double getFoundInventoriesTotalCost() {
         Double totalCost = 0.0;
-        
+
         for (Inventory foundInventory : foundInventories) {
             totalCost = totalCost + foundInventory.getTotalCostComponentCosts();
         }
-        
+
         return totalCost;
     }
-        
+
     public List<Inventory> getFoundProducts() {
         foundInventories = Inventory.find(
                 getEntityManager1(),
