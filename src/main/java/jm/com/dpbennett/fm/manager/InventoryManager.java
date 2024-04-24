@@ -1525,6 +1525,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
         selectedInventory.setDisbursementMethod(SystemOption.getString(
                 getEntityManager1(),
                 "defaultInventoryDisbursementMethod"));
+        selectedInventory.setLowStockThreshold(SystemOption.getInteger(getEntityManager1(),
+                "defaultLowStockThreshold"));
 
         openInventoryTab();
 
