@@ -167,6 +167,20 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     }
 
+    public void issueInventory() {
+
+        if (getSelectedInventoryRequisition().getIssued()) {
+            getSelectedInventoryRequisition().setDateInventoryIssued(new Date());
+            getSelectedInventoryRequisition().setInventoryIssuedBy(getUser().getEmployee());
+        } else {
+            getSelectedInventoryRequisition().setDateInventoryIssued(null);
+            getSelectedInventoryRequisition().setInventoryIssuedBy(null);
+        }
+
+        updateInventoryRequisition(null);
+
+    }
+
     public void receiveInventory() {
 
         if (getSelectedInventoryRequisition().getReceived()) {
@@ -274,14 +288,35 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
             parameters.put("reqId", getSelectedInventoryRequisition().getId());
 
-            if (getSelectedInventoryRequisition().getRequisitionApprovedBy() != null) {
+            if (getSelectedInventoryRequisition().getApproved()) {
                 parameters.put("approvedBy",
                         getSelectedInventoryRequisition().getRequisitionApprovedBy().getFirstName() + " "
                         + getSelectedInventoryRequisition().getRequisitionApprovedBy().getLastName());
+                parameters.put("approvalDate",
+                        BusinessEntityUtils.getDateInMediumDateFormat(
+                                getSelectedInventoryRequisition().getDateRequisitionApproved()));
+
             }
-            parameters.put("approvalDate",
-                    BusinessEntityUtils.getDateInMediumDateFormat(
-                            getSelectedInventoryRequisition().getDateRequisitionApproved()));
+
+            if (getSelectedInventoryRequisition().getIssued()) {
+                parameters.put("issuedBy",
+                        getSelectedInventoryRequisition().getInventoryIssuedBy().getFirstName() + " "
+                        + getSelectedInventoryRequisition().getInventoryIssuedBy().getLastName());
+                parameters.put("dateIssued",
+                        BusinessEntityUtils.getDateInMediumDateFormat(
+                                getSelectedInventoryRequisition().getDateInventoryIssued()));
+
+            }
+
+            if (getSelectedInventoryRequisition().getReceived()) {
+                parameters.put("receivedBy",
+                        getSelectedInventoryRequisition().getInventoryReceivedBy().getFirstName() + " "
+                        + getSelectedInventoryRequisition().getInventoryReceivedBy().getLastName());
+                parameters.put("dateReceived",
+                        BusinessEntityUtils.getDateInMediumDateFormat(
+                                getSelectedInventoryRequisition().getDateInventoryReceived()));
+
+            }
 
             em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);
