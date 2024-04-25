@@ -725,6 +725,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public int getNumOfSuppliersFound() {
         return getFoundSuppliers().size();
     }
+    
+     public void editPurchaseReqSupplier() {
+        setSelectedSupplier(getSelectedPurchaseRequisition().getSupplier());
+
+        editSelectedSupplier();
+    }
 
     public void editSelectedSupplier() {
 
