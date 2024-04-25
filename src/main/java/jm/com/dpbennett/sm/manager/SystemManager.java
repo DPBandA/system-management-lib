@@ -76,6 +76,8 @@ public final class SystemManager extends GeneralManager {
     private EntityManagerFactory EMF2;
     @PersistenceUnit(unitName = "ENERBASEPU")
     private EntityManagerFactory EMF3;
+    @PersistenceUnit(unitName = "JMTS3PU")
+    private EntityManagerFactory EMF4;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
@@ -2343,6 +2345,10 @@ public final class SystemManager extends GeneralManager {
 
     public EntityManager getEntityManager3() {
         return EMF3.createEntityManager();
+    }
+    
+    public EntityManager getEntityManager4() {
+        return EMF4.createEntityManager();
     }
 
     public Date getCurrentDate() {
