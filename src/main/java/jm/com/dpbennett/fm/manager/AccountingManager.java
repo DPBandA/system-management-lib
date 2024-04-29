@@ -21,8 +21,12 @@ package jm.com.dpbennett.fm.manager;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.FinancialAccount;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
+import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.TreeNode;
@@ -44,6 +48,17 @@ public class AccountingManager extends GeneralManager implements Serializable {
     @Override
     public final void init() {
         chartOfAccounts = createAccounts();
+    }
+
+    public SystemManager getSystemManager() {
+        return BeanUtils.findBean("systemManager");
+    }
+
+    @Override
+    public EntityManager getEntityManager1() {
+
+        return getSystemManager().getEntityManager1();
+
     }
 
     // tk sample accounts

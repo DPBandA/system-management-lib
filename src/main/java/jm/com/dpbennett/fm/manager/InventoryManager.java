@@ -48,7 +48,6 @@ import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.business.entity.fm.InventoryDisbursement;
 import jm.com.dpbennett.business.entity.fm.InventoryRequisition;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
-import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.util.MailUtils;

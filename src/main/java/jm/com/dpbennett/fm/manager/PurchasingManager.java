@@ -2467,7 +2467,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     @Override
     public EntityManager getEntityManager1() {
-        return getSystemManager().getEntityManager1();
+        return getFinanceManager().getEntityManager1();
     }
 
     public FinanceManager getFinanceManager() {

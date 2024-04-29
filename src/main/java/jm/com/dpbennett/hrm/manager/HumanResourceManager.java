@@ -167,7 +167,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void openManufacturerBrowser() {
         getMainTabView().openTab("Manufacturers");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
     }
 
@@ -1090,7 +1090,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     @Override
     public EntityManager getEntityManager1() {
-        return getSystemManager().getEntityManager1();
+
+        String em = SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSEM");
+
+        switch (em) {
+            case "JMTS3":
+                return getSystemManager().getEntityManager4();
+            case "JMTS":
+            default:
+                return getSystemManager().getEntityManager1();
+        }
+
     }
 
     // Manufacturer Management
@@ -1583,7 +1593,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 return true;
             case "Departments":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:departmentSearchButton");
-                return true;   
+                return true;
             case "Divisions":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:divisionSearchButton");
                 return true;
@@ -1592,7 +1602,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 return true;
             case "Organizations":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessSearchButton");
-                return true; 
+                return true;
             case "Manufacturers":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
                 return true;
