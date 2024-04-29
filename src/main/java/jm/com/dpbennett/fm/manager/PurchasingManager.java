@@ -1706,6 +1706,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             parameters.put("purchaseOrderDate",
                     BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                             getPurchaseOrderDate()));
+            parameters.put("importLicenceNo", getSelectedPurchaseRequisition().getImportLicenceNum());
             parameters.put("originatorSignature", getSelectedPurchaseRequisition()
                     .getOriginator().getFirstName() + " "
                     + getSelectedPurchaseRequisition()
