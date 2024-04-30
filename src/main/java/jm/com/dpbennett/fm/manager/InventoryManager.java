@@ -1196,7 +1196,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         Email email = Email.findActiveEmailByName(em, "ims-email-template");
 
         if (email != null) {
-            String prId = inventory.getId().toString(); // tk
+            String prId = inventory.getId().toString();
             String department = inventory.getEditedBy().getDepartment().getName();
             String JMTSURL = (String) SystemOption.getOptionValueObject(em, "appURL");
             String originator = inventory.getEditedBy().getFirstName()
@@ -1207,7 +1207,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
-                    "Job Manager",
+                    SystemOption.getString(em, "jobManagerEmailName"),
                     employee.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).

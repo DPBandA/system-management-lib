@@ -758,7 +758,7 @@ public class GeneralManager implements Manager, Serializable {
                         "developerEmailAlertActivated")) {
                     MailUtils.postMail(null, 
                             null, 
-                            "Job Manager",
+                            SystemOption.getString(getEntityManager1(), "jobManagerEmailName"),
                             null,
                             "Failed user login",
                             "Username: " + username + "\nDate/Time: " + new Date(),

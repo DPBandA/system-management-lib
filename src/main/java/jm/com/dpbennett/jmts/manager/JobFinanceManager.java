@@ -3611,6 +3611,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public String getCompletedJobCostingEmailMessage(Job job) {
+        EntityManager em = getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -3630,7 +3631,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         message = message + "If this job was incorrectly assigned to your department, the department supervisor should contact the person who entered/assigned the job.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
         message = message + "Signed<br>";
-        message = message + "Job Manager";
+        message = message + SystemOption.getString(em, "jobManagerEmailName");
 
         return message;
     }
@@ -3655,12 +3656,13 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         message = message + "If this email was sent to you in error, please contact the department referred to above.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
         message = message + "Signed<br>";
-        message = message + "Job Manager";
+        message = message + SystemOption.getString(em, "jobManagerEmailName");
 
         return message;
     }
 
     public String getNewJobEmailMessage(Job job) {
+        EntityManager em = getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -3681,12 +3683,13 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         message = message + "If this job was incorrectly assigned to your department, the department supervisor should contact the person who entered/assigned the job.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
         message = message + "Signed<br>";
-        message = message + "Job Manager";
+        message = message + SystemOption.getString(em, "jobManagerEmailName");
 
         return message;
     }
 
     public String getUpdatedJobEmailMessage(Job job) {
+        EntityManager em = getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -3706,7 +3709,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         message = message + "You are being informed of this update so that you may take the requisite action.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
         message = message + "Signed<br>";
-        message = message + "Job Manager";
+        message = message + SystemOption.getString(em, "jobManagerEmailName");
 
         return message;
     }
@@ -3755,7 +3758,9 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public void sendErrorEmail(String subject, String message) {
         try {
             // Send error message to developer's email            
-            MailUtils.postMail(null, null, "Job Manager", null, subject, message,
+            MailUtils.postMail(null, null,
+                    SystemOption.getString(getEntityManager1(),
+                            "jobManagerEmailName"), null, subject, message,
                     "text/plain", getEntityManager1());
         } catch (Exception ex) {
             System.out.println(ex);

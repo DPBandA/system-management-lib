@@ -138,7 +138,7 @@ public class ComplianceManager extends GeneralManager
     public final void init() {
         reset();
     }
-    
+
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -147,31 +147,31 @@ public class ComplianceManager extends GeneralManager
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:surveySearchButton");
 
                 return true;
-                
+
             case "Standard Browser":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:standardSearchButton");
 
                 return true;
-                
+
             case "Complaint Browser":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:complaintSearchButton");
 
                 return true;
-            
+
             case "Market Products":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
 
                 return true;
-                
+
             case "Manufacturers":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
 
                 return true;
-                
+
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
 
-                return true;    
+                return true;
 
             default:
                 return false;
@@ -289,13 +289,13 @@ public class ComplianceManager extends GeneralManager
 //    }
     public void openMarketProductBrowser() {
         getFinanceManager().openMarketProductBrowser();
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
     }
 
     public void openManufacturerBrowser() {
         getHumanResourceManager().openManufacturerBrowser();
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
     }
 
@@ -316,7 +316,8 @@ public class ComplianceManager extends GeneralManager
     public void sendErrorEmail(String subject, String message) {
         try {
             // send error message to developer's email            
-            MailUtils.postMail(null, null, "Job Manager", null, subject, message,
+            MailUtils.postMail(null, null, SystemOption.getString(getEntityManager1(),
+                    "jobManagerEmailName"), null, subject, message,
                     "text/plain", getEntityManager1());
         } catch (Exception ex) {
             System.out.println(ex);
@@ -1180,21 +1181,21 @@ public class ComplianceManager extends GeneralManager
     public void openSurveysBrowser() {
 
         getMainTabView().openTab("Survey Browser");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:surveySearchButton");
     }
 
     public void openStandardsBrowser() {
 
         getMainTabView().openTab("Standard Browser");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:standardSearchButton");
     }
 
     public void openComplaintsBrowser() {
 
         getMainTabView().openTab("Complaint Browser");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:complaintSearchButton");
     }
 
@@ -2982,7 +2983,7 @@ public class ComplianceManager extends GeneralManager
     public void openFactoryInspectionBrowser() {
 
         getMainTabView().openTab("Factory Inspections");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
     }
 

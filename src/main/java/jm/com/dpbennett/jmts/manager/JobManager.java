@@ -236,7 +236,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
-                    "Job Manager",
+                    SystemOption.getString(em, "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -288,7 +288,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
-                    "Job Manager",
+                    SystemOption.getString(em, "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -332,7 +332,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
-                    "Job Manager",
+                    SystemOption.getString(em, "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -375,7 +375,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
-                    "Job Manager",
+                    SystemOption.getString(em, "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -1914,6 +1914,7 @@ public class JobManager extends GeneralManager
      * @return
      */
     public String getUpdatedJobEmailMessage(Job job) {
+        EntityManager em = getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -1933,7 +1934,7 @@ public class JobManager extends GeneralManager
         message = message + "You are being informed of this update so that you may take the requisite action.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
         message = message + "Signed<br>";
-        message = message + "Job Manager";
+        message = message + SystemOption.getString(em, "jobManagerEmailName");
 
         return message;
     }
@@ -1986,7 +1987,7 @@ public class JobManager extends GeneralManager
             // send error message to developer's email            
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
-                    "Job Manager",
+                    SystemOption.getString(em, "jobManagerEmailName"),
                     SystemOption.getString(em, "softwareDeveloperEmailAddress"),
                     subject, message,
                     "text/plain", getEntityManager1());

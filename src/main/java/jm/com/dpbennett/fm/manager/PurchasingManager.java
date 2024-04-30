@@ -2200,7 +2200,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         MailUtils.postMail(null,
                 SystemOption.getString(em, "jobManagerEmailAddress"),
-                "Job Manager",
+                SystemOption.getString(em, "jobManagerEmailName"),
                 employee.getInternet().getEmail1(),
                 email.getSubject().
                         replace("{action}", action).
