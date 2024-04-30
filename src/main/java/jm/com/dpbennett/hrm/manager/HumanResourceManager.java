@@ -1091,15 +1091,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public EntityManager getEntityManager1() {
 
-        String em = SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSEM");
-
-        switch (em) {
-            case "JMTS3":
-                return getSystemManager().getEntityManager4();
-            case "JMTS":
-            default:
-                return getSystemManager().getEntityManager1();
-        }
+        return getSystemManager().getEntityManager();
 
     }
 

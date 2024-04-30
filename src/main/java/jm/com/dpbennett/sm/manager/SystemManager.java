@@ -126,11 +126,22 @@ public final class SystemManager extends GeneralManager {
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
 
-    /**
-     * Creates a new instance of SystemManager
-     */
     public SystemManager() {
         init();
+    }
+
+    public EntityManager getEntityManager() {
+
+        String em = SystemOption.getString(getEntityManager1(), "JMTSEM");
+
+        switch (em) {
+            case "JMTS3":
+                return getEntityManager4();
+            case "JMTS":
+            default:
+                return getEntityManager1();
+        }
+
     }
 
     public String getCountrySearchText() {
@@ -2346,7 +2357,7 @@ public final class SystemManager extends GeneralManager {
     public EntityManager getEntityManager3() {
         return EMF3.createEntityManager();
     }
-    
+
     public EntityManager getEntityManager4() {
         return EMF4.createEntityManager();
     }
