@@ -280,6 +280,23 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         }
     }
 
+    public List<Employee> completeActiveEmployee(EntityManager em, String query) {
+
+        try {
+
+            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+
+            if (employees != null) {
+                return employees;
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
     public List<EmployeePosition> completeActiveEmployeePosition(String query) {
         EntityManager em;
 
@@ -305,6 +322,19 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         try {
             em = getEntityManager1();
+
+            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
+
+            return departments;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Department> completeActiveDepartment(EntityManager em, String query) {
+
+        try {
 
             List<Department> departments = Department.findActiveDepartmentsByName(em, query);
 

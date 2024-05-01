@@ -124,6 +124,17 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    public List<Department> completeActiveDepartment(String query) {
+
+        return getHumanResourceManager().completeActiveDepartment(getEntityManager1(), query);
+    }
+
+    public List<Employee> completeActiveEmployee(String query) {
+
+        return getHumanResourceManager().completeActiveEmployee(getEntityManager1(), query);
+
+    }
+
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -1057,7 +1068,7 @@ public class JobManager extends GeneralManager
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager1();
+        return getSystemManager().getEntityManager();
     }
 
     public void prepareToCloseJobDetail() {
@@ -2836,9 +2847,10 @@ public class JobManager extends GeneralManager
         firstModule = null;
 
         getMainTabView().reset(getUser());
-        
-        // tk to be replaced by JMTS dashboard tab.
-        getFinanceManager().openDashboardTab();
+
+        if (getUser().hasModule("purchasingManager")) {
+            getFinanceManager().openDashboardTab();
+        }
 
         // Compliance
         if (getUser().hasModule("complianceManager")) {
@@ -2934,7 +2946,7 @@ public class JobManager extends GeneralManager
                 }
             }
         }
-        
+
         openModuleMainTab(firstModule);
     }
 
