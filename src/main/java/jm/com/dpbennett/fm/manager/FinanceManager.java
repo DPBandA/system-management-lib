@@ -38,8 +38,6 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.fm.Sector;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.fm.Tax;
-import jm.com.dpbennett.business.entity.hrm.Department;
-import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
@@ -1670,7 +1668,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager1();
+        String em = SystemOption.getString(getSystemManager().getEntityManager1(), "FMEM");
+
+        return getSystemManager().getEntityManager(em);
 
     }
 
