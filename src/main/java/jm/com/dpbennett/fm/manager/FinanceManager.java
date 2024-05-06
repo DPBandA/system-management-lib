@@ -121,6 +121,16 @@ public class FinanceManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public String getJobManagerEmailName() {
+
+        return SystemOption.getString(getEntityManager1(), "jobManagerEmailName");
+    }
+
+    public String getJobManagerEmailAddress() {
+
+       return SystemOption.getString(getEntityManager1(), "jobManagerEmailAddress");
+    }
+
     public void openDashboardTab() {
 
         getMainTabView().openTab("Dashboard");

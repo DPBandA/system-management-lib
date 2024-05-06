@@ -1522,9 +1522,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     }
 
-    public void openRequestApprovalEmailDialog() {
+    public void openPurchaseRequisistionEmailDialog() {
         EntityManager em = getEntityManager1();
-        Email email = Email.findActiveEmailByName(em, "pr-email-template"); //"pr-gen-email-template");
+        Email email = Email.findActiveEmailByName(em, "pr-email-template");
 
         String prNum = getSelectedPurchaseRequisition().getNumber();
         String JMTSURL = (String) SystemOption.getOptionValueObject(em, "appURL");
@@ -1570,8 +1570,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             for (Employee toEmployee : getToEmployees()) {
 
                 if (MailUtils.postMail(null,
-                        getUser().getEmployee().getInternet().getEmail1(),
-                        getUser().getEmployee().getFirstName() + " " + getUser().getEmployee().getLastName(),
+                        getFinanceManager().getJobManagerEmailAddress(),
+                        getFinanceManager().getJobManagerEmailName(),
                         toEmployee.getInternet().getEmail1(),
                         getPurchaseReqEmailSubject(),
                         getPurchaseReqEmailContent(),
@@ -2178,7 +2178,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
     }
-
+    
     private void sendPurchaseReqEmail(
             EntityManager em,
             PurchaseRequisition purchaseRequisition,
