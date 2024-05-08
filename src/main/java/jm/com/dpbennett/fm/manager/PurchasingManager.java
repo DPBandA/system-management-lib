@@ -725,8 +725,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public int getNumOfSuppliersFound() {
         return getFoundSuppliers().size();
     }
-    
-     public void editPurchaseReqSupplier() {
+
+    public void editPurchaseReqSupplier() {
         setSelectedSupplier(getSelectedPurchaseRequisition().getSupplier());
 
         editSelectedSupplier();
@@ -1125,8 +1125,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     = (Integer) SystemOption.getOptionValueObject(em,
                             "requiredPRApprovals");
 
-            if (!((getSelectedPurchaseRequisition().getApprovals() + 
-                    getSelectedPurchaseRequisition().getRecommendations()) >= requiredApprovals)
+            if (!((getSelectedPurchaseRequisition().getApprovals()
+                    + getSelectedPurchaseRequisition().getRecommendations()) >= requiredApprovals)
                     && getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")) {
 
                 PrimeFacesUtils.addMessage("Purchase Requisition Not Completed",
@@ -1341,7 +1341,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         //if (!purchaseRequisition.hasRecommender()) {
         //    return false;
         //}
-        
         // Add approver if user has TEAM LEADER position
         if ((purchaseRequisition.getApprover1() == null)
                 && (purchaseRequisition.getRecommender1() == null)
@@ -1354,7 +1353,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
-        
+
         // Add approver if user has DIVISIONAL MANAGER position
         if ((purchaseRequisition.getApprover2() == null)
                 && (purchaseRequisition.getRecommender2() == null)
@@ -1367,7 +1366,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
-        
+
         // Add approver if user has DIVISIONAL DIRECTOR position
         if ((purchaseRequisition.getApprover3() == null)
                 && (purchaseRequisition.getRecommender3() == null)
@@ -1380,7 +1379,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
-        
+
         // Add approver if user has FINANCE MANAGER position
         if ((purchaseRequisition.getApprover4() == null)
                 && (purchaseRequisition.getRecommender4() == null)
@@ -1393,7 +1392,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             return true;
         }
-        
+
         // Add approver if user has EXECUTIVE DIRECTOR position
         if ((purchaseRequisition.getApprover5() == null)
                 && (purchaseRequisition.getRecommender5() == null)
@@ -1536,6 +1535,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String description = getSelectedPurchaseRequisition().getDescription();
         String sender = getUser().getEmployee().getFirstName() + " "
                 + getUser().getEmployee().getLastName();
+        String approversAndRecommendersList = getSelectedPurchaseRequisition().getApproversAndRecommendersList();
 
         getToEmployees().clear();
         setPurchaseReqEmailSubject(
@@ -1549,6 +1549,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         replace("{requisitionDate}", requisitionDate).
                         replace("{action}", "approved").
                         replace("{description}", description).
+                        replace("{approversAndRecommendersList}", approversAndRecommendersList).
                         replace("{sender}", sender));
 
         editPurchReqGeneralEmail();
@@ -1722,7 +1723,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                                 getApprovalOrRecommendationDate1()));
 
             }
-            
+
             if (getSelectedPurchaseRequisition().getRecommender2() != null) {
                 parameters.put("divisionalManagerRecommendation",
                         getSelectedPurchaseRequisition().getRecommender2().getFirstName() + " "
@@ -1967,7 +1968,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void updatePurchaseReq(AjaxBehaviorEvent event) {
         getSelectedPurchaseRequisition().setIsDirty(true);
         getSelectedPurchaseRequisition().setEditStatus("(edited)");
-        
+
         getSelectedPurchaseRequisition().addAction(BusinessEntity.Action.EDIT);
 
     }
@@ -2178,7 +2179,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
     }
-    
+
     private void sendPurchaseReqEmail(
             EntityManager em,
             PurchaseRequisition purchaseRequisition,
@@ -2197,6 +2198,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String requisitionDate = BusinessEntityUtils.
                 getDateInMediumDateFormat(purchaseRequisition.getRequisitionDate());
         String description = purchaseRequisition.getDescription();
+        String approversAndRecommendersList = purchaseRequisition.getApproversAndRecommendersList();
 
         MailUtils.postMail(null,
                 SystemOption.getString(em, "jobManagerEmailAddress"),
@@ -2206,9 +2208,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         replace("{action}", action).
                         replace("{purchaseRequisitionNumber}", prNum),
                 email.getContent("/correspondences/").
-                        replace("{title}",
-                                employee.getTitle()).
-                        replace("{surname}",
+                        replace("{firstname}",
+                                employee.getFirstName()).
+                        replace("{lastname}",
                                 employee.getLastName()).
                         replace("{JMTSURL}", JMTSURL).
                         replace("{purchaseRequisitionNumber}", prNum).
@@ -2217,7 +2219,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         replace("{requisitionDate}", requisitionDate).
                         replace("{role}", role).
                         replace("{action}", action).
-                        replace("{description}", description),
+                        replace("{description}", description).
+                        replace("{approversAndRecommendersList}", approversAndRecommendersList),
                 email.getContentType(),
                 em);
     }
@@ -2768,8 +2771,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             if (!addRecommender(purchaseRequisition, getUser().getEmployee())) {
                 PrimeFacesUtils.addMessage("Not Recommended",
-                        "The maximum number of recommenders was reached for this purchase requisition " 
-                                + "or you do not have the privilege to recommend purchase requisitions.",
+                        "The maximum number of recommenders was reached for this purchase requisition "
+                        + "or you do not have the privilege to recommend purchase requisitions.",
                         FacesMessage.SEVERITY_ERROR);
 
                 return;
