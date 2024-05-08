@@ -35,7 +35,7 @@ public class notificationConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
       
-       Notification notification = Notification.findNotificationByName(getEntityManager(), submittedValue, false);
+       Notification notification = Notification.findNotificationByName(getEntityManager("SMEM"), submittedValue, false);
 
         if (notification == null) {
             notification = new Notification(submittedValue);

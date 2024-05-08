@@ -35,7 +35,7 @@ public class ActiveSupplierConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
       
-       Supplier supplier = Supplier.findActiveSupplierByName(getEntityManager(), value, false);
+       Supplier supplier = Supplier.findActiveSupplierByName(getEntityManager("FMEM"), value, false);
 
         if (supplier == null) {
             supplier = new Supplier(value);

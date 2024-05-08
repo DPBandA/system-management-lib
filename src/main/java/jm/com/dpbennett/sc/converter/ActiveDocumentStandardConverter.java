@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.sc.converter;
 
 import javax.faces.component.UIComponent;
@@ -32,15 +31,17 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
  */
 @FacesConverter("activeDocumentStandardConverter")
 public class ActiveDocumentStandardConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-      
-       DocumentStandard documentStandard = DocumentStandard.findActiveDocumentStandardByName(getEntityManager(), submittedValue, Boolean.FALSE);
+
+        DocumentStandard documentStandard = DocumentStandard.findActiveDocumentStandardByName(getEntityManager("JMTSEM"),
+                submittedValue, Boolean.FALSE);
 
         if (documentStandard == null) {
             documentStandard = new DocumentStandard(submittedValue);
-        } 
-        
+        }
+
         return documentStandard;
-    }   
+    }
 }

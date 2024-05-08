@@ -38,7 +38,7 @@ public class SectorConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         try {
-            Sector sector = Sector.findSectorByName(getEntityManager(), value);
+            Sector sector = Sector.findSectorByName(getEntityManager("FMEM"), value);
 
             if (sector == null) {
                 sector = new Sector(value);

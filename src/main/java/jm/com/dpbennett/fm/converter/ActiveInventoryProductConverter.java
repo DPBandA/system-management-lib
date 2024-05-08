@@ -36,7 +36,7 @@ public class ActiveInventoryProductConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         MarketProduct marketProduct = 
-                MarketProduct.findActiveMarketProductByType(getEntityManager(), value, "Inventory");
+                MarketProduct.findActiveMarketProductByType(getEntityManager("FMEM"), value, "Inventory");
 
         if (marketProduct == null) {
             marketProduct = new MarketProduct(value);

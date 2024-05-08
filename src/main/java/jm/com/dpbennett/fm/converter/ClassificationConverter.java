@@ -37,7 +37,7 @@ public class ClassificationConverter extends ConverterAdapter{
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
                 
         Classification classification = 
-                Classification.findClassificationByName(getEntityManager(), submittedValue);
+                Classification.findClassificationByName(getEntityManager("FMEM"), submittedValue);
         
         if (classification == null) {
             classification = new Classification();

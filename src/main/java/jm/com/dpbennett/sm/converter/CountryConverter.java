@@ -35,7 +35,7 @@ public class CountryConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         
-        Country country = Country.findCountryByName(getEntityManager(), value);
+        Country country = Country.findCountryByName(getEntityManager("SMEM"), value);
 
         if (country == null) {
             country =  new Country(value);

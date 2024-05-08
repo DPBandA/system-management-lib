@@ -41,7 +41,7 @@ public class ManufacturerContactConverter extends ConverterAdapter {
             Manufacturer currentManufacturer = (Manufacturer) component.getAttributes().get("currentManufacturer");
 
             if (currentManufacturer != null) {
-                contact = Contact.findContact(getEntityManager(), value, currentManufacturer.getContacts());
+                contact = Contact.findContact(getEntityManager("JMTSEM"), value, currentManufacturer.getContacts());
                 if (contact == null) {
                   
                     contact = new Contact(value);

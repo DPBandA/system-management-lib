@@ -35,7 +35,7 @@ public class ActiveEmployeePositionConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
                 
-        EmployeePosition position = EmployeePosition.findActiveEmployeePositionByTitle(getEntityManager(), value);
+        EmployeePosition position = EmployeePosition.findActiveEmployeePositionByTitle(getEntityManager("JMTSEM"), value);
 
         if (value == null) {
             position = new EmployeePosition(value);

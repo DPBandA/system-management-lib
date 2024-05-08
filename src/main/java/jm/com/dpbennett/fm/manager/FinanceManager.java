@@ -1678,14 +1678,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        String em = SystemOption.getString(getSystemManager().getEntityManager1(), "FMEM");
-
-        return getSystemManager().getEntityManager(em);
+        return getSystemManager().getEntityManager("FMEM");
 
     }
 
     @Override
     public EntityManager getEntityManager2() {
+        
         return getSystemManager().getEntityManager2();
     }
 

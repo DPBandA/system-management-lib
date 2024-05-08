@@ -642,7 +642,9 @@ public class ReportManager extends GeneralManager {
 
     @Override
     public EntityManager getEntityManager1() {
-        return getSystemManager().getEntityManager1();
+        
+        return getSystemManager().getEntityManager("JMTSEM");
+        
     }
 
     public Employee getReportEmployee1() {

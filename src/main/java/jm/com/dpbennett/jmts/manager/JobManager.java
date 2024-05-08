@@ -1068,7 +1068,7 @@ public class JobManager extends GeneralManager
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager();
+        return getSystemManager().getEntityManager("JMTSEM");
     }
 
     public void prepareToCloseJobDetail() {

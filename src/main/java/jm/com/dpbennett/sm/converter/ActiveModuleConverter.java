@@ -35,7 +35,7 @@ public class ActiveModuleConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
      
-        Modules module = Modules.findActiveModuleByName(getEntityManager(), value);
+        Modules module = Modules.findActiveModuleByName(getEntityManager("SMEM"), value);
 
         if (module == null) {
             module = new Modules(value);

@@ -35,7 +35,7 @@ public class ActiveReportConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Report report = Report.findActiveReportByName(getEntityManager(), value);
+        Report report = Report.findActiveReportByName(getEntityManager("JMTSEM"), value);
 
         if (report == null) {
             report = new Report(value);

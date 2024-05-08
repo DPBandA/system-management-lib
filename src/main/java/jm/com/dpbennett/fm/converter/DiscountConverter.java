@@ -36,7 +36,7 @@ public class DiscountConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Discount discount = Discount.findByName(getEntityManager(), value);
+        Discount discount = Discount.findByName(getEntityManager("FMEM"), value);
 
         if (discount == null) {
             discount = new Discount(value);

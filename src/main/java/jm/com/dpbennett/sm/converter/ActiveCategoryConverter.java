@@ -35,7 +35,7 @@ public class ActiveCategoryConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
       
-       Category category = Category.findActiveCategoryByName(getEntityManager(), submittedValue, false);
+       Category category = Category.findActiveCategoryByName(getEntityManager("SMEM"), submittedValue, false);
 
         if (category == null) {
             category = new Category(submittedValue);

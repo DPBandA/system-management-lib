@@ -1483,7 +1483,7 @@ public class ComplianceManager extends GeneralManager
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager1();
+        return getSystemManager().getEntityManager("JMTSEM");
     }
 
     public ProductInspection getCurrentProductInspection() {

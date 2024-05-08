@@ -41,7 +41,7 @@ public class ClientContactConverter extends ConverterAdapter {
             Client currentClient = (Client) component.getAttributes().get("currentClient");
 
             if (currentClient != null) {
-                contact = Contact.findClientContact(getEntityManager(), value, currentClient);
+                contact = Contact.findClientContact(getEntityManager("JMTSEM"), value, currentClient);
                 if (contact == null) {
                     // This means the contact was not found.
                     // NB: The addres created here will be invalid because it may

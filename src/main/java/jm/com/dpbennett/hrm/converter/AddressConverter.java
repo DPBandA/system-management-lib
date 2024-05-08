@@ -35,7 +35,7 @@ public class AddressConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Address address = Address.findAddressByName(getEntityManager(), value);
+        Address address = Address.findAddressByName(getEntityManager("JMTSEM"), value);
 
         if (address == null) {
             address = new Address(value);

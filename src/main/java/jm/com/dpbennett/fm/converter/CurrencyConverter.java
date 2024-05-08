@@ -36,7 +36,7 @@ public class CurrencyConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Currency currency = Currency.findByName(getEntityManager(), value);
+        Currency currency = Currency.findByName(getEntityManager("FMEM"), value);
 
         if (currency == null) {
             currency = new Currency(value);

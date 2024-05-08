@@ -24,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
@@ -36,7 +35,7 @@ public class ActiveDepartmentConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
      
-        Department department = Department.findActiveDepartmentByName(getEntityManager(), value);
+        Department department = Department.findActiveDepartmentByName(getEntityManager("JMTSEM"), value);
 
         if (department == null) {
             department = new Department(value);

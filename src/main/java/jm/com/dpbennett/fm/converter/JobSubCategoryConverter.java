@@ -34,7 +34,7 @@ public class JobSubCategoryConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        JobSubCategory jobSubCategory = JobSubCategory.findJobSubCategoryByName(getEntityManager(), value);
+        JobSubCategory jobSubCategory = JobSubCategory.findJobSubCategoryByName(getEntityManager("FMEM"), value);
         
         if (jobSubCategory == null) {
             jobSubCategory = new JobSubCategory(value);

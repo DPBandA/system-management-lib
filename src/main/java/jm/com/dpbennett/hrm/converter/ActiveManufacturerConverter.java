@@ -35,7 +35,7 @@ public class ActiveManufacturerConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
       
-       Manufacturer manufacturer = Manufacturer.findActiveManufacturerByName(getEntityManager(), submittedValue, Boolean.FALSE);
+       Manufacturer manufacturer = Manufacturer.findActiveManufacturerByName(getEntityManager("JMTSEM"), submittedValue, Boolean.FALSE);
 
         if (manufacturer == null) {
             manufacturer = new Manufacturer(submittedValue);

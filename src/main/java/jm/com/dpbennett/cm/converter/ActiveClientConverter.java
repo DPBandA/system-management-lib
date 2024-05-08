@@ -36,7 +36,7 @@ public class ActiveClientConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
       
-       Client client = Client.findActiveClientByName(getEntityManager(), submittedValue, Boolean.FALSE);
+       Client client = Client.findActiveClientByName(getEntityManager("JMTSEM"), submittedValue, Boolean.FALSE);
 
         if (client == null) {
             client = new Client(submittedValue);

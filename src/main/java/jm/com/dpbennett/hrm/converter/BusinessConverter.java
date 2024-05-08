@@ -35,7 +35,7 @@ public class BusinessConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Business business = Business.findBusinessByName(getEntityManager(), value);
+        Business business = Business.findBusinessByName(getEntityManager("JMTSEM"), value);
 
         if (business == null) {
             business = new Business(value);

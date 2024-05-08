@@ -36,7 +36,7 @@ public class TaxConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Tax tax = Tax.findByName(getEntityManager(), value);
+        Tax tax = Tax.findByName(getEntityManager("FMEM"), value);
 
         if (tax == null) {
             tax = new Tax(value);

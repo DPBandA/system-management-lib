@@ -42,7 +42,7 @@ public class AssetManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager1();
+        return getSystemManager().getEntityManager("FMEM");
 
     }
 

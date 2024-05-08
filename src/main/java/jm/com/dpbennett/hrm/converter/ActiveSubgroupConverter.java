@@ -35,7 +35,7 @@ public class ActiveSubgroupConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
      
-        Subgroup subgroup = Subgroup.findActiveSubgroupByName(getEntityManager(), value);
+        Subgroup subgroup = Subgroup.findActiveSubgroupByName(getEntityManager("JMTSEM"), value);
 
         if (subgroup == null) {
             subgroup = new Subgroup(value);

@@ -36,7 +36,7 @@ public class AccountingCodeConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        AccountingCode accountingCode = AccountingCode.findByName(getEntityManager(), value);
+        AccountingCode accountingCode = AccountingCode.findByName(getEntityManager("FMEM"), value);
 
         if (accountingCode == null) {
             accountingCode = new AccountingCode(value);

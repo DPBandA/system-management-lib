@@ -110,7 +110,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager1();
+        return getSystemManager().getEntityManager("SMEM");
     }
 
     public Boolean getIsActivePostsOnly() {

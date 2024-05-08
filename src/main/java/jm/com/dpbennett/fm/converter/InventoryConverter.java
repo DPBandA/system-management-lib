@@ -36,7 +36,7 @@ public class InventoryConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         Inventory inventory = 
-                Inventory.findByName(getEntityManager(), value);
+                Inventory.findByName(getEntityManager("FMEM"), value);
 
         if (inventory == null) {
             inventory = new Inventory(value);

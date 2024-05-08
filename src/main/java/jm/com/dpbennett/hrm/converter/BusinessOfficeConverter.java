@@ -36,7 +36,7 @@ public class BusinessOfficeConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
        
-        BusinessOffice office = BusinessOffice.findBusinessOfficeByName(getEntityManager(), value);
+        BusinessOffice office = BusinessOffice.findBusinessOfficeByName(getEntityManager("JMTSEM"), value);
 
         if (office == null) {
             office = new BusinessOffice(value);

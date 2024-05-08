@@ -36,7 +36,7 @@ public class ServiceConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         
-        Service service = Service.findByExactName(getEntityManager(), value);
+        Service service = Service.findByExactName(getEntityManager("FMEM"), value);
 
         if (service == null) {
             service =  new Service(value);

@@ -36,7 +36,7 @@ public class ActiveEmployeeConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
                 
-        Employee employee = Employee.findActiveEmployeeByName(getEntityManager(), value);
+        Employee employee = Employee.findActiveEmployeeByName(getEntityManager("JMTSEM"), value);
 
         if (value == null) {
             employee = new Employee("--", "--");
