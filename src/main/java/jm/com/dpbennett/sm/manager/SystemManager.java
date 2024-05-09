@@ -370,7 +370,7 @@ public final class SystemManager extends GeneralManager {
     public List<Client> completeActiveClient(String query) {
         try {
             return Client.findActiveClientsByAnyPartOfName(
-                    getEntityManager("JMTSEM"), 
+                    getEntityManager1(), 
                     query);
 
         } catch (Exception e) {
@@ -385,7 +385,7 @@ public final class SystemManager extends GeneralManager {
 
         try {
 
-            em = getEntityManager("JMTSEM"); // tk
+            em = getEntityManager1();
             
             List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
 
@@ -2360,7 +2360,7 @@ public final class SystemManager extends GeneralManager {
         
         switch (em) {
             case "JMTS3":
-                return getEntityManager4();
+                return EMF4.createEntityManager();
             case "JMTS":
             default:
                 return getDefaultEntityManager();
