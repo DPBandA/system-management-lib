@@ -1544,12 +1544,14 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 email.getContent("/correspondences/").
                         replace("{JMTSURL}", JMTSURL).
                         replace("{purchaseRequisitionNumber}", prNum).
+                        replace("{supplier}", getSelectedPurchaseRequisition().getSupplier().getName()).
                         replace("{originator}", originator).
                         replace("{department}", department).
                         replace("{requisitionDate}", requisitionDate).
                         replace("{action}", "approved").
                         replace("{description}", description).
                         replace("{approversAndRecommendersList}", approversAndRecommendersList).
+                        replace("{workProgress}", getSelectedPurchaseRequisition().getWorkProgress()).
                         replace("{sender}", sender));
 
         editPurchReqGeneralEmail();
@@ -2214,13 +2216,15 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                                 employee.getLastName()).
                         replace("{JMTSURL}", JMTSURL).
                         replace("{purchaseRequisitionNumber}", prNum).
+                        replace("{supplier}", purchaseRequisition.getSupplier().getName()).
                         replace("{originator}", originator).
                         replace("{department}", department).
                         replace("{requisitionDate}", requisitionDate).
                         replace("{role}", role).
                         replace("{action}", action).
                         replace("{description}", description).
-                        replace("{approversAndRecommendersList}", approversAndRecommendersList),
+                        replace("{approversAndRecommendersList}", approversAndRecommendersList).
+                        replace("{workProgress}", purchaseRequisition.getWorkProgress()),
                 email.getContentType(),
                 em);
     }
