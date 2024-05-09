@@ -2157,7 +2157,6 @@ public class JobManager extends GeneralManager
     public void search() {
 
         doJobSearch();
-        //openJobBrowser();
 
     }
 

@@ -142,10 +142,10 @@ public final class SystemManager extends GeneralManager {
 
         switch (em) {
             case "JMTS3":
-                return getEntityManager4();
+                return EMF4.createEntityManager();
             case "JMTS":
             default:
-                return getEntityManager1();
+                return EMF.createEntityManager();
         }
 
     }
