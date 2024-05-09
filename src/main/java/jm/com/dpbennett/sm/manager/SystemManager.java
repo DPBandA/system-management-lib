@@ -369,7 +369,9 @@ public final class SystemManager extends GeneralManager {
 
     public List<Client> completeActiveClient(String query) {
         try {
-            return Client.findActiveClientsByAnyPartOfName(getEntityManager1(), query);
+            return Client.findActiveClientsByAnyPartOfName(
+                    getEntityManager("JMTSEM"), 
+                    query);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -383,7 +385,8 @@ public final class SystemManager extends GeneralManager {
 
         try {
 
-            em = getEntityManager1();
+            em = getEntityManager("JMTSEM"); // tk
+            
             List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
 
             if (employees != null) {
@@ -401,7 +404,7 @@ public final class SystemManager extends GeneralManager {
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getEntityManager("JMTSEM"); // tk getEntityManager("JMTSEM");
 
             List<Department> departments = Department.findActiveDepartmentsByName(em, query);
 
