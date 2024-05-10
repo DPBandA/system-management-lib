@@ -253,7 +253,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public void okLabel() {
         if (selectedEnergyLabel.getIsDirty()) {
-            selectedEnergyLabel.save(getEntityManager3());
+            selectedEnergyLabel.save(getEntityManager1());
             selectedEnergyLabel.setIsDirty(false);
         }
 
@@ -262,7 +262,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public void saveEnergyLabel() {
 
-            ReturnMessage returnMessage = selectedEnergyLabel.save(getEntityManager3());
+            ReturnMessage returnMessage = selectedEnergyLabel.save(getEntityManager1());
             
             if (returnMessage.isSuccess()) {
 
@@ -463,7 +463,7 @@ public class EnergyLabelManager extends GeneralManager
                 + " OR r.efficiencyRatio LIKE '%" + searchPattern + "%'";
 
         try {
-            labelsFound = (List<EnergyLabel>) getEntityManager3()
+            labelsFound = (List<EnergyLabel>) getEntityManager1()
                     .createQuery(query)
                     .setMaxResults(maxLabelSearchResults)
                     .getResultList();
@@ -488,7 +488,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void onLabelCellEdit(CellEditEvent event) {
-        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager3(),
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
                 getFoundEnergyLabels().get(event.getRowIndex()));
     }
 
@@ -501,10 +501,6 @@ public class EnergyLabelManager extends GeneralManager
         foundEnergyLabels = findLabels(getEnergyLabelSearchText());
     }
 
-    public EntityManager getEntityManager3() {
-
-        return getSystemManager().getEntityManager3();
-    }
 
     @Override
     public EntityManager getEntityManager1() {
