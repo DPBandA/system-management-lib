@@ -787,9 +787,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.supplierSearchText = supplierSearchText;
 
         if (getIsActiveSuppliersOnly()) {
-            foundSuppliers = Supplier.findActiveSuppliersByFirstPartOfName(getEntityManager1(), supplierSearchText);
+            foundSuppliers = Supplier.findActiveSuppliersByAnyPartOfName(getEntityManager1(), supplierSearchText);
         } else {
-            foundSuppliers = Supplier.findSuppliersByFirstPartOfName(getEntityManager1(), supplierSearchText);
+            foundSuppliers = Supplier.findSuppliersByAnyPartOfName(getEntityManager1(), supplierSearchText);
         }
 
     }
