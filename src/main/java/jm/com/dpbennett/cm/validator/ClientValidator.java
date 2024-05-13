@@ -51,7 +51,7 @@ public class ClientValidator implements Validator {
         switch (componentId) {
             case "clientName":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name",
-                        "The character ' is not allowed in the field value.");
+                        "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");
             case "trn":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A.");
             default:

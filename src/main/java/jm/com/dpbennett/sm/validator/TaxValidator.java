@@ -46,14 +46,14 @@ public class TaxValidator implements Validator {
         switch(componentId) {
             case "taxName":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Valid Name Required", 
-                        "The character ' is not allowed in the field value.");            
+                        "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");            
             case "taxValueType":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Valid Type Required", "Please enter a valid type.");               
             case "taxDescription":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Valid Description Required", "Please enter a valid description.");      
             default:
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", 
-                        "The character ' is not allowed in the field value.");
+                        "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");
         }
     }
 }

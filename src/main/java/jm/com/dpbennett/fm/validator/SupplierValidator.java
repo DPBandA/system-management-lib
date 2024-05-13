@@ -52,7 +52,7 @@ public class SupplierValidator implements Validator {
         switch (componentId) {
             case "supplier":
             case "supplierName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Supplier Name", "Please enter a valid name for the suppier.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Supplier Name", "Please enter a valid name for the suppier. The character ' is not allowed in the name. Use the apostrophe (`) character instead.");
             case "trn":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A.");
             default:

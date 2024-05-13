@@ -46,7 +46,7 @@ public class IdentifierValidator implements Validator {
 
         return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
                 "Valid Field Required", 
-                "The character ' is not allowed in the field value.");
+                "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");
 
     }
 }

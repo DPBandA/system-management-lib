@@ -46,7 +46,7 @@ public class DiscountValidator implements Validator {
         switch(componentId) {
             case "discountName":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Valid Name Required", 
-                        "The character ' is not allowed in the field value.");            
+                        "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");            
             case "discountValueType":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Valid Type Required", "Please enter a valid type.");               
             case "discountDescription":

@@ -52,7 +52,7 @@ public class ManufacturerValidator implements Validator {
         switch (componentId) {
             case "manufacturerName":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name",
-                        "The character ' is not allowed in the field value.");
+                        "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");
             default:
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
         }
