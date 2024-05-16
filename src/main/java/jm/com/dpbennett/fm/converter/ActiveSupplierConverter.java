@@ -26,16 +26,12 @@ import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.pm.Supplier;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
-/**
- *
- * @author desbenn
- */
 @FacesConverter("activeSupplierConverter")
 public class ActiveSupplierConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
       
-       Supplier supplier = Supplier.findActiveSupplierByName(getEntityManager("FMEM"), value, false);
+       Supplier supplier = Supplier.findActiveByName(getEntityManager("FMEM"), value, false);
 
         if (supplier == null) {
             supplier = new Supplier(value);

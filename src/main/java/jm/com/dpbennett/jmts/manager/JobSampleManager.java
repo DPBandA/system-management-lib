@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -259,14 +259,14 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
 
         // Update department
         if (!getCurrentJob().getDepartment().getName().equals("")) {
-            Department department = Department.findDepartmentByName(em, getCurrentJob().getDepartment().getName());
+            Department department = Department.findByName(em, getCurrentJob().getDepartment().getName());
             if (department != null) {
                 getCurrentJob().setDepartment(department);
             }
         }
         // Update subcontracted department
         if (!getCurrentJob().getSubContractedDepartment().getName().equals("")) {
-            Department subContractedDepartment = Department.findDepartmentByName(em, getCurrentJob().getSubContractedDepartment().getName());
+            Department subContractedDepartment = Department.findByName(em, getCurrentJob().getSubContractedDepartment().getName());
             getCurrentJob().setSubContractedDepartment(subContractedDepartment);
         }
 

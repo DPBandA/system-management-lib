@@ -35,7 +35,7 @@ public class ActiveDepartmentConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
      
-        Department department = Department.findActiveDepartmentByName(getEntityManager("JMTSEM"), value);
+        Department department = Department.findActiveByName(getEntityManager("JMTSEM"), value);
 
         if (department == null) {
             department = new Department(value);

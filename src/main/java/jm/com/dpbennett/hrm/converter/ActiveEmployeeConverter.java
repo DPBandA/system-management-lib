@@ -24,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
@@ -36,7 +35,7 @@ public class ActiveEmployeeConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
                 
-        Employee employee = Employee.findActiveEmployeeByName(getEntityManager("JMTSEM"), value);
+        Employee employee = Employee.findActiveByName(getEntityManager("JMTSEM"), value);
 
         if (value == null) {
             employee = new Employee("--", "--");

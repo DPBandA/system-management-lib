@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -984,10 +984,10 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
         Job foundJob = Job.findJobById(em, job.getId());
 
-        if (Department.findDepartmentAssignedToJob(foundJob, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
+        if (Department.findAssignedToJob(foundJob, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
             return true;
-        } else if ((Department.findDepartmentAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
-                && Department.findDepartmentAssignedToJob(foundJob, em).getActingHeadActive()) {
+        } else if ((Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
+                && Department.findAssignedToJob(foundJob, em).getActingHeadActive()) {
             return true;
         } else {
             return false;

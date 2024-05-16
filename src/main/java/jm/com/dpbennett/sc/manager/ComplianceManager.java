@@ -1848,11 +1848,11 @@ public class ComplianceManager extends GeneralManager
 
         try {
 
-            Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
+            Employee inspector = Employee.findByName(em, currentComplianceSurvey.getInspector().getName());
             if (inspector != null) {
                 currentComplianceSurvey.setInspector(inspector);
             } else {
-                currentComplianceSurvey.setInspector(Employee.findDefaultEmployee(em, "--", "--", true));
+                currentComplianceSurvey.setInspector(Employee.findDefault(em, "--", "--", true));
             }
 
             if (currentComplianceSurvey.getRequestForDetentionIssuedForPortOfEntry()) {

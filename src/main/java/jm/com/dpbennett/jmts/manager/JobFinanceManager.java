@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -321,9 +321,9 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
-        getCurrentJob().setSubContractedDepartment(Department.findDefaultDepartment(
+        getCurrentJob().setSubContractedDepartment(Department.findDefault(
                 getEntityManager1(), "--"));
-        getCurrentJob().setClient(Client.findActiveDefaultClient(
+        getCurrentJob().setClient(Client.findActiveDefault(
                 getEntityManager1(), "--", true));
         getCurrentJob().setBillingAddress(getCurrentJob().getClient().getAddresses().get(0));
         getCurrentJob().setContact(getCurrentJob().getClient().getContacts().get(0));
@@ -2625,8 +2625,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 parameters.put("creditClient", "No");
             }
             parameters.put("contactEmail", getCurrentJob().getContact().getInternet().getEmail1());
-            parameters.put("responsibleDepartment", Department.findDepartmentAssignedToJob(getCurrentJob(), em).getName());
-            parameters.put("departmentCode", Department.findDepartmentAssignedToJob(getCurrentJob(), em).getCode());
+            parameters.put("responsibleDepartment", Department.findAssignedToJob(getCurrentJob(), em).getName());
+            parameters.put("departmentCode", Department.findAssignedToJob(getCurrentJob(), em).getCode());
             parameters.put("dateAndTimePrepared",
                     DateUtils.formatDateAndTime(getCurrentJob().getJobStatusAndTracking().getDateCostingCompleted()));
             if (getCurrentJob().getClient().getCreditLimit() > 0) {
@@ -3181,7 +3181,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public void updateTotalDeposit() {
         EntityManager em = getEntityManager1();
 
-        Employee employee = Employee.findEmployeeById(em, getUser().getEmployee().getId());
+        Employee employee = Employee.findById(em, getUser().getEmployee().getId());
         if (employee != null) {
             getCurrentJob().getJobCostingAndPayment().setLastPaymentEnteredBy(employee);
         }
@@ -3247,11 +3247,11 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         EntityManager em = getEntityManager1();
 
         if (job.getDepartment().getId() != null) {
-            if (Department.findDepartmentAssignedToJob(job, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
+            if (Department.findAssignedToJob(job, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
                 return true;
             } else {
-                return (Department.findDepartmentAssignedToJob(job, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
-                        && Department.findDepartmentAssignedToJob(job, em).getActingHeadActive();
+                return (Department.findAssignedToJob(job, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
+                        && Department.findAssignedToJob(job, em).getActingHeadActive();
             }
         } else {
             return false;
@@ -3539,7 +3539,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
             // Validate and save objects
             // Department
-            Department department = Department.findDepartmentByName(em, getCurrentUnitCost().getDepartment().getName());
+            Department department = Department.findByName(em, getCurrentUnitCost().getDepartment().getName());
             if (department == null) {
                 //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid department was not entered.");
 
@@ -3651,7 +3651,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             message = message + "<span style='font-weight:bold'>Department: </span>" + job.getDepartment().getName() + "<br>";
         }
         message = message + "<span style='font-weight:bold'>Date submitted: </span>" + formatter.format(job.getJobStatusAndTracking().getDateSubmitted()) + "<br>";
-        message = message + "<span style='font-weight:bold'>Department/Unit Head: </span>" + BusinessEntityUtils.getPersonFullName(Department.findDepartmentAssignedToJob(job, em).getHead(), false) + "<br>";
+        message = message + "<span style='font-weight:bold'>Department/Unit Head: </span>" + BusinessEntityUtils.getPersonFullName(Department.findAssignedToJob(job, em).getHead(), false) + "<br>";
         message = message + "<span style='font-weight:bold'>Task/Sample descriptions: </span>" + job.getJobSampleDescriptions() + "<br><br>";
         message = message + "If this email was sent to you in error, please contact the department referred to above.<br><br>";
         message = message + "This email was automatically generated and sent by the <a href='http://boshrmapp:8080/jmts'>JMTS</a>. Please DO NOT reply.<br><br>";
@@ -3874,7 +3874,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         if (getCurrentJob().getId() != null) {
             if (isJobCostingAndPaymentDirty()) {
-                Employee employee = Employee.findEmployeeById(getEntityManager1(), getUser().getEmployee().getId());
+                Employee employee = Employee.findById(getEntityManager1(), getUser().getEmployee().getId());
                 if (employee != null) {
                     getCurrentJob().getJobCostingAndPayment().setLastPaymentEnteredBy(employee);
                 }
@@ -3962,7 +3962,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         EntityManager em = getEntityManager1();
 
         return ((isUserDepartmentSupervisor(job)
-                || (getUser().isMemberOf(em, Department.findDepartmentAssignedToJob(job, em))
+                || (getUser().isMemberOf(em, Department.findAssignedToJob(job, em))
                 && getUser().can("ApproveJobCosting")))
                 && !job.getJobCostingAndPayment().getInvoiced()
                 && job.getJobCostingAndPayment().getCostingCompleted());
@@ -4084,7 +4084,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
             List<JobCostingAndPayment> results
                     = JobCostingAndPayment.findAllActiveJobCostingAndPaymentsByDepartmentAndName(em,
-                            Department.findDepartmentAssignedToJob(getCurrentJob(), em).getName(), query);
+                            Department.findAssignedToJob(getCurrentJob(), em).getName(), query);
 
             return results;
 
@@ -4102,7 +4102,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             em = getEntityManager1();
 
             List<JobCostingAndPayment> results = JobCostingAndPayment.findAllJobCostingAndPaymentsByDepartmentAndName(em,
-                    Department.findDepartmentAssignedToJob(getCurrentJob(), em).getName(), query);
+                    Department.findAssignedToJob(getCurrentJob(), em).getName(), query);
 
             return results;
 
@@ -4244,7 +4244,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         try {
             em = getEntityManager1();
             if (currentUnitCost.getDepartment().getName() != null) {
-                Department department = Department.findDepartmentByName(em, currentUnitCost.getDepartment().getName());
+                Department department = Department.findByName(em, currentUnitCost.getDepartment().getName());
                 if (department != null) {
                     currentUnitCost.setDepartment(department);
                     setIsDirty(true);
@@ -4300,7 +4300,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         try {
             em = getEntityManager1();
             if (unitCostDepartment.getName() != null) {
-                Department department = Department.findDepartmentByName(em, unitCostDepartment.getName());
+                Department department = Department.findByName(em, unitCostDepartment.getName());
                 if (department != null) {
                     unitCostDepartment = department;
                 }
@@ -4317,7 +4317,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         try {
             em = getEntityManager1();
             if (jobCostDepartment.getName() != null) {
-                Department department = Department.findDepartmentByName(em, jobCostDepartment.getName());
+                Department department = Department.findByName(em, jobCostDepartment.getName());
                 if (department != null) {
                     jobCostDepartment = department;
                 }
@@ -4462,7 +4462,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             EntityManager em = getEntityManager1();
             JobCostingAndPayment jcp
                     = JobCostingAndPayment.findActiveJobCostingAndPaymentByDepartmentAndName(em,
-                            Department.findDepartmentAssignedToJob(getCurrentJob(), em).getName(),
+                            Department.findAssignedToJob(getCurrentJob(), em).getName(),
                             selectedJobCostingTemplate);
             if (jcp != null) {
                 getCurrentJob().getJobCostingAndPayment().getCostComponents().clear();
@@ -4708,7 +4708,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         Long id = (Long) SystemOption.getOptionValueObject(em, option);
 
-        Department department = Department.findDepartmentById(em, id);
+        Department department = Department.findById(em, id);
         em.refresh(department);
 
         if (department != null) {

@@ -518,7 +518,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void updateDepartmentResponsible() {
         if (currentDocument.getResponsibleDepartment().getId() != null) {
-            currentDocument.setResponsibleDepartment(Department.findDepartmentById(getEntityManager1(),
+            currentDocument.setResponsibleDepartment(Department.findById(getEntityManager1(),
                     currentDocument.getResponsibleDepartment().getId()));
             if (currentDocument.getAutoGenerateNumber()) {
                 currentDocument.setNumber(LegalDocument.getLegalDocumentNumber(currentDocument, "ED"));
@@ -552,16 +552,16 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         if (getUser().getId() != null) {
             if (getUser().getEmployee() != null) {
-                legalDocument.setResponsibleOfficer(Employee.findEmployeeById(em, getUser().getEmployee().getId()));
-                legalDocument.setResponsibleDepartment(Department.findDepartmentById(em, getUser().getEmployee().getDepartment().getId()));
+                legalDocument.setResponsibleOfficer(Employee.findById(em, getUser().getEmployee().getId()));
+                legalDocument.setResponsibleDepartment(Department.findById(em, getUser().getEmployee().getDepartment().getId()));
             }
         } else {
-            legalDocument.setResponsibleOfficer(Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true));
-            legalDocument.setResponsibleDepartment(Department.findDefaultDepartment(em, "--"));
+            legalDocument.setResponsibleOfficer(Employee.findDefault(getEntityManager1(), "--", "--", true));
+            legalDocument.setResponsibleDepartment(Department.findDefault(em, "--"));
         }
 
-        legalDocument.setRequestingDepartment(Department.findDefaultDepartment(em, "--"));
-        legalDocument.setSubmittedBy(Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true));
+        legalDocument.setRequestingDepartment(Department.findDefault(em, "--"));
+        legalDocument.setSubmittedBy(Employee.findDefault(getEntityManager1(), "--", "--", true));
         legalDocument.setDocumentType(DocumentType.findDefaultDocumentType(em, "--"));
         legalDocument.setClassification(Classification.findClassificationByName(em, "--"));
         legalDocument.setDocumentForm("H");

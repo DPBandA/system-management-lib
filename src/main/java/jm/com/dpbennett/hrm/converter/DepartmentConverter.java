@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +35,7 @@ public class DepartmentConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Department department = Department.findDepartmentByName(getEntityManager("JMTSEM"), value);
+        Department department = Department.findByName(getEntityManager("JMTSEM"), value);
 
         if (department == null) {
             department = new Department(value);

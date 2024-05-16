@@ -183,7 +183,7 @@ public final class SystemManager extends GeneralManager {
         EntityManager em = getEntityManager1();
 
         selectedUser = new User();
-        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+        selectedUser.setEmployee(Employee.findDefault(em, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
 
         openRegistrationDialog();
@@ -371,7 +371,7 @@ public final class SystemManager extends GeneralManager {
 
     public List<Client> completeActiveClient(String query) {
         try {
-            return Client.findActiveClientsByAnyPartOfName(
+            return Client.findActive(
                     getEntityManager1(),
                     query);
 
@@ -389,7 +389,7 @@ public final class SystemManager extends GeneralManager {
 
             em = getEntityManager1();
 
-            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+            List<Employee> employees = Employee.findActive(em, query);
 
             if (employees != null) {
                 return employees;
@@ -406,9 +406,9 @@ public final class SystemManager extends GeneralManager {
         EntityManager em;
 
         try {
-            em = getEntityManager("JMTSEM"); // tk getEntityManager("JMTSEM");
+            em = getEntityManager1();
 
-            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
+            List<Department> departments = Department.findActive(em, query);
 
             return departments;
 
@@ -869,15 +869,15 @@ public final class SystemManager extends GeneralManager {
     public void updateSelectedUserEmployee() {
         if (selectedUser.getEmployee() != null) {
             if (selectedUser.getEmployee().getId() != null) {
-                selectedUser.setEmployee(Employee.findEmployeeById(getEntityManager1(), selectedUser.getEmployee().getId()));
+                selectedUser.setEmployee(Employee.findById(getEntityManager1(), selectedUser.getEmployee().getId()));
             } else {
-                Employee employee = Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true);
+                Employee employee = Employee.findDefault(getEntityManager1(), "--", "--", true);
                 if (selectedUser.getEmployee() != null) {
                     selectedUser.setEmployee(employee);
                 }
             }
         } else {
-            Employee employee = Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true);
+            Employee employee = Employee.findDefault(getEntityManager1(), "--", "--", true);
             if (selectedUser.getEmployee() != null) {
                 selectedUser.setEmployee(employee);
             }
@@ -935,7 +935,7 @@ public final class SystemManager extends GeneralManager {
         EntityManager em = getEntityManager1();
 
         selectedUser = new User();
-        selectedUser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+        selectedUser.setEmployee(Employee.findDefault(em, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
 
         editUser();

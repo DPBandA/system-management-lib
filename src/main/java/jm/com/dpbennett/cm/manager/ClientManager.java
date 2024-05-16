@@ -102,7 +102,8 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public List<Client> completeActiveClient(String query) {
         try {
-            return Client.findActiveClientsByAnyPartOfName(getEntityManager1(), query);
+            
+            return Client.findActive(getEntityManager1(), query);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -650,7 +651,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         EntityManager em = getEntityManager1();
 
         try {
-            List<Client> clients = Client.findActiveClientsByAnyPartOfName(em, query);
+            List<Client> clients = Client.findActive(em, query);
 
             return clients;
 
@@ -673,9 +674,9 @@ public class ClientManager extends GeneralManager implements Serializable {
             case "Clients":
                 if (searchText.trim().length() > 1) {
                     if (getIsActiveClientsOnly()) {
-                        foundClients = Client.findActiveClientsByAnyPartOfName(getEntityManager1(), searchText);
+                        foundClients = Client.findActive(getEntityManager1(), searchText);
                     } else {
-                        foundClients = Client.findClientsByAnyPartOfName(getEntityManager1(), searchText);
+                        foundClients = Client.find(getEntityManager1(), searchText);
                     }
                 } else {
                     foundClients = new ArrayList<>();

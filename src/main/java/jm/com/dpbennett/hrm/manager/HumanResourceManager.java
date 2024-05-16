@@ -267,24 +267,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         try {
 
             em = getEntityManager1();
-            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
-
-            if (employees != null) {
-                return employees;
-            } else {
-                return new ArrayList<>();
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Employee> completeActiveEmployee(EntityManager em, String query) {
-
-        try {
-
-            List<Employee> employees = Employee.findActiveEmployeesByName(em, query);
+            List<Employee> employees = Employee.findAllActiveByName(em, query);
 
             if (employees != null) {
                 return employees;
@@ -323,20 +306,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         try {
             em = getEntityManager1();
 
-            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
-
-            return departments;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Department> completeActiveDepartment(EntityManager em, String query) {
-
-        try {
-
-            List<Department> departments = Department.findActiveDepartmentsByName(em, query);
+            List<Department> departments = Department.findActive(em, query);
 
             return departments;
 
@@ -577,7 +547,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Department> getFoundDepartments() {
         if (foundDepartments == null) {
-            foundDepartments = Department.findAllActiveDepartments(getEntityManager1());
+            foundDepartments = Department.findAllActive(getEntityManager1());
         }
         return foundDepartments;
     }
@@ -854,7 +824,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public Employee getSelectedEmployee() {
 
         if (selectedEmployee == null) {
-            selectedEmployee = Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true);
+            selectedEmployee = Employee.findDefault(getEntityManager1(), "--", "--", true);
         }
 
         return selectedEmployee;
@@ -863,7 +833,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void setSelectedEmployee(Employee selectedEmployee) {
         this.selectedEmployee = selectedEmployee;
 
-        this.selectedEmployee = Employee.findEmployeeById(getEntityManager1(), selectedEmployee.getId());
+        this.selectedEmployee = Employee.findById(getEntityManager1(), selectedEmployee.getId());
 
     }
 
@@ -920,18 +890,18 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void updateSelectedEmployeeDepartment() {
         if (selectedEmployee.getDepartment() != null) {
             if (selectedEmployee.getDepartment().getId() != null) {
-                selectedEmployee.setDepartment(Department.findDepartmentById(getEntityManager1(), selectedEmployee.getDepartment().getId()));
+                selectedEmployee.setDepartment(Department.findById(getEntityManager1(), selectedEmployee.getDepartment().getId()));
             } else {
-                selectedEmployee.setDepartment(Department.findDefaultDepartment(getEntityManager1(), "--"));
+                selectedEmployee.setDepartment(Department.findDefault(getEntityManager1(), "--"));
             }
         }
     }
 
     public void updateSelectedDepartmentHead() {
         if (selectedDepartment.getHead().getId() != null) {
-            selectedDepartment.setHead(Employee.findEmployeeById(getEntityManager1(), selectedDepartment.getHead().getId()));
+            selectedDepartment.setHead(Employee.findById(getEntityManager1(), selectedDepartment.getHead().getId()));
         } else {
-            selectedDepartment.setHead(Employee.findDefaultEmployee(getEntityManager1(), "--", "--", true));
+            selectedDepartment.setHead(Employee.findDefault(getEntityManager1(), "--", "--", true));
         }
     }
 
@@ -973,7 +943,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void addSubgroupDepartments() {
-        List<Department> source = Department.findAllActiveDepartments(getEntityManager1());
+        List<Department> source = Department.findAllActive(getEntityManager1());
         List<Department> target = selectedSubgroup.getDepartments();
         source.removeAll(target);
 
@@ -983,7 +953,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void addDepartmentStaff() {
-        List<Employee> source = Employee.findAllActiveEmployees(getEntityManager1());
+        List<Employee> source = Employee.findAllActive(getEntityManager1());
         List<Employee> target = selectedDepartment.getStaff();
 
         source.removeAll(target);
@@ -1019,7 +989,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void addDivisionDepartments() {
-        List<Department> source = Department.findAllActiveDepartments(getEntityManager1());
+        List<Department> source = Department.findAllActive(getEntityManager1());
         List<Department> target = selectedDivision.getDepartments();
 
         source.removeAll(target);
@@ -1060,7 +1030,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void addBusinessDepartments() {
-        List<Department> source = Department.findAllActiveDepartments(getEntityManager1());
+        List<Department> source = Department.findAllActive(getEntityManager1());
         List<Department> target = selectedBusiness.getDepartments();
 
         source.removeAll(target);
@@ -1103,16 +1073,16 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public List<Department> getDepartments() {
-        return Department.findAllDepartments(getEntityManager1());
+        return Department.findAllActive(getEntityManager1());
     }
 
     public List<Employee> getEmployees() {
-        return Employee.findAllEmployees(getEntityManager1());
+        return Employee.findAll(getEntityManager1());
     }
 
     public List<Employee> getFoundEmployees() {
         if (foundEmployees == null) {
-            foundEmployees = Employee.findAllActiveEmployees(getEntityManager1());
+            foundEmployees = Employee.findAllActive(getEntityManager1());
         }
 
         return foundEmployees;
@@ -1487,10 +1457,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         switch (searchType) {
             case "Employees":
                 if (getIsActiveEmployeesOnly()) {
-                    foundEmployees = Employee.findActiveEmployees(getEntityManager1(),
+                    foundEmployees = Employee.findActive(getEntityManager1(),
                             searchText);
                 } else {
-                    foundEmployees = Employee.findEmployees(getEntityManager1(),
+                    foundEmployees = Employee.find(getEntityManager1(),
                             searchText);
                 }
 
@@ -1507,10 +1477,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 break;
             case "Departments":
                 if (getIsActiveDepartmentsOnly()) {
-                    foundDepartments = Department.findActiveDepartmentsByName(getEntityManager1(),
+                    foundDepartments = Department.findActive(getEntityManager1(),
                             searchText);
                 } else {
-                    foundDepartments = Department.findDepartmentsByName(getEntityManager1(),
+                    foundDepartments = Department.findAllByName(getEntityManager1(),
                             searchText);
                 }
 

@@ -1772,7 +1772,7 @@ public class ReportManager extends GeneralManager {
 
             // Insert data at top of sheet
             //  Department name
-            Department department = Department.findDepartmentById(em, departmentId);
+            Department department = Department.findById(em, departmentId);
             ReportUtils.setExcelCellValue(wb, rawData, 0, 1,
                     department.getName(),
                     "java.lang.String", stringCellStyle);
@@ -2013,7 +2013,7 @@ public class ReportManager extends GeneralManager {
         }
         // Insert data at top of sheet
         // Department name
-        Department department = Department.findDepartmentById(em, departmentId);
+        Department department = Department.findById(em, departmentId);
         ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, 0, 1,
                 department.getName(),
                 "java.lang.String", stringCellStyle);
@@ -2114,7 +2114,7 @@ public class ReportManager extends GeneralManager {
         }
         // Insert data at top of sheet
         // Department name
-        Department department = Department.findDepartmentById(em, departmentId);
+        Department department = Department.findById(em, departmentId);
         ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, 0, 1,
                 department.getName(),
                 "java.lang.String", stringCellStyle);
@@ -2215,7 +2215,7 @@ public class ReportManager extends GeneralManager {
         }
         // Insert data at top of sheet
         // Department name
-        Department department = Department.findDepartmentById(em, departmentId);
+        Department department = Department.findById(em, departmentId);
         ReportUtils.setExcelCellValue(wb, factoryInspectionsSheet, 0, 1,
                 department.getName(),
                 "java.lang.String", stringCellStyle);

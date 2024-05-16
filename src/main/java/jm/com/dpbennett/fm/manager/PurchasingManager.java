@@ -787,9 +787,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.supplierSearchText = supplierSearchText;
 
         if (getIsActiveSuppliersOnly()) {
-            foundSuppliers = Supplier.findActiveSuppliersByAnyPartOfName(getEntityManager1(), supplierSearchText);
+            foundSuppliers = Supplier.findActive(getEntityManager1(), supplierSearchText);
         } else {
-            foundSuppliers = Supplier.findSuppliersByAnyPartOfName(getEntityManager1(), supplierSearchText);
+            foundSuppliers = Supplier.find(getEntityManager1(), supplierSearchText);
         }
 
     }
@@ -826,7 +826,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public List<Supplier> completeActiveSupplier(String query) {
         try {
-            return Supplier.findActiveSuppliersByAnyPartOfName(getEntityManager1(), query);
+            return Supplier.findActive(getEntityManager1(), query);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -1156,10 +1156,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             if (!getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")) {
 
                 selectedPurchaseRequisition.setPurchasingDepartment(
-                        Department.findDefaultDepartment(em,
+                        Department.findDefault(em,
                                 "--"));
                 selectedPurchaseRequisition.setProcurementOfficer(
-                        Employee.findDefaultEmployee(em,
+                        Employee.findDefault(em,
                                 "--", "--", false));
                 getSelectedPurchaseRequisition().setDateOfCompletion(null);
 
@@ -2084,7 +2084,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             String action) {
 
         List<Employee> procurementOfficers = Employee.
-                findActiveEmployeesByPosition(em,
+                findActiveByPosition(em,
                         "Procurement Officer");
 
         for (Employee procurementOfficer : procurementOfficers) {
@@ -2114,7 +2114,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             String action) {
 
         List<Employee> procurementOfficers = Employee.
-                findActiveEmployeesByPosition(em,
+                findActiveByPosition(em,
                         "Procurement Officer");
 
         for (Employee procurementOfficer : procurementOfficers) {

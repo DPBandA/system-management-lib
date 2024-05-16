@@ -124,17 +124,6 @@ public class JobManager extends GeneralManager
         init();
     }
 
-    public List<Department> completeActiveDepartment(String query) {
-
-        return getHumanResourceManager().completeActiveDepartment(getEntityManager1(), query);
-    }
-
-    public List<Employee> completeActiveEmployee(String query) {
-
-        return getHumanResourceManager().completeActiveEmployee(getEntityManager1(), query);
-
-    }
-
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -1910,7 +1899,9 @@ public class JobManager extends GeneralManager
     }
 
     public Boolean getIsClientNameValid() {
+
         return BusinessEntityUtils.validateText(currentJob.getClient().getName());
+
     }
 
     public Boolean getIsBillingAddressNameValid() {
@@ -2489,7 +2480,7 @@ public class JobManager extends GeneralManager
     public User createNewUser(EntityManager em) {
         User jmuser = new User();
 
-        jmuser.setEmployee(Employee.findDefaultEmployee(em, "--", "--", true));
+        jmuser.setEmployee(Employee.findDefault(em, "--", "--", true));
 
         return jmuser;
     }
