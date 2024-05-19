@@ -123,6 +123,16 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
+    
+    public List<BusinessOffice> getAllActiveBusinessOffices() {
+        
+        return BusinessOffice.findAllActiveBusinessOffices(getEntityManager1());
+    }
+    
+    public List<Classification> getAllActiveJobClassifications() {
+        
+        return Classification.findActiveClassificationsByCategory(getEntityManager1(), "Job");
+    }
 
     @Override
     public boolean handleTabChange(String tabTitle) {
@@ -2057,8 +2067,14 @@ public class JobManager extends GeneralManager
         currentJob.getJobStatusAndTracking().setExpectedDateOfCompletion(selectedDate);
 
         setIsDirty(true);
+    }   
+    
+    
+    public List<Address> getCurrentJobClientAddresses() {
+        
+        return getCurrentJob().getClient().getAddresses();
     }
-
+    
     public List<Address> completeClientAddress(String query) {
         List<Address> addresses = new ArrayList<>();
 
@@ -2076,6 +2092,11 @@ public class JobManager extends GeneralManager
             System.out.println(e);
             return new ArrayList<>();
         }
+    }
+    
+    public List<Contact> getCurrentJobClientContacts() {
+        
+        return getCurrentJob().getClient().getContacts();
     }
 
     public List<Contact> completeClientContact(String query) {

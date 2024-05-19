@@ -41,6 +41,7 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.cm.model.LazyClientDataModel;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -65,12 +66,18 @@ public class ClientManager extends GeneralManager implements Serializable {
     private Boolean edit;
     private String clientDialogTitle;
     private String clientSearchText;
+    private LazyClientDataModel lazyClientDataModel;
 
     /**
      * Creates a new instance of ClientManager
      */
     public ClientManager() {
         init();
+    }
+    
+    public LazyClientDataModel getLazyClientDataModel() {
+        
+        return lazyClientDataModel;
     }
 
     public String getClientSearchText() {
@@ -211,6 +218,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         selectedContact = null;
         selectedAddress = null;
         clientSearchText = "";
+        lazyClientDataModel = new LazyClientDataModel(); //tk
     }
 
     public Client getSelectedClient() {
