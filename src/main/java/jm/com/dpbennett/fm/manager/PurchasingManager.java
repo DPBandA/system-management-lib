@@ -1895,7 +1895,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             parameters.put("QEMS_PO_Footnote3", footNote3);
             parameters.put("QEMS_PO_Footnote4", footNote4);
 
-            parameters.put("purposeOfOrder", getSelectedPurchaseRequisition().getDescription());
+            parameters.put("purposeOfOrder",
+                    "Purpose: " + getSelectedPurchaseRequisition().getDescription());
 
             parameters.put("shippingInstructions",
                     getSelectedPurchaseRequisition().getShippingInstructions());
@@ -1906,7 +1907,21 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             parameters.put("deliveryDateRequired",
                     BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                             getDeliveryDateRequired()));
-            parameters.put("pleaseSupply", getSelectedPurchaseRequisition().getPleaseSupplyNote());
+
+            if (getSelectedPurchaseRequisition().getPleaseSupplyNote().isEmpty()) {
+                if (getSelectedPurchaseRequisition().getSupplier().getIdentificationType().contains("TRN")) {
+                    parameters.put("pleaseSupply",
+                            "TRN: " + getSelectedPurchaseRequisition().getSupplier().getIdentification());
+                }
+            } else {
+                if (getSelectedPurchaseRequisition().getSupplier().getIdentificationType().contains("TRN")) {
+                    parameters.put("pleaseSupply",
+                            getSelectedPurchaseRequisition().getPleaseSupplyNote() + ", TRN: " + getSelectedPurchaseRequisition().getSupplier().getIdentification());
+                } else {
+                    parameters.put("pleaseSupply", getSelectedPurchaseRequisition().getPleaseSupplyNote());
+                }
+            }
+
             parameters.put("importLicenseDate",
                     BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                             getImportLicenceDate()));
