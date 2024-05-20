@@ -123,6 +123,28 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public void okCashPayment() {
+
+        selectedCashPayment.save(getEntityManager1());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+
+    public void cancelCashPaymentEdit() {
+        selectedCashPayment.setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public List getPaymentTypes() {
+        return FinancialUtils.getPaymentTypes(getEntityManager1());
+    }
+
+    public List getPaymentPurposes() {
+        return FinancialUtils.getPaymentPurposes(getEntityManager1());
+    }
+
     public List<PurchaseRequisition> getProcurementTasks() {
 
         EntityManager em = getEntityManager1();
@@ -1598,10 +1620,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public List getCostTypeList() {
         return FinancialUtils.getCostTypeList(getEntityManager1());
-    }
-
-    public List getPaymentTypes() {
-        return FinancialUtils.getPaymentTypes(getEntityManager1());
     }
 
     public Boolean getIsSupplierNameValid() {
