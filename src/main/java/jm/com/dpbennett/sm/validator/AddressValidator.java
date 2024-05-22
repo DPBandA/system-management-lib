@@ -70,7 +70,7 @@ public class AddressValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "billingAddress":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Billing Address", "Please ensure that all billing address fields are entered and contain valid characters. The characters \" ' and ; are NOT allowed.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Billing Address", "Please ensure that all billing address fields are entered and contain valid characters. The characters \", ' and ; are NOT allowed.");
             case "invalidBillingAddress":
                 return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Billing Address", "Please enter a valid Billing Address.");
             default:

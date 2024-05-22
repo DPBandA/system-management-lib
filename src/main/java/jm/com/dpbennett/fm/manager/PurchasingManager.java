@@ -202,7 +202,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width("300px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -241,7 +241,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.selectedCashPayment = selectedCashPayment;
     }
 
-    public void createNewCashPayment() {
+    public void createNewCashPayment(ActionEvent event) {
         selectedCashPayment = new CashPayment();
         selectedCashPayment.setOwnerId(getSelectedPurchaseRequisition().getId());
         selectedCashPayment.setDateOfPayment(new Date());
@@ -249,10 +249,32 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         getCashPayments().add(selectedCashPayment);
         BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(), selectedCashPayment);
 
-        FacesMessage msg = new FacesMessage("New Payment Added",
-                "Click in cells to edit");
+//        FacesMessage msg = new FacesMessage("New Payment Added",
+//                "Click in cells to edit");
+//
+//        FacesContext.getCurrentInstance().addMessage(null, msg);
 
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        editCashPayment(event);
+        
+    }
+    
+    public void editCashPayment(ActionEvent event) {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/finance/purch/cashPaymentDialog", options, null);
+
     }
 
     public boolean getApplyTax() {
