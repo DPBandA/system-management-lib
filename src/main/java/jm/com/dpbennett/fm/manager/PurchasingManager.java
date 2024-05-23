@@ -223,8 +223,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         for (CashPayment payment : payments) {
             if (payment.equals(selectedCashPayment)) {
+                
                 selectedCashPayment.setOwnerId(null);
                 payments.remove(selectedCashPayment);
+                selectedCashPayment.save(getEntityManager1());
+                               
                 break;
             }
         }
@@ -248,11 +251,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         getCashPayments().add(selectedCashPayment);
         BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(), selectedCashPayment);
-
-//        FacesMessage msg = new FacesMessage("New Payment Added",
-//                "Click in cells to edit");
-//
-//        FacesContext.getCurrentInstance().addMessage(null, msg);
 
         editCashPayment(event);
         
