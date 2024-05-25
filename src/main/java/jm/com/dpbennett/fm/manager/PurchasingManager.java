@@ -116,11 +116,39 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     private UploadedFile uploadedFile;
     private List<CashPayment> cashPayments;
 
-    /**
-     * Creates a new instance of PurchasingManager
-     */
     public PurchasingManager() {
         init();
+    }
+
+    public Boolean getRenderCurrencyExchangeRate() {
+
+        EntityManager em = getEntityManager1();
+        String defaultCurrency = SystemOption.getString(em, "defaultCurrency");
+        String selectedCurrency = getSelectedPurchaseRequisition().getCurrency().getName();
+
+        return true; // tk !defaultCurrency.equals(selectedCurrency);
+    }
+
+    public String getCurrencyExchangeRateName() {
+        String name = "?-?";
+
+        EntityManager em = getEntityManager1();
+        String defaultCurrencyName = SystemOption.getString(em, "defaultCurrency");
+        Currency defaultCurrency = Currency.findByName(em, defaultCurrencyName);
+        String selectedCurrencyName = getSelectedPurchaseRequisition().getCurrency().getName();
+        Currency selectedCurrency = Currency.findByName(em, selectedCurrencyName);
+
+        if (defaultCurrency != null && selectedCurrency != null) {
+            name = selectedCurrency.getCode() + "-"
+                    + defaultCurrency.getCode();
+        }
+
+        return name;
+    }
+
+    public String getCurrencyExchangeRateLabel() {
+
+        return getCurrencyExchangeRateName() + " exchange rate";
     }
 
     public void okCashPayment() {
@@ -223,11 +251,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         for (CashPayment payment : payments) {
             if (payment.equals(selectedCashPayment)) {
-                
+
                 selectedCashPayment.setOwnerId(null);
                 payments.remove(selectedCashPayment);
                 selectedCashPayment.save(getEntityManager1());
-                               
+
                 break;
             }
         }
@@ -253,9 +281,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(), selectedCashPayment);
 
         editCashPayment(event);
-        
+
     }
-    
+
     public void editCashPayment(ActionEvent event) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -2016,6 +2044,17 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void updateTotalCost() {
+
+        Double currencyExchangeRate = SystemOption.getDouble(
+                getEntityManager1(), getCurrencyExchangeRateName());
+
+        if (currencyExchangeRate > 0.0) {
+            getSelectedPurchaseRequisition().setCurrencyExchangeRate(currencyExchangeRate);
+        } else {
+            getSelectedPurchaseRequisition().setCurrencyExchangeRate(1.0);
+        }
+        
+        // Update total cost using the exchange rate
 
         updatePurchaseReq(null);
     }
