@@ -135,7 +135,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String defaultCurrency = SystemOption.getString(em, "defaultCurrency");
         String selectedCurrency = getSelectedPurchaseRequisition().getCurrency().getName();
         
-        return true; // tk !defaultCurrency.equals(selectedCurrency);
+        return !defaultCurrency.equals(selectedCurrency);
     }
     
     public String getCurrencyExchangeRateName() {
