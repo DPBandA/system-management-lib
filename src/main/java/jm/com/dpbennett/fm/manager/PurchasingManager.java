@@ -1897,6 +1897,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     + getSelectedPurchaseRequisition()
                             .getProcurementOfficer().getLastName());
             // Total cost
+            parameters.put("currencyExchangeRate", getSelectedPurchaseRequisition().getCurrencyExchangeRate());
             parameters.put("totalCost", getSelectedPurchaseRequisition().getConvertedTotalCost());
 
             em.getTransaction().begin();
@@ -2020,7 +2021,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     .getProcurementOfficer().getFirstName() + " "
                     + getSelectedPurchaseRequisition()
                             .getProcurementOfficer().getLastName());
-            
+
+            parameters.put("currencyExchangeRate", getSelectedPurchaseRequisition().getCurrencyExchangeRate());
             parameters.put("totalCost", getSelectedPurchaseRequisition().getConvertedTotalCost());
 
             em.getTransaction().begin();
