@@ -1943,7 +1943,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
         dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
         dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-        dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
+        dateSearchFields.add(new SelectItem("financeDirectorApprovalDate", "Finance Director approval date"));
         dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
 
         return dateSearchFields;

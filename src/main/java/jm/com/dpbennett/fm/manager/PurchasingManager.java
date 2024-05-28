@@ -1469,10 +1469,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add approver if user has FINANCE MANAGER position
+        // Add approver if user has FINANCE DIRECTOR position
         if ((purchaseRequisition.getApprover4() == null)
                 && (purchaseRequisition.getRecommender4() == null)
-                && (approver.hasEmploymentPosition("Finance Manager"))) {
+                && (approver.hasEmploymentPosition("Finance Director"))) {
 
             purchaseRequisition.setApprover4(approver);
             purchaseRequisition.setApprovalOrRecommendationDate4(new Date());
@@ -1541,10 +1541,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add recommender if user has FINANCE MANAGER position
+        // Add recommender if user has FINANCE DIRECTOR position
         if ((purchaseRequisition.getRecommender4() == null)
                 && (purchaseRequisition.getApprover4() == null)
-                && (recommender.hasEmploymentPosition("Finance Manager"))) {
+                && (recommender.hasEmploymentPosition("Finance Director"))) {
 
             purchaseRequisition.setRecommender4(recommender);
             purchaseRequisition.setApprovalOrRecommendationDate4(new Date());
@@ -1830,10 +1830,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             }
             if (getSelectedPurchaseRequisition().getRecommender4() != null) {
-                parameters.put("financeManagerRecommendation",
+                parameters.put("financeDirectorRecommendation",
                         getSelectedPurchaseRequisition().getRecommender4().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getRecommender4().getLastName());
-                parameters.put("financeManagerApprovalDate",
+                parameters.put("financeDirectorApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().
                                 getApprovalOrRecommendationDate4()));
 
@@ -1875,10 +1875,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             }
             if (getSelectedPurchaseRequisition().getApprover4() != null) {
-                parameters.put("financeManagerApproval",
+                parameters.put("financeDirectorApproval",
                         getSelectedPurchaseRequisition().getApprover4().getFirstName() + " "
                         + getSelectedPurchaseRequisition().getApprover4().getLastName());
-                parameters.put("financeManagerApprovalDate",
+                parameters.put("financeDirectorApprovalDate",
                         BusinessEntityUtils.getDateInMediumDateFormat(getSelectedPurchaseRequisition().getApprovalOrRecommendationDate4()));
 
             }
@@ -3049,7 +3049,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
                 dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
                 dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-                dateSearchFields.add(new SelectItem("financeManagerApprovalDate", "Finance Manager approval date"));
+                dateSearchFields.add(new SelectItem("financeDirectorApprovalDate", "Finance Director approval date"));
                 dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
                 break;
             default:
