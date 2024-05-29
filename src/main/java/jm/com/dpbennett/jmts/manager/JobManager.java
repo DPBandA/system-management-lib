@@ -62,6 +62,8 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
+import jm.com.dpbennett.business.entity.fm.Discount;
+import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -123,20 +125,30 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
+
     public List<BusinessOffice> getAllActiveBusinessOffices() {
-        
+
         return BusinessOffice.findAllActiveBusinessOffices(getEntityManager1());
     }
-    
+
+    public List<Employee> getAllActiveEmployees() {
+
+        return Employee.findAllActive(getEntityManager1());
+    }
+
     public List<Department> getAllActiveDepartments() {
-        
+
         return Department.findAllActive(getEntityManager1());
     }
-    
+
     public List<Classification> getAllActiveJobClassifications() {
-        
+
         return Classification.findActiveClassificationsByCategory(getEntityManager1(), "Job");
+    }
+
+    public List<Service> getAllActiveServices() {
+
+        return Service.findAllActive(getEntityManager1());
     }
 
     @Override
@@ -2072,14 +2084,13 @@ public class JobManager extends GeneralManager
         currentJob.getJobStatusAndTracking().setExpectedDateOfCompletion(selectedDate);
 
         setIsDirty(true);
-    }   
-    
-    
+    }
+
     public List<Address> getCurrentJobClientAddresses() {
-        
+
         return getCurrentJob().getClient().getAddresses();
     }
-    
+
     public List<Address> completeClientAddress(String query) {
         List<Address> addresses = new ArrayList<>();
 
@@ -2098,9 +2109,9 @@ public class JobManager extends GeneralManager
             return new ArrayList<>();
         }
     }
-    
+
     public List<Contact> getCurrentJobClientContacts() {
-        
+
         return getCurrentJob().getClient().getContacts();
     }
 
@@ -2305,7 +2316,7 @@ public class JobManager extends GeneralManager
 
     public void setEditCurrentJob(Job currentJob) {
 
-        this.currentJob = getSavedCurrentJob(currentJob); 
+        this.currentJob = getSavedCurrentJob(currentJob);
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);

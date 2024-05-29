@@ -140,11 +140,18 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     private String proformaInvoiceSearchText;
     private String costEstimateSearchText;
 
-    /**
-     * Creates a new instance of the JobFinanceManager class.
-     */
     public JobFinanceManager() {
         init();
+    }
+
+    public List<Discount> getAllActiveDiscounts() {
+
+        return Discount.findAllActiveDiscounts(getEntityManager1());
+    }
+    
+    public List<Tax> getAllActiveTaxes() {
+
+        return Tax.findAllActiveTaxes(getEntityManager1());
     }
 
     public Integer getDialogHeight() {
