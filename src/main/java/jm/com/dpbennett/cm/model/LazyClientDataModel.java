@@ -83,8 +83,6 @@ public class LazyClientDataModel extends LazyDataModel<Client> {
 
             filterValue = entry.getValue();
 
-            System.out.println("filter value: " + filterValue); // tk
-
             if (filterValue.getFilterValue() != null) {
                 datasource = Client.findActive(em, offset, pageSize, filterValue.getFilterValue().toString());
             } 

@@ -129,6 +129,11 @@ public class JobManager extends GeneralManager
         return BusinessOffice.findAllActiveBusinessOffices(getEntityManager1());
     }
     
+    public List<Department> getAllActiveDepartments() {
+        
+        return Department.findAllActive(getEntityManager1());
+    }
+    
     public List<Classification> getAllActiveJobClassifications() {
         
         return Classification.findActiveClassificationsByCategory(getEntityManager1(), "Job");
@@ -2300,7 +2305,7 @@ public class JobManager extends GeneralManager
 
     public void setEditCurrentJob(Job currentJob) {
 
-        this.currentJob = getSavedCurrentJob(currentJob);
+        this.currentJob = getSavedCurrentJob(currentJob); 
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
