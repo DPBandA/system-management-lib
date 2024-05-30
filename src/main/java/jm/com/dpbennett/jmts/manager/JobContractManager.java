@@ -31,6 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cm.Client;
@@ -56,6 +58,7 @@ import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import static jm.com.dpbennett.business.entity.util.NumberUtils.formatAsCurrency;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -63,6 +66,8 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  * This class manages the functions and operations pertaining to a job contract.
@@ -74,11 +79,97 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
     private Integer longProcessProgress;
     private JobManager jobManager;
 
-    /**
-     * Get the service contract streamed content using JRXML file format.
-     *
-     * @return
-     */
+    public JobContractManager() {
+        init();
+    }
+
+    public void okJobServiceContract(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void cancelJobServiceContractEdit(ActionEvent actionEvent) {
+       
+
+        getCurrentJob().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void jobServiceContractDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (getCurrentJob().getIsDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+
+                    getJobManager().processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Service Contract"
+                            + " Saved", "This job"
+                            + " and the service contract were saved", FacesMessage.SEVERITY_INFO);
+
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Service Contract"
+                            + " NOT Saved", "This job"
+                            + " and the service contract were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
+
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
+    public void editJobServiceContract() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 300) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/jobServiceContractDialog", options, null);
+
+    }
+
+    public void openJobServiceContractDialog() {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+
+            editJobServiceContract();
+
+        } else {
+
+            if (getJobManager().getCurrentJob().getIsDirty()) {
+                getJobManager().saveCurrentJob();
+            }
+
+            if (getCurrentJob().getId() != null) {
+                editJobServiceContract();
+            } else {
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before the service contract can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
+            }
+        }
+    }
+
     public StreamedContent getServiceContractStreamContentJRXML() {
 
         HashMap parameters = new HashMap();
@@ -165,7 +256,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             parameters.put("contactPhone", contactPerson.getMainPhoneNumber().toString());
             // Contact Fax
             parameters.put("contactFax", contactPerson.getMainFaxNumber().toString());
-            
+
             // Type of Services Needed
             getCurrentJob().getServiceContract().setJob(getCurrentJob());
             String services
@@ -196,9 +287,9 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
                     services = services + " " + getCurrentJob().getServiceContract().getServiceRequestedOtherText();
                 }
             }
-            */
+             */
             parameters.put("typeOfServicesNeeded", services);
-            
+
             // Fax/Email Report?
             if (getCurrentJob().getServiceContract().getAdditionalServiceFaxResults()) {
                 parameters.put("emailReport", "Yes");
@@ -266,13 +357,6 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             return null;
         }
 
-    }
-
-    /**
-     * Creates a new instance of JobManagerBean
-     */
-    public JobContractManager() {
-        init();
     }
 
     public Boolean getUseServiceContractExcel() {
@@ -345,10 +429,10 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
             em = getEntityManager1();
 
-            String filePath = 
-                    (String) SystemOption.getOptionValueObject(em, "serviceContract");
-            ByteArrayInputStream stream = 
-                    createServiceContractExcelFileInputStream(em, getUser(), filePath);
+            String filePath
+                    = (String) SystemOption.getOptionValueObject(em, "serviceContract");
+            ByteArrayInputStream stream
+                    = createServiceContractExcelFileInputStream(em, getUser(), filePath);
 
             DefaultStreamedContent dsc = DefaultStreamedContent.builder()
                     .contentType("application/xls")
@@ -1032,7 +1116,6 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
             String filePath) {
         try {
 
-           
             Client client = getCurrentJob().getClient();
 
             File file = new File(filePath);
@@ -1443,7 +1526,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
                     services = services + " " + job.getServiceContract().getServiceRequestedOtherText();
                 }
             }
-            */
+             */
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AD21",
                     services,

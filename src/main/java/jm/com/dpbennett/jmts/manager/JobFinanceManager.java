@@ -3975,7 +3975,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 && job.getJobCostingAndPayment().getCostingCompleted());
     }
 
-    // tk
     public void openJobCostingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
             // Reload cash payments if possible to avoid overwriting them 

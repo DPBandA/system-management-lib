@@ -1091,11 +1091,6 @@ public class JobManager extends GeneralManager
         PrimeFacesUtils.closeDialog(null);
     }
 
-    /**
-     * Get selected jobs which are usually displayed in a table.
-     *
-     * @return
-     */
     public Job[] getSelectedJobs() {
         if (selectedJobs == null) {
             selectedJobs = new Job[]{};
@@ -2041,6 +2036,25 @@ public class JobManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostingAndPaymentDialog", options, null);
+
+    }
+
+    public void editJobServiceContractDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/jobServiceContractDialog", options, null);
 
     }
 
