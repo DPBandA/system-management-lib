@@ -144,6 +144,28 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         init();
     }
     
+     public void openJobCostingAndPaymentDialog() {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+
+            editJobCostingAndPayment();
+
+        } else {
+
+            if (getJobManager().getCurrentJob().getIsDirty()) {
+                getJobManager().saveCurrentJob();
+            }
+
+            if (getCurrentJob().getId() != null) {
+                editJobCostingAndPayment();
+            } else {
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before the job costing and payment can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
+            }
+        }
+    }
+    
     public void jobCostingAndPaymentDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -153,15 +175,15 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     getJobManager().processJobActions();
                     getCurrentJob().getJobStatusAndTracking().setEditStatus("");
                     PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Job Samples"
+                            + " Costing & Payment"
                             + " Saved", "This job"
-                            + " and the job samples were saved", FacesMessage.SEVERITY_INFO);
+                            + " and the costing and payment were saved", FacesMessage.SEVERITY_INFO);
 
                 } else {
                     PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Job Samples"
+                            + " Costing & Payment"
                             + " NOT Saved", "This job"
-                            + " and the job sampples were NOT saved",
+                            + " and the costing and payment were NOT saved",
                             FacesMessage.SEVERITY_ERROR);
                 }
             }
@@ -3526,6 +3548,11 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             }
 
         }
+    }
+    
+    public void okJobCostingAndPayment(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
     }
 
     public void okJobCosting(ActionEvent actionEvent) {
