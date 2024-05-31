@@ -52,9 +52,6 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     private JobManager jobManager;
     private Boolean cancelEdit;
 
-    /**
-     * Creates a new instance of JobManagerBean
-     */
     public JobSampleManager() {
         init();
     }
@@ -62,6 +59,84 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     private void init() {
         selectedJobSample = new JobSample();
         jobSampleDialogTabViewActiveIndex = 0;
+    }
+
+    public void jobSamplesDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (getCurrentJob().getIsDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+
+                    getJobManager().processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Job Samples"
+                            + " Saved", "This job"
+                            + " and the job samples were saved", FacesMessage.SEVERITY_INFO);
+
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Job Samples"
+                            + " NOT Saved", "This job"
+                            + " and the job sampples were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
+
+    public void okJobSamples(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void cancelJobSamplesEdit(ActionEvent actionEvent) {
+
+        getCurrentJob().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void openJobSamplesDialog() {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+
+            editJobSamples();
+
+        } else {
+
+            if (getJobManager().getCurrentJob().getIsDirty()) {
+                getJobManager().saveCurrentJob();
+            }
+
+            if (getCurrentJob().getId() != null) {
+                editJobSamples();
+            } else {
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before job samples can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
+            }
+        }
+    }
+
+    public void editJobSamples() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 300) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/sample/jobSamplesDialog", options, null);
+
     }
 
     public Integer getDialogHeight() {

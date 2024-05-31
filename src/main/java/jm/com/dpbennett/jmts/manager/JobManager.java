@@ -2020,25 +2020,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    public void editJobCostingAndPayment() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostingAndPaymentDialog", options, null);
-
-    }
-
     public void editJobServiceContractDialog() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -2322,14 +2303,7 @@ public class JobManager extends GeneralManager
 
     }
 
-    /**
-     * Finds and returns the current job that is saved in the database. It also
-     * updates 'jobSearchResultList' with the saved job.
-     *
-     * @param currentJob
-     * @return
-     */
-    private Job getSavedCurrentJob(Job currentJob) {
+    public Job getSavedCurrentJob(Job currentJob) {
         int i = 0;
         Job foundJob = Job.findJobById(getEntityManager1(), currentJob.getId());
         for (Job job : jobSearchResultList) {
@@ -2378,21 +2352,6 @@ public class JobManager extends GeneralManager
                     FacesMessage.SEVERITY_INFO);
         }
 
-    }
-
-    public void setEditJobCosting(Job currentJob) {
-
-        this.currentJob = getSavedCurrentJob(currentJob);
-        this.currentJob.setVisited(true);
-
-        setSelectedJobs(new Job[]{});
-    }
-
-    public void setEditJobCostingAndPayment(Job currentJob) {
-        this.currentJob = getSavedCurrentJob(currentJob);
-        this.currentJob.setVisited(true);
-
-        getJobFinanceManager().setEnableOnlyPaymentEditing(true);
     }
 
     @Override

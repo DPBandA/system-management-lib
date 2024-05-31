@@ -143,12 +143,71 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public JobFinanceManager() {
         init();
     }
+    
+    public void jobCostingAndPaymentDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (getCurrentJob().getIsDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+
+                    getJobManager().processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Job Samples"
+                            + " Saved", "This job"
+                            + " and the job samples were saved", FacesMessage.SEVERITY_INFO);
+
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Job Samples"
+                            + " NOT Saved", "This job"
+                            + " and the job sampples were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
+
+    public void setEditJobCosting(Job currentJob) {
+
+        setCurrentJob(getJobManager().getSavedCurrentJob(currentJob));
+        getCurrentJob().setVisited(true);
+
+        setSelectedJobs(new Job[]{});
+    }
+
+    public void setEditJobCostingAndPayment(Job currentJob) {
+        setCurrentJob(getJobManager().getSavedCurrentJob(currentJob));
+        getCurrentJob().setVisited(true);
+
+        setEnableOnlyPaymentEditing(true);
+    }
+
+    public void editJobCostingAndPayment() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostingAndPaymentDialog", options, null);
+
+    }
 
     public List<Discount> getAllActiveDiscounts() {
 
         return Discount.findAllActiveDiscounts(getEntityManager1());
     }
-    
+
     public List<Tax> getAllActiveTaxes() {
 
         return Tax.findAllActiveTaxes(getEntityManager1());
@@ -4207,6 +4266,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public Job getCurrentJob() {
         return getJobManager().getCurrentJob();
+    }
+    
+    public void setCurrentJob(Job currentJob) {
+        getJobManager().setCurrentJob(currentJob);
     }
 
     @Override
