@@ -144,7 +144,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/jobServiceContractDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/service/jobServiceContractDialog", options, null);
 
     }
 

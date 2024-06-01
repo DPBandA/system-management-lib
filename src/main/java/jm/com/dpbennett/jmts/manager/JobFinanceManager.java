@@ -143,8 +143,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public JobFinanceManager() {
         init();
     }
-    
-     public void openJobCostingAndPaymentDialog() {
+
+    public void openJobCostingAndPaymentDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
 
             editJobCostingAndPayment();
@@ -165,7 +165,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             }
         }
     }
-    
+
     public void jobCostingAndPaymentDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -3549,7 +3549,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         }
     }
-    
+
     public void okJobCostingAndPayment(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
@@ -4294,7 +4294,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public Job getCurrentJob() {
         return getJobManager().getCurrentJob();
     }
-    
+
     public void setCurrentJob(Job currentJob) {
         getJobManager().setCurrentJob(currentJob);
     }

@@ -62,7 +62,6 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
-import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
@@ -124,6 +123,84 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+    
+    public void jobGroupingDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (getCurrentJob().getIsDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+
+                    processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Grouping"
+                            + " Saved", "This job"
+                            + " and the job grouping were saved", FacesMessage.SEVERITY_INFO);
+
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Grouping"
+                            + " NOT Saved", "This job"
+                            + " and the job grouping were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
+    
+    public void editJobGrouping() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/grouping/jobGroupingDialog", options, null);
+
+    }
+    
+    public void openJobGroupingDialog() {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+
+            editJobGrouping();
+
+        } else {
+
+            if (getCurrentJob().getIsDirty()) {
+                saveCurrentJob();
+            }
+
+            if (getCurrentJob().getId() != null) {
+                editJobGrouping();
+            } else {
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before the grouping can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
+            }
+        }
+    }
+
+    public void okJobGrouping(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void cancelJobGroupingEdit(ActionEvent actionEvent) {
+
+        getCurrentJob().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
     }
 
     public List<BusinessOffice> getAllActiveBusinessOffices() {
