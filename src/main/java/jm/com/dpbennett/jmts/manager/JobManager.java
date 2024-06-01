@@ -124,7 +124,7 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
+
     public void jobGroupingDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -149,7 +149,33 @@ public class JobManager extends GeneralManager
 
         }
     }
-    
+
+    public void jobStatusAndTrackingDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (getCurrentJob().getIsDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+
+                    processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Status and Tracking"
+                            + " Saved", "This job"
+                            + " and the job status and tracking were saved",
+                            FacesMessage.SEVERITY_INFO);
+
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Status and Tracking"
+                            + " NOT Saved", "This job"
+                            + " and the job status and tracking were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
+
     public void editJobGrouping() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -169,6 +195,25 @@ public class JobManager extends GeneralManager
 
     }
     
+    public void editJobStatusAndTracking() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/tracking/jobStatusAndTrackingDialog", options, null);
+
+    }
+
     public void openJobGroupingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
 
@@ -191,12 +236,46 @@ public class JobManager extends GeneralManager
         }
     }
 
+    public void openJobStatusAndTrackingDialog() {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+
+            editJobStatusAndTracking();
+
+        } else {
+
+            if (getCurrentJob().getIsDirty()) {
+                saveCurrentJob();
+            }
+
+            if (getCurrentJob().getId() != null) {
+                editJobStatusAndTracking();
+            } else {
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before the status and tracking can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
+            }
+        }
+    }
+
     public void okJobGrouping(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    public void okJobStatusAndTracking(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
     public void cancelJobGroupingEdit(ActionEvent actionEvent) {
+
+        getCurrentJob().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void cancelJobStatusAndTrackingEdit(ActionEvent actionEvent) {
 
         getCurrentJob().setIsDirty(false);
 
@@ -578,7 +657,7 @@ public class JobManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/statusNoteDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/tracking/statusNoteDialog", options, null);
 
     }
 
