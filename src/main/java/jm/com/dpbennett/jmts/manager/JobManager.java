@@ -175,6 +175,32 @@ public class JobManager extends GeneralManager
 
         }
     }
+    
+    public void jobReportingDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (getCurrentJob().getIsDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+
+                    processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Reporting"
+                            + " Saved", "This job"
+                            + " and the job reporting were saved",
+                            FacesMessage.SEVERITY_INFO);
+
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Reporting"
+                            + " NOT Saved", "This job"
+                            + " and the job reporting were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
 
     public void editJobGrouping() {
 
@@ -211,6 +237,25 @@ public class JobManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/tracking/jobStatusAndTrackingDialog", options, null);
+
+    }
+    
+    public void editJobReporting() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/reporting/jobReportingDialog", options, null);
 
     }
 
@@ -257,6 +302,28 @@ public class JobManager extends GeneralManager
             }
         }
     }
+    
+    public void openJobReportingDialog() {
+        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
+
+            editJobReporting();
+
+        } else {
+
+            if (getCurrentJob().getIsDirty()) {
+                saveCurrentJob();
+            }
+
+            if (getCurrentJob().getId() != null) {
+                editJobReporting();
+            } else {
+                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                        "This " + getCurrentJob().getType()
+                        + " must be saved before the reporting can be viewed or edited",
+                        FacesMessage.SEVERITY_WARN);
+            }
+        }
+    }
 
     public void okJobGrouping(ActionEvent actionEvent) {
 
@@ -264,6 +331,11 @@ public class JobManager extends GeneralManager
     }
 
     public void okJobStatusAndTracking(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void okJobReporting(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -276,6 +348,13 @@ public class JobManager extends GeneralManager
     }
 
     public void cancelJobStatusAndTrackingEdit(ActionEvent actionEvent) {
+
+        getCurrentJob().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void cancelJobReportingEdit(ActionEvent actionEvent) {
 
         getCurrentJob().setIsDirty(false);
 
