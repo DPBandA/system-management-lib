@@ -3098,9 +3098,9 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        if (getUser().hasModule("purchasingManager")) {
-            getFinanceManager().openDashboardTab();
-        }
+//        if (getUser().hasModule("purchasingManager")) {
+//            getFinanceManager().openDashboardTab();
+//        }
 
         // Compliance
         if (getUser().hasModule("complianceManager")) {

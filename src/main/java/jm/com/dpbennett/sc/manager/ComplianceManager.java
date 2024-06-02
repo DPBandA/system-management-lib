@@ -899,10 +899,12 @@ public class ComplianceManager extends GeneralManager
 
     public List<String> completeJobNumber(String query) {
         List<String> jobNumbers = new ArrayList<>();
+        int maxResult = SystemOption.getInteger(getEntityManager1(),
+                        "maxSearchResults");
 
         try {
 
-            List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query, 25);
+            List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query, maxResult);
 
             for (Job job : foundJobs) {
                 jobNumbers.add(job.getJobNumber());
@@ -1098,7 +1100,7 @@ public class ComplianceManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/compliance/surveyDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyDialog", options, null);
 
     }
 
