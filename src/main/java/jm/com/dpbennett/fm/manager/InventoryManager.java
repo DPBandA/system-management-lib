@@ -846,9 +846,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<Inventory> completeInventoryItem(String query) {
         try {
+
+            int maxResult = SystemOption.getInteger(getEntityManager1(),
+                    "maxSearchResults");
+
             return Inventory.findActive(
                     getEntityManager1(),
-                    query, 105); // tk set max results from system option.
+                    query, maxResult);
 
         } catch (Exception e) {
             System.out.println(e);

@@ -38,6 +38,7 @@ import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.hrm.Internet;
 import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
+import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -74,9 +75,17 @@ public class ClientManager extends GeneralManager implements Serializable {
     public ClientManager() {
         init();
     }
-    
+
+    @Override
+    public void initMainTabView() {
+
+        getMainTabView().reset(getUser());
+
+        openClientsTab();
+    }
+
     public LazyClientDataModel getLazyClientDataModel() {
-        
+
         return lazyClientDataModel;
     }
 
@@ -108,9 +117,12 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public List<Client> completeActiveClient(String query) {
+        int maxResult = SystemOption.getInteger(getEntityManager1(),
+                        "maxSearchResults");
+        
         try {
-            
-            return Client.findActive(getEntityManager1(), query);
+
+            return Client.findActive(getEntityManager1(), query, maxResult);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -179,7 +191,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:clientSearchButton");
     }
-    
+
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -387,7 +399,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
-    
+
     public void updateClient() {
         setIsDirty(true);
     }
@@ -657,9 +669,12 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public List<Client> completeClient(String query) {
         EntityManager em = getEntityManager1();
+        int maxResult = SystemOption.getInteger(getEntityManager1(),
+                        "maxSearchResults");
 
-        try {
-            List<Client> clients = Client.findActive(em, query);
+        try {            
+            
+            List<Client> clients = Client.findActive(em, query, maxResult);
 
             return clients;
 
@@ -680,18 +695,14 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         switch (searchType) {
             case "Clients":
-                if (searchText.trim().length() > 1) {
-                    if (getIsActiveClientsOnly()) {
-                        foundClients = Client.findActive(getEntityManager1(), searchText);
-                    } else {
-                        foundClients = Client.find(getEntityManager1(), searchText);
-                    }
+                int maxResult = SystemOption.getInteger(getEntityManager1(),
+                        "maxSearchResults");
+                
+                if (getIsActiveClientsOnly()) {
+                    foundClients = Client.findActive(getEntityManager1(), 
+                            searchText, maxResult);
                 } else {
-                    foundClients = new ArrayList<>();
-                }
-
-                if (startDate != null) {
-                    openClientsTab();
+                    foundClients = Client.find(getEntityManager1(), searchText, maxResult);
                 }
 
                 break;

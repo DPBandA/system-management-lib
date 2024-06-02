@@ -370,10 +370,14 @@ public final class SystemManager extends GeneralManager {
     }
 
     public List<Client> completeActiveClient(String query) {
+        int maxResult = SystemOption.getInteger(getEntityManager1(),
+                        "maxSearchResults");
+        
         try {
             return Client.findActive(
                     getEntityManager1(),
-                    query);
+                    query,
+                    maxResult);
 
         } catch (Exception e) {
             System.out.println(e);
