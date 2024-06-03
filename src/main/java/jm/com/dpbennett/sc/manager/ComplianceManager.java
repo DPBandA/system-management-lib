@@ -138,6 +138,38 @@ public class ComplianceManager extends GeneralManager
     public final void init() {
         reset();
     }
+    
+    public void okSurveyEstablishmentsDialog() {
+        PrimeFacesUtils.closeDialog(null);
+    }
+    
+    public void cancelSurveyEstablishmentsDialog() {
+        PrimeFacesUtils.closeDialog(null);
+    }
+    
+    public void surveyEstablishmentsDialogReturn() {
+        // tk set survey dirty?
+        System.out.println("Set survey dirty??");
+    }
+    
+    public void openSurveyEstablishmentsDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyEstablishmentsDialog", options, null);
+
+    }
 
     @Override
     public boolean handleTabChange(String tabTitle) {
