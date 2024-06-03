@@ -159,6 +159,7 @@ public class ComplianceManager extends GeneralManager
                 .fitViewport(true)
                 .responsive(true)
                 .width(getDialogWidth() + "px")
+                .height(getDialogHeight() + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
