@@ -129,6 +129,7 @@ public class ComplianceManager extends GeneralManager
     private Boolean isActiveMarketProductsOnly;
     private Boolean edit;
     private SystemManager systemManager;
+    private String surveyEstablishmentsDialogHeader;
 
     public ComplianceManager() {
         init();
@@ -138,21 +139,30 @@ public class ComplianceManager extends GeneralManager
     public final void init() {
         reset();
     }
-    
+
     public void okSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
-    
+
     public void cancelSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
-    
+
     public void surveyEstablishmentsDialogReturn() {
-        // tk set survey dirty?
-        System.out.println("Set survey dirty??");
+        // Nothing to do yet.
     }
-    
-    public void openSurveyEstablishmentsDialog() {
+
+    public String getSurveyEstablishmentsDialogHeader() {
+        return surveyEstablishmentsDialogHeader;
+    }
+
+    public void setSurveyEstablishmentsDialogHeader(String header) {
+        surveyEstablishmentsDialogHeader = header;
+    }
+
+    public void openSurveyEstablishmentsDialog(String header) {
+
+        setSurveyEstablishmentsDialogHeader(header);
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -933,7 +943,7 @@ public class ComplianceManager extends GeneralManager
     public List<String> completeJobNumber(String query) {
         List<String> jobNumbers = new ArrayList<>();
         int maxResult = SystemOption.getInteger(getEntityManager1(),
-                        "maxSearchResults");
+                "maxSearchResults");
 
         try {
 
@@ -1015,6 +1025,7 @@ public class ComplianceManager extends GeneralManager
         complianceSurveyTableToUpdate = "appForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
         isActiveMarketProductsOnly = true;
+        surveyEstablishmentsDialogHeader = "Establishment";
     }
 
     public List<FactoryInspection> getFactoryInspections() {
