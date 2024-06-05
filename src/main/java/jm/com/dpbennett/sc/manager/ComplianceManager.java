@@ -181,7 +181,7 @@ public class ComplianceManager extends GeneralManager
         PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyEstablishmentsDialog", options, null);
 
     }
-    
+
     public void openSurveyConsigneeDialog() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -201,7 +201,7 @@ public class ComplianceManager extends GeneralManager
         PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyConsigneeDialog", options, null);
 
     }
-    
+
     public void openSurveyBrokerDialog() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -219,6 +219,26 @@ public class ComplianceManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyBrokerDialog", options, null);
+
+    }
+
+    public void openSurveyRetailOutletDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .height(getDialogHeight() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyRetailOutletDialog", options, null);
 
     }
 
@@ -674,7 +694,7 @@ public class ComplianceManager extends GeneralManager
             return new ArrayList<>();
         }
     }
-    
+
     public List<Address> completeConsigneeAddress(String query) {
         List<Address> addresses = new ArrayList<>();
 
@@ -706,6 +726,25 @@ public class ComplianceManager extends GeneralManager
             }
 
             return contacts;
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Address> completeRetailAddress(String query) {
+        List<Address> addresses = new ArrayList<>();
+
+        try {
+
+            for (Address address : getCurrentComplianceSurvey().getRetailOutlet().getAddresses()) {
+                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
+                    addresses.add(address);
+                }
+            }
+
+            return addresses;
+            
         } catch (Exception e) {
             System.out.println(e);
             return new ArrayList<>();
@@ -1169,7 +1208,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void updateConsignee() {
-        
+
         currentComplianceSurvey
                 .setConsigneeRepresentative(currentComplianceSurvey.getConsignee().getBillingContact());
         currentComplianceSurvey

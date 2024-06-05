@@ -106,16 +106,6 @@ public class EnergyLabelManager extends GeneralManager
         return 600;
     }
 
-    public void onLabelDialogTabChange(TabChangeEvent event) {
-        switch (event.getTab().getTitle()) {
-            case "Preview":
-                break;
-            default:
-                break;
-        }
-
-    }
-
     public String getEnergyLabelSearchText() {
         return energyLabelSearchText;
     }
