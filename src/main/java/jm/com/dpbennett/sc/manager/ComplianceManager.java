@@ -181,6 +181,46 @@ public class ComplianceManager extends GeneralManager
         PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyEstablishmentsDialog", options, null);
 
     }
+    
+    public void openSurveyConsigneeDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .height(getDialogHeight() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyConsigneeDialog", options, null);
+
+    }
+    
+    public void openSurveyBrokerDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + "px")
+                .height(getDialogHeight() + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/compliance/survey/surveyBrokerDialog", options, null);
+
+    }
 
     @Override
     public boolean handleTabChange(String tabTitle) {
@@ -622,6 +662,25 @@ public class ComplianceManager extends GeneralManager
         try {
 
             for (Address address : getCurrentComplianceSurvey().getBroker().getAddresses()) {
+                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
+                    addresses.add(address);
+                }
+            }
+
+            return addresses;
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+    
+    public List<Address> completeConsigneeAddress(String query) {
+        List<Address> addresses = new ArrayList<>();
+
+        try {
+
+            for (Address address : getCurrentComplianceSurvey().getConsignee().getAddresses()) {
                 if (address.toString().toUpperCase().contains(query.toUpperCase())) {
                     addresses.add(address);
                 }
@@ -1110,7 +1169,11 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void updateConsignee() {
-        currentComplianceSurvey.setConsigneeRepresentative(new Contact());
+        
+        currentComplianceSurvey
+                .setConsigneeRepresentative(currentComplianceSurvey.getConsignee().getBillingContact());
+        currentComplianceSurvey
+                .setConsigneeAddress(currentComplianceSurvey.getConsignee().getBillingAddress());
         currentComplianceSurvey.setIsDirty(true);
     }
 
@@ -1119,13 +1182,18 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void updateBroker() {
-        currentComplianceSurvey.setBrokerRepresentative(new Contact());
-        currentComplianceSurvey.setBrokerAddress(new Address());
+        currentComplianceSurvey
+                .setBrokerRepresentative(currentComplianceSurvey.getBroker().getBillingContact());
+        currentComplianceSurvey
+                .setBrokerAddress(currentComplianceSurvey.getBroker().getBillingAddress());
         currentComplianceSurvey.setIsDirty(true);
     }
 
     public void updateRetailOutlet() {
-        currentComplianceSurvey.setRetailRepresentative(new Contact());
+        currentComplianceSurvey
+                .setRetailRepresentative(currentComplianceSurvey.getRetailOutlet().getBillingContact());
+        currentComplianceSurvey
+                .setRetailOutletAddress(currentComplianceSurvey.getRetailOutlet().getBillingAddress());
         currentComplianceSurvey.setIsDirty(true);
     }
 
