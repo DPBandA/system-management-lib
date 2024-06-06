@@ -128,7 +128,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public String getJobManagerEmailAddress() {
 
-       return SystemOption.getString(getEntityManager1(), "jobManagerEmailAddress");
+        return SystemOption.getString(getEntityManager1(), "jobManagerEmailAddress");
     }
 
     public void openDashboardTab() {
@@ -533,7 +533,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() + 100) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -1684,7 +1684,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public EntityManager getEntityManager2() {
-        
+
         return getSystemManager().getEntityManager2();
     }
 

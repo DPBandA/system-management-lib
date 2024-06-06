@@ -266,10 +266,10 @@ public class ComplianceManager extends GeneralManager
 
                 return true;
 
-            case "Manufacturers":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
-
-                return true;
+//            case "Manufacturers":
+//                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
+//
+//                return true;
 
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
@@ -396,11 +396,11 @@ public class ComplianceManager extends GeneralManager
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
     }
 
-    public void openManufacturerBrowser() {
-        getHumanResourceManager().openManufacturerBrowser();
-
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
-    }
+//    public void openManufacturerBrowser() {
+//        getHumanResourceManager().openManufacturerBrowser();
+//
+//        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
+//    }
 
     public Integer getDialogHeight() {
         return 400;
@@ -1924,24 +1924,24 @@ public class ComplianceManager extends GeneralManager
         this.currentComplianceSurvey = currentComplianceSurvey;
     }
 
-    public List<Address> completeManufacturerAddress(String query) {
-        List<Address> addresses = new ArrayList<>();
-
-        try {
-
-            for (Address address : getCurrentFactoryInspection().getManufacturer().getAddresses()) {
-                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
-                    addresses.add(address);
-                }
-            }
-
-            return addresses;
-        } catch (Exception e) {
-
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
+//    public List<Address> completeManufacturerAddress(String query) {
+//        List<Address> addresses = new ArrayList<>();
+//
+//        try {
+//
+//            for (Address address : getCurrentFactoryInspection().getManufacturer().getAddresses()) {
+//                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
+//                    addresses.add(address);
+//                }
+//            }
+//
+//            return addresses;
+//        } catch (Exception e) {
+//
+//            System.out.println(e);
+//            return new ArrayList<>();
+//        }
+//    }
 
     public void updateManufacturer() {
 
