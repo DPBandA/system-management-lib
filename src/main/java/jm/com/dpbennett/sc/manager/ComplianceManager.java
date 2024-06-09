@@ -1289,7 +1289,7 @@ public class ComplianceManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/compliance/productInspectionDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/compliance/survey/productInspectionDialog", options, null);
 
     }
 
@@ -1308,7 +1308,7 @@ public class ComplianceManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/compliance/complaintProductInspectionDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/compliance/complaint/complaintProductInspectionDialog", options, null);
 
     }
 
@@ -2442,7 +2442,7 @@ public class ComplianceManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/compliance/complaintDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/compliance/complaint/complaintDialog", options, null);
 
     }
 
