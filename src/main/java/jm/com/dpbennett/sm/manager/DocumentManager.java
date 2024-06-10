@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,7 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sm.manager;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.event.ActionEvent;
@@ -131,8 +132,8 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
     public List<Post> getFoundPosts() {
         if (foundPosts == null) {
-            foundPosts = Post.findActive(getEntityManager1(), "", 25);
-            //tk add system option for max results.
+            //foundPosts = Post.findActive(getEntityManager1(), "", 25);
+            foundPosts = new ArrayList<>();
         }
 
         return foundPosts;

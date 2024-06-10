@@ -1082,7 +1082,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Employee> getFoundEmployees() {
         if (foundEmployees == null) {
-            foundEmployees = Employee.findAllActive(getEntityManager1());
+            //foundEmployees = Employee.findAllActive(getEntityManager1());
+            foundEmployees = new ArrayList<>();
         }
 
         return foundEmployees;

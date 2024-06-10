@@ -1545,7 +1545,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Country> getFoundCountries() {
         if (foundCountries == null) {
-            foundCountries = Country.findAllCountries(getEntityManager1());
+            //foundCountries = Country.findAllCountries(getEntityManager1());
+            foundCountries = new ArrayList<>();
         }
 
         return foundCountries;
@@ -2063,8 +2064,10 @@ public final class SystemManager extends GeneralManager {
 
     public List<SystemOption> getFoundSystemOptions() {
         if (foundSystemOptions == null) {
-            foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager1());
+            //foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager1());
+            foundSystemOptions = new ArrayList<>();
         }
+        
         return foundSystemOptions;
     }
 
