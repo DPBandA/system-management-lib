@@ -395,7 +395,8 @@ public class ReportManager extends GeneralManager {
 
     public List<Report> getFoundReports() {
         if (foundReports == null) {
-            foundReports = Report.findAllActiveReports(getEntityManager1());
+            //foundReports = Report.findAllActiveReports(getEntityManager1());
+            foundReports = new ArrayList<>();
         }
 
         return foundReports;
