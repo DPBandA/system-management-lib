@@ -371,8 +371,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Client> completeActiveClient(String query) {
         int maxResult = SystemOption.getInteger(getEntityManager1(),
-                        "maxSearchResults");
-        
+                "maxSearchResults");
+
         try {
             return Client.findActive(
                     getEntityManager1(),
@@ -462,7 +462,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Notification> getFoundNotifications() {
         if (foundNotifications == null) {
-            foundNotifications = Notification.findAllActiveNotifications(getEntityManager1());
+            //foundNotifications = Notification.findAllActiveNotifications(getEntityManager1());
+            foundNotifications = new ArrayList<>();
         }
 
         return foundNotifications;
@@ -490,7 +491,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Email> getFoundEmails() {
         if (foundEmails == null) {
-            foundEmails = Email.findAllActiveEmails(getEntityManager1());
+            //foundEmails = Email.findAllActiveEmails(getEntityManager1());
+            foundEmails = new ArrayList<>();
         }
 
         return foundEmails;
@@ -751,7 +753,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<User> getFoundUsers() {
         if (foundUsers == null) {
-            doUserSearch();
+            //doUserSearch();
+            foundUsers = new ArrayList<>();
         }
 
         return foundUsers;
@@ -759,8 +762,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Attachment> getFoundAttachments() {
         if (foundAttachments == null) {
-            foundAttachments
-                    = Attachment.findAttachmentsByName(getEntityManager1(), "");
+            //foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(), "");
+            foundAttachments = new ArrayList<>();
         }
         return foundAttachments;
     }
@@ -1516,7 +1519,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<DocumentType> getFoundDocumentTypes() {
         if (foundDocumentTypes == null) {
-            foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager1());
+            //foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager1());
+            foundDocumentTypes = new ArrayList<>();
         }
 
         return foundDocumentTypes;
@@ -1528,7 +1532,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Category> getFoundCategories() {
         if (foundCategories == null) {
-            foundCategories = Category.findAllCategories(getEntityManager1());
+            //foundCategories = Category.findAllCategories(getEntityManager1());
+            foundCategories = new ArrayList<>();
         }
 
         return foundCategories;
@@ -1552,7 +1557,8 @@ public final class SystemManager extends GeneralManager {
 
     public List<Privilege> getFoundActivePrivileges() {
         if (foundActivePrivileges == null) {
-            foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(), "");
+            //foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(), "");
+            foundActivePrivileges = new ArrayList<>();
         }
 
         return foundActivePrivileges;
@@ -1565,7 +1571,8 @@ public final class SystemManager extends GeneralManager {
     public List<Modules> getFoundActiveModules() {
         if (foundActiveModules == null) {
 
-            doActiveModuleSearch();
+            //doActiveModuleSearch();
+            foundActiveModules = new ArrayList<>();
         }
 
         return foundActiveModules;
@@ -2047,8 +2054,10 @@ public final class SystemManager extends GeneralManager {
 
     public List<LdapContext> getFoundLdapContexts() {
         if (foundLdapContexts == null) {
-            foundLdapContexts = LdapContext.findAllActiveLdapContexts(getEntityManager1());
+            //foundLdapContexts = LdapContext.findAllActiveLdapContexts(getEntityManager1());
+            foundLdapContexts = new ArrayList<>();
         }
+        
         return foundLdapContexts;
     }
 
