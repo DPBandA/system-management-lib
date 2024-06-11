@@ -1507,11 +1507,13 @@ public class ComplianceManager extends GeneralManager
 
     public void updateAuthDetentionRequestPOE() {
 
-        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() == null) {
+        if (currentComplianceSurvey.getAuthEmployeeForDetentionRequestPOE().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
+            currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(getUser().getEmployee());
             currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUser().getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
+            currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
         }
 
