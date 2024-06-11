@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -34,7 +35,7 @@ public class ActiveMarketProductConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
+        
         MarketProduct marketProduct = 
                 MarketProduct.findActiveMarketProduct(getEntityManager("FMEM"), value);
 

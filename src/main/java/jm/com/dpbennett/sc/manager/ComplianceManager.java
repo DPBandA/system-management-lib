@@ -139,7 +139,7 @@ public class ComplianceManager extends GeneralManager
     public final void init() {
         reset();
     }
-
+    
     public void okSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
@@ -1128,7 +1128,8 @@ public class ComplianceManager extends GeneralManager
 
     public List<FactoryInspection> getFactoryInspections() {
         if (factoryInspections == null) {
-            doFactoryInspectionSearch();
+            //doFactoryInspectionSearch();
+            factoryInspections = new ArrayList<>();
         }
 
         return factoryInspections;
@@ -1587,16 +1588,18 @@ public class ComplianceManager extends GeneralManager
 
     public List<ComplianceSurvey> getComplianceSurveys() {
         if (complianceSurveys == null) {
-            doSurveySearch();
+            //doSurveySearch();
+            complianceSurveys = new ArrayList<>();
         }
+        
         return complianceSurveys;
     }
 
     public List<Complaint> getComplaints() {
 
         if (complaints == null) {
-
-            doComplaintSearch();
+            //doComplaintSearch();
+            complaints = new ArrayList<>();
         }
 
         return complaints;
@@ -3166,9 +3169,11 @@ public class ComplianceManager extends GeneralManager
     public List<DocumentStandard> getDocumentStandards() {
 
         if (documentStandards == null) {
-            documentStandards
-                    = DocumentStandard.findAllActive(getEntityManager1(),
-                            25); // tk to be made system option
+//            documentStandards
+//                    = DocumentStandard.findAllActive(getEntityManager1(),
+//                            25); // tk to be made system option
+            documentStandards = new ArrayList<>();
+               
         }
 
         return documentStandards;

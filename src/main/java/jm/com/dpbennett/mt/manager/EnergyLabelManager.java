@@ -468,8 +468,10 @@ public class EnergyLabelManager extends GeneralManager
 
     public List<EnergyLabel> getFoundEnergyLabels() {
         if (foundEnergyLabels == null) {
-            foundEnergyLabels = findLabels("");
+            //foundEnergyLabels = findLabels("");
+            foundEnergyLabels = new ArrayList<>();
         }
+        
         return foundEnergyLabels;
     }
 
