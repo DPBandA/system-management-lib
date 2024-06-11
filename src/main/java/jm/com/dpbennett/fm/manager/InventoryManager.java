@@ -746,8 +746,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<MarketProduct> getFoundInventoryProducts() {
         if (foundInventoryProducts == null) {
-            foundInventoryProducts = MarketProduct.findAllActiveMarketProductsByType(
-                    getEntityManager1(), "Inventory");
+//            foundInventoryProducts = MarketProduct.findAllActiveMarketProductsByType(
+//                    getEntityManager1(), "Inventory");
+            foundInventoryProducts = new ArrayList<>();
         }
 
         return foundInventoryProducts;
@@ -1430,7 +1431,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<Inventory> getFoundInventories() {
         if (foundInventories == null) {
-            doInventorySearch();
+            //doInventorySearch();
+            foundInventories = new ArrayList<>();
         }
         return foundInventories;
     }
@@ -1469,8 +1471,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<InventoryRequisition> getFoundInventoryRequisitions() {
         if (foundInventoryRequisitions == null) {
-            doInventoryRequisitionSearch();
+            //doInventoryRequisitionSearch();
+            foundInventoryRequisitions = new ArrayList<>();
         }
+
         return foundInventoryRequisitions;
     }
 

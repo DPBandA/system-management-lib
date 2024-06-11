@@ -843,7 +843,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public List<Supplier> getFoundSuppliers() {
         if (foundSuppliers == null) {
-            doSupplierSearch();
+            //doSupplierSearch();
+            foundSuppliers = new ArrayList<>();
         }
         return foundSuppliers;
     }

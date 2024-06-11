@@ -144,16 +144,16 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         // tk 
         // Use open*() after checking for module access or privilege as is done in JMTS.
-        //getMainTabView().openTab("Financial Administration");
+        getMainTabView().openTab("Financial Administration");
         //openDashboardTab();        
-        getMainTabView().openTab("Purchase Requisitions");
-
-        getMainTabView().openTab("Inventory Requisitions");
-
-        getMainTabView().openTab("Inventory Products");
-        getMainTabView().openTab("Market Products");
-        getMainTabView().openTab("Inventory");
-        getMainTabView().openTab("Suppliers");
+//        getMainTabView().openTab("Purchase Requisitions");
+//
+//        getMainTabView().openTab("Inventory Requisitions");
+//
+//        getMainTabView().openTab("Inventory Products");
+//        getMainTabView().openTab("Market Products");
+//        getMainTabView().openTab("Inventory");
+//        getMainTabView().openTab("Suppliers");
         //getMainTabView().openTab("System Administration");
     }
 
@@ -279,7 +279,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<ProcurementMethod> getFoundProcurementMethods() {
         if (foundProcurementMethods == null) {
-            foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
+            //foundProcurementMethods = ProcurementMethod.findAll(getEntityManager1());
+            foundProcurementMethods = new ArrayList<>();
         }
 
         return foundProcurementMethods;
@@ -497,7 +498,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<MarketProduct> getFoundMarketProducts() {
         if (foundMarketProducts == null) {
-            foundMarketProducts = MarketProduct.findAllActiveMarketProducts(getEntityManager1());
+            //foundMarketProducts = MarketProduct.findAllActiveMarketProducts(getEntityManager1());
+            foundMarketProducts = new ArrayList<>();
         }
 
         return foundMarketProducts;
@@ -659,8 +661,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Service> getFoundServices() {
         if (foundServices == null) {
-            foundServices = Service.findAllActive(getEntityManager1());
+            //foundServices = Service.findAllActive(getEntityManager1());
+            foundServices = new ArrayList<>();
         }
+
         return foundServices;
     }
 
@@ -819,8 +823,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Classification> getFoundClassifications() {
         if (foundClassifications == null) {
-            foundClassifications = Classification.findAllActiveClassifications(getEntityManager1());
+            //foundClassifications = Classification.findAllActiveClassifications(getEntityManager1());
+            foundClassifications = new ArrayList<>();
         }
+
         return foundClassifications;
     }
 
@@ -1167,7 +1173,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<AccountingCode> getFoundAccountingCodes() {
         if (foundAccountingCodes == null) {
-            doAccountingCodeSearch();
+            //doAccountingCodeSearch();
+            foundAccountingCodes = new ArrayList<>();
         }
 
         return foundAccountingCodes;
@@ -1179,7 +1186,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Tax> getFoundTaxes() {
         if (foundTaxes == null) {
-            doTaxSearch();
+            //doTaxSearch();
+            foundTaxes = new ArrayList<>();
         }
 
         return foundTaxes;
@@ -1191,8 +1199,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Currency> getFoundCurrencies() {
         if (foundCurrencies == null) {
-            doCurrencySearch();
+            //doCurrencySearch();
+            foundCurrencies = new ArrayList<>();
         }
+
         return foundCurrencies;
     }
 
@@ -1202,7 +1212,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Discount> getFoundDiscounts() {
         if (foundDiscounts == null) {
-            doDiscountSearch();
+            //doDiscountSearch();
+            foundDiscounts = new ArrayList<>();
         }
 
         return foundDiscounts;
@@ -1338,8 +1349,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<JobCategory> getFoundJobCategories() {
         if (foundJobCategories == null) {
-            foundJobCategories = JobCategory.findAllActiveJobCategories(getEntityManager1());
+            //foundJobCategories = JobCategory.findAllActiveJobCategories(getEntityManager1());
+            foundJobCategories = new ArrayList<>();
         }
+
         return foundJobCategories;
     }
 
@@ -1402,8 +1415,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<JobSubCategory> getFoundJobSubcategories() {
         if (foundJobSubcategories == null) {
-            foundJobSubcategories = JobSubCategory.findAllActiveJobSubCategories(getEntityManager1());
+            //foundJobSubcategories = JobSubCategory.findAllActiveJobSubCategories(getEntityManager1());
+            foundJobSubcategories = new ArrayList<>();
         }
+
         return foundJobSubcategories;
     }
 
@@ -1495,8 +1510,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Sector> getFoundSectors() {
         if (foundSectors == null) {
-            foundSectors = Sector.findAllActiveSectors(getEntityManager1());
+            //foundSectors = Sector.findAllActiveSectors(getEntityManager1());
+            foundSectors = new ArrayList<>();
         }
+
         return foundSectors;
     }
 
