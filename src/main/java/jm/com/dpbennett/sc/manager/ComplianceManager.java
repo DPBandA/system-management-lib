@@ -139,7 +139,7 @@ public class ComplianceManager extends GeneralManager
     public final void init() {
         reset();
     }
-    
+
     public void okSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
@@ -270,7 +270,6 @@ public class ComplianceManager extends GeneralManager
 //                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
 //
 //                return true;
-
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
 
@@ -401,7 +400,6 @@ public class ComplianceManager extends GeneralManager
 //
 //        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
 //    }
-
     public Integer getDialogHeight() {
         return 400;
     }
@@ -744,7 +742,7 @@ public class ComplianceManager extends GeneralManager
             }
 
             return addresses;
-            
+
         } catch (Exception e) {
             System.out.println(e);
             return new ArrayList<>();
@@ -1523,11 +1521,13 @@ public class ComplianceManager extends GeneralManager
 
     public void updateInspectorSigForSampleRequestPOE() {
 
-        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() == null) {
+        if (currentComplianceSurvey.getInspectorForSampleRequestPOE().getId() == null) {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
+            currentComplianceSurvey.setInspectorForSampleRequestPOE(getUser().getEmployee());
             currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUser().getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
+            currentComplianceSurvey.setInspectorForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
         }
 
@@ -1536,7 +1536,7 @@ public class ComplianceManager extends GeneralManager
 
     public void updatePreparedBySigForReleaseRequestPOE() {
 
-        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() == null) {
+        if (currentComplianceSurvey.getPreparedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
             currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
@@ -1566,7 +1566,7 @@ public class ComplianceManager extends GeneralManager
 
     public void updateApprovedBySigForReleaseRequestPOE() {
 
-        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() == null) {
+        if (currentComplianceSurvey.getApprovedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
             currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
@@ -1593,7 +1593,7 @@ public class ComplianceManager extends GeneralManager
             //doSurveySearch();
             complianceSurveys = new ArrayList<>();
         }
-        
+
         return complianceSurveys;
     }
 
@@ -1947,7 +1947,6 @@ public class ComplianceManager extends GeneralManager
 //            return new ArrayList<>();
 //        }
 //    }
-
     public void updateManufacturer() {
 
         currentFactoryInspection.setAddress(new Address());
@@ -2391,7 +2390,6 @@ public class ComplianceManager extends GeneralManager
                 false,
                 25); // tk to be made system option.
 
-        openSurveysBrowser();
     }
 
     public void doDefaultSurveySearch() {
@@ -3175,7 +3173,7 @@ public class ComplianceManager extends GeneralManager
 //                    = DocumentStandard.findAllActive(getEntityManager1(),
 //                            25); // tk to be made system option
             documentStandards = new ArrayList<>();
-               
+
         }
 
         return documentStandards;
