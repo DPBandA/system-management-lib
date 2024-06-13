@@ -497,7 +497,7 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("ELMEM");
+        return getSystemManager().getEntityManager("MTEM");
     }
 
     @Override

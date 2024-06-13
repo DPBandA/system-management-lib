@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -34,35 +34,19 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
  */
 public class ConverterAdapter implements Converter {
 
-    private final EntityManagerFactory emf;
-    private final EntityManagerFactory emf2;
-    private final EntityManagerFactory emf3;
-    private final EntityManagerFactory emf4;
-    private final EntityManager em;
-    private final EntityManager em2;
-    private final EntityManager em3;
-    private final EntityManager em4;
+    private final EntityManagerFactory JMTS;
+    private final EntityManagerFactory FIN;
+    private final EntityManagerFactory JMTS3;
 
     public ConverterAdapter() {
-        emf = Persistence.createEntityManagerFactory("JMTSPU");
-        emf2 = Persistence.createEntityManagerFactory("FINPU");
-        emf3 = Persistence.createEntityManagerFactory("ENERBASEPU");
-        emf4 = Persistence.createEntityManagerFactory("JMTS3PU");
-
-        em = emf.createEntityManager();
-        em2 = emf2.createEntityManager();
-        em3 = emf3.createEntityManager();
-        em4 = emf4.createEntityManager();
+        JMTS = Persistence.createEntityManagerFactory("JMTSPU");
+        FIN = Persistence.createEntityManagerFactory("FINPU");
+        JMTS3 = Persistence.createEntityManagerFactory("JMTS3PU");
+      
     }
 
-//    public EntityManager getEntityManager() {
-//
-//        return getEntityManager(SystemOption.getString(getDefaultEntityManager(), "SMEM"));
-//
-//    }
-
     public EntityManager getDefaultEntityManager() {
-        return em;
+        return JMTS.createEntityManager();
     }
 
     public EntityManager getEntityManager(String emname) {
@@ -71,7 +55,7 @@ public class ConverterAdapter implements Converter {
 
         switch (em1) {
             case "JMTS3":
-                return getEntityManager4();
+                return getEntityManager3();
             case "JMTS":
             default:
                 return getEntityManager1();
@@ -85,7 +69,7 @@ public class ConverterAdapter implements Converter {
 
         switch (emName) {
             case "JMTS3":
-                return getEntityManager4();
+                return getEntityManager3();
             case "JMTS":
             default:
                 return getDefaultEntityManager();
@@ -94,16 +78,11 @@ public class ConverterAdapter implements Converter {
     }
 
     public EntityManager getEntityManager2() {
-        return em2;
+        return FIN.createEntityManager();
     }
 
     public EntityManager getEntityManager3() {
-        return em3;
-    }
-
-    public EntityManager getEntityManager4() {
-
-        return em4;
+        return JMTS3.createEntityManager();
     }
 
     @Override

@@ -70,14 +70,12 @@ import org.primefaces.model.file.UploadedFile;
  */
 public final class SystemManager extends GeneralManager {
 
-    @PersistenceUnit(unitName = "JMTSPU")
-    private EntityManagerFactory EMF;
     @PersistenceUnit(unitName = "FINPU")
-    private EntityManagerFactory EMF2;
-    @PersistenceUnit(unitName = "ENERBASEPU")
-    private EntityManagerFactory EMF3;
+    private EntityManagerFactory FIN;
     @PersistenceUnit(unitName = "JMTS3PU")
-    private EntityManagerFactory EMF4;
+    private EntityManagerFactory JMTS3;
+    @PersistenceUnit(unitName = "JMTSPU")
+    private EntityManagerFactory JMTS;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
@@ -141,13 +139,11 @@ public final class SystemManager extends GeneralManager {
         String em = SystemOption.getString(getDefaultEntityManager(), emname);
 
         switch (em) {
-            case "MT":
-                return EMF3.createEntityManager();
             case "JMTS3":
-                return EMF4.createEntityManager();
+                return JMTS3.createEntityManager();
             case "JMTS":
             default:
-                return EMF.createEntityManager();
+                return JMTS.createEntityManager();
         }
 
     }
@@ -2058,7 +2054,7 @@ public final class SystemManager extends GeneralManager {
             //foundLdapContexts = LdapContext.findAllActiveLdapContexts(getEntityManager1());
             foundLdapContexts = new ArrayList<>();
         }
-        
+
         return foundLdapContexts;
     }
 
@@ -2067,7 +2063,7 @@ public final class SystemManager extends GeneralManager {
             //foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager1());
             foundSystemOptions = new ArrayList<>();
         }
-        
+
         return foundSystemOptions;
     }
 
@@ -2166,10 +2162,10 @@ public final class SystemManager extends GeneralManager {
 
     public void editSystemOption() {
 
-       editSystemOption("/admin/systemOptionDialog");
+        editSystemOption("/admin/systemOptionDialog");
 
     }
-    
+
     public void editSystemOption(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -2288,7 +2284,7 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().closeDynamic(null);
 
     }
-    
+
     public void saveDefaultSelectedSystemOption() {
 
         selectedSystemOption.save(getDefaultEntityManager());
@@ -2350,7 +2346,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void createNewSelectedUserSystemOption() {
-        
+
         selectedSystemOption = new SystemOption();
         selectedSystemOption.setOptionValueType("String");
         selectedSystemOption.setOwnerId(getSelectedUser().getId());
@@ -2365,11 +2361,35 @@ public final class SystemManager extends GeneralManager {
 
         editSystemOption();
     }
-    
+
     public void editSMEM() {
 
         selectedSystemOption = SystemOption.findSystemOptionByName(
                 getDefaultEntityManager(), "SMEM");
+
+        editSystemOption("/admin/systemDefaultOptionDialog");
+    }
+
+    public void editFMEM() {
+
+        selectedSystemOption = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "FMEM");
+
+        editSystemOption("/admin/systemDefaultOptionDialog");
+    }
+
+    public void editJMTSEM() {
+
+        selectedSystemOption = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "JMTSEM");
+
+        editSystemOption("/admin/systemDefaultOptionDialog");
+    }
+
+    public void editMTEM() {
+
+        selectedSystemOption = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "MTEM");
 
         editSystemOption("/admin/systemDefaultOptionDialog");
     }
@@ -2400,7 +2420,7 @@ public final class SystemManager extends GeneralManager {
 
         switch (em) {
             case "JMTS3":
-                return EMF4.createEntityManager();
+                return JMTS3.createEntityManager();
             case "JMTS":
             default:
                 return getDefaultEntityManager();
@@ -2409,20 +2429,16 @@ public final class SystemManager extends GeneralManager {
     }
 
     public EntityManager getDefaultEntityManager() {
-        return EMF.createEntityManager();
+        return JMTS.createEntityManager();
     }
 
     @Override
     public EntityManager getEntityManager2() {
-        return EMF2.createEntityManager();
+        return FIN.createEntityManager();
     }
 
     public EntityManager getEntityManager3() {
-        return EMF3.createEntityManager();
-    }
-
-    public EntityManager getEntityManager4() {
-        return EMF4.createEntityManager();
+        return JMTS3.createEntityManager();
     }
 
     public Date getCurrentDate() {
