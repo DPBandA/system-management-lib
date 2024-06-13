@@ -2166,6 +2166,12 @@ public final class SystemManager extends GeneralManager {
 
     public void editSystemOption() {
 
+       editSystemOption("/admin/systemOptionDialog");
+
+    }
+    
+    public void editSystemOption(String dialog) {
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -2179,7 +2185,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("systemOptionDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -2282,6 +2288,14 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().closeDynamic(null);
 
     }
+    
+    public void saveDefaultSelectedSystemOption() {
+
+        selectedSystemOption.save(getDefaultEntityManager());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
 
     public void okAttachment() {
         if (getUploadedFile() != null) {
@@ -2336,7 +2350,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void createNewSelectedUserSystemOption() {
-        // tk
+        
         selectedSystemOption = new SystemOption();
         selectedSystemOption.setOptionValueType("String");
         selectedSystemOption.setOwnerId(getSelectedUser().getId());
@@ -2350,6 +2364,14 @@ public final class SystemManager extends GeneralManager {
         selectedSystemOption.setOptionValueType("String");
 
         editSystemOption();
+    }
+    
+    public void editSMEM() {
+
+        selectedSystemOption = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "SMEM");
+
+        editSystemOption("/admin/systemDefaultOptionDialog");
     }
 
     public void createNewSystemOption(String category) {

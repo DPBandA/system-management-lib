@@ -1552,12 +1552,14 @@ public class ComplianceManager extends GeneralManager
 
     public void updateAuthSigForNoticeOfDentionDM() {
 
-        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() == null) {
+        if (currentComplianceSurvey.getAuthEmployeeForNoticeOfDentionDM().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
             currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(getUser().getEmployee());
         } else {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
+            currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(null);
         }
 
         updateSurvey();
