@@ -362,8 +362,14 @@ public class JobManager extends GeneralManager
     }
 
     public List<BusinessOffice> getAllActiveBusinessOffices() {
+        
+        List<BusinessOffice> offices = new ArrayList<>();
+        
+        offices.add(new BusinessOffice());
+        offices.addAll(BusinessOffice.
+                findAllActiveBusinessOffices(getEntityManager1()));
 
-        return BusinessOffice.findAllActiveBusinessOffices(getEntityManager1());
+        return offices;
     }
 
     public List<Employee> getAllActiveEmployees() {
