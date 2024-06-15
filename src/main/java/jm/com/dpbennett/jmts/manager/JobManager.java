@@ -402,17 +402,17 @@ public class JobManager extends GeneralManager
     }
 
     public List<Employee> getAllActiveEmployees() {
-
+       
         return Employee.findAllActive(getEntityManager1());
     }
 
     public List<Department> getAllActiveDepartments() {
-
+       
         return Department.findAllActive(getEntityManager1());
     }
 
     public List<Classification> getAllActiveJobClassifications() {
-
+              
         return Classification.findActiveClassificationsByCategory(getEntityManager1(), "Job");
     }
 
@@ -2192,6 +2192,7 @@ public class JobManager extends GeneralManager
     }
 
     public void saveCurrentJob() {
+     
         saveJob(getCurrentJob());
     }
 
