@@ -175,7 +175,7 @@ public class JobManager extends GeneralManager
 
         }
     }
-    
+
     public void jobReportingDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -220,7 +220,7 @@ public class JobManager extends GeneralManager
         PrimeFaces.current().dialog().openDynamic("/job/grouping/jobGroupingDialog", options, null);
 
     }
-    
+
     public void editJobStatusAndTracking() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -239,7 +239,7 @@ public class JobManager extends GeneralManager
         PrimeFaces.current().dialog().openDynamic("/job/tracking/jobStatusAndTrackingDialog", options, null);
 
     }
-    
+
     public void editJobReporting() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -302,7 +302,7 @@ public class JobManager extends GeneralManager
             }
         }
     }
-    
+
     public void openJobReportingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
 
@@ -334,7 +334,7 @@ public class JobManager extends GeneralManager
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void okJobReporting(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
@@ -353,7 +353,7 @@ public class JobManager extends GeneralManager
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void cancelJobReportingEdit(ActionEvent actionEvent) {
 
         getCurrentJob().setIsDirty(false);
@@ -362,14 +362,43 @@ public class JobManager extends GeneralManager
     }
 
     public List<BusinessOffice> getAllActiveBusinessOffices() {
-        
+
         List<BusinessOffice> offices = new ArrayList<>();
-        
+
         offices.add(new BusinessOffice());
         offices.addAll(BusinessOffice.
                 findAllActiveBusinessOffices(getEntityManager1()));
 
         return offices;
+    }
+
+    public List<Sector> getAllActiveSectors() {
+
+        List<Sector> sectors = new ArrayList<>();
+
+        sectors.addAll(Sector.findAllActiveSectors(getEntityManager1()));
+
+        return sectors;
+    }
+
+    public List<JobSubCategory> getAllActiveJobSubCategories() {
+
+        List<JobSubCategory> jobSubCategories = new ArrayList<>();
+
+        jobSubCategories.addAll(JobSubCategory.
+                findAllActiveJobSubCategories(getEntityManager1()));
+
+        return jobSubCategories;
+    }
+    
+    public List<JobCategory> getAllActiveJobCategories() {
+
+        List<JobCategory> jobCategories = new ArrayList<>();
+
+        jobCategories.addAll(JobCategory.
+                findAllActiveJobCategories(getEntityManager1()));
+
+        return jobCategories;
     }
 
     public List<Employee> getAllActiveEmployees() {
@@ -389,7 +418,12 @@ public class JobManager extends GeneralManager
 
     public List<Service> getAllActiveServices() {
 
-        return Service.findAllActive(getEntityManager1());
+        List<Service> services = new ArrayList<>();
+
+        services.add(new Service());
+        services.addAll(Service.findAllActive(getEntityManager1()));
+
+        return services;
     }
 
     @Override
@@ -3107,7 +3141,6 @@ public class JobManager extends GeneralManager
 //        if (getUser().hasModule("purchasingManager")) {
 //            getFinanceManager().openDashboardTab();
 //        }
-
         // Compliance
         if (getUser().hasModule("complianceManager")) {
             Modules module = Modules.findActiveModuleByName(
