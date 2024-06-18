@@ -38,7 +38,6 @@ import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.hrm.Internet;
 import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
