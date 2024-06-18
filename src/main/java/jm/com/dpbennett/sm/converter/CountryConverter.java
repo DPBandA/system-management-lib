@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,12 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.sm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.sm.Country;
 
 /**
@@ -34,11 +34,12 @@ public class CountryConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        
-        Country country = Country.findCountryByName(getEntityManager("SMEM"), value);
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Country country = Country.findCountryByName(em, value);
 
         if (country == null) {
-            country =  new Country(value);
+            country = new Country(value);
         }
 
         return country;

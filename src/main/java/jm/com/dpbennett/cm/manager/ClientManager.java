@@ -131,38 +131,6 @@ public class ClientManager extends GeneralManager implements Serializable {
         }
     }
 
-    public List<Discount> completeDiscount(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Discount> discounts = Discount.findActiveDiscountsByNameAndDescription(em, query);
-
-            return discounts;
-
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Tax> completeTax(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Tax> taxes = Tax.findTaxesByNameAndDescription(em, query);
-
-            return taxes;
-
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
     public List<AccPacCustomer> completeAccPacClient(String query) {
         EntityManager em2;
 

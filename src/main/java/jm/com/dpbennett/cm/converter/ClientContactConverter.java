@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2019  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ package jm.com.dpbennett.cm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
@@ -38,10 +39,12 @@ public class ClientContactConverter extends ConverterAdapter {
         Contact contact;
 
         try {
+            
+            EntityManager em = (EntityManager) component.getAttributes().get("em");
             Client currentClient = (Client) component.getAttributes().get("currentClient");
 
             if (currentClient != null) {
-                contact = Contact.findClientContact(getEntityManager("JMTSEM"), value, currentClient);
+                contact = Contact.findClientContact(em, value, currentClient);
                 if (contact == null) {
                     // This means the contact was not found.
                     // NB: The addres created here will be invalid because it may

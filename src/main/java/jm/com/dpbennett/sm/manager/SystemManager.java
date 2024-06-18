@@ -36,20 +36,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.auth.Privilege;
-import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
-import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Modules;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -126,6 +124,20 @@ public final class SystemManager extends GeneralManager {
 
     public SystemManager() {
         init();
+    }
+
+    public List<Category> completeActiveCategory(String query) {
+        try {
+            return Category.findActiveCategoriesByAnyPartOfNameAndType(
+                    getEntityManager1(),
+                    "Product",
+                    query);
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
     }
 
     public EntityManager getEntityManager() {
@@ -363,58 +375,6 @@ public final class SystemManager extends GeneralManager {
 
         selectedSystemOption.updateOptionValueType();
 
-    }
-
-    public List<Client> completeActiveClient(String query) {
-        int maxResult = SystemOption.getInteger(getEntityManager1(),
-                "maxSearchResults");
-
-        try {
-            return Client.findActive(
-                    getEntityManager1(),
-                    query,
-                    maxResult);
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Employee> completeActiveEmployee(String query) {
-        EntityManager em;
-
-        try {
-
-            em = getEntityManager1();
-
-            List<Employee> employees = Employee.findActive(em, query);
-
-            if (employees != null) {
-                return employees;
-            } else {
-                return new ArrayList<>();
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Department> completeActiveDepartment(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Department> departments = Department.findActive(em, query);
-
-            return departments;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
     }
 
     public Integer getDialogHeight() {

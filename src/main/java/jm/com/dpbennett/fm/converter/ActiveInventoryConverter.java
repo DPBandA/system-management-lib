@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,8 +36,9 @@ public class ActiveInventoryConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
         Inventory inventory = 
-                Inventory.findActiveByName(getEntityManager("FMEM"), value);
+                Inventory.findActiveByName(em, value);
 
         if (inventory == null) {
             inventory = new Inventory(value);

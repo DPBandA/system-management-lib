@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,7 +36,8 @@ public class CurrencyConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Currency currency = Currency.findByName(getEntityManager("FMEM"), value);
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Currency currency = Currency.findByName(em, value);
 
         if (currency == null) {
             currency = new Currency(value);

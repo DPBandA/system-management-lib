@@ -17,12 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.sm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.sm.Category;
 
 /**
@@ -31,15 +31,17 @@ import jm.com.dpbennett.business.entity.sm.Category;
  */
 @FacesConverter("activeCategoryConverter")
 public class ActiveCategoryConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-      
-       Category category = Category.findActiveCategoryByName(getEntityManager("SMEM"), submittedValue, false);
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Category category = Category.findActiveCategoryByName(em, submittedValue, false);
 
         if (category == null) {
             category = new Category(submittedValue);
-        } 
-        
+        }
+
         return category;
-    }   
+    }
 }

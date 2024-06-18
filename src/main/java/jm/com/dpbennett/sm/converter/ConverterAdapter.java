@@ -22,11 +22,7 @@ package jm.com.dpbennett.sm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.BusinessEntity;
-import jm.com.dpbennett.business.entity.sm.SystemOption;
 
 /**
  *
@@ -34,60 +30,60 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
  */
 public class ConverterAdapter implements Converter {
 
-    private final EntityManagerFactory JMTS;
-    private final EntityManagerFactory FIN;
-    private final EntityManagerFactory JMTS3;
+//    private final EntityManagerFactory JMTS;
+//    private final EntityManagerFactory FIN;
+//    private final EntityManagerFactory JMTS3;
 
-    public ConverterAdapter() {
-        JMTS = Persistence.createEntityManagerFactory("JMTSPU");
-        FIN = Persistence.createEntityManagerFactory("FINPU");
-        JMTS3 = Persistence.createEntityManagerFactory("JMTS3PU");
-      
-    }
+//    public ConverterAdapter() {
+//        JMTS = Persistence.createEntityManagerFactory("JMTSPU");
+//        FIN = Persistence.createEntityManagerFactory("FINPU");
+//        JMTS3 = Persistence.createEntityManagerFactory("JMTS3PU");
+//      
+//    }
 
-    public EntityManager getDefaultEntityManager() {
-        return JMTS.createEntityManager();
-    }
+//    public EntityManager getDefaultEntityManager() {
+//        return JMTS.createEntityManager();
+//    }
 
-    public EntityManager getEntityManager(String emname) {
+//    public EntityManager getEntityManager(/*String emname*/) {
         
-        String em1 = SystemOption.getString(getDefaultEntityManager(), emname);
+//        String em1 = SystemOption.getString(getDefaultEntityManager(), emname);
+//
+//        switch (em1) {
+//            case "JMTS3":
+//                return getEntityManager3();
+//            case "JMTS":
+//            default:
+//                return getEntityManager1();
+//        }
 
-        switch (em1) {
-            case "JMTS3":
-                return getEntityManager3();
-            case "JMTS":
-            default:
-                return getEntityManager1();
-        }
+//    }
 
-    }
+//    public EntityManager getEntityManager1() {
+//
+//        String emName = SystemOption.getString(getDefaultEntityManager(), "SMEM");
+//
+//        switch (emName) {
+//            case "JMTS3":
+//                return getEntityManager3();
+//            case "JMTS":
+//            default:
+//                return getDefaultEntityManager();
+//        }
+//
+//    }
 
-    public EntityManager getEntityManager1() {
-
-        String emName = SystemOption.getString(getDefaultEntityManager(), "SMEM");
-
-        switch (emName) {
-            case "JMTS3":
-                return getEntityManager3();
-            case "JMTS":
-            default:
-                return getDefaultEntityManager();
-        }
-
-    }
-
-    public EntityManager getEntityManager2() {
-        return FIN.createEntityManager();
-    }
-
-    public EntityManager getEntityManager3() {
-        return JMTS3.createEntityManager();
-    }
+//    public EntityManager getEntityManager2() {
+//        return FIN.createEntityManager();
+//    }
+//
+//    public EntityManager getEntityManager3() {
+//        return JMTS3.createEntityManager();
+//    }
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        return null;
+       return null; 
     }
 
     @Override

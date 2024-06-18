@@ -36,8 +36,9 @@ public class ActiveMarketProductConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
         MarketProduct marketProduct = 
-                MarketProduct.findActiveMarketProduct(getEntityManager("FMEM"), value);
+                MarketProduct.findActiveMarketProduct(em, value);
 
         if (marketProduct == null) {
             marketProduct = new MarketProduct(value);

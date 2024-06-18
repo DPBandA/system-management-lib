@@ -17,27 +17,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.fm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.pm.Supplier;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 @FacesConverter("activeSupplierConverter")
 public class ActiveSupplierConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-      
-       Supplier supplier = Supplier.findActiveByName(getEntityManager("FMEM"), value, false);
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Supplier supplier = Supplier.findActiveByName(em, value, false);
 
         if (supplier == null) {
             supplier = new Supplier(value);
             supplier.setName(value);
-        } 
-        
+        }
+
         return supplier;
-    }   
+    }
 }

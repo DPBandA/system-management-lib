@@ -25,11 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.FacesValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import jm.com.dpbennett.business.entity.hrm.User;
-import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *

@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.sql.Connection;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,7 +46,6 @@ import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.EmployeePosition;
 import jm.com.dpbennett.business.entity.hrm.Internet;
-import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.pm.Supplier;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -73,6 +71,7 @@ import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Division;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -338,51 +337,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void setSelectedPurchaseRequisitions(List<PurchaseRequisition> selectedPurchaseRequisitions) {
         this.selectedPurchaseRequisitions = selectedPurchaseRequisitions;
-    }
-
-    public List<Currency> completeCurrency(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Currency> currencies = Currency.findAllByName(em, query);
-
-            return currencies;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Tax> completeTax(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Tax> taxes = Tax.findActiveTaxesByNameAndDescription(em, query);
-
-            return taxes;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Discount> completeDiscount(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Discount> discounts = Discount.findActiveDiscountsByNameAndDescription(em, query);
-
-            return discounts;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
     }
 
     @Override

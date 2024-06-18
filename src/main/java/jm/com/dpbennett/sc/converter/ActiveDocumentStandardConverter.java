@@ -22,6 +22,7 @@ package jm.com.dpbennett.sc.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,7 +36,8 @@ public class ActiveDocumentStandardConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
 
-        DocumentStandard documentStandard = DocumentStandard.findActiveDocumentStandardByName(getEntityManager("JMTSEM"),
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        DocumentStandard documentStandard = DocumentStandard.findActiveDocumentStandardByName(em,
                 submittedValue, Boolean.FALSE);
 
         if (documentStandard == null) {

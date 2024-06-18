@@ -35,7 +35,6 @@ import jm.com.dpbennett.business.entity.BusinessEntity;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
-import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import org.primefaces.event.CellEditEvent;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -50,6 +49,7 @@ import jm.com.dpbennett.business.entity.fm.InventoryRequisition;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -676,20 +676,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
         getFinanceManager().getSystemManager().getSelectedCategory().setType("Product");
 
         getFinanceManager().getSystemManager().editCategory();
-    }
-
-    public List<Category> completeActiveCategory(String query) {
-        try {
-            return Category.findActiveCategoriesByAnyPartOfNameAndType(
-                    getEntityManager1(),
-                    "Product",
-                    query);
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
     }
 
     public Boolean getActiveInventoryOnly() {

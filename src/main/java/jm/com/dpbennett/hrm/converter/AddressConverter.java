@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ package jm.com.dpbennett.hrm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,7 +36,8 @@ public class AddressConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Address address = Address.findAddressByName(getEntityManager("JMTSEM"), value);
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Address address = Address.findAddressByName(em, value);
 
         if (address == null) {
             address = new Address(value);

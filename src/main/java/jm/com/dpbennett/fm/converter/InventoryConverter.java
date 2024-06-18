@@ -1,6 +1,6 @@
 /*
 Financial Management (FM)
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Inventory;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,13 +36,13 @@ public class InventoryConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Inventory inventory = 
-                Inventory.findByName(getEntityManager("FMEM"), value);
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Inventory inventory = Inventory.findByName(em, value);
 
         if (inventory == null) {
             inventory = new Inventory(value);
         }
-       
+
         return inventory;
     }
 
@@ -49,7 +50,5 @@ public class InventoryConverter extends ConverterAdapter {
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         return ((Inventory) value).getName();
     }
-    
-    
 
 }

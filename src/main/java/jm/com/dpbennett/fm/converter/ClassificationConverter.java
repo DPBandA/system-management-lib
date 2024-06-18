@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,12 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.fm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Classification;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -31,20 +31,21 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
  * @author desbenn
  */
 @FacesConverter("classificationConverter")
-public class ClassificationConverter extends ConverterAdapter{
-        
+public class ClassificationConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-                
-        Classification classification = 
-                Classification.findClassificationByName(getEntityManager("FMEM"), submittedValue);
-        
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Classification classification
+                = Classification.findClassificationByName(em, submittedValue);
+
         if (classification == null) {
             classification = new Classification();
             classification.setName(submittedValue);
-        } 
-        
+        }
+
         return classification;
     }
-    
+
 }

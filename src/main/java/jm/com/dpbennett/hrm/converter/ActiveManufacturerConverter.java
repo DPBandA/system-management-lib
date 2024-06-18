@@ -17,12 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.hrm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -32,16 +32,19 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
  */
 @FacesConverter("activeManufacturerConverter")
 public class ActiveManufacturerConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-      
-       Manufacturer manufacturer = Manufacturer.findActiveManufacturerByName(getEntityManager("JMTSEM"), submittedValue, Boolean.FALSE);
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Manufacturer manufacturer
+                = Manufacturer.findActiveManufacturerByName(em, submittedValue, Boolean.FALSE);
 
         if (manufacturer == null) {
             manufacturer = new Manufacturer(submittedValue);
             manufacturer.setName(submittedValue);
-        } 
-        
+        }
+
         return manufacturer;
-    }   
+    }
 }

@@ -22,6 +22,7 @@ package jm.com.dpbennett.hrm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,7 +36,8 @@ public class DepartmentConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Department department = Department.findByName(getEntityManager("JMTSEM"), value);
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Department department = Department.findByName(em, value);
 
         if (department == null) {
             department = new Department(value);

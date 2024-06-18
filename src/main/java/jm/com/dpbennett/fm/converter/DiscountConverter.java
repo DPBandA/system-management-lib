@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -35,7 +36,8 @@ public class DiscountConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-        Discount discount = Discount.findByName(getEntityManager("FMEM"), value);
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Discount discount = Discount.findByName(em, value);
 
         if (discount == null) {
             discount = new Discount(value);

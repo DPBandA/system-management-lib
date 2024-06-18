@@ -44,6 +44,7 @@ import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -119,6 +120,36 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
+    }
+
+    public List<Currency> completeCurrency(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Currency> currencies = Currency.findAllByName(em, query);
+
+            return currencies;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Tax> completeTax(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Tax> taxes = Tax.findActiveTaxesByNameAndDescription(em, query);
+
+            return taxes;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public String getJobManagerEmailName() {
@@ -1574,15 +1605,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    public List<Tax> completeTax(String query) {
+    public List<Discount> completeDiscount(String query) {
         EntityManager em;
 
         try {
             em = getEntityManager1();
 
-            List<Tax> taxes = Tax.findTaxesByNameAndDescription(em, query);
+            List<Discount> discounts = Discount.findActiveDiscountsByNameAndDescription(em, query);
 
-            return taxes;
+            return discounts;
 
         } catch (Exception e) {
             System.out.println(e);

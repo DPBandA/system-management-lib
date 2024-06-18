@@ -1,6 +1,6 @@
 /*
 Report Manager (RM) - Reporting module. 
-Copyright (C) 2021  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -18,16 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm;
-
-import java.util.HashMap;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import jm.com.dpbennett.business.entity.auth.Privilege;
-import jm.com.dpbennett.business.entity.hrm.User;
-import jm.com.dpbennett.business.entity.fm.MarketProduct;
-import org.junit.Test;
 
 /**
  *

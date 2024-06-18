@@ -17,12 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-
 package jm.com.dpbennett.cm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
@@ -32,15 +32,18 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
  */
 @FacesConverter("activeClientConverter")
 public class ActiveClientConverter extends ConverterAdapter {
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-      
-       Client client = Client.findActiveByName(getEntityManager("JMTSEM"), submittedValue, Boolean.FALSE);
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Client client = Client.findActiveByName(em, submittedValue, Boolean.FALSE);
 
         if (client == null) {
             client = new Client(submittedValue);
-        } 
-        
+        }
+
         return client;
-    }   
+    }
+
 }

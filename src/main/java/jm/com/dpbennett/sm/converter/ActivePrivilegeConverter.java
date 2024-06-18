@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2022  D P Bennett & Associates Limited
+Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -22,9 +22,8 @@ package jm.com.dpbennett.sm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.auth.Privilege;
-import jm.com.dpbennett.business.entity.hrm.Department;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
@@ -35,8 +34,9 @@ public class ActivePrivilegeConverter extends ConverterAdapter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-     
-        Privilege privilege = Privilege.findActivePrivilegeByName(getEntityManager("SMEM"), value);
+
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Privilege privilege = Privilege.findActivePrivilegeByName(em, value);
 
         if (privilege == null) {
             privilege = new Privilege(value);

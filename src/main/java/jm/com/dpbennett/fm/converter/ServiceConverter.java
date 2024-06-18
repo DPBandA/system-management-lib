@@ -22,6 +22,7 @@ package jm.com.dpbennett.fm.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
+import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
 import jm.com.dpbennett.sm.converter.ConverterAdapter;
@@ -36,7 +37,8 @@ public class ServiceConverter extends ConverterAdapter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         
-        Service service = Service.findByExactName(getEntityManager("FMEM"), value);
+        EntityManager em = (EntityManager) component.getAttributes().get("em");
+        Service service = Service.findByExactName(em, value);
 
         if (service == null) {
             service =  new Service(value);
