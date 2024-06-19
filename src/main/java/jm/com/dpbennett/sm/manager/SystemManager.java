@@ -125,6 +125,21 @@ public final class SystemManager extends GeneralManager {
     public SystemManager() {
         init();
     }
+    
+    public List<DocumentType> completeDocumentType(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<DocumentType> documentTypes = DocumentType.findDocumentTypesByName(em, query);
+
+            return documentTypes;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
 
     public List<Category> completeActiveCategory(String query) {
         try {

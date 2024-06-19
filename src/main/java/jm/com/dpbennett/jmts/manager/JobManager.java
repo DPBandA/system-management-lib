@@ -361,71 +361,6 @@ public class JobManager extends GeneralManager
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public List<BusinessOffice> getAllActiveBusinessOffices() {
-
-        List<BusinessOffice> offices = new ArrayList<>();
-
-        offices.add(new BusinessOffice());
-        offices.addAll(BusinessOffice.
-                findAllActiveBusinessOffices(getEntityManager1()));
-
-        return offices;
-    }
-
-    public List<Sector> getAllActiveSectors() {
-
-        List<Sector> sectors = new ArrayList<>();
-
-        sectors.addAll(Sector.findAllActiveSectors(getEntityManager1()));
-
-        return sectors;
-    }
-
-    public List<JobSubCategory> getAllActiveJobSubCategories() {
-
-        List<JobSubCategory> jobSubCategories = new ArrayList<>();
-
-        jobSubCategories.addAll(JobSubCategory.
-                findAllActiveJobSubCategories(getEntityManager1()));
-
-        return jobSubCategories;
-    }
-    
-    public List<JobCategory> getAllActiveJobCategories() {
-
-        List<JobCategory> jobCategories = new ArrayList<>();
-
-        jobCategories.addAll(JobCategory.
-                findAllActiveJobCategories(getEntityManager1()));
-
-        return jobCategories;
-    }
-
-    public List<Employee> getAllActiveEmployees() {
-       
-        return Employee.findAllActive(getEntityManager1());
-    }
-
-    public List<Department> getAllActiveDepartments() {
-       
-        return Department.findAllActive(getEntityManager1());
-    }
-
-    public List<Classification> getAllActiveJobClassifications() {
-              
-        return Classification.findActiveClassificationsByCategory(getEntityManager1(), "Job");
-    }
-
-    public List<Service> getAllActiveServices() {
-
-        List<Service> services = new ArrayList<>();
-
-        services.add(new Service());
-        services.addAll(Service.findAllActive(getEntityManager1()));
-
-        return services;
-    }
-
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -1010,50 +945,6 @@ public class JobManager extends GeneralManager
             application = BeanUtils.findBean("App");
         }
         return application;
-    }
-
-    /**
-     * Completes a list of active job subcategories based on the query string
-     * provided.
-     *
-     * @param query
-     * @return
-     */
-    public List<JobSubCategory> completeActiveJobSubCategories(String query) {
-        EntityManager em = getEntityManager1();
-
-        List<JobSubCategory> subCategories = JobSubCategory.findActiveJobSubcategoriesByName(em, query);
-
-        return subCategories;
-    }
-
-    /**
-     * Completes a list of active job categories based on the query string
-     * provided.
-     *
-     * @param query
-     * @return
-     */
-    public List<JobCategory> completeActiveJobCategories(String query) {
-        EntityManager em = getEntityManager1();
-
-        List<JobCategory> categories = JobCategory.findActiveJobCategoriesByName(em, query);
-
-        return categories;
-    }
-
-    /**
-     * NB: query parameter currently not used to filter sectors.
-     *
-     * @param query
-     * @return
-     */
-    public List<Sector> completeActiveSectors(String query) {
-        EntityManager em = getEntityManager1();
-
-        List<Sector> sectors = Sector.findActiveSectorsByName(em, query);
-
-        return sectors;
     }
 
     public List<String> getJobTableViews() {
@@ -2066,7 +1957,8 @@ public class JobManager extends GeneralManager
             return true;
         } else {
             PrimeFacesUtils.addMessage(job.getType() + " NOT Saved!",
-                    job.getType() + " was NOT saved. Please contact the System Administrator!",
+                    job.getType() + " was NOT saved. Please contact the System Administrator!: " 
+                    + returnMessage.getDetail(), // tk to be commented out.
                     FacesMessage.SEVERITY_ERROR);
 
             sendErrorEmail("An error occurred while saving a " + job.getType(),

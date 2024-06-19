@@ -132,21 +132,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         return 600;
     }
 
-    public List<DocumentType> completeLegalDocumentType(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<DocumentType> documentTypes = DocumentType.findDocumentTypesByName(em, query);
-
-            return documentTypes;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
     // tk make system option
     public List getDocumentForms() {
         ArrayList forms = new ArrayList();
@@ -228,21 +213,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void onRowSelect() {
         setDefaultCommandTarget("@this");
-    }
-
-    public List<Classification> completeClassification(String query) {
-        EntityManager em = getEntityManager1();
-
-        try {
-
-            List<Classification> classifications = Classification.findActiveClassificationsByNameAndCategory(em, query, "Legal");
-
-            return classifications;
-        } catch (Exception e) {
-
-            System.out.println(e);
-            return new ArrayList<>();
-        }
     }
 
     public Boolean getIsClientNameValid() {

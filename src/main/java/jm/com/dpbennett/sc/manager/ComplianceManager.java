@@ -3124,20 +3124,6 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public List<Category> completeActiveCategory(String query) {
-        try {
-            return Category.findActiveCategoriesByAnyPartOfNameAndType(
-                    getEntityManager1(),
-                    "Product",
-                    query);
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
-    }
-
     public void openFactoryInspectionBrowser() {
 
         getMainTabView().openTab("Factory Inspections");

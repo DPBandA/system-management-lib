@@ -224,16 +224,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     }
 
-    public List<Discount> getAllActiveDiscounts() {
-
-        return Discount.findAllActiveDiscounts(getEntityManager1());
-    }
-
-    public List<Tax> getAllActiveTaxes() {
-
-        return Tax.findAllActiveTaxes(getEntityManager1());
-    }
-
     public Integer getDialogHeight() {
         return 400;
     }
@@ -727,65 +717,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     public void setDiscount(Discount discount) {
 
         getCurrentJob().getJobCostingAndPayment().setDiscount(discount);
-    }
-
-    /**
-     * This method is called automatically by a JSF "auto complete" component to
-     * "complete" a list of tax objects based on a database query.
-     *
-     * @param query
-     * @return
-     */
-    public List<Tax> completeTax(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Tax> taxes = Tax.findActiveTaxesByNameAndDescription(em, query);
-
-            return taxes;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    public List<Currency> completeCurrency(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Currency> currencies = Currency.findAllByName(em, query);
-
-            return currencies;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * This method is called automatically by a JSF "auto complete" component to
-     * "complete" a list of discount objects based on a database query.
-     *
-     * @param query
-     * @return
-     */
-    public List<Discount> completeDiscount(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Discount> discounts = Discount.findActiveDiscountsByNameAndDescription(em, query);
-
-            return discounts;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
     }
 
     /**

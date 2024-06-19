@@ -44,7 +44,6 @@ import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -120,6 +119,99 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
+    }
+
+    public List<Classification> completeClassification(String query) {
+        EntityManager em = getEntityManager1();
+
+        try {
+
+            List<Classification> classifications = Classification.findActiveClassificationsByNameAndCategory(em, query, "Legal");
+
+            return classifications;
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<JobSubCategory> completeActiveJobSubCategories(String query) {
+        EntityManager em = getEntityManager1();
+
+        List<JobSubCategory> subCategories = JobSubCategory.findActiveJobSubcategoriesByName(em, query);
+
+        return subCategories;
+    }
+
+    public List<JobCategory> completeActiveJobCategories(String query) {
+        EntityManager em = getEntityManager1();
+
+        List<JobCategory> categories = JobCategory.findActiveJobCategoriesByName(em, query);
+
+        return categories;
+    }
+
+    public List<Sector> completeActiveSectors(String query) {
+        EntityManager em = getEntityManager1();
+
+        List<Sector> sectors = Sector.findActiveSectorsByName(em, query);
+
+        return sectors;
+    }
+
+    public List<Discount> getAllActiveDiscounts() {
+
+        return Discount.findAllActiveDiscounts(getEntityManager1());
+    }
+
+    public List<Tax> getAllActiveTaxes() {
+
+        return Tax.findAllActiveTaxes(getEntityManager1());
+    }
+
+    public List<Sector> getAllActiveSectors() {
+
+        List<Sector> sectors = new ArrayList<>();
+
+        sectors.addAll(Sector.findAllActiveSectors(getEntityManager1()));
+
+        return sectors;
+    }
+
+    public List<JobSubCategory> getAllActiveJobSubCategories() {
+
+        List<JobSubCategory> jobSubCategories = new ArrayList<>();
+
+        jobSubCategories.addAll(JobSubCategory.
+                findAllActiveJobSubCategories(getEntityManager1()));
+
+        return jobSubCategories;
+    }
+
+    public List<JobCategory> getAllActiveJobCategories() {
+
+        List<JobCategory> jobCategories = new ArrayList<>();
+
+        jobCategories.addAll(JobCategory.
+                findAllActiveJobCategories(getEntityManager1()));
+
+        return jobCategories;
+    }
+
+    public List<Classification> getAllActiveJobClassifications() {
+
+        return Classification.findActiveClassificationsByCategory(getEntityManager1(), "Job");
+    }
+
+    public List<Service> getAllActiveServices() {
+
+        List<Service> services = new ArrayList<>();
+
+        services.add(new Service());
+        services.addAll(Service.findAllActive(getEntityManager1()));
+
+        return services;
     }
 
     public List<Currency> completeCurrency(String query) {
@@ -457,20 +549,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getSelectedMarketProduct().setIsDirty(false);
 
         PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public List<Category> completeActiveCategory(String query) {
-        try {
-            return Category.findActiveCategoriesByAnyPartOfNameAndType(
-                    getEntityManager1(),
-                    "Product",
-                    query);
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
     }
 
     public void updateMarketProduct() {

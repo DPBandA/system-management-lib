@@ -113,6 +113,27 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         reset();
     }
 
+    public List<BusinessOffice> getAllActiveBusinessOffices() {
+
+        List<BusinessOffice> offices = new ArrayList<>();
+
+        offices.add(new BusinessOffice());
+        offices.addAll(BusinessOffice.
+                findAllActiveBusinessOffices(getEntityManager1()));
+
+        return offices;
+    }
+
+    public List<Employee> getAllActiveEmployees() {
+
+        return Employee.findAllActive(getEntityManager1());
+    }
+
+    public List<Department> getAllActiveDepartments() {
+
+        return Department.findAllActive(getEntityManager1());
+    }
+
     public List<SelectItem> getEmploymentTypeList() {
 
         return getStringListAsSelectItems(getEntityManager1(),
@@ -547,17 +568,16 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             //foundSubgroups = Subgroup.findAllActive(getEntityManager1());
             foundSubgroups = new ArrayList<>();
         }
-        
+
         return foundSubgroups;
     }
 
     public List<Business> getFoundBusinesses() {
         if (foundBusinesses == null) {
-            
+
             //foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
             //        getSearchText());
-            
-            foundBusinesses = new ArrayList<>();                
+            foundBusinesses = new ArrayList<>();
         }
 
         return foundBusinesses;
@@ -1108,7 +1128,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             //foundManufacturers = Manufacturer.findAllActiveManufacturers(getEntityManager1());
             foundManufacturers = new ArrayList<>();
         }
-        
+
         return foundManufacturers;
     }
 
