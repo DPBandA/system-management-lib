@@ -816,7 +816,7 @@ public class JobManager extends GeneralManager
                 return fieldDisablingActive
                         && !userHasPrivilege
                         && jobIsNotNew;
-            case "department":
+            case "department":                
                 return (fieldDisablingActive
                         && !userHasPrivilege
                         && (jobIsNotNew)) || getDisableDepartment(job);
@@ -824,15 +824,15 @@ public class JobManager extends GeneralManager
                 return (fieldDisablingActive
                         && !userHasPrivilege
                         && (jobIsNotNew)) || getJobFinanceManager().getIsJobCompleted(job);
-            case "discount":
+            case "discount":                
                 return (fieldDisablingActive
                         && !userHasPrivilege
                         && (jobIsNotNew)) || !getJobFinanceManager().getCanApplyDiscount();
-            case "tax":
+            case "tax":                
                 return (fieldDisablingActive
                         && !userHasPrivilege
                         && (jobIsNotNew)) || !getJobFinanceManager().getCanApplyTax(job);
-            default:
+            default:                
                 return false;
         }
 
@@ -964,27 +964,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    public List<Classification> completeJobClassification(String query) {
-        EntityManager em;
-
-        try {
-            em = getEntityManager1();
-
-            List<Classification> classifications = Classification.findActiveClassificationsByNameAndCategory(em, query, "Job");
-
-            return classifications;
-        } catch (Exception e) {
-
-            System.out.println(e);
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Finds an Accpac customer by name and updates the Accpac customer field.
-     *
-     * @param event
-     */
     public void updateAccPacCustomer(SelectEvent event) {
         EntityManager em = getEntityManager2();
 
@@ -2012,13 +1991,13 @@ public class JobManager extends GeneralManager
         }
 
         // Ensure that at least 1 service is selected
-        if (job.getServices().isEmpty()) {
-            PrimeFacesUtils.addMessage("Service(s) NOT Selected",
-                    "Please select at least one service",
-                    FacesMessage.SEVERITY_ERROR);
-
-            return;
-        }
+//        if (job.getServices().isEmpty()) {
+//            PrimeFacesUtils.addMessage("Service(s) NOT Selected",
+//                    "Please select at least one service",
+//                    FacesMessage.SEVERITY_ERROR);
+//
+//            return;
+//        }
 
         // Check if there exists another job/subcontract with the same job number.
         Job savedSubcontract = Job.findJobByJobNumber(getEntityManager1(), job.getJobNumber());

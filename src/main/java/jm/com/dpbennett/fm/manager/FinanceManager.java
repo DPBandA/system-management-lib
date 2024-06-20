@@ -121,6 +121,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public List<Classification> completeJobClassification(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Classification> classifications = Classification.findActiveClassificationsByNameAndCategory(em, query, "Job");
+
+            return classifications;
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
     public List<Classification> completeClassification(String query) {
         EntityManager em = getEntityManager1();
 
