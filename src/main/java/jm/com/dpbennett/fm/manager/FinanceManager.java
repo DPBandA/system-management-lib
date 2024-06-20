@@ -878,7 +878,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("classificationDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/finance/classificationDialog", options, null);
 
     }
 

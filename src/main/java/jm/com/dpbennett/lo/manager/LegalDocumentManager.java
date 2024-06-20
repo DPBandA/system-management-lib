@@ -41,6 +41,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -77,6 +78,11 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         init();
     }
 
+    public ClientManager getClientManager() {
+
+        return BeanUtils.findBean("clientManager");
+    }
+    
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -221,14 +227,30 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void editExternalClient() {
 
-        editClient();
+        getClientManager().setSelectedClient(getCurrentDocument().getExternalClient());
+        getClientManager().setClientDialogTitle("Client Detail");
+
+        getClientManager().editSelectedClient();
+
     }
 
     public void externalClientDialogReturn() {
 
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentDocument().setExternalClient(getClientManager().getSelectedClient());
+
+            getCurrentDocument().setIsDirty(true);
+        }
+
     }
 
     public void classificationDialogReturn() {
+        
+        if (getFinanceManager().getSelectedClassification().getId() != null) {
+            getCurrentDocument().setClassification(getFinanceManager().getSelectedClassification());
+
+            updateDocument();
+        }
 
     }
 
@@ -248,24 +270,10 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void createNewExternalClient() {
 
-        editClient();
-    }
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Client Detail");
 
-    public void editClient() {
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+        getClientManager().editSelectedClient();
 
     }
 
@@ -361,51 +369,25 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getSystemManager().setSelectedDocumentType(getCurrentDocument().getDocumentType());
         getCurrentDocument().setDocumentType(null);
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() - 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
+        
+        getSystemManager().editDocumentType();
 
     }
 
     public void editClassification(ActionEvent actionEvent) {
 
-        editClassification();
+        getFinanceManager().setSelectedClassification(getCurrentDocument().getClassification());
+        getFinanceManager().editClassification();
+        
+                
     }
 
     public void createNewClassification(ActionEvent actionEvent) {
-
-        editClassification();
-    }
-
-    public void editClassification() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/finance/classificationDialog", options, null);
-
+        
+        getFinanceManager().setSelectedClassification(new Classification());
+        getFinanceManager().getSelectedClassification().setCategory("Legal");
+        getFinanceManager().editClassification();
+       
     }
 
     public void createNewDocumentType(ActionEvent actionEvent) {
@@ -510,7 +492,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void openDocumentBrowser() {
         getMainTabView().openTab("Document Browser");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:legalDocumentSearchButton");
     }
 
@@ -751,8 +733,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public EntityManager getEntityManager1() {
-        
-       return getSystemManager().getEntityManager("JMTSEM");
+
+        return getSystemManager().getEntityManager("JMTSEM");
     }
 
     @Override

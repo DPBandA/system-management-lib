@@ -125,7 +125,7 @@ public final class SystemManager extends GeneralManager {
     public SystemManager() {
         init();
     }
-    
+
     public List<DocumentType> completeDocumentType(String query) {
         EntityManager em;
 
@@ -724,7 +724,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<User> getFoundUsers() {
         if (foundUsers == null) {
-            //doUserSearch();
             foundUsers = new ArrayList<>();
         }
 
@@ -1143,8 +1142,13 @@ public final class SystemManager extends GeneralManager {
 
                 break;
             case "Document Types":
-                foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
-                        searchText);
+                if (getIsActiveDocumentTypesOnly()) {
+                    foundDocumentTypes = DocumentType.findActiveDocumentTypesByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
+                            searchText);
+                }
 
                 break;
             case "System Settings":
@@ -1909,7 +1913,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void editDocumentType() {
-        openDocumentTypeDialog("documentTypeDialog");
+        openDocumentTypeDialog("/admin/documentTypeDialog");
     }
 
     public List<DocumentType> getDocumentTypes() {

@@ -1074,30 +1074,15 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("jobFinanceManager");
     }
 
-    /**
-     * Get FinanceManager SessionScoped bean.
-     *
-     * @return
-     */
     public FinanceManager getFinanceManager() {
 
         return BeanUtils.findBean("financeManager");
     }
 
-    /**
-     * Gets the ReportManager SessionScoped bean.
-     *
-     * @return
-     */
     public ReportManager getReportManager() {
         return BeanUtils.findBean("reportManager");
     }
 
-    /**
-     * Gets the ClientManager SessionScoped bean.
-     *
-     * @return
-     */
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
