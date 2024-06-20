@@ -1161,7 +1161,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("hr/manufacturer/manufacturerDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/hr/manufacturer/manufacturerDialog", options, null);
 
     }
 
