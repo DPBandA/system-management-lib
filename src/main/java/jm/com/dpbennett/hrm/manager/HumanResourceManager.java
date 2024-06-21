@@ -73,6 +73,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     private Boolean isActiveEmployeePositionsOnly;
     private Boolean isActiveDepartmentsOnly;
     private Boolean isActiveBusinessesOnly;
+    private Boolean isActiveBusinessOfficesOnly;
     private Boolean isActiveSubgroupsOnly;
     private Boolean isActiveDivisionsOnly;
     private Boolean isActiveManufacturersOnly;
@@ -80,6 +81,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     private String employeePositionSearchText;
     private String departmentSearchText;
     private String businessSearchText;
+    private String businessOfficeSearchText;
     private String subgroupSearchText;
     private String divisionSearchText;
     private String manufacturerSearchText;
@@ -87,6 +89,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     private List<EmployeePosition> foundEmployeePositions;
     private List<Department> foundDepartments;
     private List<Business> foundBusinesses;
+    private List<BusinessOffice> foundBusinessOffices;
     private List<Subgroup> foundSubgroups;
     private List<Division> foundDivisions;
     private List<Manufacturer> foundManufacturers;
@@ -99,6 +102,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     private Subgroup selectedSubgroup;
     private Division selectedDivision;
     private Business selectedBusiness;
+    private BusinessOffice selectedBusinessOffice;
     private Contact selectedContact;
     private Address selectedAddress;
     private Manufacturer selectedManufacturer;
@@ -111,6 +115,53 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public final void init() {
         reset();
+    }
+
+    public Boolean getIsActiveBusinessOfficesOnly() {
+
+        if (isActiveBusinessOfficesOnly == null) {
+            isActiveBusinessOfficesOnly = true;
+        }
+
+        return isActiveBusinessOfficesOnly;
+    }
+
+    public void setIsActiveBusinessOfficesOnly(Boolean isActiveBusinessOfficesOnly) {
+        this.isActiveBusinessOfficesOnly = isActiveBusinessOfficesOnly;
+    }
+
+    public String getBusinessOfficeSearchText() {
+
+        if (businessOfficeSearchText == null) {
+            businessOfficeSearchText = "";
+        }
+
+        return businessOfficeSearchText;
+    }
+
+    public void setBusinessOfficeSearchText(String businessOfficeSearchText) {
+        this.businessOfficeSearchText = businessOfficeSearchText;
+    }
+
+    public BusinessOffice getSelectedBusinessOffice() {
+        return selectedBusinessOffice;
+    }
+
+    public void setSelectedBusinessOffice(BusinessOffice selectedBusinessOffice) {
+        this.selectedBusinessOffice = selectedBusinessOffice;
+    }
+
+    public List<BusinessOffice> getFoundBusinessOffices() {
+
+        if (foundBusinessOffices == null) {
+            foundBusinessOffices = new ArrayList<>();
+        }
+
+        return foundBusinessOffices;
+    }
+
+    public void setFoundBusinessOffices(List<BusinessOffice> foundBusinessOffices) {
+        this.foundBusinessOffices = foundBusinessOffices;
     }
 
     public List<BusinessOffice> getAllActiveBusinessOffices() {
@@ -688,6 +739,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 null);
     }
 
+    public void doBusinessOfficeSearch() {
+
+        doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Business Offices",
+                getBusinessOfficeSearchText(),
+                null,
+                null);
+    }
+
     public void doEmployeeSearch() {
 
         doDefaultSearch(
@@ -817,6 +879,25 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
+    public void editBusinessOffice() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() - 300) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/hr/businessOfficeDialog", options, null);
+
+    }
+
     public void editEmployee() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -866,6 +947,13 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void saveSelectedBusiness() {
 
         selectedBusiness.save(getEntityManager1());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void saveSelectedBusinessOffice() {
+
+        selectedBusinessOffice.save(getEntityManager1());
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -1060,6 +1148,13 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         selectedBusiness = new Business();
 
         editBusiness();
+    }
+
+    public void createNewBusinessOffice() {
+
+        selectedBusinessOffice = new BusinessOffice();
+
+        editBusinessOffice();
     }
 
     public void createNewSubgroup() {
@@ -1525,6 +1620,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                             searchText);
                 } else {
                     foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
+                            searchText);
+                }
+
+                break;
+
+            case "Business Offices":
+                if (getIsActiveBusinessOfficesOnly()) {
+                    foundBusinessOffices = BusinessOffice.findActiveBusinessOfficesByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundBusinessOffices = BusinessOffice.findBusinessOfficesByName(getEntityManager1(),
                             searchText);
                 }
 
