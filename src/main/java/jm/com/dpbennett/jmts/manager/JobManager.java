@@ -3080,18 +3080,18 @@ public class JobManager extends GeneralManager
             }
         }
         // LabelPrint
-        if (getUser().hasModule("energyLabelManager")) {
-            Modules module = Modules.findActiveModuleByName(
-                    getEntityManager1(),
-                    "energyLabelManager");
-            if (module != null) {
-                openModuleMainTab("energyLabelManager");
-
-                if (firstModule == null) {
-                    firstModule = "energyLabelManager";
-                }
-            }
-        }
+//        if (getUser().hasModule("energyLabelManager")) {
+//            Modules module = Modules.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "energyLabelManager");
+//            if (module != null) {
+//                openModuleMainTab("energyLabelManager");
+//
+//                if (firstModule == null) {
+//                    firstModule = "energyLabelManager";
+//                }
+//            }
+//        }
 
         openModuleMainTab(firstModule);
     }

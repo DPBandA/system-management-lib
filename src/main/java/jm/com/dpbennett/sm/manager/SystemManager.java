@@ -132,7 +132,7 @@ public final class SystemManager extends GeneralManager {
         try {
             em = getEntityManager1();
 
-            List<DocumentType> documentTypes = DocumentType.findDocumentTypesByName(em, query);
+            List<DocumentType> documentTypes = DocumentType.findActiveDocumentTypesByName(em, query);
 
             return documentTypes;
 

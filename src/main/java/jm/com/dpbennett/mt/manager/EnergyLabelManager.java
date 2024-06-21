@@ -327,6 +327,8 @@ public class EnergyLabelManager extends GeneralManager
         selectedEnergyLabel.setCostPerKwh2(costPerKWh_2);
         selectedEnergyLabel.setValidity("" + BusinessEntityUtils.getCurrentYear());
         selectedEnergyLabel.setYearOfEvaluation("" + BusinessEntityUtils.getCurrentYear());
+        
+        openEnergyLabelBrowser();
 
         editSelectedEnergyLabel();
     }
@@ -468,7 +470,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public List<EnergyLabel> getFoundEnergyLabels() {
         if (foundEnergyLabels == null) {
-            //foundEnergyLabels = findLabels("");
+            
             foundEnergyLabels = new ArrayList<>();
         }
         
