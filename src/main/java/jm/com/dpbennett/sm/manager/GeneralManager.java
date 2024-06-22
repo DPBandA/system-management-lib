@@ -34,7 +34,7 @@ import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
-import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.MailUtils;
@@ -178,7 +178,7 @@ public class GeneralManager implements Manager, Serializable {
 
         for (String moduleName : moduleNames) {
 
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     moduleName);
 
@@ -264,7 +264,7 @@ public class GeneralManager implements Manager, Serializable {
         getMainTabView().reset(getUser());
 
         for (String moduleName : moduleNames) {
-            Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+            Module module = Module.findActiveModuleByName(getEntityManager1(),
                     moduleName);
             if (module != null) {
                 if (getUser().hasModule(moduleName)) {
@@ -304,7 +304,7 @@ public class GeneralManager implements Manager, Serializable {
 
         for (String moduleName : moduleNames) {
 
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     moduleName);
 
@@ -439,7 +439,7 @@ public class GeneralManager implements Manager, Serializable {
 
         for (String moduleName : moduleNames) {
 
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     moduleName);
 

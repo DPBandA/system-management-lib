@@ -52,7 +52,7 @@ import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.ComplianceSurvey;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
-import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -618,7 +618,7 @@ public class ReportManager extends GeneralManager {
         getMainTabView().reset(getUser());
         
         if (getUser().hasModule("systemManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "systemManager");
             if (module != null) {
@@ -627,7 +627,7 @@ public class ReportManager extends GeneralManager {
         }
 
         if (getUser().hasModule("reportManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "reportManager");
             if (module != null) {

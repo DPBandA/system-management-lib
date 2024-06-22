@@ -23,7 +23,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  *
@@ -36,10 +36,10 @@ public class ActiveModuleConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Modules module = Modules.findActiveModuleByName(em, value);
+        Module module = Module.findActiveModuleByName(em, value);
 
         if (module == null) {
-            module = new Modules(value);
+            module = new Module(value);
         }
 
         return module;

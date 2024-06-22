@@ -1719,6 +1719,9 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             case "Organizations":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessSearchButton");
                 return true;
+            case "Business Offices":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessOfficeSearchButton");
+                return true;    
             case "Manufacturers":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
                 return true;

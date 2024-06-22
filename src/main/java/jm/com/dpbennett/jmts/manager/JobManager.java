@@ -70,7 +70,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Email;
-import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
@@ -3000,7 +3000,7 @@ public class JobManager extends GeneralManager
 //        }
         // Compliance
         if (getUser().hasModule("complianceManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "complianceManager");
             if (module != null) {
@@ -3014,7 +3014,7 @@ public class JobManager extends GeneralManager
         }
         // Jobs
         if (getUser().hasModule("jobManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "jobManager");
             if (module != null) {
@@ -3027,7 +3027,7 @@ public class JobManager extends GeneralManager
         }
         // Clients
         if (getUser().hasModule("clientManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "clientManager");
             if (module != null) {
@@ -3040,7 +3040,7 @@ public class JobManager extends GeneralManager
         }
         // Procurement
         if (getUser().hasModule("purchasingManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "purchasingManager");
             if (module != null) {
@@ -3054,7 +3054,7 @@ public class JobManager extends GeneralManager
 
         // Inventory
         if (getUser().hasModule("inventoryManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "inventoryManager");
             if (module != null) {
@@ -3068,7 +3068,7 @@ public class JobManager extends GeneralManager
 
         // Legal
         if (getUser().hasModule("legalDocumentManager")) {
-            Modules module = Modules.findActiveModuleByName(
+            Module module = Module.findActiveModuleByName(
                     getEntityManager1(),
                     "legalDocumentManager");
             if (module != null) {

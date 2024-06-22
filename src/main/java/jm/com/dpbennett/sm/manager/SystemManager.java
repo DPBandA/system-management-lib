@@ -45,7 +45,7 @@ import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
-import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -78,6 +78,7 @@ public final class SystemManager extends GeneralManager {
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
     private Boolean isActiveUsersOnly;
+    private Boolean isActiveModulesOnly;
     private String systemOptionSearchText;
     private String ldapSearchText;
     private String documentTypeSearchText;
@@ -95,21 +96,19 @@ public final class SystemManager extends GeneralManager {
     private List<Country> foundCountries;
     private List<Notification> foundNotifications;
     private List<Privilege> foundActivePrivileges;
-    private List<Modules> foundActiveModules;
-    private List<Modules> filteredFoundActiveModules;
+    private List<Module> foundModules;
     private List<User> foundUsers;
-    private List<User> filteredFoundUsers;
     private List<Attachment> foundAttachments;
     private SystemOption selectedSystemOption;
     private DualListModel<Privilege> privilegeDualList;
-    private DualListModel<Modules> moduleDualList;
+    private DualListModel<Module> moduleDualList;
     private LdapContext selectedLdapContext;
     private DocumentType selectedDocumentType;
     private Category selectedCategory;
     private Country selectedCountry;
     private Privilege selectedPrivilege;
     private Notification selectedNotification;
-    private Modules selectedModule;
+    private Module selectedModule;
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
@@ -124,6 +123,19 @@ public final class SystemManager extends GeneralManager {
 
     public SystemManager() {
         init();
+    }
+
+    public Boolean getIsActiveModulesOnly() {
+
+        if (isActiveModulesOnly == null) {
+            isActiveModulesOnly = true;
+        }
+
+        return isActiveModulesOnly;
+    }
+
+    public void setIsActiveModulesOnly(Boolean isActiveModulesOnly) {
+        this.isActiveModulesOnly = isActiveModulesOnly;
     }
 
     public List<DocumentType> completeDocumentType(String query) {
@@ -302,7 +314,7 @@ public final class SystemManager extends GeneralManager {
 
         setTabTitle(event.getTab().getTitle());
 
-        for (Modules module : getUser().getActiveModules()) {
+        for (Module module : getUser().getActiveModules()) {
             Manager manager = getManager(module.getName());
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
@@ -548,11 +560,11 @@ public final class SystemManager extends GeneralManager {
         this.attachment = attachment;
     }
 
-    public DualListModel<Modules> getModuleDualList() {
+    public DualListModel<Module> getModuleDualList() {
         return moduleDualList;
     }
 
-    public void setModuleDualList(DualListModel<Modules> moduleDualList) {
+    public void setModuleDualList(DualListModel<Module> moduleDualList) {
         this.moduleDualList = moduleDualList;
     }
 
@@ -571,8 +583,8 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void addUserModules() {
-        List<Modules> source = Modules.findAllActiveModules(getEntityManager1(), 0);
-        List<Modules> target = selectedUser.getActiveModules();
+        List<Module> source = Module.findAllActiveModules(getEntityManager1(), 0);
+        List<Module> target = selectedUser.getActiveModules();
 
         source.removeAll(target);
 
@@ -584,7 +596,7 @@ public final class SystemManager extends GeneralManager {
     private List<Privilege> getUserActiveModulePrivileges() {
         List<Privilege> privs = new ArrayList<>();
 
-        for (Modules mod : getSelectedUser().getActiveModules()) {
+        for (Module mod : getSelectedUser().getActiveModules()) {
             privs.addAll(mod.getPrivileges());
         }
 
@@ -693,11 +705,11 @@ public final class SystemManager extends GeneralManager {
         this.selectedPrivilege = selectedPrivilege;
     }
 
-    public Modules getSelectedModule() {
+    public Module getSelectedModule() {
         return selectedModule;
     }
 
-    public void setSelectedModule(Modules selectedModule) {
+    public void setSelectedModule(Module selectedModule) {
         this.selectedModule = selectedModule;
     }
 
@@ -758,28 +770,27 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void doUserFilter() {
-
-        foundUsers = new ArrayList<>();
-
-        for (User filteredFoundUser : filteredFoundUsers) {
-            if (filteredFoundUser != null) {
-                if (filteredFoundUser.getUsername().contains(getUserSearchText())
-                        || filteredFoundUser.getPFThemeName().contains(getUserSearchText())
-                        || filteredFoundUser.getActivity().contains(getUserSearchText())
-                        || filteredFoundUser.getEmployee().toString().contains(getUserSearchText())
-                        || filteredFoundUser.getJobTableViewPreference().contains(getUserSearchText())) {
-                    foundUsers.add(filteredFoundUser);
-                }
-            }
-        }
-
-        if (foundUsers.isEmpty()) {
-            doUserSearch();
-        }
-
-    }
-
+//    public void doUserFilter() {
+//
+//        foundUsers = new ArrayList<>();
+//
+//        for (User filteredFoundUser : filteredFoundUsers) {
+//            if (filteredFoundUser != null) {
+//                if (filteredFoundUser.getUsername().contains(getUserSearchText())
+//                        || filteredFoundUser.getPFThemeName().contains(getUserSearchText())
+//                        || filteredFoundUser.getActivity().contains(getUserSearchText())
+//                        || filteredFoundUser.getEmployee().toString().contains(getUserSearchText())
+//                        || filteredFoundUser.getJobTableViewPreference().contains(getUserSearchText())) {
+//                    foundUsers.add(filteredFoundUser);
+//                }
+//            }
+//        }
+//
+//        if (foundUsers.isEmpty()) {
+//            doUserSearch();
+//        }
+//
+//    }
     public void doAttachmentSearch() {
 
         doDefaultSearch(
@@ -1167,11 +1178,17 @@ public final class SystemManager extends GeneralManager {
 
                 break;
             case "Modules":
-                foundActiveModules = Modules.findActiveModules(
-                        getEntityManager1(),
-                        searchText, maxResult);
 
-                filteredFoundActiveModules = new ArrayList<Modules>(foundActiveModules);
+                if (getIsActiveModulesOnly()) {
+                    foundModules = Module.findActiveModules(
+                            getEntityManager1(),
+                            searchText, maxResult);
+                }
+                else {
+                    foundModules = Module.findModules(
+                            getEntityManager1(),
+                            searchText, maxResult);
+                }
 
                 break;
             case "Attachments":
@@ -1544,18 +1561,17 @@ public final class SystemManager extends GeneralManager {
         this.foundActivePrivileges = foundActivePrivileges;
     }
 
-    public List<Modules> getFoundActiveModules() {
-        if (foundActiveModules == null) {
+    public List<Module> getFoundModules() {
+        if (foundModules == null) {
 
-            //doActiveModuleSearch();
-            foundActiveModules = new ArrayList<>();
+            foundModules = new ArrayList<>();
         }
 
-        return foundActiveModules;
+        return foundModules;
     }
 
-    public void setFoundActiveModules(List<Modules> foundActiveModules) {
-        this.foundActiveModules = foundActiveModules;
+    public void setFoundModules(List<Module> foundModules) {
+        this.foundModules = foundModules;
     }
 
     public void doDocumentTypeSearch() {
@@ -1609,7 +1625,7 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void doActiveModuleSearch() {
+    public void doModuleSearch() {
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1621,29 +1637,28 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void doActiveModuleFilter() {
-
-        foundActiveModules = new ArrayList<>();
-
-        for (Modules filteredFoundModule : filteredFoundActiveModules) {
-            if (filteredFoundModule != null) {
-                if (filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
-                        || filteredFoundModule.getMainViewTitle().contains(getModuleSearchText())
-                        || filteredFoundModule.getDescription().contains(getModuleSearchText())
-                        || filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
-                        || filteredFoundModule.getName().contains(getModuleSearchText())) {
-
-                    foundActiveModules.add(filteredFoundModule);
-                }
-            }
-        }
-
-        if (foundActiveModules.isEmpty()) {
-            doActiveModuleSearch();
-        }
-
-    }
-
+//    public void doActiveModuleFilter() {
+//
+//        foundModules = new ArrayList<>();
+//
+//        for (Modules filteredFoundModule : filteredFoundActiveModules) {
+//            if (filteredFoundModule != null) {
+//                if (filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
+//                        || filteredFoundModule.getMainViewTitle().contains(getModuleSearchText())
+//                        || filteredFoundModule.getDescription().contains(getModuleSearchText())
+//                        || filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
+//                        || filteredFoundModule.getName().contains(getModuleSearchText())) {
+//
+//                    foundModules.add(filteredFoundModule);
+//                }
+//            }
+//        }
+//
+//        if (foundModules.isEmpty()) {
+//            doActiveModuleSearch();
+//        }
+//
+//    }
     public void openDocumentTypeDialog(String url) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -1706,7 +1721,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void createNewModule() {
-        selectedModule = new Modules();
+        selectedModule = new Module();
         selectedModule.setActive(true);
 
         editModule();
@@ -1952,8 +1967,6 @@ public final class SystemManager extends GeneralManager {
         foundLdapContexts = null;
         foundSystemOptions = null;
         foundSystemOptionsByCategory = new ArrayList<>();
-        filteredFoundUsers = new ArrayList<>();
-        filteredFoundActiveModules = new ArrayList<>();
         foundLdapContexts = null;
         systemOptionSearchText = "";
         ldapSearchText = "";

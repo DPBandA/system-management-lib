@@ -34,7 +34,7 @@ import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.Modules;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -119,7 +119,7 @@ public class EnergyLabelManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        Modules module = Modules.findActiveModuleByName(getEntityManager1(),
+        Module module = Module.findActiveModuleByName(getEntityManager1(),
                 "energyLabelManager");
         if (module != null) {
             getMainTabView().openTab(module.getDashboardTitle());

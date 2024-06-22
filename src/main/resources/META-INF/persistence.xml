@@ -125,6 +125,7 @@
     <class>jm.com.dpbennett.business.entity.mt.EnergyConsumptionAndEfficiency</class>
     <class>jm.com.dpbennett.business.entity.mt.EnergyLabel</class>
     <class>jm.com.dpbennett.business.entity.sm.User</class>
+    <class>jm.com.dpbennett.business.entity.sm.Module</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="eclipselink.cache.shared.default" value="false"/>
@@ -261,5 +262,6 @@
     <class>jm.com.dpbennett.business.entity.mt.EnergyConsumptionAndEfficiency</class>
     <class>jm.com.dpbennett.business.entity.mt.EnergyLabel</class>
     <class>jm.com.dpbennett.business.entity.sm.User</class>
+    <class>jm.com.dpbennett.business.entity.sm.Module</class>
   </persistence-unit>
 </persistence>
