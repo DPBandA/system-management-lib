@@ -790,7 +790,8 @@ public class JobManager extends GeneralManager
                         "activateJobDialogFieldDisabling");
 
         Boolean userHasPrivilege = getUser().can("EditDisabledJobField")
-                || getUser().getEmployee().getDepartment().getPrivilege().getCanEditDisabledJobField();
+                // tk re-add 
+                /*|| getUser().getEmployee().getDepartment().getPrivilege().getCanEditDisabledJobField()*/;
 
         Boolean jobIsNotNew = job.getId() != null;
 
@@ -1120,9 +1121,10 @@ public class JobManager extends GeneralManager
         if (getUser(em).can("EditJob")
                 || getUser(em).can("EnterJob")
                 || getUser(em).can("EditInvoicingAndPayment")
+                /* tk re-add with can()
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
                 || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEditJob()
-                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()) {
+                || getUser(em).getEmployee().getDepartment().getPrivilege().getCanEnterJob()*/) {
 
             searchTypes.add(new SelectItem("General", "General"));
             searchTypes.add(new SelectItem("My jobs", "My jobs"));
@@ -1999,9 +2001,10 @@ public class JobManager extends GeneralManager
         // Check for job entry privileges
         if (isJobNew(job)
                 && ( // Can the user's department can enter any job?
-                getUser().getEmployee().getDepartment().getPrivilege().getCanEnterJob()
+                // tk Re-add with can()
+                /*getUser().getEmployee().getDepartment().getPrivilege().getCanEnterJob()
                 // Can the user enter a job for the department to which the job is assigned?
-                || (getUser().can("EnterDepartmentJob") // Use Department.findDepartmentAssignedToJob() instead?
+                ||*/ (getUser().can("EnterDepartmentJob") // Use Department.findDepartmentAssignedToJob() instead?
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
                 // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                 || (getUser().can("EnterOwnJob")
@@ -2018,9 +2021,10 @@ public class JobManager extends GeneralManager
             savedJob = Job.findJobById(em, job.getId());
             // Check for job editing privileges
             if ( // Can the user's department edit any job?
+                    /* tk re-add with can()
                     getUser().getEmployee().getDepartment().getPrivilege().getCanEditJob()
                     // Can the user edit a job for the department to which the job is assigned?
-                    || (getUser().can("EditDepartmentJob") // Use Department.findDepartmentAssignedToJob() instead?
+                    ||*/ (getUser().can("EditDepartmentJob") // Use Department.findDepartmentAssignedToJob() instead?
                     && (getUser().isMemberOf(em, savedJob.getDepartment()) || getUser().isMemberOf(em, savedJob.getSubContractedDepartment())))
                     // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                     || (getUser().can("EditOwnJob")

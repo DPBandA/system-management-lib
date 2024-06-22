@@ -2863,8 +2863,9 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public Boolean getDisableInvoiceJobCosting() {
-        return !getUser().getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
-                || !getCurrentJob().getJobCostingAndPayment().getCostingApproved();
+        // re-add privilege code using can()
+        return /*!getUser().getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
+                ||*/ !getCurrentJob().getJobCostingAndPayment().getCostingApproved();
     }
 
     /**
@@ -2878,7 +2879,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         // Check for permission to invoice by department that can do invoices
         // NB: This permission will be put in the user's profile in the future.
-        if (!getUser().getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()) {
+        // tk re-add code with can()
+        if (true/*!getUser().getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()*/) {
             PrimeFacesUtils.addMessage("Permission Denied",
                     "You do not have permission to create an invoice for "
                     + job.getJobNumber(),
@@ -3973,7 +3975,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      */
     public Boolean getCanApplyDiscount() {
 
-        return getUser().getEmployee().getDepartment().getPrivilege().getCanApplyDiscountsToJobCosting();
+        // tk re-add code with can()
+        return true; //getUser().getEmployee().getDepartment().getPrivilege().getCanApplyDiscountsToJobCosting();
     }
 
     public Boolean getCanApproveJobCosting() {

@@ -79,6 +79,8 @@ public final class SystemManager extends GeneralManager {
     private Boolean isActiveDocumentTypesOnly;
     private Boolean isActiveUsersOnly;
     private Boolean isActiveModulesOnly;
+    private Boolean isActivePrivilegesOnly;
+    private Boolean isActiveCategoriesOnly;
     private String systemOptionSearchText;
     private String ldapSearchText;
     private String documentTypeSearchText;
@@ -95,7 +97,7 @@ public final class SystemManager extends GeneralManager {
     private List<Category> foundCategories;
     private List<Country> foundCountries;
     private List<Notification> foundNotifications;
-    private List<Privilege> foundActivePrivileges;
+    private List<Privilege> foundPrivileges;
     private List<Module> foundModules;
     private List<User> foundUsers;
     private List<Attachment> foundAttachments;
@@ -125,6 +127,19 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public Boolean getIsActiveCategoriesOnly() {
+
+        if (isActiveCategoriesOnly == null) {
+            isActiveCategoriesOnly = true;
+        }
+
+        return isActiveCategoriesOnly;
+    }
+
+    public void setIsActiveCategoriesOnly(Boolean isActiveCategoriesOnly) {
+        this.isActiveCategoriesOnly = isActiveCategoriesOnly;
+    }
+
     public Boolean getIsActiveModulesOnly() {
 
         if (isActiveModulesOnly == null) {
@@ -136,6 +151,19 @@ public final class SystemManager extends GeneralManager {
 
     public void setIsActiveModulesOnly(Boolean isActiveModulesOnly) {
         this.isActiveModulesOnly = isActiveModulesOnly;
+    }
+
+    public Boolean getIsActivePrivilegesOnly() {
+
+        if (isActivePrivilegesOnly == null) {
+            isActivePrivilegesOnly = true;
+        }
+
+        return isActivePrivilegesOnly;
+    }
+
+    public void setIsActivePrivilegesOnly(Boolean isActivePrivilegesOnly) {
+        this.isActivePrivilegesOnly = isActivePrivilegesOnly;
     }
 
     public List<DocumentType> completeDocumentType(String query) {
@@ -1123,28 +1151,39 @@ public final class SystemManager extends GeneralManager {
             Date startDate,
             Date endDate) {
 
-        int maxResult = SystemOption.getInteger(getEntityManager1(),
+        int maxSearchResults = SystemOption.getInteger(getEntityManager1(),
                 "maxSearchResults");
 
         switch (searchType) {
             case "Users":
                 if (getIsActiveUsersOnly()) {
                     foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(),
-                            searchText, maxResult);
+                            searchText, maxSearchResults);
                 } else {
                     foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
-                            searchText, maxResult);
+                            searchText, maxSearchResults);
                 }
 
                 break;
             case "Privileges":
-                foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(),
-                        searchText);
+                if (getIsActivePrivilegesOnly()) {
+                    foundPrivileges = Privilege.findActivePrivileges(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundPrivileges = Privilege.findPrivileges(getEntityManager1(),
+                            searchText);
+                }
 
                 break;
             case "Categories":
-                foundCategories = Category.findCategoriesByName(getEntityManager1(),
-                        searchText);
+
+                if (getIsActiveCategoriesOnly()) {
+                    foundCategories = Category.findActiveCategoriesByName(getEntityManager1(),
+                            searchText);
+                } else {
+                    foundCategories = Category.findCategoriesByName(getEntityManager1(),
+                            searchText);
+                }
 
                 break;
             case "Countries":
@@ -1182,18 +1221,18 @@ public final class SystemManager extends GeneralManager {
                 if (getIsActiveModulesOnly()) {
                     foundModules = Module.findActiveModules(
                             getEntityManager1(),
-                            searchText, maxResult);
-                }
-                else {
+                            searchText, maxSearchResults);
+                } else {
                     foundModules = Module.findModules(
                             getEntityManager1(),
-                            searchText, maxResult);
+                            searchText, maxSearchResults);
                 }
 
                 break;
             case "Attachments":
+                
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
-                        searchText);
+                        searchText, maxSearchResults);
 
                 break;
             default:
@@ -1548,17 +1587,17 @@ public final class SystemManager extends GeneralManager {
         this.foundCountries = foundCountries;
     }
 
-    public List<Privilege> getFoundActivePrivileges() {
-        if (foundActivePrivileges == null) {
+    public List<Privilege> getFoundPrivileges() {
+        if (foundPrivileges == null) {
             //foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(), "");
-            foundActivePrivileges = new ArrayList<>();
+            foundPrivileges = new ArrayList<>();
         }
 
-        return foundActivePrivileges;
+        return foundPrivileges;
     }
 
-    public void setFoundActivePrivileges(List<Privilege> foundActivePrivileges) {
-        this.foundActivePrivileges = foundActivePrivileges;
+    public void setFoundPrivileges(List<Privilege> foundPrivileges) {
+        this.foundPrivileges = foundPrivileges;
     }
 
     public List<Module> getFoundModules() {
@@ -1609,11 +1648,18 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void doNotificationSearch() {
+        
+        int maxSearchResults = SystemOption.getInteger(getEntityManager1(),
+                "maxSearchResults");
 
-        foundNotifications = Notification.findNotificationsByName(getEntityManager1(), getNotificationSearchText());
+        foundNotifications = Notification.findNotificationsByName(
+                getEntityManager1(), 
+                getNotificationSearchText(),
+                maxSearchResults);
+        
     }
 
-    public void doActivePrivilegeSearch() {
+    public void doPrivilegeSearch() {
 
         doDefaultSearch(
                 getMainTabView(),
@@ -1637,28 +1683,6 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-//    public void doActiveModuleFilter() {
-//
-//        foundModules = new ArrayList<>();
-//
-//        for (Modules filteredFoundModule : filteredFoundActiveModules) {
-//            if (filteredFoundModule != null) {
-//                if (filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
-//                        || filteredFoundModule.getMainViewTitle().contains(getModuleSearchText())
-//                        || filteredFoundModule.getDescription().contains(getModuleSearchText())
-//                        || filteredFoundModule.getDashboardTitle().contains(getModuleSearchText())
-//                        || filteredFoundModule.getName().contains(getModuleSearchText())) {
-//
-//                    foundModules.add(filteredFoundModule);
-//                }
-//            }
-//        }
-//
-//        if (foundModules.isEmpty()) {
-//            doActiveModuleSearch();
-//        }
-//
-//    }
     public void openDocumentTypeDialog(String url) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
