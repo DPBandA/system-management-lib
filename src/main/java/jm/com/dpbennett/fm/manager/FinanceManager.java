@@ -106,6 +106,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private Boolean isActiveJobSubcategoriesOnly;
     private Boolean isActiveSectorsOnly;
     private Boolean isActiveServicesOnly;
+    private Boolean isActiveProcurementMethodsOnly;
     private List<MarketProduct> foundMarketProducts;
     private Boolean isActiveMarketProductsOnly;
     private List<ProcurementMethod> foundProcurementMethods;
@@ -119,6 +120,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
+    }
+
+    public Boolean getIsActiveProcurementMethodsOnly() {
+
+        return isActiveProcurementMethodsOnly;
+    }
+
+    public void setIsActiveProcurementMethodsOnly(Boolean isActiveProcurementMethodsOnly) {
+        this.isActiveProcurementMethodsOnly = isActiveProcurementMethodsOnly;
     }
 
     public List<Classification> completeJobClassification(String query) {
@@ -757,7 +767,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public List<Service> completeService(String query) {
 
         try {
-            return Service.findAllByName(getEntityManager1(), query);
+            return Service.findAllActiveByName(getEntityManager1(), query);
         } catch (Exception e) {
             System.out.println(e);
 
@@ -1799,6 +1809,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         isActiveServicesOnly = true;
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
+        isActiveProcurementMethodsOnly = true;
 
         dashboardModel = new DefaultDashboardModel();
         dashboardModel.addWidget(new DefaultDashboardWidget("procurementTasks", RESPONSIVE_CLASS));
@@ -1913,8 +1924,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
                 break;
             case "Procurement":
-                foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
-                        searchText);
+
+                if (getIsActiveProcurementMethodsOnly()) {
+                    foundProcurementMethods = ProcurementMethod.findAllActiveByName(getEntityManager1(),
+                            searchText);
+                }
+                else {
+                    foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
+                            searchText);
+                }
 
                 break;
             case "Settings":
