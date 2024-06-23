@@ -922,12 +922,12 @@ public final class SystemManager extends GeneralManager {
 
     public List<String> completeUser(String query) {
 
-        int maxResult = SystemOption.getInteger(getEntityManager1(),
+        int maxSearchResults = SystemOption.getInteger(getEntityManager1(),
                 "maxSearchResults");
 
         try {
             List<User> users = User.findJobManagerUsersByUsername(
-                    getEntityManager1(), query, maxResult);
+                    getEntityManager1(), query, maxSearchResults);
             List<String> suggestions = new ArrayList<>();
             if (users != null) {
                 if (!users.isEmpty()) {

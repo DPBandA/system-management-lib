@@ -27,6 +27,7 @@ import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.dm.Post;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.PrimeFaces;
@@ -188,13 +189,14 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     }
 
     public void doPostSearch() {
-
-        setDefaultCommandTarget("@this");
+        
+        int maxSearchResults = SystemOption.getInteger(getEntityManager1(),
+                "maxSearchResults");
 
         if (getIsActivePostsOnly()) {
-            foundPosts = Post.findActive(getEntityManager1(), getPostSearchText(), 100);
+            foundPosts = Post.findActive(getEntityManager1(), getPostSearchText(), maxSearchResults);
         } else {
-            foundPosts = Post.find(getEntityManager1(), getPostSearchText(), 100);
+            foundPosts = Post.find(getEntityManager1(), getPostSearchText(), maxSearchResults);
         }
 
     }
