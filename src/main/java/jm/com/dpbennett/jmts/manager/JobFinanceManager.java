@@ -62,7 +62,6 @@ import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
 import jm.com.dpbennett.business.entity.fm.AccPacDocument;
 import jm.com.dpbennett.business.entity.fm.AccountingCode;
 import jm.com.dpbennett.business.entity.fm.Classification;
-import jm.com.dpbennett.business.entity.fm.Currency;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -2863,9 +2862,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public Boolean getDisableInvoiceJobCosting() {
-        // re-add privilege code using can()
-        return /*!getUser().getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()
-                ||*/ !getCurrentJob().getJobCostingAndPayment().getCostingApproved();
+        
+        return !getUser().can("EditInvoicingAndPayment")
+                || !getCurrentJob().getJobCostingAndPayment().getCostingApproved();
+        
     }
 
     /**
@@ -2879,8 +2879,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
         // Check for permission to invoice by department that can do invoices
         // NB: This permission will be put in the user's profile in the future.
-        // tk re-add code with can()
-        if (true/*!getUser().getEmployee().getDepartment().getPrivilege().getCanEditInvoicingAndPayment()*/) {
+        if (!getUser().can("EditInvoicingAndPayment")) {
             PrimeFacesUtils.addMessage("Permission Denied",
                     "You do not have permission to create an invoice for "
                     + job.getJobNumber(),
@@ -3967,16 +3966,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 && getCanEditJobCosting(job);
     }
 
-    /**
-     * This determines if the user's main department can apply discounts to a
-     * job costing.
-     *
-     * @return
-     */
     public Boolean getCanApplyDiscount() {
+        
+        return getUser().can("ApplyDiscountsToJobCosting"); 
 
-        // tk re-add code with can()
-        return true; //getUser().getEmployee().getDepartment().getPrivilege().getCanApplyDiscountsToJobCosting();
     }
 
     public Boolean getCanApproveJobCosting() {
