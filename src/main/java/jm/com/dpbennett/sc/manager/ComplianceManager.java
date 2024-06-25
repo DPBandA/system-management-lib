@@ -1754,6 +1754,11 @@ public class ComplianceManager extends GeneralManager
 
         getCurrentProductInspection().setIsDirty(true);
     }
+    
+    public void updateProductInspectionStandardsBreached() {
+
+        getCurrentProductInspection().setIsDirty(true);
+    }
 
     public Boolean getRenderHeatNumber() {
 
