@@ -2611,7 +2611,8 @@ public class ComplianceManager extends GeneralManager
 
         // sample disposal
         if (currentComplianceSurvey.getSamplesToBeCollected()) {
-            parameters.put("samplesToBeCollected", "\u2713"); // \u2713 is unicode for tick
+            // \u2713 is the unicode for the tick character
+            parameters.put("samplesToBeCollected", "\u2713"); 
         } else {
             parameters.put("samplesToBeCollected", "");
         }
