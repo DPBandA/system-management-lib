@@ -70,10 +70,12 @@ public final class SystemManager extends GeneralManager {
 
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory FIN;
-    @PersistenceUnit(unitName = "JMTS3PU")
-    private EntityManagerFactory JMTS3;
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory JMTS;
+    @PersistenceUnit(unitName = "JMTS3PU")
+    private EntityManagerFactory JMTS3;
+    @PersistenceUnit(unitName = "JMTS5PU")
+    private EntityManagerFactory JMTS5;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
@@ -208,6 +210,8 @@ public final class SystemManager extends GeneralManager {
         switch (em) {
             case "JMTS3":
                 return JMTS3.createEntityManager();
+            case "JMTS5":
+                return JMTS5.createEntityManager();    
             case "JMTS":
             default:
                 return JMTS.createEntityManager();
@@ -1230,7 +1234,7 @@ public final class SystemManager extends GeneralManager {
 
                 break;
             case "Attachments":
-                
+
                 foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
                         searchText, maxSearchResults);
 
@@ -1648,15 +1652,15 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void doNotificationSearch() {
-        
+
         int maxSearchResults = SystemOption.getInteger(getEntityManager1(),
                 "maxSearchResults");
 
         foundNotifications = Notification.findNotificationsByName(
-                getEntityManager1(), 
+                getEntityManager1(),
                 getNotificationSearchText(),
                 maxSearchResults);
-        
+
     }
 
     public void doPrivilegeSearch() {
@@ -2455,6 +2459,10 @@ public final class SystemManager extends GeneralManager {
 
     public EntityManager getEntityManager3() {
         return JMTS3.createEntityManager();
+    }
+
+    public EntityManager getEntityManager5() {
+        return JMTS5.createEntityManager();
     }
 
     public Date getCurrentDate() {
