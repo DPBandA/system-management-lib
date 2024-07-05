@@ -204,14 +204,14 @@ public final class SystemManager extends GeneralManager {
     }
 
     public EntityManager getEntityManager(String emname) {
-
+        
         String em = SystemOption.getString(getDefaultEntityManager(), emname);
 
         switch (em) {
             case "JMTS3":
                 return JMTS3.createEntityManager();
             case "JMTS5":
-                return JMTS5.createEntityManager();    
+                return JMTS5.createEntityManager();
             case "JMTS":
             default:
                 return JMTS.createEntityManager();
@@ -2436,15 +2436,7 @@ public final class SystemManager extends GeneralManager {
     @Override
     public EntityManager getEntityManager1() {
 
-        String em = SystemOption.getString(getDefaultEntityManager(), "SMEM");
-
-        switch (em) {
-            case "JMTS3":
-                return JMTS3.createEntityManager();
-            case "JMTS":
-            default:
-                return getDefaultEntityManager();
-        }
+        return getEntityManager("SMEM");
 
     }
 
