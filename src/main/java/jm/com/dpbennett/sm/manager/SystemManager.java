@@ -129,6 +129,21 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public String getEntityManagerSettings() {
+
+        // tk will get the organization's options in the future.
+        SystemOption smem = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "SMEM");
+        SystemOption fmem = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "FMEM");
+        SystemOption jmtsem = SystemOption.findSystemOptionByName(
+                getDefaultEntityManager(), "JMTSEM");
+
+        return "SMEM: " + smem.getOptionValue()
+                + ", FMEM: " + fmem.getOptionValue()
+                + ", JMTSEM: " + jmtsem.getOptionValue();
+    }
+
     public Boolean getIsActiveCategoriesOnly() {
 
         if (isActiveCategoriesOnly == null) {
@@ -204,7 +219,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public EntityManager getEntityManager(String emname) {
-        
+
         String em = SystemOption.getString(getDefaultEntityManager(), emname);
 
         switch (em) {
