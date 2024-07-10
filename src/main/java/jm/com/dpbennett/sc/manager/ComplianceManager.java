@@ -54,6 +54,7 @@ import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -138,6 +139,101 @@ public class ComplianceManager extends GeneralManager
     @Override
     public final void init() {
         reset();
+    }
+
+    public Boolean getHasJobManager() {
+
+        return getJobManager() != null;
+    }
+
+    @Override
+    public void setManagersUser() {
+
+        getManager("systemManager").setUser(getUser());
+        getManager("clientManager").setUser(getUser());
+        getManager("reportManager").setUser(getUser());
+        getManager("humanResourceManager").setUser(getUser());
+        getManager("complianceManager").setUser(getUser());
+
+    }
+
+    public void openClientsTab() {
+
+        getMainTabView().openTab("Clients");
+    }
+
+    public void openReportsTab() {
+        getMainTabView().openTab("Reports");
+    }
+
+    private void openModuleMainTab(String moduleName) {
+
+        if (moduleName != null) {
+            switch (moduleName) {
+                case "complianceManager":
+                    openSurveysBrowser();
+                    openComplaintsBrowser();
+                    openFactoryInspectionBrowser();
+                    openMarketProductBrowser();
+                    openDocumentStandardDialog();                    
+                    break;
+                case "clientManager":
+                    getClientManager().openClientsTab();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void initMainTabView() {
+
+        String firstModule;
+        firstModule = null;
+
+        getMainTabView().reset(getUser());
+
+        if (getUser().hasModule("complianceManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getEntityManager1(),
+                    "complianceManager");
+            if (module != null) {
+                openModuleMainTab("complianceManager");
+
+                if (firstModule == null) {
+                    firstModule = "complianceManager";
+                }
+
+            }
+        }
+
+        // Clients
+        if (getUser().hasModule("clientManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getEntityManager1(),
+                    "clientManager");
+            if (module != null) {
+                openModuleMainTab("clientManager");
+
+                if (firstModule == null) {
+                    firstModule = "clientManager";
+                }
+            }
+        }
+
+        openModuleMainTab(firstModule);
+    }
+
+    @Override
+    public void handleKeepAlive() {
+
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged in");
+
+        super.handleKeepAlive();
+
     }
 
     public void okSurveyEstablishmentsDialog() {
@@ -1754,7 +1850,7 @@ public class ComplianceManager extends GeneralManager
 
         getCurrentProductInspection().setIsDirty(true);
     }
-    
+
     public void updateProductInspectionStandardsBreached() {
 
         getCurrentProductInspection().setIsDirty(true);
@@ -2612,7 +2708,7 @@ public class ComplianceManager extends GeneralManager
         // sample disposal
         if (currentComplianceSurvey.getSamplesToBeCollected()) {
             // \u2713 is the unicode for the tick character
-            parameters.put("samplesToBeCollected", "\u2713"); 
+            parameters.put("samplesToBeCollected", "\u2713");
         } else {
             parameters.put("samplesToBeCollected", "");
         }
@@ -3108,13 +3204,27 @@ public class ComplianceManager extends GeneralManager
 
     @Override
     public void completeLogin() {
-        initDashboard();
+        if (getUser().getId() != null) {
+            super.updateUserActivity("JMTSv"
+                    + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                    "Logged in");
+            getUser().save(getEntityManager1());
+        }
+
+        setManagersUser();
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
         initMainTabView();
     }
 
     @Override
     public void completeLogout() {
-        reset();
+        super.updateUserActivity("JMTSv"
+                + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                "Logged out");
+
+        super.completeLogout();
     }
 
     public List<DocumentStandard> completeActiveDocumentStandard(String query) {

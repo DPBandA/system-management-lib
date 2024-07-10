@@ -544,9 +544,11 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public User getUser() {
+        
         if (user == null) {
             user = new User();
         }
+        
         return user;
     }
 
