@@ -129,19 +129,87 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
-    public String getEntityManagerSettings() {
+    public String entityManagerSetting(String setting) {
 
-        // tk will get the organization's options in the future.
-        SystemOption smem = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "SMEM");
-        SystemOption fmem = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "FMEM");
-        SystemOption jmtsem = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "JMTSEM");
+        SystemOption option;
 
-        return "SMEM: " + smem.getOptionValue()
-                + ", FMEM: " + fmem.getOptionValue()
-                + ", JMTSEM: " + jmtsem.getOptionValue();
+        switch (setting) {
+            case "SMEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "SMEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "CMEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "CMEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "HRMEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "HRMEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "RMEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "RMEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "SCEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "SCEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "LOEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "LOEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "LPEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "LPEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "FMEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "FMEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            case "JMTSEM":
+                option = SystemOption.findSystemOptionByName(
+                        getDefaultEntityManager(), "JMTSEM");
+                if (option != null) {
+                    return option.getOptionValue();
+                } else {
+                    return "Entity manager: ?";
+                }
+            default:
+                return "Entity manager: ?";
+        }
+
     }
 
     public Boolean getIsActiveCategoriesOnly() {
@@ -380,8 +448,10 @@ public final class SystemManager extends GeneralManager {
 
     @Override
     public String getAppShortcutIconURL() {
+        
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
+        
     }
 
     @Override
@@ -2396,35 +2466,11 @@ public final class SystemManager extends GeneralManager {
 
         editSystemOption();
     }
-
-    public void editSMEM() {
-
-        selectedSystemOption = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "SMEM");
-
-        editSystemOption("/admin/systemDefaultOptionDialog");
-    }
-
-    public void editFMEM() {
+    
+    public void editEM(String em) {
 
         selectedSystemOption = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "FMEM");
-
-        editSystemOption("/admin/systemDefaultOptionDialog");
-    }
-
-    public void editJMTSEM() {
-
-        selectedSystemOption = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "JMTSEM");
-
-        editSystemOption("/admin/systemDefaultOptionDialog");
-    }
-
-    public void editMTEM() {
-
-        selectedSystemOption = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), "MTEM");
+                getDefaultEntityManager(), em);
 
         editSystemOption("/admin/systemDefaultOptionDialog");
     }

@@ -456,6 +456,27 @@ public class ReportManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("reportDialog", options, null);
 
     }
+    
+    public void openReportDialog(String reportCategory) {
+        
+        this.reportCategory = reportCategory;
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 50) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("reportDialog", options, null);
+
+    }
 
     public Report getSelectedReport() {
         if (selectedReport == null) {

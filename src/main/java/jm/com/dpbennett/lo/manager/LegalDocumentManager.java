@@ -1,5 +1,5 @@
 /*
-Legal Office (LO) 
+LegalOffice (LO) 
 Copyright (C) 2024  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,7 @@ import jm.com.dpbennett.business.entity.dm.DocumentSequenceNumber;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.lo.LegalDocument;
+import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.User;
@@ -77,12 +78,75 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public LegalDocumentManager() {
         init();
     }
+    
+    public void openClientsTab() {
+
+        getMainTabView().openTab("Clients");
+    }
+
+    @Override
+    public void initMainTabView() {
+
+        String firstModule;
+        firstModule = null;
+
+        getMainTabView().reset(getUser());
+
+        // Legal documents
+        if (getUser().hasModule("legalDocumentManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getEntityManager1(),
+                    "legalDocumentManager");
+            if (module != null) {
+                openModuleMainTab("legalDocumentManager");
+
+                if (firstModule == null) {
+                    firstModule = "legalDocumentManager";
+                }
+            }
+        }
+
+        // Clients
+        if (getUser().hasModule("clientManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getEntityManager1(),
+                    "clientManager");
+            if (module != null) {
+                openModuleMainTab("clientManager");
+
+                if (firstModule == null) {
+                    firstModule = "clientManager";
+                }
+            }
+        }
+
+        openModuleMainTab(firstModule);
+    }
+
+    private void openModuleMainTab(String moduleName) {
+
+        if (moduleName != null) {
+            switch (moduleName) {
+                case "clientManager":
+                    getClientManager().openClientsTab();
+                    break;
+                case "legalDocumentManager":
+                    openDocumentBrowser();
+                    break;
+                case "reportManager":
+                    getReportManager().openReportTemplatesTab();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
     }
-    
+
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -119,7 +183,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationHeader() {
-        return "Legal Office";
+        return "LegalOffice";
     }
 
     public List getLegalDocumentSearchTypes() {
@@ -245,7 +309,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void classificationDialogReturn() {
-        
+
         if (getFinanceManager().getSelectedClassification().getId() != null) {
             getCurrentDocument().setClassification(getFinanceManager().getSelectedClassification());
 
@@ -369,7 +433,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getSystemManager().setSelectedDocumentType(getCurrentDocument().getDocumentType());
         getCurrentDocument().setDocumentType(null);
-        
+
         getSystemManager().editDocumentType();
 
     }
@@ -378,16 +442,15 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getFinanceManager().setSelectedClassification(getCurrentDocument().getClassification());
         getFinanceManager().editClassification();
-        
-                
+
     }
 
     public void createNewClassification(ActionEvent actionEvent) {
-        
+
         getFinanceManager().setSelectedClassification(new Classification());
         getFinanceManager().getSelectedClassification().setCategory("Legal");
         getFinanceManager().editClassification();
-       
+
     }
 
     public void createNewDocumentType(ActionEvent actionEvent) {
@@ -728,13 +791,13 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationSubheader() {
-        return "Legal Office Administration &amp; Management";
+        return "Legal Office Administration";
     }
 
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("JMTSEM");
+        return getSystemManager().getEntityManager("LOEM");
     }
 
     @Override
@@ -744,8 +807,10 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getAppShortcutIconURL() {
+
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
+
     }
 
     @Override
@@ -852,12 +917,28 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     @Override
     public void completeLogin() {
 
-        super.updateUserActivity("LOv"
-                + SystemOption.getString(getEntityManager1(), "LOv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            super.updateUserActivity("LOv"
+                    + SystemOption.getString(getEntityManager1(), "LOv"),
+                    "Logged in");
+            getUser().save(getEntityManager1());
+        }
 
-        super.completeLogin();
+        setManagersUser();
 
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
+
+    }
+    
+    @Override
+    public void setManagersUser() {
+
+        getManager("systemManager").setUser(getUser());
+        getManager("clientManager").setUser(getUser());
+        getManager("reportManager").setUser(getUser());
+        
     }
 
 }

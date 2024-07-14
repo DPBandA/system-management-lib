@@ -55,7 +55,6 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
@@ -117,20 +116,45 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public void initMainTabView() {
 
+        String firstModule;
+        firstModule = null;
+
         getMainTabView().reset(getUser());
 
-        Module module = Module.findActiveModuleByName(getEntityManager1(),
-                "energyLabelManager");
-        if (module != null) {
-            getMainTabView().openTab(module.getDashboardTitle());
+        // Label
+        if (getUser().hasModule("energyLabelManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getEntityManager1(),
+                    "energyLabelManager");
+            if (module != null) {
+                openModuleMainTab("energyLabelManager");
+
+                if (firstModule == null) {
+                    firstModule = "energyLabelManager";
+                }
+            }
         }
 
+        openModuleMainTab(firstModule);
+    }
+
+    private void openModuleMainTab(String moduleName) {
+
+        if (moduleName != null) {
+            switch (moduleName) {
+                case "energyLabelManager":
+                    openEnergyLabelBrowser();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public void openEnergyLabelBrowser() {
 
         getMainTabView().openTab("Label Browser");
-        
+
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
 
     }
@@ -252,22 +276,22 @@ public class EnergyLabelManager extends GeneralManager
 
     public void saveEnergyLabel() {
 
-            ReturnMessage returnMessage = selectedEnergyLabel.save(getEntityManager1());
-            
-            if (returnMessage.isSuccess()) {
+        ReturnMessage returnMessage = selectedEnergyLabel.save(getEntityManager1());
 
-                selectedEnergyLabel.setIsDirty(false);
-                selectedEnergyLabel.setEditStatus("        ");
-                PrimeFacesUtils.addMessage("Saved!", "Energy label was saved",
-                        FacesMessage.SEVERITY_INFO);
+        if (returnMessage.isSuccess()) {
 
-            } else {
+            selectedEnergyLabel.setIsDirty(false);
+            selectedEnergyLabel.setEditStatus("        ");
+            PrimeFacesUtils.addMessage("Saved!", "Energy label was saved",
+                    FacesMessage.SEVERITY_INFO);
 
-                PrimeFacesUtils.addMessage("Energy Label NOT Saved!",
-                        "Energy label was NOT saved. Please contact the System Administrator!",
-                        FacesMessage.SEVERITY_ERROR);
+        } else {
 
-            }
+            PrimeFacesUtils.addMessage("Energy Label NOT Saved!",
+                    "Energy label was NOT saved. Please contact the System Administrator!",
+                    FacesMessage.SEVERITY_ERROR);
+
+        }
 
     }
 
@@ -327,7 +351,7 @@ public class EnergyLabelManager extends GeneralManager
         selectedEnergyLabel.setCostPerKwh2(costPerKWh_2);
         selectedEnergyLabel.setValidity("" + BusinessEntityUtils.getCurrentYear());
         selectedEnergyLabel.setYearOfEvaluation("" + BusinessEntityUtils.getCurrentYear());
-        
+
         openEnergyLabelBrowser();
 
         editSelectedEnergyLabel();
@@ -470,10 +494,10 @@ public class EnergyLabelManager extends GeneralManager
 
     public List<EnergyLabel> getFoundEnergyLabels() {
         if (foundEnergyLabels == null) {
-            
+
             foundEnergyLabels = new ArrayList<>();
         }
-        
+
         return foundEnergyLabels;
     }
 
@@ -495,11 +519,10 @@ public class EnergyLabelManager extends GeneralManager
         foundEnergyLabels = findLabels(getEnergyLabelSearchText());
     }
 
-
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("MTEM");
+        return getSystemManager().getEntityManager("LPEM");
     }
 
     @Override
@@ -565,12 +588,27 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public void completeLogin() {
 
-        super.updateUserActivity("LPv"
-                + SystemOption.getString(getEntityManager1(), "LPv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            super.updateUserActivity("LPv"
+                    + SystemOption.getString(getEntityManager1(), "LPv"),
+                    "Logged in");
+            getUser().save(getEntityManager1());
+        }
 
-        super.completeLogin();
+        setManagersUser();
 
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
+
+    }
+
+    @Override
+    public void setManagersUser() {
+
+        getManager("systemManager").setUser(getUser());       
+        getManager("energyLabelManager").setUser(getUser());
+        
     }
 
     // SVG manipulation

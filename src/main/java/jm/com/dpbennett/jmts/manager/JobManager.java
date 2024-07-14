@@ -61,7 +61,6 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
-import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -83,8 +82,6 @@ import jm.com.dpbennett.fm.manager.InventoryManager;
 import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
-import jm.com.dpbennett.lo.manager.LegalDocumentManager;
-import jm.com.dpbennett.mt.manager.EnergyLabelManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sc.manager.ComplianceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -447,8 +444,10 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getAppShortcutIconURL() {
+        
         return SystemOption.getString(
                 getEntityManager1(), "JMTSLogo");
+        
     }
 
     private void sendJobEntryEmail(
@@ -1099,14 +1098,6 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("inventoryManager");
     }
 
-    public LegalDocumentManager getLegalDocumentManager() {
-        return BeanUtils.findBean("legalDocumentManager");
-    }
-
-    public EnergyLabelManager getEnergyLabelManager() {
-        return BeanUtils.findBean("energyLabelManager");
-    }
-
     public ComplianceManager getComplianceManager() {
         return BeanUtils.findBean("complianceManager");
     }
@@ -1175,9 +1166,7 @@ public class JobManager extends GeneralManager
             "inventoryManager",
             "humanResourceManager",
             "purchasingManager",
-            "legalDocumentManager",
-            "complianceManager",
-            "energyLabelManager"
+            "complianceManager"
         });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
@@ -2933,8 +2922,6 @@ public class JobManager extends GeneralManager
         getManager("humanResourceManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
         getManager("inventoryManager").setUser(getUser());
-        getManager("legalDocumentManager").setUser(getUser());
-        getManager("energyLabelManager").setUser(getUser());
         getManager("complianceManager").setUser(getUser());
     }
 
@@ -2963,12 +2950,6 @@ public class JobManager extends GeneralManager
                     getInventoryManager().openInventoryProductBrowser();
                     getInventoryManager().openInventoryTab();
                     getInventoryManager().openInventoryRequisitionTab();
-                    break;
-                case "legalDocumentManager":
-                    getLegalDocumentManager().openDocumentBrowser();
-                    break;
-                case "energyLabelManager":
-                    getEnergyLabelManager().openEnergyLabelBrowser();
                     break;
                 default:
                     break;
@@ -3054,33 +3035,6 @@ public class JobManager extends GeneralManager
                 }
             }
         }
-
-        // Legal
-        if (getUser().hasModule("legalDocumentManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
-                    "legalDocumentManager");
-            if (module != null) {
-                openModuleMainTab("legalDocumentManager");
-
-                if (firstModule == null) {
-                    firstModule = "legalDocumentManager";
-                }
-            }
-        }
-        // LabelPrint
-//        if (getUser().hasModule("energyLabelManager")) {
-//            Modules module = Modules.findActiveModuleByName(
-//                    getEntityManager1(),
-//                    "energyLabelManager");
-//            if (module != null) {
-//                openModuleMainTab("energyLabelManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "energyLabelManager";
-//                }
-//            }
-//        }
 
         openModuleMainTab(firstModule);
     }
