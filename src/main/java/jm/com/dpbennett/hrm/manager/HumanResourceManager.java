@@ -1211,7 +1211,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("JMTSEM");
+        return getSystemManager().getEntityManager("HRMEM");
 
     }
 

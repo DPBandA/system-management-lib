@@ -49,6 +49,7 @@ import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.Utils;
@@ -1053,11 +1054,13 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void saveSelectedUser() {
+        
+        ReturnMessage rm = getSelectedUser().saveUnique(getEntityManager1());
 
-        if (!getSelectedUser().saveUnique(getEntityManager1()).isSuccess()) {
+        if (!rm.isSuccess()) {
             PrimeFacesUtils.addMessage(
-                    "User Exists",
-                    "The user already exists!",
+                    rm.getHeader(),
+                    rm.getMessage(),
                     FacesMessage.SEVERITY_ERROR);
 
             return;

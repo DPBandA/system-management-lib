@@ -664,7 +664,7 @@ public class ReportManager extends GeneralManager {
     @Override
     public EntityManager getEntityManager1() {
         
-        return getSystemManager().getEntityManager("JMTSEM");
+        return getSystemManager().getEntityManager("RMEM");
         
     }
 
