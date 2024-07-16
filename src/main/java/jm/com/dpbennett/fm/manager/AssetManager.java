@@ -21,7 +21,6 @@ package jm.com.dpbennett.fm.manager;
 
 import java.io.Serializable;
 import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;

@@ -300,7 +300,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 //        getMainTabView().openTab("Inventory");
 //        getMainTabView().openTab("Suppliers");
 //        getMainTabView().openTab("System Administration");
-        getMainTabView().openTab("Financial Administration");
+        getMainTabView().openTab("Trades");
+        //getMainTabView().openTab("Financial Administration");
     }
 
     @Override
@@ -1020,6 +1021,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public InventoryManager getInventoryManager() {
         return BeanUtils.findBean("inventoryManager");
+    }
+
+    public TradeManager getTradeManager() {
+        return BeanUtils.findBean("tradeManager");
     }
 
     public List<AccountingCode> completeAccountingCode(String query) {
@@ -1928,8 +1933,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 if (getIsActiveProcurementMethodsOnly()) {
                     foundProcurementMethods = ProcurementMethod.findAllActiveByName(getEntityManager1(),
                             searchText);
-                }
-                else {
+                } else {
                     foundProcurementMethods = ProcurementMethod.findAllByName(getEntityManager1(),
                             searchText);
                 }

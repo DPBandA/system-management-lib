@@ -40,6 +40,8 @@ import java.util.zip.ZipOutputStream;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.SelectItem;
+import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.BusinessEntity;
 import jm.com.dpbennett.business.entity.cm.Client;
@@ -79,6 +81,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.FileUtils;
@@ -104,7 +107,8 @@ import org.primefaces.model.DialogFrameworkOptions;
  *
  * @author Desmond P. Bennett (info@dpbenentt.com.jm)
  */
-public class JobFinanceManager implements Serializable, BusinessEntityManagement {
+public class JobFinanceManager extends GeneralManager
+        implements Serializable, BusinessEntityManagement {
 
     private CashPayment selectedCashPayment;
     private StreamedContent jobCostingFile;
@@ -247,14 +251,17 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         this.costEstimateSearchText = costEstimateSearchText;
     }
 
+    @Override
     public String getSearchType() {
         return searchType;
     }
 
+    @Override
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
 
+    @Override
     public String getSearchText() {
         return searchText;
     }
@@ -625,7 +632,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
             if (job.getJobCostingAndPayment().getPercentageGCT() != null) {
                 // Find and use tax object 
                 Tax tax2 = Tax.findByValue(getEntityManager1(),
-                        Double.parseDouble(job.getJobCostingAndPayment().getPercentageGCT()));
+                        Double.valueOf(job.getJobCostingAndPayment().getPercentageGCT()));
                 if (tax2 != null) {
                     tax = tax2;
                     job.getJobCostingAndPayment().setTax(tax2);
@@ -794,6 +801,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      *
      * @return
      */
+    @Override
     public MainTabView getMainTabView() {
 
         return getJobManager().getMainTabView();
@@ -1039,6 +1047,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 // Cost components
                 int index = 0;
                 for (CostComponent costComponent : getCostComponentsWithoutHeadings(job.getJobCostingAndPayment())) {
+                    costComponent.getCost(); // NB: Not used
                     ReportUtils.setExcelCellValue(wb, costings,
                             costingRow + index++,
                             costingCol,
@@ -1423,6 +1432,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     // CNTBTCH (batch number)
                     int index = 0;
                     for (CostComponent costComponent : getCostComponentsWithoutHeadings(job.getJobCostingAndPayment())) {
+                        costComponent.getCost(); // NB: Not used
                         ReportUtils.setExcelCellValue(wb, invoiceDetails,
                                 invoiceDetailsRow + index++,
                                 invoiceDetailsCol,
@@ -1455,6 +1465,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     index = 0;
                     invoiceDetailsCol++;
                     for (CostComponent costComponent : getCostComponentsWithoutHeadings(job.getJobCostingAndPayment())) {
+                        costComponent.getCost(); // NB: Not used
                         ReportUtils.setExcelCellValue(wb, invoiceDetails,
                                 invoiceDetailsRow + index++,
                                 invoiceDetailsCol,
@@ -1487,6 +1498,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     index = 0;
                     invoiceDetailsCol++;
                     for (CostComponent costComponent : getCostComponentsWithoutHeadings(job.getJobCostingAndPayment())) {
+                        costComponent.getCost(); // NB: Not used
                         ReportUtils.setExcelCellValue(wb, invoiceDetails,
                                 invoiceDetailsRow + index++,
                                 invoiceDetailsCol,
@@ -1649,6 +1661,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                     index = 0;
                     invoiceDetailsCol++;
                     for (CostComponent costComponent : getCostComponentsWithoutHeadings(job.getJobCostingAndPayment())) {
+                        costComponent.getCost(); // NB: Not used
                         ReportUtils.setExcelCellValue(wb, invoiceDetails,
                                 invoiceDetailsRow + index++,
                                 invoiceDetailsCol,
@@ -2073,7 +2086,20 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     /**
      * Initializes an instance of the JobFinanceManger class.
      */
-    private void init() {
+    @Override
+    public final void init() {
+
+        reset();
+
+    }
+
+    /**
+     * Resets an instance of this class.
+     */
+    @Override
+    public void reset() {
+        super.reset();
+
         longProcessProgress = 0;
         accPacCustomer = new AccPacCustomer(null);
         useAccPacCustomerList = false;
@@ -2092,13 +2118,6 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         dateSearchPeriod.initDatePeriod();
         proformaInvoiceSearchText = "";
         costEstimateSearchText = "";
-    }
-
-    /**
-     * Resets an instance of this class.
-     */
-    public void reset() {
-        init();
     }
 
     public Boolean getEnableSubcontractWithCosting() {
@@ -2137,6 +2156,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      *
      * @return
      */
+    @Override
     public EntityManager getEntityManager1() {
         return getJobManager().getEntityManager1();
     }
@@ -2146,6 +2166,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      *
      * @return
      */
+    @Override
     public User getUser() {
         return getJobManager().getUser();
     }
@@ -2862,10 +2883,10 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public Boolean getDisableInvoiceJobCosting() {
-        
+
         return !getUser().can("EditInvoicingAndPayment")
                 || !getCurrentJob().getJobCostingAndPayment().getCostingApproved();
-        
+
     }
 
     /**
@@ -2978,6 +2999,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
      *
      * @return
      */
+    @Override
     public EntityManager getEntityManager2() {
         return getJobManager().getEntityManager2();
     }
@@ -3001,7 +3023,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     public void updateSubcontract(AjaxBehaviorEvent event) {
         if (!((SelectOneMenu) event.getComponent()).getValue().toString().equals("null")) {
-            Long subcontractId = new Long(((SelectOneMenu) event.getComponent()).getValue().toString());
+            Long subcontractId = Long.valueOf(((SelectOneMenu) event.getComponent()).getValue().toString());
             Job subcontract = Job.findJobById(getEntityManager1(), subcontractId);
 
             selectedCostComponent.setCost(subcontract.getJobCostingAndPayment().getFinalCost());
@@ -3328,7 +3350,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
         return false;
     }
 
-    private Boolean areThereSubcontractCostingsToInclude(Job job) {
+    public Boolean areThereSubcontractCostingsToInclude(Job job) {
         if (job.getSubcontracts(getEntityManager1()).isEmpty()) {
             return false;
         } else {
@@ -3825,7 +3847,7 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
             // If there were other payments it is assumed that this is a final payment.
             // Otherwsie, it is assumed to be a deposit.
-            if (getCurrentJob().getJobCostingAndPayment().getCashPayments().size() > 0) {
+            if (!getCurrentJob().getJobCostingAndPayment().getCashPayments().isEmpty()) {
                 selectedCashPayment.setPaymentPurpose("Final");
             } else {
                 selectedCashPayment.setPaymentPurpose("Deposit");
@@ -3967,8 +3989,8 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
     }
 
     public Boolean getCanApplyDiscount() {
-        
-        return getUser().can("ApplyDiscountsToJobCosting"); 
+
+        return getUser().can("ApplyDiscountsToJobCosting");
 
     }
 
@@ -4059,18 +4081,67 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
 
     }
 
+    @Override
     public void doSearch() {
 
         doJobSearch();
 
     }
 
+    @Override
     public void updateDateSearchField() {
     }
 
     public void doJobSearch() {
 
         jobSearchResultList = findJobs(0);
+
+    }
+
+    public void doProformaSearch() {
+
+        getJobManager().doDefaultSearch(
+                getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
+
+    }
+
+    @Override
+    public SelectItemGroup getSearchTypesGroup() {
+        SelectItemGroup group = new SelectItemGroup("Proforma Invoice Search Types");
+
+        group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
+
+        return group;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
+
+        groupedSearchTypes.add(getSearchTypesGroup());
+
+        return groupedSearchTypes;
+    }
+
+    @Override
+    public ArrayList<SelectItem> getSearchTypes() {
+
+        return getAuthorizedSearchTypes();
+    }
+
+    public ArrayList<SelectItem> getAuthorizedSearchTypes() {
+
+        ArrayList searchTypes = new ArrayList();
+
+        searchTypes.add(new SelectItem("My dept's proforma invoices",
+                "My dept's proforma invoices"));
+
+        return searchTypes;
 
     }
 
@@ -4091,6 +4162,11 @@ public class JobFinanceManager implements Serializable, BusinessEntityManagement
                 getProformaInvoiceSearchText(),
                 0, // tk make system option
                 true);
+    }
+
+    public ArrayList<SelectItem> getDateSearchFields() {
+
+        return getJobManager().getDateSearchFields();
     }
 
     public List<JobCostingAndPayment> completeJobCostingAndPaymentName(String query) {

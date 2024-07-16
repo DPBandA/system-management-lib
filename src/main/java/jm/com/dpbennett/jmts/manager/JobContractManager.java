@@ -57,6 +57,7 @@ import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import static jm.com.dpbennett.business.entity.util.NumberUtils.formatAsCurrency;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
@@ -74,7 +75,8 @@ import org.primefaces.model.DialogFrameworkOptions;
  *
  * @author Desmond Bennett
  */
-public class JobContractManager implements Serializable, BusinessEntityManagement {
+public class JobContractManager extends GeneralManager
+        implements Serializable, BusinessEntityManagement {
 
     private Integer longProcessProgress;
     private JobManager jobManager;
@@ -87,9 +89,8 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void cancelJobServiceContractEdit(ActionEvent actionEvent) {
-       
 
         getCurrentJob().setIsDirty(false);
 
@@ -407,17 +408,22 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
         return getJobManager().getCurrentJob();
     }
 
-    private void init() {
+    @Override
+    public final void init() {
+        reset();
     }
 
+    @Override
     public void reset() {
-        init();
+        super.reset();
     }
 
+    @Override
     public User getUser() {
         return getJobManager().getUser();
     }
 
+    @Override
     public EntityManager getEntityManager1() {
         return getJobManager().getEntityManager1();
     }
@@ -1070,11 +1076,9 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
         if (Department.findAssignedToJob(foundJob, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
             return true;
-        } else if ((Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
-                && Department.findAssignedToJob(foundJob, em).getActingHeadActive()) {
-            return true;
         } else {
-            return false;
+            return (Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
+                    && Department.findAssignedToJob(foundJob, em).getActingHeadActive();
         }
     }
 
@@ -1094,7 +1098,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
         return cellStyle;
     }
 
-    Font getWingdingsFont(HSSFWorkbook wb) {
+    public Font getWingdingsFont(HSSFWorkbook wb) {
         Font font = wb.createFont();
         font.setFontHeightInPoints((short) 14);
         font.setFontName("Wingdings");
@@ -1102,7 +1106,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
         return font;
     }
 
-    Font getFont(HSSFWorkbook wb, String fontName, short fontsize) {
+    public Font getFont(HSSFWorkbook wb, String fontName, short fontsize) {
         Font font = wb.createFont();
         font.setFontHeightInPoints(fontsize);
         font.setFontName(fontName);
@@ -1590,7 +1594,7 @@ public class JobContractManager implements Serializable, BusinessEntityManagemen
 
             // DESCRIPTION OF SUBMITTED SAMPLE(S)
             int samplesStartngRow = 32;
-            if (getCurrentJob().getJobSamples().size() > 0) {
+            if (!getCurrentJob().getJobSamples().isEmpty()) {
                 for (JobSample jobSample : getCurrentJob().getJobSamples()) {
                     dataCellStyle = getDefaultCellStyle(wb);
                     dataCellStyle.setBorderLeft((short) 1);

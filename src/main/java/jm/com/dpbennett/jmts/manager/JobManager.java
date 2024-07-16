@@ -366,6 +366,11 @@ public class JobManager extends GeneralManager
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
                 return true;
+                
+            case "Proforma Invoices":
+                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
+
+                return true;    
 
             default:
                 return false;
@@ -1158,6 +1163,8 @@ public class JobManager extends GeneralManager
         setSearchText("");
         setModuleNames(new String[]{
             "jobManager",
+            "jobFinanceManager",
+            "jobContractManager",
             "clientManager",
             "reportManager",
             "systemManager",
@@ -1168,6 +1175,7 @@ public class JobManager extends GeneralManager
             "purchasingManager",
             "complianceManager"
         });
+        
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2938,7 +2946,14 @@ public class JobManager extends GeneralManager
                     getComplianceManager().openSurveysBrowser();
                     break;
                 case "jobManager":
+                    // tk remove after testing
+                    getJobFinanceManager().openProformaInvoicesTab();
+                    
                     openJobBrowser();
+                    
+                    // tk remove after testing
+                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
+                    
                     break;
                 case "clientManager":
                     getClientManager().openClientsTab();
@@ -2969,19 +2984,23 @@ public class JobManager extends GeneralManager
 //            getFinanceManager().openDashboardTab();
 //        }
         // Compliance
-        if (getUser().hasModule("complianceManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
-                    "complianceManager");
-            if (module != null) {
-                openModuleMainTab("complianceManager");
+//        if (getUser().hasModule("complianceManager")) {
+//            Module module = Module.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "complianceManager");
+//            if (module != null) {
+//                openModuleMainTab("complianceManager");
+//
+//                if (firstModule == null) {
+//                    firstModule = "complianceManager";
+//                }
+//
+//            }
+//        }
 
-                if (firstModule == null) {
-                    firstModule = "complianceManager";
-                }
+        // Proformas
+        
 
-            }
-        }
         // Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
