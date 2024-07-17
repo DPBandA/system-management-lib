@@ -298,7 +298,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() - 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -717,15 +717,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public List<CashPayment> getCashPayments() {
 
-        if (cashPayments == null) {
-
-            if (getSelectedPurchaseRequisition().getId() != null) {
-                cashPayments = CashPayment.
-                        findCashPaymentsByOwnerId(getEntityManager1(),
-                                getSelectedPurchaseRequisition().getId());
-            } else {
-                cashPayments = new ArrayList<>();
-            }
+        if (getSelectedPurchaseRequisition().getId() != null) {
+            cashPayments = CashPayment.
+                    findCashPaymentsByOwnerId(getEntityManager1(),
+                            getSelectedPurchaseRequisition().getId());
+        } else {
+            cashPayments = new ArrayList<>();
         }
 
         return cashPayments;
