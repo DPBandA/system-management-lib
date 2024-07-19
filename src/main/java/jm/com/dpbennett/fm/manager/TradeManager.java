@@ -23,6 +23,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -35,12 +36,12 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.OHLCDataset;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.dashboard.DashboardModel;
@@ -52,22 +53,24 @@ import org.primefaces.model.dashboard.DefaultDashboardWidget;
  * @author Desmond Bennett
  */
 public class TradeManager extends GeneralManager implements Serializable {
-    
+
     private DashboardModel dashboardModel;
     private static final String RESPONSIVE_CLASS = "col-12 lg:col-6 xl:col-6";
     private FinanceManager financeManager;
     private JFreeChart ohlcChart;
-   
+    private OHLCDataset dataset;
+    private XYPlot plot;
+
     public TradeManager() {
-              
+
         init();
     }
-    
+
     @Override
     public final void init() {
         reset();
     }
-    
+
     @Override
     public void reset() {
         super.reset();
@@ -75,20 +78,48 @@ public class TradeManager extends GeneralManager implements Serializable {
         dashboardModel = new DefaultDashboardModel();
         dashboardModel.addWidget(new DefaultDashboardWidget("trades", RESPONSIVE_CLASS));
         dashboardModel.addWidget(new DefaultDashboardWidget("positions", RESPONSIVE_CLASS));
-        
+
         createOhlcChart();
 
     }
-    
-    public InputStream getChartAsStream() {
-        return getChart().getStream().get();
+
+    public void updateCharts() {
+        int randomInt = (int) (Math.random() * 5000);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.JULY, 15); // Year, month, and day (note: month is 0-based)
+        Date past = calendar.getTime();
+
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(2024, Calendar.JULY, 14);
+        Date past2 = calendar2.getTime();
+
+        Date[] dates = new Date[]{past, past, new Date(), past2, new Date()};
+        double[] high = new double[]{randomInt, 25, 30, 35, 40};
+        double[] low = new double[]{10, 15, randomInt, 25, 30};
+        double[] open = new double[]{12, randomInt, 22, 27, 32};
+        double[] close = new double[]{38, 23, 28, 33, randomInt};
+        double[] volume = new double[]{1000, randomInt, 2000, 2500, 3000};
+
+        dataset = new DefaultHighLowDataset(
+                "OHLC",
+                dates,
+                high,
+                low,
+                open,
+                close,
+                volume
+        );
+        
+        plot.setDataset(dataset);
+              
     }
-    
+
     public StreamedContent getChart() {
         try {
-            
+
             Random random = new Random();
-            
+
             return DefaultStreamedContent.builder()
                     .contentType("image/png")
                     .stream(() -> {
@@ -96,79 +127,70 @@ public class TradeManager extends GeneralManager implements Serializable {
                             File chartFile = new File("" + random.nextInt());
                             ChartUtilities.saveChartAsPNG(chartFile, getOhlcChart(), 375, 300);
                             return new FileInputStream(chartFile);
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
+                        } catch (IOException e) {
+                            System.out.println(e);
                             return null;
                         }
                     })
                     .build();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+            
+        } catch (Exception e) {
+            System.out.println(e);
             return null;
         }
     }
 
     public JFreeChart getOhlcChart() {
+
         return ohlcChart;
     }
-    
+
     private void createOhlcChart() {
         // Example data
-        
+        int randomInt = (int) (Math.random() * 5000);
+
         Calendar calendar = Calendar.getInstance();
         calendar.set(2024, Calendar.JULY, 15); // Year, month, and day (note: month is 0-based)
         Date past = calendar.getTime();
-        
+
         Calendar calendar2 = Calendar.getInstance();
         calendar2.set(2024, Calendar.JULY, 14);
         Date past2 = calendar2.getTime();
-        
-                
-        Date[] dates = new Date[] {past, past, new Date(), past2, new Date()};
-        double[] high = new double[] {20, 25, 30, 35, 40};
-        double[] low = new double[] {10, 15, 20, 25, 30};
-        double[] open = new double[] {12, 17, 22, 27, 32};
-        double[] close = new double[] {38, 23, 28, 33, 18};
-        double[] volume = new double[] {1000, 1500, 2000, 2500, 3000};
 
-        OHLCDataset dataset = new DefaultHighLowDataset(
-            "OHLC",
-            dates,
-            high,
-            low,
-            open,
-            close,
-            volume
+        Date[] dates = new Date[]{past, past, new Date(), past2, new Date()};
+        double[] high = new double[]{randomInt, 25, 30, 35, 40};
+        double[] low = new double[]{10, 15, randomInt, 25, 30};
+        double[] open = new double[]{12, randomInt, 22, 27, 32};
+        double[] close = new double[]{38, 23, 28, 33, randomInt};
+        double[] volume = new double[]{1000, randomInt, 2000, 2500, 3000};
+
+        dataset = new DefaultHighLowDataset(
+                "OHLC",
+                dates,
+                high,
+                low,
+                open,
+                close,
+                volume
         );
-        
-        
-//        ohlcChart = 
-//                ChartFactory.createHighLowChart(
-//                        "OHLC Chart",                         
-//                        "Time", 
-//                        "Value", 
-//                        dataset, 
-//                        true);
-        
-         ohlcChart = 
-                ChartFactory.createCandlestickChart(
-                        "OHLC Chart",                         
-                        "Time", 
-                        "Value", 
-                        dataset, 
+
+        ohlcChart
+                = ChartFactory.createCandlestickChart(
+                        "OHLC Chart",
+                        "Time",
+                        "Value",
+                        dataset,
                         true);
 
-        XYPlot plot = (XYPlot) ohlcChart.getPlot();
+        plot = (XYPlot) ohlcChart.getPlot();
         CandlestickRenderer renderer = new CandlestickRenderer();
-		renderer.setSeriesStroke(0, new BasicStroke(1.0f,
-				BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-		renderer.setSeriesPaint(0, Color.black);
-        
+        renderer.setSeriesStroke(0, new BasicStroke(1.0f,
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+        renderer.setSeriesPaint(0, Color.black);
+
         plot.setRenderer(renderer);
     }
-    
+
     public FinanceManager getFinanceManager() {
         if (financeManager == null) {
             financeManager = BeanUtils.findBean("financeManager");
@@ -176,18 +198,18 @@ public class TradeManager extends GeneralManager implements Serializable {
 
         return financeManager;
     }
-    
+
     @Override
     public MainTabView getMainTabView() {
 
         return getFinanceManager().getMainTabView();
     }
-    
+
     public void openInventoryProductBrowser() {
 
         getFinanceManager().getMainTabView().openTab("Trades");
-        
-  }
+
+    }
 
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
@@ -199,7 +221,7 @@ public class TradeManager extends GeneralManager implements Serializable {
         return getSystemManager().getEntityManager("FMEM");
 
     }
-    
+
     public DashboardModel getDashboardModel() {
         return dashboardModel;
     }
