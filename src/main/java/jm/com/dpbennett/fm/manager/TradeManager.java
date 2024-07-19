@@ -23,9 +23,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -78,13 +80,20 @@ public class TradeManager extends GeneralManager implements Serializable {
 
     }
     
+    public InputStream getChartAsStream() {
+        return getChart().getStream().get();
+    }
+    
     public StreamedContent getChart() {
         try {
+            
+            Random random = new Random();
+            
             return DefaultStreamedContent.builder()
                     .contentType("image/png")
                     .stream(() -> {
                         try {
-                            File chartFile = new File("dynamichart2");
+                            File chartFile = new File("" + random.nextInt());
                             ChartUtilities.saveChartAsPNG(chartFile, getOhlcChart(), 375, 300);
                             return new FileInputStream(chartFile);
                         }
@@ -117,7 +126,7 @@ public class TradeManager extends GeneralManager implements Serializable {
         Date past2 = calendar2.getTime();
         
                 
-        Date[] dates = new Date[] {new Date(), past, new Date(), past2, new Date()};
+        Date[] dates = new Date[] {past, past, new Date(), past2, new Date()};
         double[] high = new double[] {20, 25, 30, 35, 40};
         double[] low = new double[] {10, 15, 20, 25, 30};
         double[] open = new double[] {12, 17, 22, 27, 32};
