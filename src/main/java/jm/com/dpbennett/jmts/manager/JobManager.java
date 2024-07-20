@@ -819,7 +819,11 @@ public class JobManager extends GeneralManager
                 return fieldDisablingActive
                         && !userHasPrivilege
                         && jobIsNotNew;
-            case "department":
+            case "department":                
+                if (getUser().can("CreateDirectSubcontract")) {
+                    return false;
+                }
+
                 return (fieldDisablingActive
                         && !userHasPrivilege
                         && (jobIsNotNew)) || getDisableDepartment(job);
@@ -1340,6 +1344,18 @@ public class JobManager extends GeneralManager
 
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        editJob();
+        openJobBrowser();
+    }
+    
+     public void createNewSubcontract() {
+
+        EntityManager em = getEntityManager1();
+
+        createJob(em, false, false);
+        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+        getCurrentJob().setIsToBeSubcontracted(true); // tk
 
         editJob();
         openJobBrowser();
