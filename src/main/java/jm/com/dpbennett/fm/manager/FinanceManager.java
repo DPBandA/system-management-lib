@@ -19,6 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.fm.manager;
 
+import jm.com.dpbennett.tm.manager.TradeManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;

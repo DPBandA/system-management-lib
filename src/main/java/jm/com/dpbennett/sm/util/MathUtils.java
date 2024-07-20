@@ -19,18 +19,22 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.util;
 
-import javax.faces.context.FacesContext;
+import java.text.DecimalFormat;
 
-/**
- *
- * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
- */
-public class BeanUtils {
+public class MathUtils {
 
-    @SuppressWarnings("unchecked")
-    public static <T> T findBean(String beanName) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        return (T) context.getApplication().
-                evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    public static final String TWO_DEC_DOUBLE_FORMAT = "##.00";
+
+    /**
+     * Round double.
+     *
+     * @param value the value
+     * @param format the format
+     * @return the double
+     */
+    public static double roundDouble(double value, String format) {
+        DecimalFormat df = new DecimalFormat(format);
+        return Double.parseDouble(df.format(value));
     }
+
 }
