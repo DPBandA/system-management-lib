@@ -2963,12 +2963,11 @@ public class JobManager extends GeneralManager
                     break;
                 case "jobManager":
                     // tk remove after testing
-                    // getJobFinanceManager().openProformaInvoicesTab();
+                    getJobFinanceManager().openProformaInvoicesTab();
+                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
                     
-                    openJobBrowser();
-                    
-                    // tk remove after testing
-                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+                    // openJobBrowser();                    
+                    // getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
                     
                     break;
                 case "clientManager":
