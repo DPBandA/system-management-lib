@@ -22,6 +22,7 @@ package jm.com.dpbennett.tm.manager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Random;
 import javax.persistence.EntityManager;
@@ -66,6 +67,39 @@ public class TradeManager extends GeneralManager implements Serializable {
     public void updateCharts() {
 
     }
+    
+    public InputStream getChartAsStream() {
+        return getChart().getStream().get();
+    }
+    
+    public byte[] getChartAsByteArray() throws IOException {
+        InputStream is = getChartAsStream();
+        byte[] array = new byte[is.available()];
+        is.read(array);
+        return array;
+    }
+    
+    public StreamedContent getChartWithoutBuffering() {
+        try {
+            return DefaultStreamedContent.builder()
+                    .contentType("image/png")
+                    .writer((os) -> {
+                        try {
+                            
+                            ChartUtils.writeChartAsPNG(os, 
+                                    jfreeCandlestickChart.getCandlestickChart(), 1000, 500);
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    })
+                    .build();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public StreamedContent getChart() {
         try {
@@ -76,11 +110,13 @@ public class TradeManager extends GeneralManager implements Serializable {
                     .contentType("image/png")
                     .stream(() -> {
                         try {
-                            File chartFile = new File("image-" + random.nextInt());
+                            File chartFile = new File("image-" + random.nextInt() + ".png");
                             ChartUtils.saveChartAsPNG(chartFile,
                                     jfreeCandlestickChart.getCandlestickChart(),
                                     1000, 500);
+                         
                             return new FileInputStream(chartFile);
+                            
                         } catch (IOException e) {
                             System.out.println(e);
                             return null;
