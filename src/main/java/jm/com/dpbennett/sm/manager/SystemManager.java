@@ -19,6 +19,14 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.UrlEncodedContent;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonObjectParser;
+import com.google.api.client.json.gson.GsonFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -26,8 +34,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -126,10 +138,73 @@ public final class SystemManager extends GeneralManager {
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
 
+    // tk
+    // end tk
+    // Get these from the database
+    private static final String GITHUB_CLIENT_ID = "";
+    private static final String GITHUB_CLIENT_SECRET = "";
+    private static final String GITHUB_REDIRECT_URI = "http://localhost:8080/sm";
+    //private static final String GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
+    private static final String GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token";
+    private static final String GITHUB_USER_URL = "https://api.github.com/user";
+    private HttpRequestFactory requestFactory;
+
     public SystemManager() {
         init();
     }
 
+    // tk
+    public void redirectToGitHub() throws IOException {
+
+        FacesContext.getCurrentInstance().getExternalContext().redirect(
+                "https://github.com/login/oauth/authorize?client_id="
+                + GITHUB_CLIENT_ID + "&redirect_uri=" + GITHUB_REDIRECT_URI
+        );
+
+    }
+    
+    public void handleGitHubCallback() throws IOException {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+        Map<String, String> requestParameterMap = externalContext.getRequestParameterMap();
+        String code = requestParameterMap.get("code");
+
+        if (code != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("client_id", GITHUB_CLIENT_ID);
+            params.put("client_secret", GITHUB_CLIENT_SECRET);
+            params.put("code", code);
+
+            HttpRequest tokenRequest = requestFactory.buildPostRequest(
+                new GenericUrl(GITHUB_TOKEN_URL),
+                new UrlEncodedContent(params)
+            );
+            tokenRequest.getHeaders().setAccept("application/json");
+            HttpResponse tokenResponse = tokenRequest.execute();
+            Map<String, Object> tokenData = tokenResponse.parseAs(HashMap.class);
+            String accessToken = (String) tokenData.get("access_token");
+
+            HttpRequest userRequest = requestFactory.buildGetRequest(new GenericUrl(GITHUB_USER_URL));
+            userRequest.getHeaders().setAuthorization("token " + accessToken);
+            userRequest.getHeaders().setAccept("application/json");
+            HttpResponse userResponse = userRequest.execute();
+            Map<String, Object> userData = userResponse.parseAs(HashMap.class);
+
+            String username = (String) userData.get("login");
+            String avatarUrl = (String) userData.get("avatar_url");
+
+            externalContext.getSessionMap().put("username", username);
+            externalContext.getSessionMap().put("avatarUrl", avatarUrl);
+            
+            // tk
+            // Do login() here.
+
+            externalContext.redirect("index.xhtml");
+        }
+    }
+
+    // end tk
+    
     public String entityManagerSetting(String setting) {
 
         SystemOption option;
@@ -449,10 +524,10 @@ public final class SystemManager extends GeneralManager {
 
     @Override
     public String getAppShortcutIconURL() {
-        
+
         return (String) SystemOption.getOptionValueObject(
                 getEntityManager1(), "appShortcutIconURL");
-        
+
     }
 
     @Override
@@ -1054,7 +1129,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void saveSelectedUser() {
-        
+
         ReturnMessage rm = getSelectedUser().saveUnique(getEntityManager1());
 
         if (!rm.isSuccess()) {
@@ -2108,6 +2183,12 @@ public final class SystemManager extends GeneralManager {
         setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
         setTabTitle("Users");
 
+        // tk
+        this.requestFactory = new NetHttpTransport().createRequestFactory(
+                request -> request.setParser(new JsonObjectParser(new GsonFactory()))
+        );
+        // end tk
+
     }
 
     public List<SystemOption> getFoundSystemOptionsByCategory() {
@@ -2469,7 +2550,7 @@ public final class SystemManager extends GeneralManager {
 
         editSystemOption();
     }
-    
+
     public void editEM(String em) {
 
         selectedSystemOption = SystemOption.findSystemOptionByName(

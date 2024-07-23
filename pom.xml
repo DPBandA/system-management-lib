@@ -118,8 +118,20 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
-        </dependency>  
+        </dependency> 
         
+        <!-- Google HTTP Client -->
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+            <version>1.44.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-gson</artifactId>
+            <version>1.44.2</version>
+        </dependency> 
+       
         <dependency>
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
@@ -137,6 +149,6 @@
             <artifactId>firebase-admin</artifactId>
             <version>9.2.0</version>
         </dependency>
-          
+                 
     </dependencies>
 </project>
