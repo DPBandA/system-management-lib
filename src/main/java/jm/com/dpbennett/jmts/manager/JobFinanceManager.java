@@ -831,8 +831,6 @@ public class JobFinanceManager extends GeneralManager
 
             ByteArrayInputStream stream = getCostingsFileInputStreamAsZip();
 
-            setLongProcessProgress(100);
-
             return DefaultStreamedContent.builder()
                     .stream(() -> stream)
                     .contentType("application/zip")
@@ -858,8 +856,6 @@ public class JobFinanceManager extends GeneralManager
                             getResource("/reports/"
                                     + (String) SystemOption.getOptionValueObject(getEntityManager1(),
                                             "JobCostingAnalysesTemplate")).getFile()));
-
-            setLongProcessProgress(100);
 
             return DefaultStreamedContent.builder()
                     .stream(() -> stream)
@@ -1177,8 +1173,6 @@ public class JobFinanceManager extends GeneralManager
                             getResource("/reports/"
                                     + (String) SystemOption.getOptionValueObject(getEntityManager1(),
                                             "AccpacInvoicesFileTemplateName")).getFile()));
-
-            setLongProcessProgress(100);
 
             return DefaultStreamedContent.builder()
                     .stream(() -> stream)
@@ -2557,15 +2551,6 @@ public class JobFinanceManager extends GeneralManager
         longProcessProgress = 0;
     }
 
-    /**
-     * Sets the longProcessProgress field.
-     *
-     * @param longProcessProgress
-     */
-    public void setLongProcessProgress(Integer longProcessProgress) {
-        this.longProcessProgress = longProcessProgress;
-    }
-
     public StreamedContent getJobCostingAnalysisFile(EntityManager em) {
 
         HashMap parameters = new HashMap();
@@ -2624,8 +2609,6 @@ public class JobFinanceManager extends GeneralManager
                             .name("Job Costing - " + getCurrentJob().getJobNumber() + ".pdf")
                             .build();
 
-                    setLongProcessProgress(100);
-
                     em.getTransaction().commit();
 
                     return streamContent;
@@ -2667,6 +2650,8 @@ public class JobFinanceManager extends GeneralManager
             parameters.put("departmentCode", Department.findAssignedToJob(getCurrentJob(), em).getCode());
             parameters.put("dateAndTimePrepared",
                     DateUtils.formatDateAndTime(getCurrentJob().getJobStatusAndTracking().getDateCostingCompleted()));
+            parameters.put("issueDate",
+                    DateUtils.formatDate(getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
             if (getCurrentJob().getClient().getCreditLimit() > 0) {
                 parameters.put("standardNote",
                         (String) SystemOption.getOptionValueObject(em, "creditClientProformaStandardNote"));
@@ -2727,8 +2712,6 @@ public class JobFinanceManager extends GeneralManager
                             .name("Proforma Invoice - " + getCurrentJob().getJobNumber() + ".pdf")
                             .build();
 
-                    setLongProcessProgress(100);
-
                     em.getTransaction().commit();
 
                     return streamContent;
@@ -2759,11 +2742,8 @@ public class JobFinanceManager extends GeneralManager
 
             jobCostingFile = getJobCostingAnalysisFile(em);
 
-            setLongProcessProgress(100);
-
         } catch (Exception e) {
             System.out.println(e);
-            setLongProcessProgress(100);
         }
 
         return jobCostingFile;
@@ -2799,11 +2779,8 @@ public class JobFinanceManager extends GeneralManager
 
             jobCostingFile = getProformaInvoice(em);
 
-            setLongProcessProgress(100);
-
         } catch (Exception e) {
             System.out.println(e);
-            setLongProcessProgress(100);
         }
 
         return jobCostingFile;

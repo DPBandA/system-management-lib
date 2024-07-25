@@ -19,6 +19,8 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -125,5 +127,12 @@ public class DateUtils {
                 hour  + ":" + min  + ":" + sec;
 
         return dateAndTime;
+    }
+    
+    public static String formatDate(Date date) {
+        DateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy");
+        
+        return dateFormatter.format(date);
+        
     }
 }
