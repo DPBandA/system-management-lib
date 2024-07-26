@@ -890,7 +890,7 @@ public class JobFinanceManager extends GeneralManager
                 parameters.put("customerAddress", selectedJob.getBillingAddress().toString());
                 parameters.put("contactNumbers", selectedJob.getContact().getMainPhoneNumber().getLocalNumber());
                 parameters.put("jobDescription", selectedJob.getJobDescription());
-                parameters.put("totalCost", selectedJob.getJobCostingAndPayment().getTotalJobCostingsAmount());
+                parameters.put("totalCost", selectedJob.getJobCostingAndPayment().getTotalJobCostingsAmount());                
                 parameters.put("depositReceiptNumbers", selectedJob.getJobCostingAndPayment().getReceiptNumbers());
                 parameters.put("discount", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValue());
                 parameters.put("discountType", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValueType());
@@ -2630,7 +2630,8 @@ public class JobFinanceManager extends GeneralManager
 
         HashMap parameters = new HashMap();
         // tk the currency symbol is to be obtained from default currency
-        DecimalFormat currencyFormatter = new DecimalFormat("JMD#,##0.00");
+        DecimalFormat currencyFormatter = new DecimalFormat("#,##0.00");
+        DecimalFormat hourFormatter = new DecimalFormat("#,##0.0");
 
         try {
             parameters.put("jobId", getCurrentJob().getId());
@@ -2668,6 +2669,7 @@ public class JobFinanceManager extends GeneralManager
             parameters.put("contactNumbers", getCurrentJob().getContact().getMainPhoneNumber().getLocalNumber());
             parameters.put("jobDescription", getCurrentJob().getJobDescription());
             parameters.put("totalCost", currencyFormatter.format(getCurrentJob().getJobCostingAndPayment().getTotalJobCostingsAmount()));
+            parameters.put("totalHours", hourFormatter.format(getCurrentJob().getJobCostingAndPayment().getTotalJobCostingsHoursOrQuantity()));
             parameters.put("discount", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValue());
             parameters.put("discountType", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValueType());
             parameters.put("totalTax", currencyFormatter.format(getTotalTax(getCurrentJob())));
