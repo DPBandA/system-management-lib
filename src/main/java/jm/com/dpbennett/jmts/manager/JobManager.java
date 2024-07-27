@@ -366,11 +366,11 @@ public class JobManager extends GeneralManager
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
                 return true;
-                
+
             case "Proforma Invoices":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
 
-                return true;    
+                return true;
 
             default:
                 return false;
@@ -449,10 +449,10 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getAppShortcutIconURL() {
-        
+
         return SystemOption.getString(
                 getEntityManager1(), "JMTSLogo");
-        
+
     }
 
     private void sendJobEntryEmail(
@@ -819,7 +819,7 @@ public class JobManager extends GeneralManager
                 return fieldDisablingActive
                         && !userHasPrivilege
                         && jobIsNotNew;
-            case "department":                
+            case "department":
                 if (getUser().can("CreateDirectSubcontract")) {
                     return false;
                 }
@@ -1179,7 +1179,7 @@ public class JobManager extends GeneralManager
             "purchasingManager",
             "complianceManager"
         });
-        
+
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1348,8 +1348,8 @@ public class JobManager extends GeneralManager
         editJob();
         openJobBrowser();
     }
-    
-     public void createNewSubcontract() {
+
+    public void createNewSubcontract() {
 
         EntityManager em = getEntityManager1();
 
@@ -2963,12 +2963,12 @@ public class JobManager extends GeneralManager
                     break;
                 case "jobManager":
                     // tk remove after testing
-                    getJobFinanceManager().openProformaInvoicesTab();
-                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
-                    
-                    // openJobBrowser();                    
-                    // getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
-                    
+//                    getJobFinanceManager().openProformaInvoicesTab();
+//                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
+
+                    openJobBrowser();
+                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+
                     break;
                 case "clientManager":
                     getClientManager().openClientsTab();
@@ -2995,9 +2995,9 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-//        if (getUser().hasModule("purchasingManager")) {
-//            getFinanceManager().openDashboardTab();
-//        }
+        if (getUser().hasModule("purchasingManager")) {
+            getFinanceManager().openDashboardTab();
+        }
         // Compliance
 //        if (getUser().hasModule("complianceManager")) {
 //            Module module = Module.findActiveModuleByName(
@@ -3014,8 +3014,6 @@ public class JobManager extends GeneralManager
 //        }
 
         // Proformas
-        
-
         // Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
@@ -3030,18 +3028,18 @@ public class JobManager extends GeneralManager
             }
         }
         // Clients
-        if (getUser().hasModule("clientManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
-                    "clientManager");
-            if (module != null) {
-                openModuleMainTab("clientManager");
-
-                if (firstModule == null) {
-                    firstModule = "clientManager";
-                }
-            }
-        }
+//        if (getUser().hasModule("clientManager")) {
+//            Module module = Module.findActiveModuleByName(
+//                    getEntityManager1(),
+//                    "clientManager");
+//            if (module != null) {
+//                openModuleMainTab("clientManager");
+//
+//                if (firstModule == null) {
+//                    firstModule = "clientManager";
+//                }
+//            }
+//        }
         // Procurement
         if (getUser().hasModule("purchasingManager")) {
             Module module = Module.findActiveModuleByName(
@@ -3081,9 +3079,8 @@ public class JobManager extends GeneralManager
                 "Logged in");
 
         super.handleKeepAlive();
-        
-        // tk Check for subscription expiration etc.
 
+        // tk Check for subscription expiration etc.
     }
 
     @Override
