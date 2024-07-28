@@ -569,40 +569,44 @@ public class GeneralManager implements Manager, Serializable {
 
     public void setManagersUser() {
 
-        getManager("systemManager").setUser(getUser());
+        //getManager("systemManager").setUser(getUser());
+        throw new UnsupportedOperationException("Not supported yet.");
 
     }
 
     @Override
     public void completeLogin() {
 
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        setManagersUser();
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initDashboard();
-        initMainTabView();
-        updateAllForms();
+//        if (getUser().getId() != null) {
+//            getUser().save(getEntityManager1());
+//        }
+//
+//        setManagersUser();
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        initDashboard();
+//        initMainTabView();
+//        updateAllForms();
+            throw new UnsupportedOperationException("Not supported yet.");
 
     }
 
     @Override
     public void completeLogout() {
 
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
+//        if (getUser().getId() != null) {
+//            getUser().save(getEntityManager1());
+//        }
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        reset();
+//
+//        getManager("systemManager").setUser(getUser());
 
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-        getManager("systemManager").setUser(getUser());
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -799,7 +803,7 @@ public class GeneralManager implements Manager, Serializable {
 
                     completeLogin();
 
-                    PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+                    //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else if (validateUser(em)) {
                     logonMessage = "Please provide your login details below:";
                     username = "";

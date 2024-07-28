@@ -3075,23 +3075,49 @@ public class JobManager extends GeneralManager
     public void handleKeepAlive() {
 
         super.updateUserActivity("JMTSv"
-                + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
                 "Logged in");
 
-        super.handleKeepAlive();
+        //super.handleKeepAlive();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
 
-        // tk Check for subscription expiration etc.
+        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+
+        // tk Check for subscription expiration etc.?
     }
 
     @Override
     public void completeLogout() {
 
         super.updateUserActivity("JMTSv"
-                + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
                 "Logged out");
 
-        super.completeLogout();
+        //super.completeLogout();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
 
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
+
+        //getManager("systemManager").setUser(getUser());
+        setManagersUser();
+
+    }
+
+    @Override
+    public void login() {
+        login(getSystemManager().getEntityManager1());
     }
 
     @Override
@@ -3099,9 +3125,9 @@ public class JobManager extends GeneralManager
 
         if (getUser().getId() != null) {
             super.updateUserActivity("JMTSv"
-                    + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                    + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
                     "Logged in");
-            getUser().save(getEntityManager1());
+            getUser().save(getSystemManager().getEntityManager1());
         }
 
         setManagersUser();
