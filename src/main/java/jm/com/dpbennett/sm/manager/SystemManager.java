@@ -153,6 +153,24 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    @Override
+    public void completeLogout() {
+
+        super.updateUserActivity("SMv"
+                + SystemOption.getString(getEntityManager1(), "SMv"),
+                "Logged out");
+
+        if (getUser().getId() != null) {
+            getUser().save(getEntityManager1());
+        }
+
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
+
+    }
+
     // tk
     public void redirectToGitHub() throws IOException {
 
@@ -162,7 +180,7 @@ public final class SystemManager extends GeneralManager {
         );
 
     }
-    
+
     public void handleGitHubCallback() throws IOException {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext externalContext = facesContext.getExternalContext();
@@ -176,8 +194,8 @@ public final class SystemManager extends GeneralManager {
             params.put("code", code);
 
             HttpRequest tokenRequest = requestFactory.buildPostRequest(
-                new GenericUrl(GITHUB_TOKEN_URL),
-                new UrlEncodedContent(params)
+                    new GenericUrl(GITHUB_TOKEN_URL),
+                    new UrlEncodedContent(params)
             );
             tokenRequest.getHeaders().setAccept("application/json");
             HttpResponse tokenResponse = tokenRequest.execute();
@@ -195,16 +213,14 @@ public final class SystemManager extends GeneralManager {
 
             externalContext.getSessionMap().put("username", username);
             externalContext.getSessionMap().put("avatarUrl", avatarUrl);
-            
+
             // tk
             // Do login() here.
-
             externalContext.redirect("index.xhtml");
         }
     }
 
     // end tk
-    
     public String entityManagerSetting(String setting) {
 
         SystemOption option;
@@ -2653,23 +2669,18 @@ public final class SystemManager extends GeneralManager {
     }
 
     @Override
-    public void completeLogout() {
-
-        super.updateUserActivity("SMv"
-                + SystemOption.getString(getEntityManager1(), "SMv"),
-                "Logged out");
-
-        super.completeLogout();
-    }
-
-    @Override
     public void completeLogin() {
 
-        super.updateUserActivity("SMv"
-                + SystemOption.getString(getEntityManager1(), "SMv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            super.updateUserActivity("JMTSv"
+                    + SystemOption.getString(getEntityManager1(), "JMTSv"),
+                    "Logged in");
+            getUser().save(getEntityManager1());
+        }
 
-        super.completeLogin();
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
     }
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {

@@ -104,6 +104,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
         init();
     }
 
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
+    }
+
     public List<SelectItem> getInventoryLocations() {
 
         return getStringListAsSelectItems(getEntityManager1(), "inventoryLocations");

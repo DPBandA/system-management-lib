@@ -2366,7 +2366,6 @@ public class JobManager extends GeneralManager
 //
 //        return sectors;
 //    }
-
     public List<Address> getClientAddresses() {
 
         List<Address> addresses = getCurrentJob().getClient().getAddresses();
@@ -2389,7 +2388,6 @@ public class JobManager extends GeneralManager
 //
 //        return subCategories;
 //    }
-
     public List<Job> getJobSearchResultList() {
         return jobSearchResultList;
     }
@@ -2924,19 +2922,6 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void setManagersUser() {
-
-        getManager("systemManager").setUser(getUser());
-        getManager("clientManager").setUser(getUser());
-        getManager("reportManager").setUser(getUser());
-        getManager("financeManager").setUser(getUser());
-        getManager("humanResourceManager").setUser(getUser());
-        getManager("purchasingManager").setUser(getUser());
-        getManager("inventoryManager").setUser(getUser());
-        getManager("complianceManager").setUser(getUser());
-    }
-
-    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
@@ -3094,8 +3079,6 @@ public class JobManager extends GeneralManager
 
         reset();
 
-        setManagersUser();
-
     }
 
     @Override
@@ -3112,13 +3095,25 @@ public class JobManager extends GeneralManager
                     "Logged in");
             getUser().save(getSystemManager().getEntityManager1());
         }
-
-        setManagersUser();
+       
+        setManagerUser();
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
 
+    }
+    
+    @Override
+    public void setManagerUser() {
+
+        getManager("systemManager").setUser(getUser());
+        getManager("clientManager").setUser(getUser());
+        getManager("reportManager").setUser(getUser());
+        getManager("financeManager").setUser(getUser());
+        getManager("humanResourceManager").setUser(getUser());
+        getManager("complianceManager").setUser(getUser());
+        
     }
 
 }

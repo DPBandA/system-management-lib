@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Random;
 import javax.persistence.EntityManager;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -64,38 +65,43 @@ public class TradeManager extends GeneralManager implements Serializable {
 
     }
 
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
+    }
+
     public void updateCharts() {
 
     }
-    
+
     public InputStream getChartAsStream() {
         return getChart().getStream().get();
     }
-    
+
     public byte[] getChartAsByteArray() throws IOException {
         InputStream is = getChartAsStream();
         byte[] array = new byte[is.available()];
         is.read(array);
         return array;
     }
-    
+
     public StreamedContent getChartWithoutBuffering() {
         try {
             return DefaultStreamedContent.builder()
                     .contentType("image/png")
                     .writer((os) -> {
                         try {
-                            
-                            ChartUtils.writeChartAsPNG(os, 
+
+                            ChartUtils.writeChartAsPNG(os,
                                     jfreeCandlestickChart.getCandlestickChart(), 1000, 500);
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     })
                     .build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -114,9 +120,9 @@ public class TradeManager extends GeneralManager implements Serializable {
                             ChartUtils.saveChartAsPNG(chartFile,
                                     jfreeCandlestickChart.getCandlestickChart(),
                                     1000, 500);
-                         
+
                             return new FileInputStream(chartFile);
-                            
+
                         } catch (IOException e) {
                             System.out.println(e);
                             return null;

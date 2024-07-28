@@ -58,6 +58,7 @@ import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
@@ -141,20 +142,16 @@ public class ComplianceManager extends GeneralManager
         reset();
     }
 
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
+    }
+
     public Boolean getHasJobManager() {
 
         return getJobManager() != null;
-    }
-
-    @Override
-    public void setManagersUser() {
-
-        getManager("systemManager").setUser(getUser());
-        getManager("clientManager").setUser(getUser());
-        getManager("reportManager").setUser(getUser());
-        getManager("humanResourceManager").setUser(getUser());
-        getManager("complianceManager").setUser(getUser());
-
     }
 
     public void openClientsTab() {
@@ -175,7 +172,7 @@ public class ComplianceManager extends GeneralManager
                     openComplaintsBrowser();
                     openFactoryInspectionBrowser();
                     openMarketProductBrowser();
-                    openDocumentStandardDialog();                    
+                    openDocumentStandardDialog();
                     break;
                 case "clientManager":
                     getClientManager().openClientsTab();
@@ -3210,8 +3207,6 @@ public class ComplianceManager extends GeneralManager
                     "Logged in");
             getUser().save(getEntityManager1());
         }
-
-        setManagersUser();
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 

@@ -79,6 +79,14 @@ public class GeneralManager implements Manager, Serializable {
         init();
     }
 
+    /**
+     * NB: A manager must call this method to set the User field of all managers
+     * on which it depends.
+     */
+    public void setManagerUser() {
+        getManager("systemManager").setUser(getUser());
+    }
+
     @Override
     public String getRegistrationMessage() {
         return registrationMessage;
@@ -203,7 +211,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void handleKeepAlive() {
-       throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -213,7 +221,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void logout() {
-        
+
         completeLogout();
     }
 
@@ -231,9 +239,9 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getApplicationSubheader() {
-        
+
         return "General System Administration &amp; Management";
-        
+
     }
 
     @Override
@@ -516,7 +524,7 @@ public class GeneralManager implements Manager, Serializable {
         loginAttempts = 0;
         userLoggedIn = false;
         logonMessage = "Please provide your login details below";
-        registrationMessage= "Please provide your registration details below";
+        registrationMessage = "Please provide your registration details below";
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
@@ -536,12 +544,13 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public User getUser() {
-        
+
         if (user == null) {
             user = new User();
         }
-        
+
         return user;
+
     }
 
     @Override
@@ -559,15 +568,10 @@ public class GeneralManager implements Manager, Serializable {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void setManagersUser() {
-
-        throw new UnsupportedOperationException("Not supported yet.");
-
-    }
-
     @Override
     public void completeLogin() {
-           throw new UnsupportedOperationException("Not supported yet.");
+        
+        throw new UnsupportedOperationException("Not supported yet.");
 
     }
 
@@ -614,7 +618,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getUsername() {
-        
+
         return username;
     }
 
@@ -730,8 +734,8 @@ public class GeneralManager implements Manager, Serializable {
                 // Send email to system administrator alert if activated
                 if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
                         "developerEmailAlertActivated")) {
-                    MailUtils.postMail(null, 
-                            null, 
+                    MailUtils.postMail(null,
+                            null,
                             SystemOption.getString(getEntityManager1(), "jobManagerEmailName"),
                             null,
                             "Failed user login",
@@ -742,7 +746,7 @@ public class GeneralManager implements Manager, Serializable {
             } catch (Exception ex) {
                 System.out.println(ex);
             }
-        } else if (loginAttempts > 2) {// tk # attempts to be made option
+        } else if (loginAttempts > 2) {// tk # attempts to be made system option
             PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
         }
 
@@ -771,7 +775,6 @@ public class GeneralManager implements Manager, Serializable {
 
                     completeLogin();
 
-                    //PrimeFaces.current().executeScript("PF('loginDialog').hide();");
                 } else if (validateUser(em)) {
                     logonMessage = "Please provide your login details below:";
                     username = "";
@@ -850,7 +853,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getConfirmedPassword() {
-        
+
         return confirmedPassword;
     }
 
@@ -861,9 +864,9 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void register() {
-        
-       throw new UnsupportedOperationException("Not supported yet.");
-       
+
+        throw new UnsupportedOperationException("Not supported yet.");
+
     }
 
 }

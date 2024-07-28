@@ -37,6 +37,7 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
@@ -81,6 +82,13 @@ public class EnergyLabelManager extends GeneralManager
      */
     public EnergyLabelManager() {
         init();
+    }
+
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
     }
 
     @Override
@@ -595,20 +603,10 @@ public class EnergyLabelManager extends GeneralManager
             getUser().save(getEntityManager1());
         }
 
-        setManagersUser();
-
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
 
-    }
-
-    @Override
-    public void setManagersUser() {
-
-        getManager("systemManager").setUser(getUser());       
-        getManager("energyLabelManager").setUser(getUser());
-        
     }
 
     // SVG manipulation

@@ -78,7 +78,14 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public LegalDocumentManager() {
         init();
     }
-    
+
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
+    }
+
     public void openClientsTab() {
 
         getMainTabView().openTab("Clients");
@@ -924,21 +931,10 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             getUser().save(getEntityManager1());
         }
 
-        setManagersUser();
-
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
 
-    }
-    
-    @Override
-    public void setManagersUser() {
-
-        getManager("systemManager").setUser(getUser());
-        getManager("clientManager").setUser(getUser());
-        getManager("reportManager").setUser(getUser());
-        
     }
 
 }

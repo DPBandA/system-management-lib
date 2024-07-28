@@ -67,8 +67,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItemGroup;
 import jm.com.dpbennett.business.entity.fm.CashPayment;
 import jm.com.dpbennett.business.entity.fm.Currency;
-import jm.com.dpbennett.business.entity.fm.Discount;
-import jm.com.dpbennett.business.entity.fm.Tax;
 import jm.com.dpbennett.business.entity.hrm.Division;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
@@ -118,6 +116,13 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public PurchasingManager() {
         init();
+    }
+
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
     }
 
     public String formatAsCurrency(Double number) {

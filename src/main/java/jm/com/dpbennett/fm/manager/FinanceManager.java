@@ -44,6 +44,7 @@ import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -2047,15 +2048,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public void setManagersUser() {
-
-        getManager("systemManager").setUser(getUser());
-        getManager("inventoryManager").setUser(getUser());
-        getManager("purchasingManager").setUser(getUser());
-
-    }
-
-    @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
     }
@@ -2077,6 +2069,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 "Logged in");
 
         super.completeLogin();
+    }
+
+    @Override
+    public User getUser() {
+
+        return getSystemManager().getUser();
+
     }
 
     public ArrayList<SelectItem> getPurchReqSearchTypes() {
