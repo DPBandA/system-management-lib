@@ -203,17 +203,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void handleKeepAlive() {
-
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -223,7 +213,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void logout() {
-        //reset();
+        
         completeLogout();
     }
 
@@ -235,13 +225,15 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public String getApplicationHeader() {
 
-        return "System Management";
+        return "General Management";
 
     }
 
     @Override
     public String getApplicationSubheader() {
+        
         return "General System Administration &amp; Management";
+        
     }
 
     @Override
@@ -569,42 +561,18 @@ public class GeneralManager implements Manager, Serializable {
 
     public void setManagersUser() {
 
-        //getManager("systemManager").setUser(getUser());
         throw new UnsupportedOperationException("Not supported yet.");
 
     }
 
     @Override
     public void completeLogin() {
-
-//        if (getUser().getId() != null) {
-//            getUser().save(getEntityManager1());
-//        }
-//
-//        setManagersUser();
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        initDashboard();
-//        initMainTabView();
-//        updateAllForms();
-            throw new UnsupportedOperationException("Not supported yet.");
+           throw new UnsupportedOperationException("Not supported yet.");
 
     }
 
     @Override
     public void completeLogout() {
-
-//        if (getUser().getId() != null) {
-//            getUser().save(getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//        getManager("systemManager").setUser(getUser());
 
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -893,8 +861,9 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void register() {
-        // tk
-        System.out.println("Registering...");
+        
+       throw new UnsupportedOperationException("Not supported yet.");
+       
     }
 
 }

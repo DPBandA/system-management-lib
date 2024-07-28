@@ -390,7 +390,7 @@ public class JobManager extends GeneralManager
     @Override
     public String getLogoURL() {
         return SystemOption.getString(
-                getEntityManager1(), "JMTSLogo");
+                getSystemManager().getEntityManager1(), "JMTSLogo");
     }
 
     public Integer getDialogHeight() {
@@ -404,7 +404,7 @@ public class JobManager extends GeneralManager
     public String getApplicationFooter() {
 
         return getApplicationHeader() + ", v"
-                + SystemOption.getString(getEntityManager1(),
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
                         "JMTSv");
     }
 
@@ -451,7 +451,7 @@ public class JobManager extends GeneralManager
     public String getAppShortcutIconURL() {
 
         return SystemOption.getString(
-                getEntityManager1(), "JMTSLogo");
+                getSystemManager().getEntityManager1(), "JMTSLogo");
 
     }
 
@@ -645,7 +645,7 @@ public class JobManager extends GeneralManager
                     if (!Objects.equals(getCurrentJob().getAssignedTo().getId(),
                             getCurrentJob().getJobStatusAndTracking().getEnteredBy().getId())) {
 
-                        sendJobEntryEmail(getEntityManager1(),
+                        sendJobEntryEmail(getSystemManager().getEntityManager1(),
                                 getCurrentJob().getAssignedTo(),
                                 "job assignee", "entered");
                     }
@@ -653,24 +653,24 @@ public class JobManager extends GeneralManager
                 case PREPARE:
                     if (getCurrentJob().getIsSubContract()) {
 
-                        sendJobCostingPreparedEmail(getEntityManager1(),
+                        sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
                                 getCurrentJob().getSubContractedDepartment().getHead(),
                                 "head", "prepared");
 
                         if (getCurrentJob().getSubContractedDepartment().getActingHeadActive()) {
-                            sendJobCostingPreparedEmail(getEntityManager1(),
+                            sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
                                     getCurrentJob().getSubContractedDepartment().getHead(),
                                     "acting head", "prepared");
                         }
 
                     } else {
 
-                        sendJobCostingPreparedEmail(getEntityManager1(),
+                        sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
                                 getCurrentJob().getDepartment().getHead(),
                                 "head", "prepared");
 
                         if (getCurrentJob().getDepartment().getActingHeadActive()) {
-                            sendJobCostingPreparedEmail(getEntityManager1(),
+                            sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
                                     getCurrentJob().getDepartment().getHead(),
                                     "acting head", "prepared");
                         }
@@ -681,14 +681,14 @@ public class JobManager extends GeneralManager
                 case APPROVE:
                     if (getCurrentJob().getIsSubContract()) {
                         if (getCurrentJob().getParent() != null) {
-                            sendChildJobCostingApprovalEmail(getEntityManager1(),
+                            sendChildJobCostingApprovalEmail(getSystemManager().getEntityManager1(),
                                     getCurrentJob().getParent().getAssignedTo(),
                                     "assignee", "approved");
                         }
                     }
                     break;
                 case PAYMENT:
-                    sendJobPaymentEmail(getEntityManager1(),
+                    sendJobPaymentEmail(getSystemManager().getEntityManager1(),
                             getCurrentJob().getAssignedTo(),
                             "job assignee", "payment");
                     break;
@@ -931,15 +931,15 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getApplicationHeader() {
-        return SystemOption.getString(getEntityManager1(), "JMTSName");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSName");
     }
 
     public String getCopyrightOrganization() {
-        return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "copyrightOrganization");
     }
 
     public String getOrganizationWebsite() {
-        return SystemOption.getString(getEntityManager1(), "organizationWebsite");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "organizationWebsite");
     }
 
     /**
@@ -1313,19 +1313,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-//    public Integer getLongProcessProgress() {
-//        if (longProcessProgress == null) {
-//            longProcessProgress = 0;
-//        } else {
-//            if (longProcessProgress < 10) {
-//                // this is to ensure that this method does not make the progress
-//                // complete as this is done elsewhere.
-//                longProcessProgress = longProcessProgress + 1;
-//            }
-//        }
-//
-//        return longProcessProgress;
-//    }
     /**
      * For future implementation if necessary
      *
@@ -1367,7 +1354,7 @@ public class JobManager extends GeneralManager
         try {
 
             Boolean useServiceContractJRXML
-                    = (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    = (Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(),
                             "useServiceContractJRXML");
 
             if (useServiceContractJRXML) {
@@ -2072,7 +2059,7 @@ public class JobManager extends GeneralManager
      * @return
      */
     public String getUpdatedJobEmailMessage(Job job) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -2140,7 +2127,7 @@ public class JobManager extends GeneralManager
 
     public void sendErrorEmail(String subject, String message) {
         try {
-            EntityManager em = getEntityManager1();
+            EntityManager em = getSystemManager().getEntityManager1();
 
             // send error message to developer's email            
             MailUtils.postMail(null,
@@ -2148,7 +2135,7 @@ public class JobManager extends GeneralManager
                     SystemOption.getString(em, "jobManagerEmailName"),
                     SystemOption.getString(em, "softwareDeveloperEmailAddress"),
                     subject, message,
-                    "text/plain", getEntityManager1());
+                    "text/plain", em);
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -2364,21 +2351,21 @@ public class JobManager extends GeneralManager
      *
      * @return
      */
-    public List<Classification> getActiveClassifications() {
-        EntityManager em = getEntityManager1();
-
-        List<Classification> classifications = Classification.findAllActiveClassifications(em);
-
-        return classifications;
-    }
-
-    public List<Sector> getActiveSectors() {
-        EntityManager em = getEntityManager1();
-
-        List<Sector> sectors = Sector.findAllActiveSectors(em);
-
-        return sectors;
-    }
+//    public List<Classification> getActiveClassifications() {
+//        EntityManager em = getEntityManager1();
+//
+//        List<Classification> classifications = Classification.findAllActiveClassifications(em);
+//
+//        return classifications;
+//    }
+//
+//    public List<Sector> getActiveSectors() {
+//        EntityManager em = getEntityManager1();
+//
+//        List<Sector> sectors = Sector.findAllActiveSectors(em);
+//
+//        return sectors;
+//    }
 
     public List<Address> getClientAddresses() {
 
@@ -2387,21 +2374,21 @@ public class JobManager extends GeneralManager
         return addresses;
     }
 
-    public List<JobCategory> getActiveJobCategories() {
-        EntityManager em = getEntityManager1();
-
-        List<JobCategory> categories = JobCategory.findAllActiveJobCategories(em);
-
-        return categories;
-    }
-
-    public List<JobSubCategory> getActiveJobSubCategories() {
-        EntityManager em = getEntityManager1();
-
-        List<JobSubCategory> subCategories = JobSubCategory.findAllActiveJobSubCategories(em);
-
-        return subCategories;
-    }
+//    public List<JobCategory> getActiveJobCategories() {
+//        EntityManager em = getEntityManager1();
+//
+//        List<JobCategory> categories = JobCategory.findAllActiveJobCategories(em);
+//
+//        return categories;
+//    }
+//
+//    public List<JobSubCategory> getActiveJobSubCategories() {
+//        EntityManager em = getEntityManager1();
+//
+//        List<JobSubCategory> subCategories = JobSubCategory.findAllActiveJobSubCategories(em);
+//
+//        return subCategories;
+//    }
 
     public List<Job> getJobSearchResultList() {
         return jobSearchResultList;
@@ -2699,12 +2686,12 @@ public class JobManager extends GeneralManager
 
         boolean debug = false;
         Message msg;
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         if (mailSession == null) {
             //Set the host smtp address
             Properties props = new Properties();
-            String mailServer = (String) SystemOption.getOptionValueObject(getEntityManager1(), "mail.smtp.host");
+            String mailServer = (String) SystemOption.getOptionValueObject(em, "mail.smtp.host");
             props.put("mail.smtp.host", mailServer);
 
             // create some properties and get the default Session
@@ -2747,7 +2734,7 @@ public class JobManager extends GeneralManager
 
         boolean debug = false;
         Message msg;
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         try {
             if (mailSession == null) {
@@ -2855,7 +2842,7 @@ public class JobManager extends GeneralManager
     @Override
     public String getApplicationSubheader() {
 
-        return SystemOption.getString(getEntityManager1(), "JMTSTagLine");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSTagLine");
     }
 
     @Override
@@ -3001,7 +2988,7 @@ public class JobManager extends GeneralManager
         // Compliance
 //        if (getUser().hasModule("complianceManager")) {
 //            Module module = Module.findActiveModuleByName(
-//                    getEntityManager1(),
+//                    getSystemManager().getEntityManager1(),
 //                    "complianceManager");
 //            if (module != null) {
 //                openModuleMainTab("complianceManager");
@@ -3017,7 +3004,7 @@ public class JobManager extends GeneralManager
         // Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "jobManager");
             if (module != null) {
                 openModuleMainTab("jobManager");
@@ -3030,7 +3017,7 @@ public class JobManager extends GeneralManager
         // Clients
 //        if (getUser().hasModule("clientManager")) {
 //            Module module = Module.findActiveModuleByName(
-//                    getEntityManager1(),
+//                    getSystemManager().getEntityManager1(),
 //                    "clientManager");
 //            if (module != null) {
 //                openModuleMainTab("clientManager");
@@ -3043,7 +3030,7 @@ public class JobManager extends GeneralManager
         // Procurement
         if (getUser().hasModule("purchasingManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "purchasingManager");
             if (module != null) {
                 openModuleMainTab("purchasingManager");
@@ -3057,7 +3044,7 @@ public class JobManager extends GeneralManager
         // Inventory
         if (getUser().hasModule("inventoryManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "inventoryManager");
             if (module != null) {
                 openModuleMainTab("inventoryManager");
@@ -3078,7 +3065,6 @@ public class JobManager extends GeneralManager
                 + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
                 "Logged in");
 
-        //super.handleKeepAlive();
         if (getUser().getId() != null) {
             getUser().save(getSystemManager().getEntityManager1());
         }
@@ -3090,7 +3076,6 @@ public class JobManager extends GeneralManager
 
         PrimeFaces.current().ajax().update(":appForm:notificationBadge");
 
-        // tk Check for subscription expiration etc.?
     }
 
     @Override
@@ -3100,7 +3085,6 @@ public class JobManager extends GeneralManager
                 + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
                 "Logged out");
 
-        //super.completeLogout();
         if (getUser().getId() != null) {
             getUser().save(getSystemManager().getEntityManager1());
         }
@@ -3110,7 +3094,6 @@ public class JobManager extends GeneralManager
 
         reset();
 
-        //getManager("systemManager").setUser(getUser());
         setManagersUser();
 
     }
