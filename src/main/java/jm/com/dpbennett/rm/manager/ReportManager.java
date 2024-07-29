@@ -107,10 +107,10 @@ public class ReportManager extends GeneralManager {
     public ReportManager() {
         init();
     }
-    
+
     @Override
     public boolean handleTabChange(String tabTitle) {
-               
+
         switch (tabTitle) {
             case "Report Templates":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:reportTemplateSearchButton");
@@ -322,9 +322,9 @@ public class ReportManager extends GeneralManager {
     }
 
     public void openReportTemplatesTab() {
-        
+
         getSystemManager().setDocumentTypeSearchText(":appForm:mainTabView:reportTemplateSearchButton");
-        
+
         getMainTabView().openTab("Report Templates");
     }
 
@@ -374,7 +374,7 @@ public class ReportManager extends GeneralManager {
     }
 
     public List getReportCategories() {
-        return ReportUtils.getCategories(getEntityManager1());
+        return ReportUtils.getCategories(getSystemManager().getEntityManager1());
     }
 
     public List getReportMimeTypes() {
@@ -394,7 +394,7 @@ public class ReportManager extends GeneralManager {
 
     public List<Report> getFoundReports() {
         if (foundReports == null) {
-            //foundReports = Report.findAllActiveReports(getEntityManager1());
+            
             foundReports = new ArrayList<>();
         }
 
@@ -437,7 +437,7 @@ public class ReportManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("reportTemplateDialog", options, null);
 
     }
-    
+
     public void openReportDialog() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -456,9 +456,9 @@ public class ReportManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("reportDialog", options, null);
 
     }
-    
+
     public void openReportDialog(String reportCategory) {
-        
+
         this.reportCategory = reportCategory;
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -632,15 +632,15 @@ public class ReportManager extends GeneralManager {
         reportCategory = "Job";
 
     }
-    
+
     @Override
     public void initMainTabView() {
 
         getMainTabView().reset(getUser());
-        
+
         if (getUser().hasModule("systemManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "systemManager");
             if (module != null) {
                 getMainTabView().openTab("System Administration");
@@ -649,7 +649,7 @@ public class ReportManager extends GeneralManager {
 
         if (getUser().hasModule("reportManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "reportManager");
             if (module != null) {
                 getMainTabView().openTab("Report Templates");
@@ -663,9 +663,9 @@ public class ReportManager extends GeneralManager {
 
     @Override
     public EntityManager getEntityManager1() {
-        
+
         return getSystemManager().getEntityManager("RMEM");
-        
+
     }
 
     public Employee getReportEmployee1() {
@@ -786,7 +786,7 @@ public class ReportManager extends GeneralManager {
             if (con != null) {
                 StreamedContent streamContent;
                 byte[] fileBytes;
-                String logoURL = (String) SystemOption.getOptionValueObject(getEntityManager1(),
+                String logoURL = (String) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(),
                         "logoURL");
 
                 // Provide report parameters
@@ -880,8 +880,6 @@ public class ReportManager extends GeneralManager {
 
                 }
 
-                setLongProcessProgress(100);
-
                 em.getTransaction().commit();
 
                 return streamContent;
@@ -892,8 +890,7 @@ public class ReportManager extends GeneralManager {
 
         } catch (JRException e) {
             System.out.println(e);
-            setLongProcessProgress(100);
-
+            
             return null;
         }
 
@@ -928,36 +925,11 @@ public class ReportManager extends GeneralManager {
                     break;
             }
 
-            setLongProcessProgress(100);
-
         } catch (Exception e) {
             System.out.println(e);
-            setLongProcessProgress(100);
         }
 
         return reportFile;
-    }
-
-    public Integer getLongProcessProgress() {
-        if (longProcessProgress == null) {
-            longProcessProgress = 0;
-        } else {
-            if (longProcessProgress < 10) {
-                // This is to ensure that this method does not make the progress
-                // complete as this is done elsewhere.
-                longProcessProgress = longProcessProgress + 1;
-            }
-        }
-
-        return longProcessProgress;
-    }
-
-    public void onLongProcessComplete() {
-        longProcessProgress = 0;
-    }
-
-    public void setLongProcessProgress(Integer longProcessProgress) {
-        this.longProcessProgress = longProcessProgress;
     }
 
     public StreamedContent getMonthlyReport(EntityManager em) {
@@ -2407,30 +2379,30 @@ public class ReportManager extends GeneralManager {
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+                getSystemManager().getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
+                getSystemManager().getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
+                getSystemManager().getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
+                getSystemManager().getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -2484,33 +2456,68 @@ public class ReportManager extends GeneralManager {
     @Override
     public void handleKeepAlive() {
 
-        super.updateUserActivity("RMv"
-                + SystemOption.getString(getEntityManager1(), "RMv"),
+        updateUserActivity("RMv"
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
                 "Logged in");
 
-        super.handleKeepAlive();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
 
+        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+
+    }
+
+    @Override
+    public void login() {
+        login(getSystemManager().getEntityManager1());
     }
 
     @Override
     public void completeLogout() {
 
-        super.updateUserActivity("RMv"
-                + SystemOption.getString(getEntityManager1(), "RMv"),
+        updateUserActivity("RMv"
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
                 "Logged out");
 
-        super.completeLogout();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
 
     }
 
     @Override
     public void completeLogin() {
 
-        super.updateUserActivity("RMv"
-                + SystemOption.getString(getEntityManager1(), "RMv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            updateUserActivity("RMv"
+                    + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
+                    "Logged in");
+            getUser().save(getSystemManager().getEntityManager1());
+        }
 
-        super.completeLogin();
+        setManagerUser();
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
+
+    }
+
+    @Override
+    public void setManagerUser() {
+
+        getManager("systemManager").setUser(getUser());
 
     }
 
