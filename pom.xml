@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <jakartaee>8.0.0</jakartaee>
         <skipTests>true</skipTests>
     </properties>
     <description>The System Management Library for the System Management web application.</description>
@@ -96,11 +97,11 @@
         </dependency>
       
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>8.0</version>
-            <type>jar</type>
-        </dependency>  
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakartaee}</version>
+            <scope>provided</scope>
+        </dependency> 
                 
         <dependency>
             <groupId>commons-io</groupId>

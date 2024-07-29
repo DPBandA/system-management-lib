@@ -42,6 +42,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.model.LazyClientDataModel;
+import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -112,13 +113,21 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public SystemManager getSystemManager() {
+
         return BeanUtils.findBean("systemManager");
+
+    }
+
+    public FinanceManager getFinanceManager() {
+
+        return BeanUtils.findBean("financeManager");
+
     }
 
     public List<Client> completeActiveClient(String query) {
-        int maxResult = SystemOption.getInteger(getEntityManager1(),
-                        "maxSearchResults");
-        
+        int maxResult = SystemOption.getInteger(getSystemManager().getEntityManager1(),
+                "maxSearchResults");
+
         try {
 
             return Client.findActive(getEntityManager1(), query, maxResult);
@@ -187,7 +196,8 @@ public class ClientManager extends GeneralManager implements Serializable {
         setDefaultCommandTarget("@this");
         setModuleNames(new String[]{
             "systemManager",
-            "clientManager"});
+            "clientManager",
+            "financeManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -197,7 +207,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         selectedContact = null;
         selectedAddress = null;
         clientSearchText = "";
-        lazyClientDataModel = new LazyClientDataModel(); //tk
+        lazyClientDataModel = new LazyClientDataModel();
     }
 
     public Client getSelectedClient() {
@@ -417,8 +427,8 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public void createNewClient(Boolean active) {
         selectedClient = new Client("", active);
-        selectedClient.setDiscount(Discount.findDefault(getEntityManager1(), "0.0"));
-        selectedClient.setDefaultTax(Tax.findDefault(getEntityManager1(), "0.0"));
+        selectedClient.setDiscount(Discount.findDefault(getFinanceManager().getEntityManager1(), "0.0"));
+        selectedClient.setDefaultTax(Tax.findDefault(getFinanceManager().getEntityManager1(), "0.0"));
     }
 
     public Boolean getIsDirty() {
@@ -636,11 +646,11 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public List<Client> completeClient(String query) {
         EntityManager em = getEntityManager1();
-        int maxResult = SystemOption.getInteger(getEntityManager1(),
-                        "maxSearchResults");
+        int maxResult = SystemOption.getInteger(getSystemManager().getEntityManager1(),
+                "maxSearchResults");
 
-        try {            
-            
+        try {
+
             List<Client> clients = Client.findActive(em, query, maxResult);
 
             return clients;
@@ -662,11 +672,11 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         switch (searchType) {
             case "Clients":
-                int maxResult = SystemOption.getInteger(getEntityManager1(),
+                int maxResult = SystemOption.getInteger(getSystemManager().getEntityManager1(),
                         "maxSearchResults");
-                
+
                 if (getIsActiveClientsOnly()) {
-                    foundClients = Client.findActive(getEntityManager1(), 
+                    foundClients = Client.findActive(getEntityManager1(),
                             searchText, maxResult);
                 } else {
                     foundClients = Client.find(getEntityManager1(), searchText, maxResult);
@@ -722,30 +732,30 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+                getSystemManager().getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
+                getSystemManager().getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
+                getSystemManager().getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
+                getSystemManager().getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -783,31 +793,68 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void handleKeepAlive() {
 
         super.updateUserActivity("CMv"
-                + SystemOption.getString(getEntityManager1(), "CMv"),
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "CMv"),
                 "Logged in");
 
-        super.handleKeepAlive();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+
+    }
+
+    @Override
+    public void login() {
+        login(getSystemManager().getEntityManager1());
     }
 
     @Override
     public void completeLogout() {
 
         super.updateUserActivity("CMv"
-                + SystemOption.getString(getEntityManager1(), "CMv"),
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "CMv"),
                 "Logged out");
 
-        super.completeLogout();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
 
     }
 
     @Override
     public void completeLogin() {
 
-        super.updateUserActivity("CMv"
-                + SystemOption.getString(getEntityManager1(), "CMv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            super.updateUserActivity("CMv"
+                    + SystemOption.getString(getSystemManager().getEntityManager1(), "CMv"),
+                    "Logged in");
+            getUser().save(getSystemManager().getEntityManager1());
+        }
 
-        super.completeLogin();
+        setManagerUser();
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
+
+    }
+
+    @Override
+    public void setManagerUser() {
+
+        getManager("systemManager").setUser(getUser());
+        getManager("financeManager").setUser(getUser());
 
     }
 

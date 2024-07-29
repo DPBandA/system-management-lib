@@ -187,13 +187,13 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<SelectItem> getEmploymentTypeList() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
                 "employmentTypes");
     }
 
     public List<SelectItem> getPayCycleList() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
                 "payCycles");
     }
 
@@ -208,7 +208,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<SelectItem> getManufacturerStatuses() {
         ArrayList statuses = new ArrayList();
 
-        statuses.addAll(getStringListAsSelectItems(getEntityManager1(), "factoryStatusList"));
+        statuses.addAll(getStringListAsSelectItems(getSystemManager().getEntityManager1(), "factoryStatusList"));
 
         return statuses;
     }
@@ -216,7 +216,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<SelectItem> getRegistrationStatuses() {
         ArrayList statuses = new ArrayList();
 
-        statuses.addAll(getStringListAsSelectItems(getEntityManager1(), "registrationStatusList"));
+        statuses.addAll(getStringListAsSelectItems(getSystemManager().getEntityManager1(), "registrationStatusList"));
 
         return statuses;
     }
@@ -231,7 +231,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<SelectItem> getDepartmentLabelList() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
                 "departmentLabels");
     }
 
@@ -249,7 +249,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getSystemManager().getEntityManager1();
 
             List<String> preferenceValues = Preference.findAllPreferenceValues(em, query);
 
@@ -397,7 +397,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<EmployeePosition> getFoundEmployeePositions() {
         if (foundEmployeePositions == null) {
-            //foundEmployeePositions = EmployeePosition.findAllActiveEmployeePositions(getEntityManager1());
+            
             foundEmployeePositions = new ArrayList<>();
         }
         return foundEmployeePositions;
@@ -607,7 +607,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Department> getFoundDepartments() {
         if (foundDepartments == null) {
-            //foundDepartments = Department.findAllActive(getEntityManager1());
+            
             foundDepartments = new ArrayList<>();
         }
 
@@ -616,7 +616,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Subgroup> getFoundSubgroups() {
         if (foundSubgroups == null) {
-            //foundSubgroups = Subgroup.findAllActive(getEntityManager1());
+            
             foundSubgroups = new ArrayList<>();
         }
 
@@ -626,9 +626,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<Business> getFoundBusinesses() {
         if (foundBusinesses == null) {
 
-            //foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
-            //        getSearchText());
-            foundBusinesses = new ArrayList<>();
+           foundBusinesses = new ArrayList<>();
         }
 
         return foundBusinesses;
@@ -769,14 +767,14 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
     }
-    
+
     @Override
     public void initMainTabView() {
 
         getMainTabView().reset(getUser());
-        
+
         openHumanResourceBrowser();
-        
+
     }
 
     public void selectHumanResourceTab(
@@ -1201,7 +1199,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Employee> getFoundEmployees() {
         if (foundEmployees == null) {
-            //foundEmployees = Employee.findAllActive(getEntityManager1());
+            
             foundEmployees = new ArrayList<>();
         }
 
@@ -1229,7 +1227,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Manufacturer> getFoundManufacturers() {
         if (foundManufacturers == null) {
-            //foundManufacturers = Manufacturer.findAllActiveManufacturers(getEntityManager1());
+            
             foundManufacturers = new ArrayList<>();
         }
 
@@ -1663,30 +1661,30 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+                getSystemManager().getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
+                getSystemManager().getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
+                getSystemManager().getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
+                getSystemManager().getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -1730,7 +1728,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 return true;
             case "Business Offices":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessOfficeSearchButton");
-                return true;    
+                return true;
             case "Manufacturers":
                 getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
                 return true;
@@ -1762,31 +1760,67 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void handleKeepAlive() {
 
         super.updateUserActivity("HRMv"
-                + SystemOption.getString(getEntityManager1(), "HRMv"),
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
                 "Logged in");
 
-        super.handleKeepAlive();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+
+    }
+
+    @Override
+    public void login() {
+        login(getSystemManager().getEntityManager1());
     }
 
     @Override
     public void completeLogout() {
 
         super.updateUserActivity("HRMv"
-                + SystemOption.getString(getEntityManager1(), "HRMv"),
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
                 "Logged out");
 
-        super.completeLogout();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
 
     }
 
     @Override
     public void completeLogin() {
 
-        super.updateUserActivity("HRMv"
-                + SystemOption.getString(getEntityManager1(), "HRMv"),
-                "Logged in");
+        if (getUser().getId() != null) {
+            super.updateUserActivity("HRMv"
+                    + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
+                    "Logged in");
+            getUser().save(getSystemManager().getEntityManager1());
+        }
 
-        super.completeLogin();
+        setManagerUser();
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
+
+    }
+
+    @Override
+    public void setManagerUser() {
+
+        getManager("systemManager").setUser(getUser());
 
     }
 

@@ -84,7 +84,9 @@ public class GeneralManager implements Manager, Serializable {
      * on which it depends.
      */
     public void setManagerUser() {
-        getManager("systemManager").setUser(getUser());
+
+        throw new UnsupportedOperationException("Not supported yet.");
+
     }
 
     @Override
@@ -171,14 +173,8 @@ public class GeneralManager implements Manager, Serializable {
             Date startDate,
             Date endDate) {
 
-        switch (searchType) {
-            case "General":
+        throw new UnsupportedOperationException("Not supported yet.");
 
-                break;
-
-            default:
-                break;
-        }
     }
 
     @Override
@@ -222,12 +218,15 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void logout() {
 
-        completeLogout();
+        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
     @Override
     public Boolean renderUserMenu() {
+        
         return getUser().getId() != null;
+        
     }
 
     @Override
@@ -570,7 +569,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void completeLogin() {
-        
+
         throw new UnsupportedOperationException("Not supported yet.");
 
     }

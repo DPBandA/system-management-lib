@@ -3064,6 +3064,11 @@ public class JobManager extends GeneralManager
     }
 
     @Override
+    public void login() {
+        login(getSystemManager().getEntityManager1());
+    }
+
+    @Override
     public void completeLogout() {
 
         super.updateUserActivity("JMTSv"
@@ -3082,11 +3087,6 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
     public void completeLogin() {
 
         if (getUser().getId() != null) {
@@ -3095,7 +3095,7 @@ public class JobManager extends GeneralManager
                     "Logged in");
             getUser().save(getSystemManager().getEntityManager1());
         }
-       
+
         setManagerUser();
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
@@ -3103,7 +3103,7 @@ public class JobManager extends GeneralManager
         initMainTabView();
 
     }
-    
+
     @Override
     public void setManagerUser() {
 
@@ -3113,7 +3113,7 @@ public class JobManager extends GeneralManager
         getManager("financeManager").setUser(getUser());
         getManager("humanResourceManager").setUser(getUser());
         getManager("complianceManager").setUser(getUser());
-        
+
     }
 
 }
