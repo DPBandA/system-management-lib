@@ -25,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -42,8 +41,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.BusinessEntity;
 import jm.com.dpbennett.business.entity.StatusNote;
 import jm.com.dpbennett.business.entity.fm.Classification;
@@ -771,7 +768,7 @@ public class JobManager extends GeneralManager
     }
 
     public Boolean enableMultipleStatusNotes() {
-        return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
                 "enableMultipleStatusNotes");
     }
 
@@ -790,7 +787,8 @@ public class JobManager extends GeneralManager
     public Boolean disableJobDialogField(Job job, String field) {
 
         Boolean fieldDisablingActive
-                = (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                = SystemOption.getBoolean(
+                        getSystemManager().getEntityManager1(),
                         "activateJobDialogFieldDisabling");
 
         Boolean userHasPrivilege = getUser().can("EditDisabledJobField");
@@ -884,8 +882,9 @@ public class JobManager extends GeneralManager
 
     public void onJobCellEdit(CellEditEvent event) {
         EntityManager em = getEntityManager1();
+        
         Job job = getJobSearchResultList().get(event.getRowIndex());
-        Job savedJob = Job.findJobById(getEntityManager1(), job.getId());
+        Job savedJob = Job.findJobById(em, job.getId());
 
         if (!isJobNew(job)) {
             savedJob = Job.findJobById(em, job.getId());
@@ -1113,7 +1112,7 @@ public class JobManager extends GeneralManager
 
     public ArrayList<SelectItem> getAuthorizedSearchTypes() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         ArrayList searchTypes = new ArrayList();
 
         if (getUser(em).can("EditJob")
@@ -1342,7 +1341,7 @@ public class JobManager extends GeneralManager
 
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
-        getCurrentJob().setIsToBeSubcontracted(true); // tk
+        getCurrentJob().setIsToBeSubcontracted(true);
 
         editJob();
         openJobBrowser();
@@ -1354,7 +1353,8 @@ public class JobManager extends GeneralManager
         try {
 
             Boolean useServiceContractJRXML
-                    = (Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(),
+                    = (Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "useServiceContractJRXML");
 
             if (useServiceContractJRXML) {
@@ -1404,7 +1404,7 @@ public class JobManager extends GeneralManager
     }
 
     public List<Preference> getJobTableViewPreferences() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         List<Preference> prefs = Preference.findAllPreferencesByName(em, "jobTableView");
 
@@ -1524,7 +1524,7 @@ public class JobManager extends GeneralManager
     }
 
     public void updateJobView(AjaxBehaviorEvent event) {
-        getUser().save(getEntityManager1());
+        getUser().save(getSystemManager().getEntityManager1());
     }
 
     public void updateJobClassification() {
@@ -2621,43 +2621,43 @@ public class JobManager extends GeneralManager
         return sr;
     }
 
-    public User createNewUser(EntityManager em) {
-        User jmuser = new User();
+//    public User createNewUser(EntityManager em) {
+//        User jmuser = new User();
+//
+//        jmuser.setEmployee(Employee.findDefault(em, "--", "--", true));
+//
+//        return jmuser;
+//    }
 
-        jmuser.setEmployee(Employee.findDefault(em, "--", "--", true));
+//    public EntityManagerFactory setupDatabaseConnection(String PU) {
+//        try {
+//            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU);
+//            if (emf.isOpen()) {
+//                return emf;
+//            } else {
+//                return null;
+//            }
+//        } catch (Exception ex) {
+//            System.out.println(PU + " Connection failed: " + ex);
+//            return null;
+//        }
+//    }
 
-        return jmuser;
-    }
-
-    public EntityManagerFactory setupDatabaseConnection(String PU) {
-        try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU);
-            if (emf.isOpen()) {
-                return emf;
-            } else {
-                return null;
-            }
-        } catch (Exception ex) {
-            System.out.println(PU + " Connection failed: " + ex);
-            return null;
-        }
-    }
-
-    public HashMap<String, String> getConnectionProperties(
-            String url,
-            String driver,
-            String username,
-            String password) {
-
-        // Setup new database connection properties
-        HashMap<String, String> prop = new HashMap<>();
-        prop.put("javax.persistence.jdbc.user", username);
-        prop.put("javax.persistence.jdbc.password", password);
-        prop.put("javax.persistence.jdbc.url", url);
-        prop.put("javax.persistence.jdbc.driver", driver);
-
-        return prop;
-    }
+//    public HashMap<String, String> getConnectionProperties(
+//            String url,
+//            String driver,
+//            String username,
+//            String password) {
+//
+//        // Setup new database connection properties
+//        HashMap<String, String> prop = new HashMap<>();
+//        prop.put("javax.persistence.jdbc.user", username);
+//        prop.put("javax.persistence.jdbc.password", password);
+//        prop.put("javax.persistence.jdbc.url", url);
+//        prop.put("javax.persistence.jdbc.driver", driver);
+//
+//        return prop;
+//    }
 
     public Date getCurrentDate() {
         return new Date();
@@ -2845,7 +2845,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,

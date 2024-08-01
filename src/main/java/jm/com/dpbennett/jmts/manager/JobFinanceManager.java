@@ -80,8 +80,11 @@ import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
+import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.FileUtils;
@@ -172,7 +175,8 @@ public class JobFinanceManager extends GeneralManager
 
         if (getCurrentJob().getId() != null) {
             if (getCurrentJob().getIsDirty()) {
-                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(),
+                        getUser()).isSuccess()) {
 
                     getJobManager().processJobActions();
                     getCurrentJob().getJobStatusAndTracking().setEditStatus("");
@@ -368,6 +372,16 @@ public class JobFinanceManager extends GeneralManager
         doJobSearch();
     }
 
+    public FinanceManager getFinanceManager() {
+
+        return BeanUtils.findBean("financeManager");
+    }
+
+    public SystemManager getSystemManager() {
+
+        return BeanUtils.findBean("systemManager");
+    }
+
     public void openNewProformaInvoiceDialog() {
 
         createNewJob();
@@ -379,8 +393,9 @@ public class JobFinanceManager extends GeneralManager
         getCurrentJob().getJobStatusAndTracking().setWorkProgress("Cancelled");
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().getJobCostingAndPayment().
-                setTax(Tax.findByName(getEntityManager1(),
-                        (String) SystemOption.getOptionValueObject(getEntityManager1(),
+                setTax(Tax.findByName(
+                        getFinanceManager().getEntityManager1(),
+                        SystemOption.getString(getSystemManager().getEntityManager1(),
                                 "defaultTax")));
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
@@ -390,13 +405,26 @@ public class JobFinanceManager extends GeneralManager
         openProformaInvoicesTab();
     }
 
+    public HumanResourceManager getHumanResourceManager() {
+        
+        return BeanUtils.findBean("humanResourceManager");
+        
+    }
+
+    public ClientManager getClientManager() {
+
+        return BeanUtils.findBean("clientManager");
+        
+    }
+
     public void openNewCostEstimateDialog() {
 
         createNewJob();
 
         getCurrentJob().setClassification(Classification.
-                findClassificationByName(getEntityManager1(),
-                        (String) SystemOption.getOptionValueObject(getEntityManager1(),
+                findClassificationByName(getFinanceManager().getEntityManager1(),
+                        (String) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
                                 "defaultJobClassification")));
         getCurrentJob().setAssignedTo(getUser().getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
@@ -405,9 +433,9 @@ public class JobFinanceManager extends GeneralManager
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
         getCurrentJob().setSubContractedDepartment(Department.findDefault(
-                getEntityManager1(), "--"));
+                getHumanResourceManager().getEntityManager1(), "--"));
         getCurrentJob().setClient(Client.findActiveDefault(
-                getEntityManager1(), "--", true));
+                getClientManager().getEntityManager1(), "--", true));
         getCurrentJob().setBillingAddress(getCurrentJob().getClient().getAddresses().get(0));
         getCurrentJob().setContact(getCurrentJob().getClient().getContacts().get(0));
 
@@ -631,17 +659,17 @@ public class JobFinanceManager extends GeneralManager
         if (tax.getId() == null) {
             if (job.getJobCostingAndPayment().getPercentageGCT() != null) {
                 // Find and use tax object 
-                Tax tax2 = Tax.findByValue(getEntityManager1(),
+                Tax tax2 = Tax.findByValue(getFinanceManager().getEntityManager1(),
                         Double.valueOf(job.getJobCostingAndPayment().getPercentageGCT()));
                 if (tax2 != null) {
                     tax = tax2;
                     job.getJobCostingAndPayment().setTax(tax2);
                 } else {
-                    tax = Tax.findDefault(getEntityManager1(), "0.0");
+                    tax = Tax.findDefault(getFinanceManager().getEntityManager1(), "0.0");
                     job.getJobCostingAndPayment().setTax(tax);
                 }
             } else {
-                tax = Tax.findDefault(getEntityManager1(), "0.0");
+                tax = Tax.findDefault(getFinanceManager().getEntityManager1(), "0.0");
                 job.getJobCostingAndPayment().setTax(tax);
             }
         }
@@ -692,14 +720,14 @@ public class JobFinanceManager extends GeneralManager
         // Handle the case where the discount object is not set.
         if (discount.getId() == null) {
             discount = Discount.findByValueAndType(
-                    getEntityManager1(),
+                    getFinanceManager().getEntityManager1(),
                     job.getJobCostingAndPayment().getDiscountValue(),
                     job.getJobCostingAndPayment().getDiscountType());
 
             if (discount == null) {
 
                 discount = Discount.findDefault(
-                        getEntityManager1(),
+                        getFinanceManager().getEntityManager1(),
                         job.getJobCostingAndPayment().getDiscountValue().toString(),
                         job.getJobCostingAndPayment().getDiscountValue(),
                         job.getJobCostingAndPayment().getDiscountType());
@@ -732,7 +760,7 @@ public class JobFinanceManager extends GeneralManager
      */
     public List getDiscountTypes() {
 
-        return FinancialUtils.getDiscountTypes(getEntityManager1());
+        return FinancialUtils.getDiscountTypes(getFinanceManager().getEntityManager1());
     }
 
     /**
@@ -741,7 +769,7 @@ public class JobFinanceManager extends GeneralManager
      * @return
      */
     public List getCostTypeList() {
-        return FinancialUtils.getCostTypeList(getEntityManager1());
+        return FinancialUtils.getCostTypeList(getFinanceManager().getEntityManager1());
     }
 
     /**
@@ -750,7 +778,7 @@ public class JobFinanceManager extends GeneralManager
      * @return
      */
     public List getPaymentTypes() {
-        return FinancialUtils.getPaymentTypes(getEntityManager1());
+        return FinancialUtils.getPaymentTypes(getFinanceManager().getEntityManager1());
     }
 
     /**
@@ -759,7 +787,7 @@ public class JobFinanceManager extends GeneralManager
      * @return
      */
     public List getPaymentPurposes() {
-        return FinancialUtils.getPaymentPurposes(getEntityManager1());
+        return FinancialUtils.getPaymentPurposes(getFinanceManager().getEntityManager1());
     }
 
     /**
@@ -854,7 +882,8 @@ public class JobFinanceManager extends GeneralManager
             stream = getCostingsFileInputStreamAsExcel(
                     new File(getClass().getClassLoader().
                             getResource("/reports/"
-                                    + (String) SystemOption.getOptionValueObject(getEntityManager1(),
+                                    + SystemOption.getString(
+                                            getSystemManager().getEntityManager1(),
                                             "JobCostingAnalysesTemplate")).getFile()));
 
             return DefaultStreamedContent.builder()
@@ -890,7 +919,7 @@ public class JobFinanceManager extends GeneralManager
                 parameters.put("customerAddress", selectedJob.getBillingAddress().toString());
                 parameters.put("contactNumbers", selectedJob.getContact().getMainPhoneNumber().getLocalNumber());
                 parameters.put("jobDescription", selectedJob.getJobDescription());
-                parameters.put("totalCost", selectedJob.getJobCostingAndPayment().getTotalJobCostingsAmount());                
+                parameters.put("totalCost", selectedJob.getJobCostingAndPayment().getTotalJobCostingsAmount());
                 parameters.put("depositReceiptNumbers", selectedJob.getJobCostingAndPayment().getReceiptNumbers());
                 parameters.put("discount", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValue());
                 parameters.put("discountType", selectedJob.getJobCostingAndPayment().getDiscount().getDiscountValueType());
@@ -3636,7 +3665,7 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public String getCompletedJobCostingEmailMessage(Job job) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -3664,7 +3693,7 @@ public class JobFinanceManager extends GeneralManager
     public String getApprovedJobCostingEmailMessage(Job job) {
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         message = message + "Dear Colleague,<br><br>";
         message = message + "The costing for a job with the following details was approved via the <a href='http://boshrmapp:8080/jmts'>Job Management & Tracking System (JMTS)</a>:<br><br>";
@@ -3687,7 +3716,7 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public String getNewJobEmailMessage(Job job) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -3714,7 +3743,7 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public String getUpdatedJobEmailMessage(Job job) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         String message = "";
         DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
 
@@ -3784,9 +3813,9 @@ public class JobFinanceManager extends GeneralManager
         try {
             // Send error message to developer's email            
             MailUtils.postMail(null, null,
-                    SystemOption.getString(getEntityManager1(),
+                    SystemOption.getString(getSystemManager().getEntityManager1(),
                             "jobManagerEmailName"), null, subject, message,
-                    "text/plain", getEntityManager1());
+                    "text/plain", getSystemManager().getEntityManager1());
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -3979,10 +4008,12 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public Boolean getCanApproveJobCosting(Job job) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getHumanResourceManager().getEntityManager1();
 
         return ((isUserDepartmentSupervisor(job)
-                || (getUser().isMemberOf(em, Department.findAssignedToJob(job, em))
+                || (getUser().isMemberOf(em, 
+                        Department.findAssignedToJob(job, 
+                                em))
                 && getUser().can("ApproveJobCosting")))
                 && !job.getJobCostingAndPayment().getInvoiced()
                 && job.getJobCostingAndPayment().getCostingCompleted());
@@ -4224,7 +4255,7 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public List<CostCode> getAllCostCodes() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getFinanceManager().getEntityManager1();
 
         List<CostCode> codes = CostCode.findAllCostCodes(em);
 
@@ -4319,7 +4350,7 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getHumanResourceManager().getEntityManager1();
             if (currentUnitCost.getDepartment().getName() != null) {
                 Department department = Department.findByName(em, currentUnitCost.getDepartment().getName());
                 if (department != null) {
@@ -4337,7 +4368,7 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getHumanResourceManager().getEntityManager1();
             if (currentUnitCost.getDepartmentUnit().getName() != null) {
                 DepartmentUnit departmentUnit = DepartmentUnit.findDepartmentUnitByName(em, currentUnitCost.getDepartmentUnit().getName());
                 if (departmentUnit != null) {
@@ -4355,7 +4386,7 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getHumanResourceManager().getEntityManager1();
             if (currentUnitCost.getLaboratory().getName() != null) {
                 Laboratory laboratory = Laboratory.findLaboratoryByName(em, currentUnitCost.getLaboratory().getName());
 
@@ -4375,7 +4406,7 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getHumanResourceManager().getEntityManager1();
             if (unitCostDepartment.getName() != null) {
                 Department department = Department.findByName(em, unitCostDepartment.getName());
                 if (department != null) {
@@ -4392,7 +4423,7 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getHumanResourceManager().getEntityManager1();
             if (jobCostDepartment.getName() != null) {
                 Department department = Department.findByName(em, jobCostDepartment.getName());
                 if (department != null) {
@@ -4756,12 +4787,14 @@ public class JobFinanceManager extends GeneralManager
             address = employee.getInternet().getEmail1();
         } else {
             // Get and set default email using company domain
-            EntityManager em = getEntityManager1();
-
-            String listAsString = (String) SystemOption.getOptionValueObject(em, "domainNames");
+            
+            String listAsString = SystemOption.getString(
+                    getSystemManager().getEntityManager1(), "domainNames");
             String domainNames[] = listAsString.split(";");
 
-            User user1 = User.findActiveJobManagerUserByEmployeeId(em, employee.getId());
+            User user1 = User.findActiveJobManagerUserByEmployeeId(
+                    getSystemManager().getEntityManager1(), 
+                    employee.getId());
 
             // Build email address
             if (user1 != null) {
@@ -4781,11 +4814,14 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public Department getDepartmentBySystemOptionDeptId(String option) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getHumanResourceManager().getEntityManager1();
+        
+        Long id = SystemOption.getLong(
+                getSystemManager().getEntityManager1(), 
+                option);
 
-        Long id = (Long) SystemOption.getOptionValueObject(em, option);
-
-        Department department = Department.findById(em, id);
+        Department department = Department.findById(
+                getHumanResourceManager().getEntityManager1(), id);
         em.refresh(department);
 
         if (department != null) {
@@ -4797,12 +4833,13 @@ public class JobFinanceManager extends GeneralManager
 
     public Boolean getIsMemberOfAccountsDept() {
         return getUser().isMemberOf(
-                getEntityManager1(), getDepartmentBySystemOptionDeptId("accountsDepartmentId"));
+                getSystemManager().getEntityManager1(), 
+                getDepartmentBySystemOptionDeptId("accountsDepartmentId"));
     }
 
     public Boolean getIsMemberOfCustomerServiceDept() {
         return getUser().isMemberOf(
-                getEntityManager1(), getDepartmentBySystemOptionDeptId("customerServiceDeptId"));
+                getSystemManager().getEntityManager1(), getDepartmentBySystemOptionDeptId("customerServiceDeptId"));
     }
 
     /**

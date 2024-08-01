@@ -72,6 +72,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.NumberUtils;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -121,7 +122,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     @Override
     public User getUser() {
 
-        return getSystemManager().getUser();
+        return getFinanceManager().getUser();
 
     }
 
@@ -135,7 +136,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public Boolean getRenderCurrencyExchangeRate() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
+
         String defaultCurrency = SystemOption.getString(em, "defaultCurrency");
         String selectedCurrency = getSelectedPurchaseRequisition().getCurrency().getName();
 
@@ -146,7 +148,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String name = "?-?";
 
         EntityManager em = getEntityManager1();
-        String defaultCurrencyName = SystemOption.getString(em, "defaultCurrency");
+        String defaultCurrencyName = SystemOption.getString(
+                getSystemManager().getEntityManager1(),
+                "defaultCurrency");
         Currency defaultCurrency = Currency.findByName(em, defaultCurrencyName);
         String selectedCurrencyName = getSelectedPurchaseRequisition().getCurrency().getName();
         Currency selectedCurrency = Currency.findByName(em, selectedCurrencyName);
@@ -179,11 +183,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public List getPaymentTypes() {
-        return FinancialUtils.getPaymentTypes(getEntityManager1());
+        return FinancialUtils.getPaymentTypes(getSystemManager().getEntityManager1());
     }
 
     public List getPaymentPurposes() {
-        return FinancialUtils.getPaymentPurposes(getEntityManager1());
+        return FinancialUtils.getPaymentPurposes(getSystemManager().getEntityManager1());
     }
 
     public List<PurchaseRequisition> getProcurementTasks() {
@@ -191,20 +195,22 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         EntityManager em = getEntityManager1();
         procurementTasks = new ArrayList<>();
         List<PurchaseRequisition> activePRs
-                = PurchaseRequisition.findAllActive(em, 5);
+                = PurchaseRequisition.findAllActive(em, 5); // tk make system option
 
         for (PurchaseRequisition activePR : activePRs) {
 
-            // tk check that the PR is not already in the list before adding it.
+            // Check that the PR is not already in the list before adding it.
             // Add the orginator's PRs
             if (activePR.getOriginator().equals(getUser().getEmployee())) {
                 procurementTasks.add(activePR);
-
-                //break;
             } else {
                 // Add PRs for persons with various positions
-                List<String> PRApproverPositions = (List<String>) SystemOption.
-                        getOptionValueObject(em, "PRApproverPositions");
+                List<String> PRApproverPositions
+                        = (List<String>) SystemOption.
+                                getOptionValueObject(
+                                        getSystemManager().getEntityManager1(),
+                                        "PRApproverPositions");
+
                 for (String position : PRApproverPositions) {
                     if (getUser().getEmployee().hasEmploymentPosition(position)) {
                         procurementTasks.add(activePR);
@@ -318,17 +324,18 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public boolean getApplyTax() {
 
-        return SystemOption.getBoolean(getEntityManager1(), "applyTaxToPR");
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), "applyTaxToPR");
     }
 
     public boolean getApplyDiscount() {
 
-        return SystemOption.getBoolean(getEntityManager1(), "applyDiscountToPR");
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), "applyDiscountToPR");
     }
 
     public List<SelectItem> getDocumentTypes() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "PRAttachmentDocumentTypes");
     }
 
@@ -346,8 +353,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     @Override
     public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+
+        return SystemOption.getString(
+                getSystemManager().getEntityManager1(),
+                "appShortcutIconURL");
+
     }
 
     @Override
@@ -407,7 +417,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             OutputStream outputStream;
 
-            String uploadedFilePath = SystemOption.getOptionValueObject(getEntityManager1(),
+            String uploadedFilePath = SystemOption.getString(
+                    getSystemManager().getEntityManager1(),
                     "purchReqUploadFolder")
                     + event.getFile().getFileName();
             File fileToSave
@@ -1032,7 +1043,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public String getSelectedPurchaseRequisitionApprovalsNote() {
         int requiredApprovals
-                = (Integer) SystemOption.getOptionValueObject(getEntityManager1(),
+                = (Integer) SystemOption.getOptionValueObject(
+                        getSystemManager().getEntityManager1(),
                         "requiredPRApprovals");
 
         if (getSelectedPurchaseRequisition().getApprovals() < requiredApprovals) {
@@ -1045,7 +1057,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public Boolean isJustificationRequired() {
         Double limitForPRJustification
-                = SystemOption.getDouble(getEntityManager1(),
+                = SystemOption.getDouble(
+                        getSystemManager().getEntityManager1(),
                         "LimitForPRJustification");
         Double totalComponentsCost = getSelectedPurchaseRequisition().getTotalCostComponentCosts();
 
@@ -1061,7 +1074,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        String defaultCurrencyName = SystemOption.getString(em, "defaultCurrency");
+        String defaultCurrencyName = SystemOption.getString(
+                getSystemManager().getEntityManager1(),
+                "defaultCurrency");
         Currency defaultCurrency = Currency.findByName(em, defaultCurrencyName);
 
         return defaultCurrency.getSymbol();
@@ -1069,7 +1084,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public String getSelectedPRJustificationStatusNote() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         if (isJustificationRequired()) {
 
@@ -1090,7 +1105,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public String getSelectedPRBidQuotesNote() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         String PRBidQuotesNote
                 = SystemOption.getString(em,
@@ -1106,7 +1121,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public String getSelectedPRProcurementAmountNote() {
         Double maxAmountForPRProcurement
-                = (Double) SystemOption.getOptionValueObject(getEntityManager1(),
+                = SystemOption.getDouble(
+                        getSystemManager().getEntityManager1(),
                         "maxAmountForPRProcurement");
 
         if (getSelectedPurchaseRequisition().getTotalCost() > maxAmountForPRProcurement) {
@@ -1168,7 +1184,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             // Do not allow flagging PR as completed unless it is approved.    
             int requiredApprovals
-                    = (Integer) SystemOption.getOptionValueObject(em,
+                    = SystemOption.getInteger(
+                            getSystemManager().getEntityManager1(),
                             "requiredPRApprovals");
 
             if (!((getSelectedPurchaseRequisition().getApprovals()
@@ -1568,9 +1585,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void openPurchaseRequisistionEmailDialog() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         Email email = Email.findActiveEmailByName(em, "pr-email-template");
-
         String prNum = getSelectedPurchaseRequisition().getNumber();
         String JMTSURL = (String) SystemOption.getOptionValueObject(em, "appURL");
         String originator = getSelectedPurchaseRequisition().getOriginator().getFirstName()
@@ -1614,7 +1630,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void sendGeneralPurchaseReqEmail() {
 
         try {
-            EntityManager em = getEntityManager1();
+            EntityManager em = getSystemManager().getEntityManager1();
 
             for (Employee toEmployee : getToEmployees()) {
 
@@ -2481,10 +2497,20 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     }
 
+    public HumanResourceManager getHumanResourceManager() {
+        return BeanUtils.findBean("humanResourceManager");
+    }
+
     public void createNewPurchaseReq() {
         EntityManager em = getEntityManager1();
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+        EntityManager smem = getSystemManager().getEntityManager1();
 
-        selectedPurchaseRequisition = PurchaseRequisition.create(em, getUser());
+        selectedPurchaseRequisition = PurchaseRequisition.create(
+                em,
+                hrmem,
+                smem,
+                getUser());
 
         openPurchaseReqsTab();
 
@@ -2940,7 +2966,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public List<SelectItem> getPriorityCodes() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "prPriorityCodes");
     }
 

@@ -142,13 +142,6 @@ public class ComplianceManager extends GeneralManager
         reset();
     }
 
-    @Override
-    public User getUser() {
-
-        return getSystemManager().getUser();
-
-    }
-
     public Boolean getHasJobManager() {
 
         return getJobManager() != null;
@@ -193,7 +186,7 @@ public class ComplianceManager extends GeneralManager
 
         if (getUser().hasModule("complianceManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "complianceManager");
             if (module != null) {
                 openModuleMainTab("complianceManager");
@@ -208,7 +201,7 @@ public class ComplianceManager extends GeneralManager
         // Clients
         if (getUser().hasModule("clientManager")) {
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     "clientManager");
             if (module != null) {
                 openModuleMainTab("clientManager");
@@ -225,11 +218,72 @@ public class ComplianceManager extends GeneralManager
     @Override
     public void handleKeepAlive() {
 
-        super.updateUserActivity("SMv"
-                + SystemOption.getString(getEntityManager1(), "SMv"),
+        updateUserActivity("SCv"
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "SCv"),
                 "Logged in");
 
-        super.handleKeepAlive();
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+            System.out.println(getApplicationHeader()
+                    + " keeping session alive: " + getUser().getPollTime());
+        }
+
+        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+
+    }
+
+    @Override
+    public void login() {
+        login(getSystemManager().getEntityManager1());
+    }
+
+    @Override
+    public void completeLogout() {
+
+        updateUserActivity("SCv"
+                + SystemOption.getString(getSystemManager().getEntityManager1(), "SCv"),
+                "Logged out");
+
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
+
+    }
+
+    @Override
+    public void completeLogin() {
+
+        if (getUser().getId() != null) {
+            updateUserActivity("SCv"
+                    + SystemOption.getString(getSystemManager().getEntityManager1(), "SCv"),
+                    "Logged in");
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        setManagerUser();
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        initMainTabView();
+
+    }
+
+    @Override
+    public void setManagerUser() {
+
+        getManager("systemManager").setUser(getUser());
+        getManager("clientManager").setUser(getUser());
+        getManager("reportManager").setUser(getUser());
+        getManager("humanResourceManager").setUser(getUser());
+        getManager("financeManager").setUser(getUser());
 
     }
 
@@ -504,15 +558,18 @@ public class ComplianceManager extends GeneralManager
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+                getSystemManager().getEntityManager1(), "appShortcutIconURL");
     }
 
     public void sendErrorEmail(String subject, String message) {
         try {
             // send error message to developer's email            
-            MailUtils.postMail(null, null, SystemOption.getString(getEntityManager1(),
-                    "jobManagerEmailName"), null, subject, message,
-                    "text/plain", getEntityManager1());
+            MailUtils.postMail(
+                    null, null,
+                    SystemOption.getString(getSystemManager().getEntityManager1(),
+                            "jobManagerEmailName"),
+                    null, subject, message,
+                    "text/plain", getSystemManager().getEntityManager1());
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -696,7 +753,8 @@ public class ComplianceManager extends GeneralManager
 
     public List<MarketProduct> getMarketProducts() {
         if (marketProducts == null) {
-            marketProducts = MarketProduct.findAllActiveMarketProducts(getEntityManager1());
+            marketProducts = MarketProduct.findAllActiveMarketProducts(
+                    getFinanceManager().getEntityManager1());
         }
         return marketProducts;
     }
@@ -1100,7 +1158,8 @@ public class ComplianceManager extends GeneralManager
         ArrayList types = new ArrayList();
 
         types.add(new SelectItem("", ""));
-        List<Category> categories = Category.findCategoriesByType(getEntityManager1(), "Product");
+        List<Category> categories = Category.findCategoriesByType(
+                getSystemManager().getEntityManager1(), "Product");
         for (Category category : categories) {
             types.add(new SelectItem(category.getName(), category.getName()));
         }
@@ -1116,7 +1175,9 @@ public class ComplianceManager extends GeneralManager
     public List<SelectItem> getDocumentStamps() {
         ArrayList stamps = new ArrayList();
         stamps.add(new SelectItem("", ""));
-        stamps.addAll(getStringListAsSelectItems(getEntityManager1(), "portOfEntryDocumentStampList"));
+        stamps.addAll(getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), 
+                "portOfEntryDocumentStampList"));
 
         return stamps;
     }
@@ -1124,14 +1185,17 @@ public class ComplianceManager extends GeneralManager
     public List<SelectItem> getProfileFlags() {
         ArrayList flags = new ArrayList();
         flags.add(new SelectItem("", ""));
-        flags.addAll(getStringListAsSelectItems(getEntityManager1(), "profileFlags"));
+        flags.addAll(getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), 
+                "profileFlags"));
 
         return flags;
     }
 
     public List<String> completeJobNumber(String query) {
         List<String> jobNumbers = new ArrayList<>();
-        int maxResult = SystemOption.getInteger(getEntityManager1(),
+        int maxResult = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
                 "maxSearchResults");
 
         try {
@@ -1153,7 +1217,9 @@ public class ComplianceManager extends GeneralManager
     public List<SelectItem> getSurveyLocationTypes() {
         ArrayList types = new ArrayList();
 
-        types.addAll(getStringListAsSelectItems(getEntityManager1(), "complianceSurveyLocationTypes"));
+        types.addAll(getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), 
+                "complianceSurveyLocationTypes"));
 
         return types;
     }
@@ -1163,10 +1229,14 @@ public class ComplianceManager extends GeneralManager
 
         switch (getCurrentComplianceSurvey().getSurveyLocationType()) {
             case "Site":
-                types.addAll(getStringListAsSelectItems(getEntityManager1(), "siteTypesOfEstablishment"));
+                types.addAll(getStringListAsSelectItems(
+                        getSystemManager().getEntityManager1(), 
+                        "siteTypesOfEstablishment"));
                 break;
             case "Commercial Marketplace":
-                types.addAll(getStringListAsSelectItems(getEntityManager1(), "commercialTypesOfEstablishment"));
+                types.addAll(getStringListAsSelectItems(
+                        getSystemManager().getEntityManager1(), 
+                        "commercialTypesOfEstablishment"));
                 break;
         }
 
@@ -1174,7 +1244,9 @@ public class ComplianceManager extends GeneralManager
     }
 
     public List<SelectItem> getTypesOfPortOfEntry() {
-        return getStringListAsSelectItems(getEntityManager1(), "portOfEntryTypeList");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), 
+                "portOfEntryTypeList");
     }
 
     public List<String> getSelectedStandardNames() {
@@ -1282,7 +1354,7 @@ public class ComplianceManager extends GeneralManager
 
     @Override
     public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -1882,7 +1954,7 @@ public class ComplianceManager extends GeneralManager
     public void updateCIF() {
 
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
-                getEntityManager1(), "defaultPercentageOfCIF");
+                getSystemManager().getEntityManager1(), "defaultPercentageOfCIF");
 
         if (percentOfCIF != null) {
             getCurrentComplianceSurvey().getEntryDocumentInspection().
@@ -2372,41 +2444,49 @@ public class ComplianceManager extends GeneralManager
 
     public List<SelectItem> getProductStatus() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "productStatusList");
     }
 
     public List<SelectItem> getEnforcementActions() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "enforcementActions");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "enforcementActions");
     }
 
     public List<SelectItem> getShippingContainerDetainPercentages() {
-        return getStringListAsSelectItems(getEntityManager1(), "shippingContainerPercentageList");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "shippingContainerPercentageList");
     }
 
     public List<SelectItem> getPortsOfEntry() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "compliancePortsOfEntry");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "compliancePortsOfEntry");
     }
 
     public List<SelectItem> getInspectionPoints() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "complianceSurveyMiscellaneousInspectionPointList");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "complianceSurveyMiscellaneousInspectionPointList");
     }
 
     public List getDocumentInspectionActions() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "portOfEntryDocumentStampList");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "portOfEntryDocumentStampList");
     }
 
     public List<SelectItem> getSurveyTypes() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "complianceSurveyTypes");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "complianceSurveyTypes");
     }
 
     public List getSampleSources() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "complianceSampleSources");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), "complianceSampleSources");
     }
 
     public void updateComplianceSurveyInspector() {
@@ -3038,7 +3118,9 @@ public class ComplianceManager extends GeneralManager
                 if (con != null) {
                     StreamedContent streamContent;
 
-                    String reportFileURL = (String) SystemOption.getOptionValueObject(em, form);
+                    String reportFileURL = SystemOption.getString(
+                            getSystemManager().getEntityManager1(),
+                            form);
 
                     // make sure is parameter is set for all forms
                     parameters.put("formId", currentComplianceSurvey.getId());
@@ -3077,19 +3159,22 @@ public class ComplianceManager extends GeneralManager
 
     public StreamedContent getComplianceDailyReportPDFFile() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         HashMap parameters = new HashMap();
 
         try {
+            // tk change to using getConnection like other modules.
             Connection con = BusinessEntityUtils.establishConnection(
                     "com.mysql.jdbc.Driver",
-                    "jdbc:mysql://boshrmapp:3306/jmtstest", // tk make system option
-                    "root", // tk make system option
-                    "");  // tk make system option
+                    "jdbc:mysql://boshrmapp:3306/jmtstest",
+                    "root",
+                    "");
             if (con != null) {
                 StreamedContent streamContent;
 
-                String reportFileURL = (String) SystemOption.getOptionValueObject(em, "complianceDailyReport");
+                String reportFileURL = SystemOption.getString(
+                        em,
+                        "complianceDailyReport");
 
                 // make sure is parameter is set for all forms
                 parameters.put("team", currentComplianceDailyReport.getTeam());
@@ -3197,29 +3282,6 @@ public class ComplianceManager extends GeneralManager
                 "noticeOfDetentionForm",
                 "detention_notice.pdf",
                 parameters);
-    }
-
-    @Override
-    public void completeLogin() {
-        if (getUser().getId() != null) {
-            super.updateUserActivity("JMTSv"
-                    + SystemOption.getString(getEntityManager1(), "JMTSv"),
-                    "Logged in");
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-    }
-
-    @Override
-    public void completeLogout() {
-        super.updateUserActivity("JMTSv"
-                + SystemOption.getString(getEntityManager1(), "JMTSv"),
-                "Logged out");
-
-        super.completeLogout();
     }
 
     public List<DocumentStandard> completeActiveDocumentStandard(String query) {
@@ -3396,7 +3458,9 @@ public class ComplianceManager extends GeneralManager
         // Add the default inspections
         FactoryInspection factoryInspection
                 = FactoryInspection.findFactoryInspectionByName(em,
-                        (String) SystemOption.getOptionValueObject(em, "defaultFacInspTemplate"));
+                        (String) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
+                                "defaultFacInspTemplate"));
 
         if (factoryInspection != null) {
             currentFactoryInspection.getInspectionComponents().clear();

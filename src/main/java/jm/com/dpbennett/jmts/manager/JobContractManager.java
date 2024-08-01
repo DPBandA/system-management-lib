@@ -28,9 +28,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -57,7 +55,10 @@ import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import static jm.com.dpbennett.business.entity.util.NumberUtils.formatAsCurrency;
+import jm.com.dpbennett.fm.manager.FinanceManager;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
@@ -80,6 +81,7 @@ public class JobContractManager extends GeneralManager
 
     private Integer longProcessProgress;
     private JobManager jobManager;
+    private SystemManager systemManager;
 
     public JobContractManager() {
         init();
@@ -184,7 +186,9 @@ public class JobContractManager extends GeneralManager
 
             // Set parameters
             // Logo URL
-            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
+            String logoURL = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), 
+                    "logoURL");
             parameters.put("logoURL", logoURL);
             // Job id
             parameters.put("jobId", getCurrentJob().getId());
@@ -322,6 +326,7 @@ public class JobContractManager extends GeneralManager
             parameters.put("additionalSampleDetails", details);
 
             em.getTransaction().begin();
+            
             Connection con = BusinessEntityUtils.getConnection(em);
 
             if (con != null) {
@@ -360,43 +365,41 @@ public class JobContractManager extends GeneralManager
 
     }
 
+    public SystemManager getSystemManager() {
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+
+        return systemManager;
+    }
+
     public Boolean getUseServiceContractExcel() {
-        return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+        return (Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(),
                 "useServiceContractExcel");
     }
 
     public Boolean getUseServiceContractPDF() {
-        return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+        return (Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(),
                 "useServiceContractJRXML");
     }
 
-    /**
-     * Creates a list of Service objects based on a query string for a
-     * PrimeFaces AutoComplete component.
-     *
-     * @param query
-     * @return
-     */
-    public List<Service> completeService(String query) {
+//    public List<Service> completeService(String query) {
+//
+//        try {
+//
+//            return Service.findAllActiveByName(
+//                    getEntityManager1(),
+//                    query);
+//
+//        } catch (Exception e) {
+//            System.out.println(e);
+//
+//            return new ArrayList<>();
+//        }
+//    }
 
-        try {
-
-            return Service.findAllActiveByName(
-                    getEntityManager1(),
-                    query);
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Gets a JobManager managed session bean.
-     *
-     * @return
-     */
     public JobManager getJobManager() {
         if (jobManager == null) {
             jobManager = BeanUtils.findBean("jobManager");
@@ -433,12 +436,12 @@ public class JobContractManager extends GeneralManager
 
         try {
 
-            em = getEntityManager1();
+            em = getSystemManager().getEntityManager1();
 
             String filePath
                     = (String) SystemOption.getOptionValueObject(em, "serviceContract");
             ByteArrayInputStream stream
-                    = createServiceContractExcelFileInputStream(em, getUser(), filePath);
+                    = createServiceContractExcelFileInputStream(getUser(), filePath);
 
             DefaultStreamedContent dsc = DefaultStreamedContent.builder()
                     .contentType("application/xls")
@@ -699,14 +702,20 @@ public class JobContractManager extends GeneralManager
 
     }
 
-    public List<Service> getAllActiveServices() {
+//    public List<Service> getAllActiveServices() {
+//
+//        return Service.findAllActive(getEntityManager1());
+//    }
+    
+    public FinanceManager getFinanceManager() {
 
-        return Service.findAllActive(getEntityManager1());
+        return BeanUtils.findBean("financeManager");
+        
     }
 
     public void addService(Job job, String name) {
         Service service = Service.findActiveByExactName(
-                getEntityManager1(),
+                getFinanceManager().getEntityManager1(),
                 name);
 
         if (service != null) {
@@ -1059,6 +1068,12 @@ public class JobContractManager extends GeneralManager
     public Boolean getIsDirty() {
         return getCurrentJob().getIsDirty();
     }
+    
+     public HumanResourceManager getHumanResourceManager() {
+         
+        return BeanUtils.findBean("humanResourceManager");
+        
+    }
 
     /**
      * Determine if the current user is the department's supervisor. This is
@@ -1115,7 +1130,6 @@ public class JobContractManager extends GeneralManager
     }
 
     public ByteArrayInputStream createServiceContractExcelFileInputStream(
-            EntityManager em,
             User user,
             String filePath) {
         try {

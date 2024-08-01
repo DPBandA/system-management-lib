@@ -107,7 +107,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public User getUser() {
 
-        return getSystemManager().getUser();
+        return getFinanceManager().getUser();
 
     }
 
