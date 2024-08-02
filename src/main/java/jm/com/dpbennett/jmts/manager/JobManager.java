@@ -882,7 +882,7 @@ public class JobManager extends GeneralManager
 
     public void onJobCellEdit(CellEditEvent event) {
         EntityManager em = getEntityManager1();
-        
+
         Job job = getJobSearchResultList().get(event.getRowIndex());
         Job savedJob = Job.findJobById(em, job.getId());
 
@@ -2627,7 +2627,6 @@ public class JobManager extends GeneralManager
 //
 //        return jmuser;
 //    }
-
 //    public EntityManagerFactory setupDatabaseConnection(String PU) {
 //        try {
 //            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU);
@@ -2641,7 +2640,6 @@ public class JobManager extends GeneralManager
 //            return null;
 //        }
 //    }
-
 //    public HashMap<String, String> getConnectionProperties(
 //            String url,
 //            String driver,
@@ -2657,7 +2655,6 @@ public class JobManager extends GeneralManager
 //
 //        return prop;
 //    }
-
     public Date getCurrentDate() {
         return new Date();
     }
@@ -2934,8 +2931,8 @@ public class JobManager extends GeneralManager
                     break;
                 case "jobManager":
                     // tk remove after testing
-                    getJobFinanceManager().openProformaInvoicesTab();
-                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
+//                    getJobFinanceManager().openProformaInvoicesTab();
+//                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
 
                     openJobBrowser();
                     getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
@@ -3064,6 +3061,11 @@ public class JobManager extends GeneralManager
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
+    }
+
+    @Override
+    public void logout() {
+        completeLogout();
     }
 
     @Override
