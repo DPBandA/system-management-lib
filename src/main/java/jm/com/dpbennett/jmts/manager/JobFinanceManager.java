@@ -302,7 +302,7 @@ public class JobFinanceManager extends GeneralManager
 
     public String getSearchResultsTableHeader() {
         return ReportUtils.getSearchResultsTableHeader(
-                getJobManager().getDateSearchPeriod(),
+                getDateSearchPeriod(),
                 getJobSearchResultList());
     }
 
@@ -4156,18 +4156,19 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public List<Job> findJobs(Integer maxResults) {
-        return Job.findJobsByDateSearchField(getEntityManager1(),
+        return Job.findJobsByDateSearchField(
+                getEntityManager1(),
                 getUser(),
-                getJobManager().getDateSearchPeriod(),
-                getJobManager().getSearchType(),
-                getJobManager().getSearchText(),
+                getDateSearchPeriod(),
+                getSearchType(),
+                getSearchText(),
                 maxResults, true);
     }
 
     public List<Job> findJobs() {
         return Job.findJobsByDateSearchField(getEntityManager1(),
                 getUser(),
-                getJobManager().getDateSearchPeriod(),
+                getDateSearchPeriod(),
                 getSearchType(),
                 getProformaInvoiceSearchText(),
                 0, // tk make system option
@@ -4176,6 +4177,7 @@ public class JobFinanceManager extends GeneralManager
 
     public ArrayList<SelectItem> getDateSearchFields() {
 
+        // tk implement search fields specific to this manager.
         return getJobManager().getDateSearchFields();
     }
 
