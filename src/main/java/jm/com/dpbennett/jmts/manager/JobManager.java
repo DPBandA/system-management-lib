@@ -957,7 +957,7 @@ public class JobManager extends GeneralManager
         EntityManager em;
 
         try {
-            em = getEntityManager1();
+            em = getSystemManager().getEntityManager1();
 
             List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
 
@@ -1112,12 +1112,11 @@ public class JobManager extends GeneralManager
 
     public ArrayList<SelectItem> getAuthorizedSearchTypes() {
 
-        EntityManager em = getSystemManager().getEntityManager1();
         ArrayList searchTypes = new ArrayList();
 
-        if (getUser(em).can("EditJob")
-                || getUser(em).can("EnterJob")
-                || getUser(em).can("EditInvoicingAndPayment")) {
+        if (getUser().can("EditJob")
+                || getUser().can("EnterJob")
+                || getUser().can("EditInvoicingAndPayment")) {
 
             searchTypes.add(new SelectItem("General", "General"));
             searchTypes.add(new SelectItem("My jobs", "My jobs"));
@@ -2935,8 +2934,8 @@ public class JobManager extends GeneralManager
                     break;
                 case "jobManager":
                     // tk remove after testing
-//                    getJobFinanceManager().openProformaInvoicesTab();
-//                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
+                    getJobFinanceManager().openProformaInvoicesTab();
+                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
 
                     openJobBrowser();
                     getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
@@ -2966,10 +2965,10 @@ public class JobManager extends GeneralManager
         firstModule = null;
 
         getMainTabView().reset(getUser());
-
-        if (getUser().hasModule("purchasingManager")) {
-            getFinanceManager().openDashboardTab();
-        }
+//
+//        if (getUser().hasModule("purchasingManager")) {
+//            getFinanceManager().openDashboardTab();
+//        }
         // Compliance
 //        if (getUser().hasModule("complianceManager")) {
 //            Module module = Module.findActiveModuleByName(
@@ -2985,8 +2984,7 @@ public class JobManager extends GeneralManager
 //            }
 //        }
 
-        // Proformas
-        // Jobs
+        // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),

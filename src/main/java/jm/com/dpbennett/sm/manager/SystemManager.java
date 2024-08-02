@@ -62,6 +62,8 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
+import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.Utils;
@@ -151,6 +153,10 @@ public final class SystemManager extends GeneralManager {
 
     public SystemManager() {
         init();
+    }
+
+    public HumanResourceManager getHumanResourceManager() {
+        return BeanUtils.findBean("humanResourceManager");
     }
 
     @Override
@@ -422,10 +428,11 @@ public final class SystemManager extends GeneralManager {
 
     public void createNewUserRegistration() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getHumanResourceManager().getEntityManager1();
 
         selectedUser = new User();
-        selectedUser.setEmployee(Employee.findDefault(em, "--", "--", true));
+        selectedUser.setEmployee(Employee.findDefault(
+                em, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
 
         openRegistrationDialog();
@@ -654,7 +661,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<Notification> getFoundNotifications() {
         if (foundNotifications == null) {
-            //foundNotifications = Notification.findAllActiveNotifications(getEntityManager1());
             foundNotifications = new ArrayList<>();
         }
 
@@ -683,7 +689,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<Email> getFoundEmails() {
         if (foundEmails == null) {
-            //foundEmails = Email.findAllActiveEmails(getEntityManager1());
             foundEmails = new ArrayList<>();
         }
 
@@ -953,8 +958,7 @@ public final class SystemManager extends GeneralManager {
 
     public List<Attachment> getFoundAttachments() {
         if (foundAttachments == null) {
-            //foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(), "");
-            foundAttachments = new ArrayList<>();
+           foundAttachments = new ArrayList<>();
         }
         return foundAttachments;
     }
@@ -1066,15 +1070,19 @@ public final class SystemManager extends GeneralManager {
     public void updateSelectedUserEmployee() {
         if (selectedUser.getEmployee() != null) {
             if (selectedUser.getEmployee().getId() != null) {
-                selectedUser.setEmployee(Employee.findById(getEntityManager1(), selectedUser.getEmployee().getId()));
+                selectedUser.setEmployee(Employee.findById(
+                        getHumanResourceManager().getEntityManager1(), 
+                        selectedUser.getEmployee().getId()));
             } else {
-                Employee employee = Employee.findDefault(getEntityManager1(), "--", "--", true);
+                Employee employee = Employee.findDefault(
+                        getHumanResourceManager().getEntityManager1(), "--", "--", true);
                 if (selectedUser.getEmployee() != null) {
                     selectedUser.setEmployee(employee);
                 }
             }
         } else {
-            Employee employee = Employee.findDefault(getEntityManager1(), "--", "--", true);
+            Employee employee = Employee.findDefault(
+                    getHumanResourceManager().getEntityManager1(), "--", "--", true);
             if (selectedUser.getEmployee() != null) {
                 selectedUser.setEmployee(employee);
             }
@@ -1129,7 +1137,7 @@ public final class SystemManager extends GeneralManager {
 
     public void createNewUser() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getHumanResourceManager().getEntityManager1();
 
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefault(em, "--", "--", true));
@@ -1733,7 +1741,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<DocumentType> getFoundDocumentTypes() {
         if (foundDocumentTypes == null) {
-            //foundDocumentTypes = DocumentType.findAllDocumentTypes(getEntityManager1());
             foundDocumentTypes = new ArrayList<>();
         }
 
@@ -1746,7 +1753,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<Category> getFoundCategories() {
         if (foundCategories == null) {
-            //foundCategories = Category.findAllCategories(getEntityManager1());
             foundCategories = new ArrayList<>();
         }
 
@@ -1759,7 +1765,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<Country> getFoundCountries() {
         if (foundCountries == null) {
-            //foundCountries = Country.findAllCountries(getEntityManager1());
             foundCountries = new ArrayList<>();
         }
 
@@ -1772,8 +1777,7 @@ public final class SystemManager extends GeneralManager {
 
     public List<Privilege> getFoundPrivileges() {
         if (foundPrivileges == null) {
-            //foundActivePrivileges = Privilege.findActivePrivileges(getEntityManager1(), "");
-            foundPrivileges = new ArrayList<>();
+           foundPrivileges = new ArrayList<>();
         }
 
         return foundPrivileges;
@@ -2256,7 +2260,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<LdapContext> getFoundLdapContexts() {
         if (foundLdapContexts == null) {
-            //foundLdapContexts = LdapContext.findAllActiveLdapContexts(getEntityManager1());
             foundLdapContexts = new ArrayList<>();
         }
 
@@ -2265,7 +2268,6 @@ public final class SystemManager extends GeneralManager {
 
     public List<SystemOption> getFoundSystemOptions() {
         if (foundSystemOptions == null) {
-            //foundSystemOptions = SystemOption.findAllSystemOptions(getEntityManager1());
             foundSystemOptions = new ArrayList<>();
         }
 

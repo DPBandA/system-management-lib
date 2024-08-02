@@ -113,7 +113,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<SelectItem> getInventoryLocations() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "inventoryLocations");
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(), 
+                "inventoryLocations");
     }
 
     public List<InventoryRequisition> getInventoryTasks() {
@@ -224,27 +226,32 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public Boolean getShowInventoryMarketingTab() {
-        return SystemOption.getBoolean(getEntityManager1(),
+        return SystemOption.getBoolean(
+                getSystemManager().getEntityManager1(),
                 "showInventoryMarketingTab");
     }
 
     public String getAmazonAffiliateURL() {
-        return SystemOption.getString(getEntityManager1(),
+        return SystemOption.getString(
+                getSystemManager().getEntityManager1(),
                 "amazonAffiliateURL");
     }
 
     public String getAmazonBanner() {
-        return SystemOption.getString(getEntityManager1(),
+        return SystemOption.getString(
+                getSystemManager().getEntityManager1(),
                 "amazonBanner");
     }
 
     public String getAliExpressAffiliateURL() {
-        return SystemOption.getString(getEntityManager1(),
+        return SystemOption.getString(
+                getSystemManager().getEntityManager1(),
                 "aliExpressAffiliateURL");
     }
 
     public String getAliExpressBanner() {
-        return SystemOption.getString(getEntityManager1(),
+        return SystemOption.getString(
+                getSystemManager().getEntityManager1(),
                 "aliExpressBanner");
     }
 
@@ -333,7 +340,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
                     // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(em,
+                                    compileReport((String) SystemOption.getOptionValueObject(
+                                            getSystemManager().getEntityManager1(),
                                             "storesRequisition"));
 
                     // Generate report
@@ -394,7 +402,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<SelectItem> getProductTypes() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "productTypes");
     }
 
@@ -591,7 +600,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public List getCostTypeList() {
-        return FinancialUtils.getCostTypeList(getEntityManager1());
+        return FinancialUtils.getCostTypeList(
+                getSystemManager().getEntityManager1());
     }
 
     public void onCostComponentCellEdit(CellEditEvent event) {
@@ -738,9 +748,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public List<MarketProduct> getFoundInventoryProducts() {
+        
         if (foundInventoryProducts == null) {
-//            foundInventoryProducts = MarketProduct.findAllActiveMarketProductsByType(
-//                    getEntityManager1(), "Inventory");
             foundInventoryProducts = new ArrayList<>();
         }
 
@@ -841,7 +850,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public List<Inventory> completeInventoryItem(String query) {
         try {
 
-            int maxResult = SystemOption.getInteger(getEntityManager1(),
+            int maxResult = SystemOption.getInteger(
+                    getSystemManager().getEntityManager1(),
                     "maxSearchResults");
 
             return Inventory.findActive(
@@ -953,7 +963,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
         String subHeader;
 
         subHeader = (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "applicationSubheader");
+                getSystemManager().getEntityManager1(), 
+                "applicationSubheader");
 
         if (subHeader != null) {
             if (subHeader.trim().equals("None")) {
@@ -1237,7 +1248,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 @Override
                 public void run() {
                     try {
-                        doProcessInventoryActions(em, inventory);
+                        doProcessInventoryActions(inventory);
                     } catch (Exception e) {
                         System.out.println("Error processing PR actions: " + e);
                     }
@@ -1247,15 +1258,18 @@ public class InventoryManager extends GeneralManager implements Serializable {
         }
     }
 
-    private synchronized void doProcessInventoryActions(EntityManager em,
-            Inventory inventory) {
+    private synchronized void doProcessInventoryActions(Inventory inventory) {
 
         for (BusinessEntity.Action action : inventory.getActions()) {
             switch (action) {
                 case CREATE:
                     System.out.println("Processing CREATE action...");
-                    notifyDepartmentHead(em, inventory, "created");
-                    emailDepartmentHead(em, inventory, "created");
+                    notifyDepartmentHead(
+                            getSystemManager().getEntityManager1(), 
+                            inventory, "created");
+                    emailDepartmentHead(
+                            getSystemManager().getEntityManager1(), 
+                            inventory, "created");
                     break;
                 case EDIT:
                     System.out.println("EDIT action received but not processed.");
@@ -1512,7 +1526,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<SelectItem> getInventoryDisbursementMethods() {
 
-        return getStringListAsSelectItems(getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "inventoryDisbursementMethods");
     }
 
@@ -1523,9 +1538,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
         selectedInventory.setDateAcquired(new Date());
         selectedInventory.setMeasurementUnit("each");
         selectedInventory.setDisbursementMethod(SystemOption.getString(
-                getEntityManager1(),
+                getSystemManager().getEntityManager1(),
                 "defaultInventoryDisbursementMethod"));
-        selectedInventory.setLowStockThreshold(SystemOption.getInteger(getEntityManager1(),
+        selectedInventory.setLowStockThreshold(SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
                 "defaultLowStockThreshold"));
 
         openInventoryTab();

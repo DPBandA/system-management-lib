@@ -35,7 +35,9 @@ import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JobSampleDataModel;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.PrimeFaces;
@@ -59,6 +61,14 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     private void init() {
         selectedJobSample = new JobSample();
         jobSampleDialogTabViewActiveIndex = 0;
+    }
+
+    public SystemManager getSystemManager() {
+        return BeanUtils.findBean("systemManager");
+    }
+
+    public HumanResourceManager getHumanResourceManager() {
+        return BeanUtils.findBean("humanResourceManager");
     }
 
     public void jobSamplesDialogReturn() {
@@ -165,11 +175,13 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
         ArrayList methods = new ArrayList();
 
         Integer days
-                = (Integer) SystemOption.getOptionValueObject(getEntityManager1(),
+                = (Integer) SystemOption.getOptionValueObject(
+                        getSystemManager().getEntityManager1(),
                         "sampleCollectionDays");
 
         String org
-                = (String) SystemOption.getOptionValueObject(getEntityManager1(),
+                = (String) SystemOption.getOptionValueObject(
+                        getSystemManager().getEntityManager1(),
                         "organizationName");
 
         methods.add(new SelectItem("1", "Collected by the client within " + days + " days"));
@@ -320,7 +332,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
     }
 
     public void okJobSample() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getHumanResourceManager().getEntityManager1();
         updateSampleReference();
         if (selectedJobSample.getIsToBeAdded()) {
             getCurrentJob().getJobSamples().add(selectedJobSample);
@@ -334,14 +346,20 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
 
         // Update department
         if (!getCurrentJob().getDepartment().getName().equals("")) {
-            Department department = Department.findByName(em, getCurrentJob().getDepartment().getName());
+            Department department = Department.findByName(
+                    em,
+                    getCurrentJob().getDepartment().getName());
+
             if (department != null) {
                 getCurrentJob().setDepartment(department);
             }
         }
         // Update subcontracted department
         if (!getCurrentJob().getSubContractedDepartment().getName().equals("")) {
-            Department subContractedDepartment = Department.findByName(em, getCurrentJob().getSubContractedDepartment().getName());
+            Department subContractedDepartment
+                    = Department.findByName(
+                            em,
+                            getCurrentJob().getSubContractedDepartment().getName());
             getCurrentJob().setSubContractedDepartment(subContractedDepartment);
         }
 
@@ -502,15 +520,17 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
      * Checks maximum allowed samples and groups. Currently not used
      */
     public void checkNumberOfJobSamplesAndGroups() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         // check for max sample
-        int maxSamples = (Integer) SystemOption.getOptionValueObject(em, "maximumJobSamples");
+        int maxSamples = (Integer) SystemOption.getOptionValueObject(em,
+                "maximumJobSamples");
         if (getCurrentNumberOfJobSamples() == maxSamples) {
             PrimeFaces.current().ajax().addCallbackParam("maxJobSamplesReached", true);
         }
         // check for max sample groups
-        int maxGropus = (Integer) SystemOption.getOptionValueObject(em, "maximumJobSampleGroups");
+        int maxGropus = (Integer) SystemOption.getOptionValueObject(em,
+                "maximumJobSampleGroups");
         if (getCurrentJob().getJobSamples().size() == maxGropus) {
             PrimeFaces.current().ajax().addCallbackParam("maxJobSampleGroupsReached", true);
         }

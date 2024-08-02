@@ -1659,7 +1659,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public List getCostTypeList() {
-        return FinancialUtils.getCostTypeList(getEntityManager1());
+        return FinancialUtils.getCostTypeList(getSystemManager().getEntityManager1());
     }
 
     public Boolean getIsSupplierNameValid() {
@@ -1687,11 +1687,16 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public StreamedContent getPurchaseReqStreamContent(EntityManager em) {
 
         HashMap parameters = new HashMap();
-        String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
-        String footNote1 = (String) SystemOption.getOptionValueObject(em, "QEMS_PR_Footnote1");
-        String footNote2 = (String) SystemOption.getOptionValueObject(em, "QEMS_PR_Footnote2");
-        String footNote3 = (String) SystemOption.getOptionValueObject(em, "QEMS_PR_Footnote3");
-        String footNote4 = (String) SystemOption.getOptionValueObject(em, "QEMS_PR_Footnote4");
+        String logoURL = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "logoURL");
+        String footNote1 = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "QEMS_PR_Footnote1");
+        String footNote2 = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "QEMS_PR_Footnote2");
+        String footNote3 = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "QEMS_PR_Footnote3");
+        String footNote4 = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "QEMS_PR_Footnote4");
 
         try {
 
@@ -1874,8 +1879,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             parameters.put("totalCost", getSelectedPurchaseRequisition().getConvertedTotalCost());
 
             em.getTransaction().begin();
-            Connection con = em.unwrap(Connection.class
-            );
+            
+            Connection con = BusinessEntityUtils.getConnection(em);
+            
             if (con != null) {
                 try {
                     StreamedContent streamedContent;
@@ -1902,6 +1908,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     System.out.println("Error compiling purchase requisition: " + e);
                 }
             }
+            
             em.getTransaction().commit();
 
             return null;
@@ -1931,15 +1938,20 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         HashMap parameters = new HashMap();
 
         try {
+            
+            String logoURL = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "logoURL");            
+            String footNote1 = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "QEMS_PO_Footnote1");
+            String footNote2 = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "QEMS_PO_Footnote2");
+            String footNote3 = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "QEMS_PO_Footnote3");
+            String footNote4 = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "QEMS_PO_Footnote4");
+
             parameters.put("prId", getSelectedPurchaseRequisition().getId());
-
-            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
             parameters.put("logoURL", logoURL);
-            String footNote1 = (String) SystemOption.getOptionValueObject(em, "QEMS_PO_Footnote1");
-            String footNote2 = (String) SystemOption.getOptionValueObject(em, "QEMS_PO_Footnote2");
-            String footNote3 = (String) SystemOption.getOptionValueObject(em, "QEMS_PO_Footnote3");
-            String footNote4 = (String) SystemOption.getOptionValueObject(em, "QEMS_PO_Footnote4");
-
             parameters.put("purchReqNo", getSelectedPurchaseRequisition().getNumber());
             parameters.put("purchaseOrderNo", getSelectedPurchaseRequisition().getPurchaseOrderNumber());
             parameters.put("addressLine1", getSelectedPurchaseRequisition()
@@ -2155,7 +2167,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     + "\nJMTS User: " + getUser().getUsername()
                     + "\nDate/time: " + new Date()
                     + "\nDetail: " + returnMessage.getDetail(),
-                    em);
+                    getSystemManager().getEntityManager1());
         }
 
     }
@@ -2316,14 +2328,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     private synchronized void processPRActions(PurchaseRequisition purchaseRequisition, User user) {
 
-        EntityManager em = getEntityManager1();
-
         if (purchaseRequisition.getId() != null) {
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        doProcessPRActions(em, purchaseRequisition);
+                        doProcessPRActions(purchaseRequisition);
                     } catch (Exception e) {
                         System.out.println("Error processing PR actions: " + e);
                     }
@@ -2333,28 +2343,39 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         }
     }
 
-    private synchronized void doProcessPRActions(EntityManager em,
-            PurchaseRequisition purchaseRequisition) {
+    private synchronized void doProcessPRActions(PurchaseRequisition purchaseRequisition) {
 
         for (BusinessEntity.Action action : purchaseRequisition.getActions()) {
             switch (action) {
                 case CREATE:
                     System.out.println("Processing CREATE action...");
-                    notifyDepartmentHead(em, purchaseRequisition, "created");
-                    emailDepartmentHead(em, purchaseRequisition, "created");
+                    notifyDepartmentHead(
+                            getSystemManager().getEntityManager1(), 
+                            purchaseRequisition, "created");
+                    emailDepartmentHead(
+                            getSystemManager().getEntityManager1(), 
+                            purchaseRequisition, "created");
                     break;
                 case EDIT:
                     System.out.println("EDIT action received but not processed.");
                     break;
                 case APPROVE:
                     System.out.println("Processing APPROVE action...");
-                    notifyProcurementOfficers(em, purchaseRequisition, "approved");
-                    emailProcurementOfficers(em, purchaseRequisition, "approved");
+                    notifyProcurementOfficers(
+                            getSystemManager().getEntityManager1(), 
+                            purchaseRequisition, "approved");
+                    emailProcurementOfficers(
+                            getSystemManager().getEntityManager1(), 
+                            purchaseRequisition, "approved");
                     break;
                 case RECOMMEND:
                     System.out.println("Processing RECOMMEND action...");
-                    notifyDivisionalHead(em, purchaseRequisition, "recommended");
-                    emailDivisionalHead(em, purchaseRequisition, "recommended");
+                    notifyDivisionalHead(
+                            getSystemManager().getEntityManager1(), 
+                            purchaseRequisition, "recommended");
+                    emailDivisionalHead(
+                            getSystemManager().getEntityManager1(), 
+                            purchaseRequisition, "recommended");
                     break;
                 case COMPLETE:
                     System.out.println("COMPLETE action received but not processed.");
