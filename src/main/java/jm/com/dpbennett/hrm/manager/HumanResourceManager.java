@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
@@ -48,6 +49,7 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.validator.AddressValidator;
 import jm.com.dpbennett.sm.validator.ContactValidator;
@@ -59,6 +61,7 @@ import jm.com.dpbennett.sm.util.Utils;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
@@ -115,6 +118,29 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public final void init() {
         reset();
+    }
+
+    public void onEmployeeRowEdit(RowEditEvent<Employee> event) {
+        
+        FacesMessage msg;
+        ReturnMessage rm = event.getObject().save(getEntityManager1());
+        
+        if (rm.isSuccess()) {
+            msg = new FacesMessage("Employee Saved", "");
+        }
+        else {
+            msg = new FacesMessage("Employee NOT Saved");
+            
+        }        
+        
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void onEmployeeRowCancel(RowEditEvent<Employee> event) {
+        
+        FacesMessage msg = new FacesMessage("Employee edit cancelled", "");
+        
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public Boolean getIsActiveBusinessOfficesOnly() {
@@ -187,13 +213,15 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<SelectItem> getEmploymentTypeList() {
 
-        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "employmentTypes");
     }
 
     public List<SelectItem> getPayCycleList() {
 
-        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "payCycles");
     }
 
@@ -208,7 +236,9 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<SelectItem> getManufacturerStatuses() {
         ArrayList statuses = new ArrayList();
 
-        statuses.addAll(getStringListAsSelectItems(getSystemManager().getEntityManager1(), "factoryStatusList"));
+        statuses.addAll(getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
+                "factoryStatusList"));
 
         return statuses;
     }
@@ -216,7 +246,9 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<SelectItem> getRegistrationStatuses() {
         ArrayList statuses = new ArrayList();
 
-        statuses.addAll(getStringListAsSelectItems(getSystemManager().getEntityManager1(), "registrationStatusList"));
+        statuses.addAll(getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
+                "registrationStatusList"));
 
         return statuses;
     }
@@ -231,7 +263,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<SelectItem> getDepartmentLabelList() {
 
-        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
                 "departmentLabels");
     }
 
@@ -307,7 +340,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         try {
             em = getEntityManager1();
 
-            List<DepartmentUnit> departmentUnits = DepartmentUnit.findDepartmentUnitsByName(em, query);
+            List<DepartmentUnit> departmentUnits
+                    = DepartmentUnit.findDepartmentUnitsByName(em, query);
 
             return departmentUnits;
 
@@ -397,7 +431,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<EmployeePosition> getFoundEmployeePositions() {
         if (foundEmployeePositions == null) {
-            
+
             foundEmployeePositions = new ArrayList<>();
         }
         return foundEmployeePositions;
@@ -607,7 +641,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Department> getFoundDepartments() {
         if (foundDepartments == null) {
-            
+
             foundDepartments = new ArrayList<>();
         }
 
@@ -616,7 +650,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Subgroup> getFoundSubgroups() {
         if (foundSubgroups == null) {
-            
+
             foundSubgroups = new ArrayList<>();
         }
 
@@ -626,7 +660,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public List<Business> getFoundBusinesses() {
         if (foundBusinesses == null) {
 
-           foundBusinesses = new ArrayList<>();
+            foundBusinesses = new ArrayList<>();
         }
 
         return foundBusinesses;
@@ -1199,7 +1233,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Employee> getFoundEmployees() {
         if (foundEmployees == null) {
-            
+
             foundEmployees = new ArrayList<>();
         }
 
@@ -1227,7 +1261,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Manufacturer> getFoundManufacturers() {
         if (foundManufacturers == null) {
-            
+
             foundManufacturers = new ArrayList<>();
         }
 
@@ -1767,7 +1801,8 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
@@ -1779,6 +1814,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
+    }
+
+    @Override
+    public void logout() {
+        completeLogout();
     }
 
     @Override
