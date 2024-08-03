@@ -2065,6 +2065,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void login() {
         login(getSystemManager().getEntityManager1());
     }
+    
+    @Override
+    public void logout() {
+        completeLogout();
+    }
 
     @Override
     public void completeLogout() {

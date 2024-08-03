@@ -2962,24 +2962,26 @@ public class JobManager extends GeneralManager
         firstModule = null;
 
         getMainTabView().reset(getUser());
-//
-//        if (getUser().hasModule("purchasingManager")) {
-//            getFinanceManager().openDashboardTab();
-//        }
+
+        // Finance dashboard
+        if (getUser().hasModule("purchasingManager")) {
+            getFinanceManager().openDashboardTab();
+        }
+        
         // Compliance
-//        if (getUser().hasModule("complianceManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "complianceManager");
-//            if (module != null) {
-//                openModuleMainTab("complianceManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "complianceManager";
-//                }
-//
-//            }
-//        }
+        if (getUser().hasModule("complianceManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "complianceManager");
+            if (module != null) {
+                openModuleMainTab("complianceManager");
+
+                if (firstModule == null) {
+                    firstModule = "complianceManager";
+                }
+
+            }
+        }
 
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
@@ -2994,19 +2996,7 @@ public class JobManager extends GeneralManager
                 }
             }
         }
-        // Clients
-//        if (getUser().hasModule("clientManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "clientManager");
-//            if (module != null) {
-//                openModuleMainTab("clientManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "clientManager";
-//                }
-//            }
-//        }
+       
         // Procurement
         if (getUser().hasModule("purchasingManager")) {
             Module module = Module.findActiveModuleByName(
