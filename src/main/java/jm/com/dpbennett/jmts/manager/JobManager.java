@@ -2929,6 +2929,9 @@ public class JobManager extends GeneralManager
                 case "complianceManager":
                     getComplianceManager().openSurveysBrowser();
                     break;
+                case "humanResourceManager":
+                    getHumanResourceManager().openHumanResourceBrowser();
+                    break;
                 case "jobManager":
                     // tk remove after testing
 //                    getJobFinanceManager().openProformaInvoicesTab();
@@ -2967,7 +2970,7 @@ public class JobManager extends GeneralManager
         if (getUser().hasModule("purchasingManager")) {
             getFinanceManager().openDashboardTab();
         }
-        
+
         // Compliance
         if (getUser().hasModule("complianceManager")) {
             Module module = Module.findActiveModuleByName(
@@ -2980,6 +2983,20 @@ public class JobManager extends GeneralManager
                     firstModule = "complianceManager";
                 }
 
+            }
+        }
+
+        // Human Resource
+        if (getUser().hasModule("humanResourceManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "humanResourceManager");
+            if (module != null) {
+                openModuleMainTab("humanResourceManager");
+
+                if (firstModule == null) {
+                    firstModule = "humanResourceManager";
+                }
             }
         }
 
@@ -2996,7 +3013,7 @@ public class JobManager extends GeneralManager
                 }
             }
         }
-       
+
         // Procurement
         if (getUser().hasModule("purchasingManager")) {
             Module module = Module.findActiveModuleByName(
