@@ -27,8 +27,10 @@ import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.dm.Post;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.User;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DialogFrameworkOptions;
@@ -47,6 +49,17 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
     public DocumentManager() {
         init();
+    }
+
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
+    }
+
+    public HumanResourceManager getHumanResourceManager() {
+
+        return BeanUtils.findBean("humanResourceManager");
     }
 
     @Override
@@ -79,7 +92,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
                 getSelectedPost().setDateEdited(new Date());
 
                 if (getUser() != null) {
-                    getSelectedPost().setEditedBy(getUser().getEmployee());
+                    getSelectedPost().setEditedBy(getEmployee());
                 }
             }
 
@@ -87,7 +100,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
             if (getSelectedPost().getIsDirty()) {
                 getSelectedPost().setDateEdited(new Date());
                 if (getUser() != null) {
-                    getSelectedPost().setEditedBy(getUser().getEmployee());
+                    getSelectedPost().setEditedBy(getEmployee());
                 }
                 getSelectedPost().save(getEntityManager1());
                 getSelectedPost().setIsDirty(false);
@@ -189,7 +202,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     }
 
     public void doPostSearch() {
-        
+
         int maxSearchResults = SystemOption.getInteger(getEntityManager1(),
                 "maxSearchResults");
 

@@ -58,7 +58,6 @@ import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
-import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.MailUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
@@ -135,6 +134,12 @@ public class ComplianceManager extends GeneralManager
 
     public ComplianceManager() {
         init();
+    }
+    
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
     @Override
@@ -238,6 +243,11 @@ public class ComplianceManager extends GeneralManager
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
+    }
+    
+    @Override
+    public void logout() {
+        completeLogout();
     }
 
     @Override
@@ -1672,8 +1682,8 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getAuthEmployeeForDetentionRequestPOE().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
-            currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(getUser().getEmployee());
-            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(getEmployee());
+            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(null);
@@ -1688,8 +1698,8 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getInspectorForSampleRequestPOE().getId() == null) {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
-            currentComplianceSurvey.setInspectorForSampleRequestPOE(getUser().getEmployee());
-            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setInspectorForSampleRequestPOE(getEmployee());
+            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorForSampleRequestPOE(null);
@@ -1703,8 +1713,8 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getPreparedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
-            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
+            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getEmployee().getSignature());
+            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getEmployee());
         } else {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(null);
             currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
@@ -1719,8 +1729,8 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getAuthEmployeeForNoticeOfDentionDM().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
-            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUser().getEmployee().getSignature());
-            currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(getUser().getEmployee());
+            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getEmployee().getSignature());
+            currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(getEmployee());
         } else {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
@@ -1735,8 +1745,8 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getApprovedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
-            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
+            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getEmployee().getSignature());
+            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getEmployee());
         } else {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(null);
             currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
@@ -2141,7 +2151,7 @@ public class ComplianceManager extends GeneralManager
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
         currentComplianceSurvey.setSurveyType("Commercial Marketplace");
         currentComplianceSurvey.setDateOfSurvey(new Date());
-        currentComplianceSurvey.setInspector(getUser().getEmployee());
+        currentComplianceSurvey.setInspector(getEmployee());
 
         editComplianceSurvey();
 
@@ -2152,7 +2162,7 @@ public class ComplianceManager extends GeneralManager
 
         currentComplaint = new Complaint();
         currentComplaint.setDateReceived(new Date());
-        currentComplaint.setEnteredBy(getUser().getEmployee());
+        currentComplaint.setEnteredBy(getEmployee());
 
         editComplaint();
 
@@ -2167,7 +2177,7 @@ public class ComplianceManager extends GeneralManager
 
         currentDocumentInspection.setDateOfInspection(new Date());
         if (getUser() != null) {
-            currentDocumentInspection.setInspector(getUser().getEmployee());
+            currentDocumentInspection.setInspector(getEmployee());
         }
 
     }
@@ -2192,7 +2202,7 @@ public class ComplianceManager extends GeneralManager
 
             if (getCurrentComplianceSurvey().getIsDirty()) {
                 currentComplianceSurvey.setDateEdited(new Date());
-                currentComplianceSurvey.setEditedBy(getUser().getEmployee());
+                currentComplianceSurvey.setEditedBy(getEmployee());
             }
 
             ReturnMessage message = currentComplianceSurvey.save(em);
@@ -2264,7 +2274,7 @@ public class ComplianceManager extends GeneralManager
         try {
 
             if (getCurrentComplaint().getEnteredBy().getId() == null) {
-                getCurrentComplaint().setEnteredBy(getUser().getEmployee());
+                getCurrentComplaint().setEnteredBy(getEmployee());
             }
 
             ReturnMessage message = getCurrentComplaint().save(em);
@@ -2364,8 +2374,8 @@ public class ComplianceManager extends GeneralManager
                 currentComplianceSurvey.getProductInspections().add(currentProductInspection);
             }
 
-            currentProductInspection.setInspector(getUser().getEmployee());
-            currentComplianceSurvey.setInspector(getUser().getEmployee());
+            currentProductInspection.setInspector(getEmployee());
+            currentComplianceSurvey.setInspector(getEmployee());
 
             currentProductInspection.setIsDirty(true);
 
@@ -3403,8 +3413,8 @@ public class ComplianceManager extends GeneralManager
                 getCurrentDocumentStandard().setDateEdited(new Date());
 
                 if (getUser() != null) {
-                    //getCurrentDocumentStandard().setEnteredBy(getUser().getEmployee());
-                    getCurrentDocumentStandard().setEditedBy(getUser().getEmployee());
+                    //getCurrentDocumentStandard().setEnteredBy(getEmployee());
+                    getCurrentDocumentStandard().setEditedBy(getEmployee());
                 }
             }
 
@@ -3412,7 +3422,7 @@ public class ComplianceManager extends GeneralManager
             if (getCurrentDocumentStandard().getIsDirty()) {
                 getCurrentDocumentStandard().setDateEdited(new Date());
                 if (getUser() != null) {
-                    getCurrentDocumentStandard().setEditedBy(getUser().getEmployee());
+                    getCurrentDocumentStandard().setEditedBy(getEmployee());
                 }
                 getCurrentDocumentStandard().save(getEntityManager1());
                 getCurrentDocumentStandard().setIsDirty(false);
@@ -3467,7 +3477,7 @@ public class ComplianceManager extends GeneralManager
             currentFactoryInspection.setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
         }
 
-        currentFactoryInspection.setAssignedInspector(getUser().getEmployee());
+        currentFactoryInspection.setAssignedInspector(getEmployee());
 
         editFactoryInspection();
 

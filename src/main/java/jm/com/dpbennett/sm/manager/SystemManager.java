@@ -155,6 +155,12 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
+    }
+
     public HumanResourceManager getHumanResourceManager() {
         return BeanUtils.findBean("humanResourceManager");
     }
@@ -958,7 +964,7 @@ public final class SystemManager extends GeneralManager {
 
     public List<Attachment> getFoundAttachments() {
         if (foundAttachments == null) {
-           foundAttachments = new ArrayList<>();
+            foundAttachments = new ArrayList<>();
         }
         return foundAttachments;
     }
@@ -1071,7 +1077,7 @@ public final class SystemManager extends GeneralManager {
         if (selectedUser.getEmployee() != null) {
             if (selectedUser.getEmployee().getId() != null) {
                 selectedUser.setEmployee(Employee.findById(
-                        getHumanResourceManager().getEntityManager1(), 
+                        getHumanResourceManager().getEntityManager1(),
                         selectedUser.getEmployee().getId()));
             } else {
                 Employee employee = Employee.findDefault(
@@ -1478,7 +1484,7 @@ public final class SystemManager extends GeneralManager {
 
             if (subHeader != null) {
                 if (subHeader.trim().equals("None")) {
-                    return getUser().getEmployee().getDepartment().getName();
+                    return getEmployee().getDepartment().getName();
                 }
             } else {
                 subHeader = "";
@@ -1777,7 +1783,7 @@ public final class SystemManager extends GeneralManager {
 
     public List<Privilege> getFoundPrivileges() {
         if (foundPrivileges == null) {
-           foundPrivileges = new ArrayList<>();
+            foundPrivileges = new ArrayList<>();
         }
 
         return foundPrivileges;

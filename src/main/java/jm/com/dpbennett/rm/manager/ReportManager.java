@@ -57,6 +57,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -94,7 +95,6 @@ import org.primefaces.model.DialogFrameworkOptions;
 public class ReportManager extends GeneralManager {
 
     private String columnsToExclude;
-    private Integer longProcessProgress;
     private String reportSearchText;
     private List<Report> foundReports;
     private Report selectedReport;
@@ -106,6 +106,17 @@ public class ReportManager extends GeneralManager {
 
     public ReportManager() {
         init();
+    }
+
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
+    }
+
+    public HumanResourceManager getHumanResourceManager() {
+
+        return BeanUtils.findBean("humanResourceManager");
     }
 
     @Override
@@ -394,7 +405,7 @@ public class ReportManager extends GeneralManager {
 
     public List<Report> getFoundReports() {
         if (foundReports == null) {
-            
+
             foundReports = new ArrayList<>();
         }
 
@@ -627,7 +638,6 @@ public class ReportManager extends GeneralManager {
         getDateSearchPeriod().initDatePeriod();
 
         reportSearchText = "";
-        longProcessProgress = 0;
         columnsToExclude = "";
         reportCategory = "Job";
 
@@ -670,7 +680,7 @@ public class ReportManager extends GeneralManager {
 
     public Employee getReportEmployee1() {
         if (selectedReport.getEmployees().isEmpty()) {
-            selectedReport.getEmployees().add(getUser().getEmployee());
+            selectedReport.getEmployees().add(getEmployee());
         }
         return selectedReport.getEmployees().get(0);
     }
@@ -681,7 +691,7 @@ public class ReportManager extends GeneralManager {
 
     public Department getReportingDepartment1() {
         if (selectedReport.getDepartments().isEmpty()) {
-            selectedReport.getDepartments().add(getUser().getEmployee().getDepartment());
+            selectedReport.getDepartments().add(getEmployee().getDepartment());
         }
         return selectedReport.getDepartments().get(0);
     }
@@ -890,7 +900,7 @@ public class ReportManager extends GeneralManager {
 
         } catch (JRException e) {
             System.out.println(e);
-            
+
             return null;
         }
 
@@ -2476,6 +2486,11 @@ public class ReportManager extends GeneralManager {
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
+    }
+
+    @Override
+    public void logout() {
+        completeLogout();
     }
 
     @Override
