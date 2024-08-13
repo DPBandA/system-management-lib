@@ -103,6 +103,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public InventoryManager() {
         init();
     }
+    
+    private Employee getEmployee() {
+               
+        return getFinanceManager().getEmployee();
+    }
 
     @Override
     public User getUser() {
@@ -126,13 +131,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 = InventoryRequisition.findAllActive(em, 5);
 
         for (InventoryRequisition activeIR : activeIRs) {
-            if (getUser().getEmployee().equals(activeIR.getContactPerson())
-                    || getUser().getEmployee().equals(activeIR.getRequisitionApprovedBy())
-                    || getUser().getEmployee().equals(activeIR.getInventoryReceivedBy())
-                    || getUser().getEmployee().equals(activeIR.getRequisitionBy())
-                    || getUser().getEmployee().equals(activeIR.getEnteredBy())
-                    || getUser().getEmployee().equals(activeIR.getEditedBy())
-                    || getUser().getEmployee().equals(activeIR.getInventoryIssuedBy())) {
+            if (getEmployee().equals(activeIR.getContactPerson())
+                    || getEmployee().equals(activeIR.getRequisitionApprovedBy())
+                    || getEmployee().equals(activeIR.getInventoryReceivedBy())
+                    || getEmployee().equals(activeIR.getRequisitionBy())
+                    || getEmployee().equals(activeIR.getEnteredBy())
+                    || getEmployee().equals(activeIR.getEditedBy())
+                    || getEmployee().equals(activeIR.getInventoryIssuedBy())) {
 
                 inventoryTasks.add(activeIR);
 
@@ -168,7 +173,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         if (getSelectedInventoryRequisition().getPrepared()) {
             getSelectedInventoryRequisition().setDateEdited(new Date());
-            getSelectedInventoryRequisition().setEditedBy(getUser().getEmployee());
+            getSelectedInventoryRequisition().setEditedBy(getEmployee());
         }
 
         updateInventoryRequisition(null);
@@ -179,7 +184,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         if (getSelectedInventoryRequisition().getIssued()) {
             getSelectedInventoryRequisition().setDateInventoryIssued(new Date());
-            getSelectedInventoryRequisition().setInventoryIssuedBy(getUser().getEmployee());
+            getSelectedInventoryRequisition().setInventoryIssuedBy(getEmployee());
         } else {
             getSelectedInventoryRequisition().setDateInventoryIssued(null);
             getSelectedInventoryRequisition().setInventoryIssuedBy(null);
@@ -193,7 +198,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         if (getSelectedInventoryRequisition().getReceived()) {
             getSelectedInventoryRequisition().setDateInventoryReceived(new Date());
-            getSelectedInventoryRequisition().setInventoryReceivedBy(getUser().getEmployee());
+            getSelectedInventoryRequisition().setInventoryReceivedBy(getEmployee());
         } else {
             getSelectedInventoryRequisition().setDateInventoryReceived(null);
             getSelectedInventoryRequisition().setInventoryReceivedBy(null);
@@ -207,7 +212,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         if (getSelectedInventoryRequisition().getApproved()) {
             getSelectedInventoryRequisition().setDateRequisitionApproved(new Date());
-            getSelectedInventoryRequisition().setRequisitionApprovedBy(getUser().getEmployee());
+            getSelectedInventoryRequisition().setRequisitionApprovedBy(getEmployee());
         } else {
             getSelectedInventoryRequisition().setDateRequisitionApproved(null);
             getSelectedInventoryRequisition().setRequisitionApprovedBy(null);
@@ -968,7 +973,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         if (subHeader != null) {
             if (subHeader.trim().equals("None")) {
-                return getUser().getEmployee().getDepartment().getName();
+                return getEmployee().getDepartment().getName();
             }
         } else {
             subHeader = "";
@@ -1553,8 +1558,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         selectedInventoryRequisition = new InventoryRequisition();
         selectedInventoryRequisition.setType("None");
-        selectedInventoryRequisition.setEnteredBy(getUser().getEmployee());
-        selectedInventoryRequisition.setEditedBy(getUser().getEmployee());
+        selectedInventoryRequisition.setEnteredBy(getEmployee());
+        selectedInventoryRequisition.setEditedBy(getEmployee());
         selectedInventoryRequisition.setDateEntered(new Date());
         selectedInventoryRequisition.setDateEdited(new Date());
         selectedInventoryRequisition.setDateOfRequisition(new Date());

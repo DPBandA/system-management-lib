@@ -118,6 +118,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public PurchasingManager() {
         init();
     }
+    
+    private Employee getEmployee() {
+               
+        return getFinanceManager().getEmployee();
+    }
 
     @Override
     public User getUser() {
@@ -201,7 +206,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             // Check that the PR is not already in the list before adding it.
             // Add the orginator's PRs
-            if (activePR.getOriginator().equals(getUser().getEmployee())) {
+            if (activePR.getOriginator().equals(getEmployee())) {
                 procurementTasks.add(activePR);
             } else {
                 // Add PRs for persons with various positions
@@ -212,7 +217,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                                         "PRApproverPositions");
 
                 for (String position : PRApproverPositions) {
-                    if (getUser().getEmployee().hasEmploymentPosition(position)) {
+                    if (getEmployee().hasEmploymentPosition(position)) {
                         procurementTasks.add(activePR);
 
                         break;
@@ -575,8 +580,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 getSelectedSupplier().setDateEntered(new Date());
                 getSelectedSupplier().setDateEdited(new Date());
                 if (getUser() != null) {
-                    selectedSupplier.setEnteredBy(getUser().getEmployee());
-                    selectedSupplier.setEditedBy(getUser().getEmployee());
+                    selectedSupplier.setEnteredBy(getEmployee());
+                    selectedSupplier.setEditedBy(getEmployee());
                 }
             }
 
@@ -584,7 +589,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             if (getSelectedSupplier().getIsDirty()) {
                 getSelectedSupplier().setDateEdited(new Date());
                 if (getUser() != null) {
-                    selectedSupplier.setEditedBy(getUser().getEmployee());
+                    selectedSupplier.setEditedBy(getEmployee());
                 }
                 selectedSupplier.save(getEntityManager1());
                 getSelectedSupplier().setIsDirty(false);
@@ -897,7 +902,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public Boolean getIsProcurementOfficer() {
-        return getUser().getEmployee().isProcurementOfficer();
+        return getEmployee().isProcurementOfficer();
     }
 
     public Boolean getCanCreateNewCashPayment() {
@@ -1148,7 +1153,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             // Procurement officer required to cancel PR.
             if (savedPurchaseRequisition != null) {
-                if (!getUser().getEmployee().isProcurementOfficer()
+                if (!getEmployee().isProcurementOfficer()
                         && getSelectedPurchaseRequisition().getWorkProgress().equals("Cancelled")) {
                     PrimeFacesUtils.addMessage("Procurement Officer Required",
                             "You are not a procurement officer so you cannot cancel this purchase requisition.",
@@ -1160,7 +1165,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             // Procurement officer required to mark job completed.
             if (savedPurchaseRequisition != null) {
-                if (!getUser().getEmployee().isProcurementOfficer()
+                if (!getEmployee().isProcurementOfficer()
                         && !getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")
                         && savedPurchaseRequisition.getWorkProgress().equals("Completed")) {
                     PrimeFacesUtils.addMessage("Procurement Officer Required",
@@ -1172,7 +1177,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             }
 
             // Procurement officer is required to approve PRs.
-            if (!getUser().getEmployee().isProcurementOfficer()
+            if (!getEmployee().isProcurementOfficer()
                     && getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")) {
 
                 PrimeFacesUtils.addMessage("Procurement Officer Required",
@@ -1236,10 +1241,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
                 // Set the procurement officer and their department
                 getSelectedPurchaseRequisition().
-                        setProcurementOfficer(getUser().getEmployee());
+                        setProcurementOfficer(getEmployee());
 
                 getSelectedPurchaseRequisition().
-                        setPurchasingDepartment(getUser().getEmployee().getDepartment());
+                        setPurchasingDepartment(getEmployee().getDepartment());
 
                 updatePurchaseReq(null);
 
@@ -1595,8 +1600,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String requisitionDate = BusinessEntityUtils.
                 getDateInMediumDateFormat(getSelectedPurchaseRequisition().getRequisitionDate());
         String description = getSelectedPurchaseRequisition().getDescription();
-        String sender = getUser().getEmployee().getFirstName() + " "
-                + getUser().getEmployee().getLastName();
+        String sender = getEmployee().getFirstName() + " "
+                + getEmployee().getLastName();
         String approversAndRecommendersList = getSelectedPurchaseRequisition().getApproversAndRecommendersList();
 
         getToEmployees().clear();
@@ -2405,7 +2410,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return "Search Results (found: " + getNumOfPurchaseReqsFound() + ")";
         } else {
             return "Search Results (found: " + getNumOfPurchaseReqsFound() + " for "
-                    + getUser().getEmployee().getDepartment() + ")";
+                    + getEmployee().getDepartment() + ")";
         }
     }
 
@@ -2774,7 +2779,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         // Check if the approver is already in the list of approvers
         if (BusinessEntityUtils.isBusinessEntityInList(
                 purchaseRequisition.getApproversAndRecommenders(),
-                getUser().getEmployee().getId())) {
+                getEmployee().getId())) {
 
             PrimeFacesUtils.addMessage("Already Approved/Recommended",
                     "You already approved/recommended this purchase requisition",
@@ -2786,7 +2791,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         // Do not allow originator to approve
         if (purchaseRequisition.getOriginator().
-                equals(getUser().getEmployee())) {
+                equals(getEmployee())) {
 
             PrimeFacesUtils.addMessage("Cannot Approve",
                     "The originator cannot approve this purchase requisition",
@@ -2799,9 +2804,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         // Check if total cost is within the approver's limit
         if (isPRCostWithinApprovalLimit(
                 purchaseRequisition,
-                getUser().getEmployee().getPositions())) {
+                getEmployee().getPositions())) {
 
-            if (!addApprover(purchaseRequisition, getUser().getEmployee())) {
+            if (!addApprover(purchaseRequisition, getEmployee())) {
                 PrimeFacesUtils.addMessage("Not Approved",
                         "The maximum number of approvers was reached or\n"
                         + "this purchase requisition has not been recommended.",
@@ -2866,7 +2871,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         // Check if the recommender is already in the list of approvers/recommenders
         if (BusinessEntityUtils.isBusinessEntityInList(
                 purchaseRequisition.getApproversAndRecommenders(),
-                getUser().getEmployee().getId())) {
+                getEmployee().getId())) {
 
             PrimeFacesUtils.addMessage("Already Approved/Recommended",
                     "You already approved/recommended this purchase requisition",
@@ -2878,7 +2883,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         // Check if originator can recommend
         if (purchaseRequisition.getOriginator().
-                equals(getUser().getEmployee()) && !getUser().can("RecommendPurchaseRequisition")) {
+                equals(getEmployee()) && !getUser().can("RecommendPurchaseRequisition")) {
 
             PrimeFacesUtils.addMessage("Cannot Recommend",
                     "The originator cannot recommend approval of this purchase requisition",
@@ -2890,9 +2895,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         // Check if total cost is within the approver's limit
         // NB: This check is not done now. Option may be added to determine if the check is to be done. 
-        if (true /*isSelectedPRCostWithinApprovalLimit(getUser().getEmployee().getPositions())*/) {
+        if (true /*isSelectedPRCostWithinApprovalLimit(getEmployee().getPositions())*/) {
 
-            if (!addRecommender(purchaseRequisition, getUser().getEmployee())) {
+            if (!addRecommender(purchaseRequisition, getEmployee())) {
                 PrimeFacesUtils.addMessage("Not Recommended",
                         "The maximum number of recommenders was reached for this purchase requisition "
                         + "or you do not have the privilege to recommend purchase requisitions.",

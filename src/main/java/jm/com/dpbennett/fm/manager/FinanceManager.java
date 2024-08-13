@@ -39,12 +39,14 @@ import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.fm.Sector;
 import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.pm.ProcurementMethod;
 import jm.com.dpbennett.business.entity.pm.PurchaseRequisition;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -121,6 +123,17 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
+    }
+    
+    public HumanResourceManager getHumanResourceManager() {
+        
+        return BeanUtils.findBean("humanResourceManager");
+    }
+    
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+        
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
     public Boolean getIsActiveProcurementMethodsOnly() {
@@ -1005,7 +1018,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                             getDateSearchPeriod(),
                             getSearchType(),
                             getPurchaseReqSearchText(),
-                            getUser().getEmployee().getDepartment().getId());
+                            getEmployee().getDepartment().getId());
         } else if (getSearchType().equals("All requisitions")) {
             getPurchasingManager().
                     doPurchaseReqSearch(
@@ -1989,7 +2002,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         if (subHeader != null) {
             if (subHeader.trim().equals("None")) {
-                return getUser().getEmployee().getDepartment().getName();
+                return getEmployee().getDepartment().getName();
             }
         } else {
             subHeader = "";

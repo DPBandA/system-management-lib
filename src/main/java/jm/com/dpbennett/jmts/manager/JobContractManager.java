@@ -52,6 +52,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import static jm.com.dpbennett.business.entity.util.NumberUtils.formatAsCurrency;
@@ -85,6 +86,11 @@ public class JobContractManager extends GeneralManager
 
     public JobContractManager() {
         init();
+    }
+    
+    public Employee getEmployee() {
+               
+        return getJobManager().getEmployee();
     }
 
     public void okJobServiceContract(ActionEvent actionEvent) {
@@ -1089,10 +1095,10 @@ public class JobContractManager extends GeneralManager
 
         Job foundJob = Job.findJobById(em, job.getId());
 
-        if (Department.findAssignedToJob(foundJob, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
+        if (Department.findAssignedToJob(foundJob, em).getHead().getId().longValue() == getEmployee().getId().longValue()) {
             return true;
         } else {
-            return (Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
+            return (Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getEmployee().getId().longValue())
                     && Department.findAssignedToJob(foundJob, em).getActingHeadActive();
         }
     }

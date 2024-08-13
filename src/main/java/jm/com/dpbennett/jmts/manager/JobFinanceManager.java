@@ -148,6 +148,11 @@ public class JobFinanceManager extends GeneralManager
     public JobFinanceManager() {
         init();
     }
+    
+    public Employee getEmployee() {
+               
+        return getJobManager().getEmployee();
+    }
 
     public void openJobCostingAndPaymentDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
@@ -387,7 +392,7 @@ public class JobFinanceManager extends GeneralManager
         createNewJob();
 
         getCurrentJob().setType("Proforma Invoice");
-        getCurrentJob().setAssignedTo(getUser().getEmployee());
+        getCurrentJob().setAssignedTo(getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
         // tk job type field to be used where applicable instead of setting progress to cancelled
         getCurrentJob().getJobStatusAndTracking().setWorkProgress("Cancelled");
@@ -426,7 +431,7 @@ public class JobFinanceManager extends GeneralManager
                         (String) SystemOption.getOptionValueObject(
                                 getSystemManager().getEntityManager1(),
                                 "defaultJobClassification")));
-        getCurrentJob().setAssignedTo(getUser().getEmployee());
+        getCurrentJob().setAssignedTo(getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
         getCurrentJob().getJobStatusAndTracking().setWorkProgress("Cancelled");
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
@@ -513,7 +518,7 @@ public class JobFinanceManager extends GeneralManager
                         job.getJobCostingAndPayment().setCostingApproved(true);
                         job.getJobStatusAndTracking().setDateCostingApproved(new Date());
                         job.getJobCostingAndPayment().setCostingApprovedBy(
-                                getUser().getEmployee());
+                                getEmployee());
                         job.getJobCostingAndPayment().setIsDirty(true);
 
                         job.save(em);
@@ -558,7 +563,7 @@ public class JobFinanceManager extends GeneralManager
             if (invoice) {
                 job.getJobCostingAndPayment().setInvoiced(invoice);
                 job.getJobStatusAndTracking().setDateCostingInvoiced(new Date());
-                job.getJobCostingAndPayment().setCostingInvoicedBy(getUser().getEmployee());
+                job.getJobCostingAndPayment().setCostingInvoicedBy(getEmployee());
             } else {
                 job.getJobCostingAndPayment().setInvoiced(invoice);
                 job.getJobStatusAndTracking().setDateCostingInvoiced(null);
@@ -2389,10 +2394,10 @@ public class JobFinanceManager extends GeneralManager
     private Boolean isJobAssignedToUserDepartment(Job job) {
 
         if (getUser() != null) {
-            if (job.getDepartment().getId().longValue() == getUser().getEmployee().getDepartment().getId().longValue()) {
+            if (job.getDepartment().getId().longValue() == getEmployee().getDepartment().getId().longValue()) {
                 return true;
             } else {
-                return job.getSubContractedDepartment().getId().longValue() == getUser().getEmployee().getDepartment().getId().longValue();
+                return job.getSubContractedDepartment().getId().longValue() == getEmployee().getDepartment().getId().longValue();
             }
         } else {
             return false;
@@ -2835,7 +2840,7 @@ public class JobFinanceManager extends GeneralManager
             // Set credit limit 
             job.getClient().setCreditLimit((financialAccount.getCreditLimit().doubleValue()));
             // Update and save
-            job.getClient().setEditedBy(getUser().getEmployee());
+            job.getClient().setEditedBy(getEmployee());
             job.getClient().setDateEdited(new Date());
             job.getClient().save(getEntityManager1());
         }
@@ -2878,7 +2883,7 @@ public class JobFinanceManager extends GeneralManager
                 // Set credit limit 
                 job.getClient().setCreditLimit((financialAccount.getCreditLimit().doubleValue()));
                 // Update and save
-                job.getClient().setEditedBy(getUser().getEmployee());
+                job.getClient().setEditedBy(getEmployee());
                 job.getClient().setDateEdited(new Date());
                 job.getClient().save(getEntityManager1());
             } else {
@@ -3230,7 +3235,7 @@ public class JobFinanceManager extends GeneralManager
     public void updateTotalDeposit() {
         EntityManager em = getEntityManager1();
 
-        Employee employee = Employee.findById(em, getUser().getEmployee().getId());
+        Employee employee = Employee.findById(em, getEmployee().getId());
         if (employee != null) {
             getCurrentJob().getJobCostingAndPayment().setLastPaymentEnteredBy(employee);
         }
@@ -3267,7 +3272,7 @@ public class JobFinanceManager extends GeneralManager
             getCurrentJob().getJobStatusAndTracking().setDateCostingCompleted(new Date());
             getCurrentJob().getJobStatusAndTracking().setCostingDate(new Date());
             getCurrentJob().getJobCostingAndPayment().setCostingPreparedBy(
-                    getUser().getEmployee());
+                    getEmployee());
 
             BusinessEntityActionUtils.addAction(BusinessEntity.Action.PREPARE,
                     getCurrentJob().getActions());
@@ -3296,10 +3301,10 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em = getEntityManager1();
 
         if (job.getDepartment().getId() != null) {
-            if (Department.findAssignedToJob(job, em).getHead().getId().longValue() == getUser().getEmployee().getId().longValue()) {
+            if (Department.findAssignedToJob(job, em).getHead().getId().longValue() == getEmployee().getId().longValue()) {
                 return true;
             } else {
-                return (Department.findAssignedToJob(job, em).getActingHead().getId().longValue() == getUser().getEmployee().getId().longValue())
+                return (Department.findAssignedToJob(job, em).getActingHead().getId().longValue() == getEmployee().getId().longValue())
                         && Department.findAssignedToJob(job, em).getActingHeadActive();
             }
         } else {
@@ -3313,7 +3318,7 @@ public class JobFinanceManager extends GeneralManager
             if (getCurrentJob().getJobCostingAndPayment().getCostingApproved()) {
                 getCurrentJob().getJobStatusAndTracking().setDateCostingApproved(new Date());
                 getCurrentJob().getJobCostingAndPayment().setCostingApprovedBy(
-                        getUser().getEmployee());
+                        getEmployee());
 
                 BusinessEntityActionUtils.addAction(BusinessEntity.Action.APPROVE,
                         getCurrentJob().getActions());
@@ -3520,8 +3525,8 @@ public class JobFinanceManager extends GeneralManager
 
         try {
 
-            if (getUser().getEmployee() != null) {
-                getCurrentJob().getJobCostingAndPayment().setFinalCostDoneBy(getUser().getEmployee().getName());
+            if (getEmployee() != null) {
+                getCurrentJob().getJobCostingAndPayment().setFinalCostDoneBy(getEmployee().getName());
             }
 
         } catch (Exception e) {
@@ -3535,8 +3540,8 @@ public class JobFinanceManager extends GeneralManager
 
         try {
 
-            if (getUser().getEmployee() != null) {
-                getCurrentJob().getJobCostingAndPayment().setFinalCostDoneBy(getUser().getEmployee().getName());
+            if (getEmployee() != null) {
+                getCurrentJob().getJobCostingAndPayment().setFinalCostDoneBy(getEmployee().getName());
             }
 
             getJobManager().saveJob(getCurrentJob());
@@ -3551,8 +3556,8 @@ public class JobFinanceManager extends GeneralManager
 
         try {
 
-            if (getUser().getEmployee() != null) {
-                getCurrentJob().getJobCostingAndPayment().setFinalCostDoneBy(getUser().getEmployee().getName());
+            if (getEmployee() != null) {
+                getCurrentJob().getJobCostingAndPayment().setFinalCostDoneBy(getEmployee().getName());
             }
 
             getJobManager().saveJob(getCurrentJob());
@@ -3928,7 +3933,7 @@ public class JobFinanceManager extends GeneralManager
 
         if (getCurrentJob().getId() != null) {
             if (isJobCostingAndPaymentDirty()) {
-                Employee employee = Employee.findById(getEntityManager1(), getUser().getEmployee().getId());
+                Employee employee = Employee.findById(getEntityManager1(), getEmployee().getId());
                 if (employee != null) {
                     getCurrentJob().getJobCostingAndPayment().setLastPaymentEnteredBy(employee);
                 }

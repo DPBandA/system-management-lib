@@ -79,6 +79,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public LegalDocumentManager() {
         init();
     }
+    
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+        
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
+    }
 
     public void openClientsTab() {
 
@@ -501,7 +507,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                     currentDocument.setNumber(LegalDocument.getLegalDocumentNumber(currentDocument, "ED"));
                 }
 
-                currentDocument.setEditedBy(getUser().getEmployee());
+                currentDocument.setEditedBy(getEmployee());
                 if (currentDocument.save(em).isSuccess()) {
                     currentDocument.setIsDirty(false);
                 }
@@ -572,9 +578,9 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         legalDocument.setAutoGenerateNumber(Boolean.TRUE);
 
         if (getUser().getId() != null) {
-            if (getUser().getEmployee() != null) {
-                legalDocument.setResponsibleOfficer(Employee.findById(em, getUser().getEmployee().getId()));
-                legalDocument.setResponsibleDepartment(Department.findById(em, getUser().getEmployee().getDepartment().getId()));
+            if (getEmployee() != null) {
+                legalDocument.setResponsibleOfficer(Employee.findById(em, getEmployee().getId()));
+                legalDocument.setResponsibleDepartment(Department.findById(em, getEmployee().getDepartment().getId()));
             }
         } else {
             legalDocument.setResponsibleOfficer(Employee.findDefault(getHumanResourceManager().getEntityManager1(), "--", "--", true));
@@ -921,6 +927,11 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
+    }
+    
+    @Override
+    public void logout() {
+        completeLogout();
     }
 
     @Override

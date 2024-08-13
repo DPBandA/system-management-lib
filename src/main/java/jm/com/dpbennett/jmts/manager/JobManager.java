@@ -118,6 +118,12 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
+    
+    public Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+        
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
+    }
 
     public void jobGroupingDialogReturn() {
 
@@ -740,7 +746,7 @@ public class JobManager extends GeneralManager
         selectedStatusNote = new StatusNote();
 
         selectedStatusNote.setEntityId(getCurrentJob().getId());
-        selectedStatusNote.setCreatedBy(getUser().getEmployee());
+        selectedStatusNote.setCreatedBy(getEmployee());
         selectedStatusNote.setDateCreated(new Date());
         selectedStatusNote.setHeader("Enter a status note below");
 
@@ -1017,7 +1023,7 @@ public class JobManager extends GeneralManager
 
         // Set edited by
         getJobSearchResultList().get(event.getRowIndex()).
-                getClient().setEditedBy(getUser().getEmployee());
+                getClient().setEditedBy(getEmployee());
 
         // Set date edited
         getJobSearchResultList().get(event.getRowIndex()).
@@ -1086,6 +1092,7 @@ public class JobManager extends GeneralManager
     }
 
     public ReportManager getReportManager() {
+        
         return BeanUtils.findBean("reportManager");
     }
 
@@ -1095,6 +1102,7 @@ public class JobManager extends GeneralManager
     }
 
     public HumanResourceManager getHumanResourceManager() {
+        
         return BeanUtils.findBean("humanResourceManager");
     }
 
@@ -1262,11 +1270,11 @@ public class JobManager extends GeneralManager
     private Boolean isJobAssignedToUserDepartment() {
 
         if (getUser() != null) {
-            if (currentJob.getDepartment().getId().longValue() == getUser().getEmployee().getDepartment().getId().longValue()) {
+            if (currentJob.getDepartment().getId().longValue() == getEmployee().getDepartment().getId().longValue()) {
                 return true;
             } else {
                 return currentJob.getSubContractedDepartment().getId().longValue()
-                        == getUser().getEmployee().getDepartment().getId().longValue();
+                        == getEmployee().getDepartment().getId().longValue();
             }
         } else {
             return false;
@@ -1713,7 +1721,7 @@ public class JobManager extends GeneralManager
                 job.getJobStatusAndTracking().setCompleted(true);
                 job.getJobStatusAndTracking().setDateOfCompletion(new Date());
                 job.getJobStatusAndTracking().
-                        setCompletedBy(getUser().getEmployee());
+                        setCompletedBy(getEmployee());
             }
 
             setIsDirty(true);
@@ -1996,7 +2004,7 @@ public class JobManager extends GeneralManager
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
                 // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                 || (getUser().can("EnterOwnJob")
-                && Objects.equals(getUser().getEmployee().getId(), job.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
+                && Objects.equals(getEmployee().getId(), job.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
                 // Can the user enter any job?
                 || getUser().can("EnterJob"))) {
@@ -2012,7 +2020,7 @@ public class JobManager extends GeneralManager
                     && (getUser().isMemberOf(em, savedJob.getDepartment()) || getUser().isMemberOf(em, savedJob.getSubContractedDepartment())))
                     // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                     || (getUser().can("EditOwnJob")
-                    && Objects.equals(getUser().getEmployee().getId(), savedJob.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
+                    && Objects.equals(getEmployee().getId(), savedJob.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
                     && (getUser().isMemberOf(em, savedJob.getDepartment()) || getUser().isMemberOf(em, savedJob.getSubContractedDepartment())))
                     // Can the user edit any job?
                     || getUser().can("EditJob")) {

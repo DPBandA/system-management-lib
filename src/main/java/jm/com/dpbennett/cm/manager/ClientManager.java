@@ -37,12 +37,14 @@ import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.fm.Discount;
 import jm.com.dpbennett.business.entity.hrm.Internet;
 import jm.com.dpbennett.business.entity.fm.Tax;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.model.LazyClientDataModel;
 import jm.com.dpbennett.fm.manager.FinanceManager;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -74,6 +76,12 @@ public class ClientManager extends GeneralManager implements Serializable {
      */
     public ClientManager() {
         init();
+    }
+    
+    private Employee getEmployee() {
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+        
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
     @Override
@@ -122,6 +130,11 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         return BeanUtils.findBean("financeManager");
 
+    }
+    
+    public HumanResourceManager getHumanResourceManager() {
+        
+        return BeanUtils.findBean("humanResourceManager");
     }
 
     public List<Client> completeActiveClient(String query) {
@@ -527,8 +540,8 @@ public class ClientManager extends GeneralManager implements Serializable {
                 getSelectedClient().setDateEntered(new Date());
                 getSelectedClient().setDateEdited(new Date());
                 if (getUser() != null) {
-                    selectedClient.setEnteredBy(getUser().getEmployee());
-                    selectedClient.setEditedBy(getUser().getEmployee());
+                    selectedClient.setEnteredBy(getEmployee());
+                    selectedClient.setEditedBy(getEmployee());
                 }
             }
 
@@ -536,7 +549,7 @@ public class ClientManager extends GeneralManager implements Serializable {
             if (getIsDirty()) {
                 getSelectedClient().setDateEdited(new Date());
                 if (getUser() != null) {
-                    selectedClient.setEditedBy(getUser().getEmployee());
+                    selectedClient.setEditedBy(getEmployee());
                 }
                 selectedClient.save(getEntityManager1());
                 setIsDirty(false);
@@ -812,6 +825,11 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
+    }
+    
+    @Override
+    public void logout() {
+        completeLogout();
     }
 
     @Override
