@@ -2672,8 +2672,6 @@ public final class SystemManager extends GeneralManager {
                 + SystemOption.getString(getEntityManager1(), "SMv"),
                 "Logged in");
 
-        super.handleKeepAlive();
-
     }
 
     @Override
