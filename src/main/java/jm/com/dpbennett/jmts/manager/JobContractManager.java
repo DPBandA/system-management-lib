@@ -341,7 +341,9 @@ public class JobContractManager extends GeneralManager
                     // Compile contract
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(em, "serviceContractJRXML"));
+                                    compileReport((String) SystemOption.
+                                            getOptionValueObject(getSystemManager().
+                                                    getEntityManager1(), "serviceContractJRXML"));
 
                     // Generate contract
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);

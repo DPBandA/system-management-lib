@@ -148,9 +148,9 @@ public class JobFinanceManager extends GeneralManager
     public JobFinanceManager() {
         init();
     }
-    
+
     public Employee getEmployee() {
-               
+
         return getJobManager().getEmployee();
     }
 
@@ -411,15 +411,15 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public HumanResourceManager getHumanResourceManager() {
-        
+
         return BeanUtils.findBean("humanResourceManager");
-        
+
     }
 
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
-        
+
     }
 
     public void openNewCostEstimateDialog() {
@@ -957,7 +957,7 @@ public class JobFinanceManager extends GeneralManager
                     // Compile job costing
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(getEntityManager1(), "jobCosting"));
+                                    compileReport((String) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "jobCosting"));
 
                     // Generate job costing
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
@@ -1205,7 +1205,8 @@ public class JobFinanceManager extends GeneralManager
             stream = getInvoicesFileInputStream(
                     new File(getClass().getClassLoader().
                             getResource("/reports/"
-                                    + (String) SystemOption.getOptionValueObject(getEntityManager1(),
+                                    + (String) SystemOption.getOptionValueObject(
+                                            getSystemManager().getEntityManager1(),
                                             "AccpacInvoicesFileTemplateName")).getFile()));
 
             return DefaultStreamedContent.builder()
@@ -1280,7 +1281,8 @@ public class JobFinanceManager extends GeneralManager
                     prepareToInvoiceJobCosting(job);
 
                     // Insert fake cost component with job description
-                    if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if ((Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addJobDescriptionToInvoiceDetail")) {
                         ArrayList<CostComponent> currentComponents
                                 = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
@@ -1296,7 +1298,8 @@ public class JobFinanceManager extends GeneralManager
 
                     // Insert tax as cost component
                     if (getTax(job).getTaxValue() > 0.0) {
-                        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        if ((Boolean) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
                                 "addTaxAsCostComponent")) {
                             ArrayList<CostComponent> currentComponents
                                     = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
@@ -1319,7 +1322,8 @@ public class JobFinanceManager extends GeneralManager
 
                     // Insert discount as cost component
                     if (getDiscount(job).getDiscountValue() > 0.0) {
-                        if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                        if ((Boolean) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
                                 "addDiscountAsCostComponent")) {
                             ArrayList<CostComponent> currentComponents
                                     = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
@@ -1342,7 +1346,8 @@ public class JobFinanceManager extends GeneralManager
                     }
 
                     // Insert fake costing for payments
-                    if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if ((Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addPaymentDetailCostComponentToInvoice")) {
                         ArrayList<CostComponent> currentComponents
                                 = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
@@ -1383,7 +1388,8 @@ public class JobFinanceManager extends GeneralManager
                     }
 
                     // Insert fake costing for balance
-                    if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if ((Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addBalanceCostComponentToInvoice")) {
                         ArrayList<CostComponent> currentComponents
                                 = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
@@ -1444,7 +1450,8 @@ public class JobFinanceManager extends GeneralManager
                             1, // tk org. 2
                             "java.lang.Integer", integerCellStyle);
                     // SPECINST
-                    if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if ((Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "exportReceiptNumbers")) {
                         ReportUtils.setExcelCellValue(wb, invoices, invoiceRow, invoiceCol++,
                                 job.getJobCostingAndPayment().getReceiptNumbers(),
@@ -1467,7 +1474,8 @@ public class JobFinanceManager extends GeneralManager
                                 0, // CNTBTCH
                                 "java.lang.Integer", integerCellStyle);
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1478,7 +1486,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Integer", integerCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1500,7 +1509,8 @@ public class JobFinanceManager extends GeneralManager
                                 invoiceRow, // CNTITEM
                                 "java.lang.Integer", integerCellStyle);
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1511,7 +1521,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Integer", integerCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1533,7 +1544,8 @@ public class JobFinanceManager extends GeneralManager
                                 index, // CNTLINE
                                 "java.lang.Integer", integerCellStyle);
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1544,7 +1556,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Integer", integerCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1584,7 +1597,8 @@ public class JobFinanceManager extends GeneralManager
                         }
 
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1595,7 +1609,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.String", stringCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1630,7 +1645,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.String", stringCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1641,7 +1657,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.String", stringCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1663,7 +1680,8 @@ public class JobFinanceManager extends GeneralManager
                                 costComponent.getName(),
                                 "java.lang.String", stringCellStyle);
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1674,7 +1692,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.String", stringCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1697,7 +1716,8 @@ public class JobFinanceManager extends GeneralManager
                                 "java.lang.String", stringCellStyle);
                     }
                     // Add Tax row value if any 
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         if (getTax(job).getTaxValue() > 0.0) {
                             ReportUtils.setExcelCellValue(wb, invoiceDetails,
@@ -1707,7 +1727,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.String", stringCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1728,7 +1749,8 @@ public class JobFinanceManager extends GeneralManager
                                 costComponent.getHoursOrQuantity().intValue(),
                                 "java.lang.Integer", integerCellStyle);
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1739,7 +1761,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Integer", integerCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1779,7 +1802,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Double", doubleCellStyle); // AMTPRIC
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1790,7 +1814,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Double", doubleCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -1830,7 +1855,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Double", doubleCellStyle); // AMTEXTN
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addTaxAsCostComponent")) {
                         // Add Tax row value if any 
                         if (getTax(job).getTaxValue() > 0.0) {
@@ -1841,7 +1867,8 @@ public class JobFinanceManager extends GeneralManager
                                     "java.lang.Double", doubleCellStyle);
                         }
                     }
-                    if (!(Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                    if (!(Boolean) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
                             "addDiscountAsCostComponent")) {
                         // Add Discount row value if any 
                         if (getDiscount(job).getDiscountValue() > 0.0) {
@@ -2149,12 +2176,14 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public Boolean getEnableSubcontractWithCosting() {
-        return (Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+        return (Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(),
                 "enableSubcontractWithCosting");
     }
 
     public Boolean getUseMulticurrency() {
-        return SystemOption.getBoolean(getEntityManager1(), "useMulticurrency");
+        return SystemOption.getBoolean(
+                getSystemManager().getEntityManager1(), "useMulticurrency");
     }
 
     /**
@@ -2178,12 +2207,6 @@ public class JobFinanceManager extends GeneralManager
         this.enableOnlyPaymentEditing = enableOnlyPaymentEditing;
     }
 
-    /**
-     * Creates and gets an EntityManager object using the EMF1
-     * EntityManagerFactory object.
-     *
-     * @return
-     */
     @Override
     public EntityManager getEntityManager1() {
         return getJobManager().getEntityManager1();
@@ -2525,7 +2548,7 @@ public class JobFinanceManager extends GeneralManager
      */
     public Integer getMaxDaysPassInvoiceDate() {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         int days = (Integer) SystemOption.getOptionValueObject(em, "maxDaysPassInvoiceDate");
 
@@ -2590,7 +2613,8 @@ public class JobFinanceManager extends GeneralManager
         HashMap parameters = new HashMap();
 
         try {
-            String logoURL = (String) SystemOption.getOptionValueObject(em, "logoURL");
+            String logoURL = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "logoURL");
             parameters.put("logoURL", logoURL);
             parameters.put("jobId", getCurrentJob().getId());
             parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(getCurrentJob().getContact()));
@@ -2630,7 +2654,8 @@ public class JobFinanceManager extends GeneralManager
                     // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(em, "jobCosting"));
+                                    compileReport((String) SystemOption.getOptionValueObject(
+                                            getSystemManager().getEntityManager1(), "jobCosting"));
 
                     // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
@@ -2689,10 +2714,13 @@ public class JobFinanceManager extends GeneralManager
                     DateUtils.formatDate(getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
             if (getCurrentJob().getClient().getCreditLimit() > 0) {
                 parameters.put("standardNote",
-                        (String) SystemOption.getOptionValueObject(em, "creditClientProformaStandardNote"));
+                        (String) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(), "creditClientProformaStandardNote"));
             } else {
                 parameters.put("standardNote",
-                        (String) SystemOption.getOptionValueObject(em, "nonCreditClientProformaStandardNote"));
+                        (String) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
+                                "nonCreditClientProformaStandardNote"));
             }
             parameters.put("additionalNote", getCurrentJob().getJobCostingAndPayment().getDescription());
             parameters.put("reimbursable",
@@ -2708,7 +2736,9 @@ public class JobFinanceManager extends GeneralManager
             parameters.put("discountType", getCurrentJob().getJobCostingAndPayment().getDiscount().getDiscountValueType());
             parameters.put("totalTax", currencyFormatter.format(getTotalTax(getCurrentJob())));
             parameters.put("totalTaxLabel",
-                    Tax.findByName(getEntityManager1(), (String) SystemOption.getOptionValueObject(getEntityManager1(), "defaultTax")).getName());
+                    Tax.findByName(getEntityManager1(),
+                            (String) SystemOption.getOptionValueObject(
+                                    getSystemManager().getEntityManager1(), "defaultTax")).getName());
             parameters.put("grandTotalCostLabel", getCurrentJob().getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
             parameters.put("grandTotalCost", currencyFormatter.format(
                     getCurrentJob().getJobCostingAndPayment().getProformaTotalCost()));
@@ -2735,7 +2765,10 @@ public class JobFinanceManager extends GeneralManager
                     // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.getOptionValueObject(em, "proformaInvoiceFormTemplate"));
+                                    compileReport((String) SystemOption.
+                                            getOptionValueObject(
+                                                    getSystemManager().getEntityManager1(),
+                                                    "proformaInvoiceFormTemplate"));
 
                     // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
@@ -4016,8 +4049,8 @@ public class JobFinanceManager extends GeneralManager
         EntityManager em = getHumanResourceManager().getEntityManager1();
 
         return ((isUserDepartmentSupervisor(job)
-                || (getUser().isMemberOf(em, 
-                        Department.findAssignedToJob(job, 
+                || (getUser().isMemberOf(em,
+                        Department.findAssignedToJob(job,
                                 em))
                 && getUser().can("ApproveJobCosting")))
                 && !job.getJobCostingAndPayment().getInvoiced()
@@ -4794,13 +4827,13 @@ public class JobFinanceManager extends GeneralManager
             address = employee.getInternet().getEmail1();
         } else {
             // Get and set default email using company domain
-            
+
             String listAsString = SystemOption.getString(
                     getSystemManager().getEntityManager1(), "domainNames");
             String domainNames[] = listAsString.split(";");
 
             User user1 = User.findActiveJobManagerUserByEmployeeId(
-                    getSystemManager().getEntityManager1(), 
+                    getSystemManager().getEntityManager1(),
                     employee.getId());
 
             // Build email address
@@ -4822,9 +4855,9 @@ public class JobFinanceManager extends GeneralManager
 
     public Department getDepartmentBySystemOptionDeptId(String option) {
         EntityManager em = getHumanResourceManager().getEntityManager1();
-        
+
         Long id = SystemOption.getLong(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 option);
 
         Department department = Department.findById(
@@ -4840,7 +4873,7 @@ public class JobFinanceManager extends GeneralManager
 
     public Boolean getIsMemberOfAccountsDept() {
         return getUser().isMemberOf(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 getDepartmentBySystemOptionDeptId("accountsDepartmentId"));
     }
 
