@@ -118,9 +118,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public PurchasingManager() {
         init();
     }
-    
+
     private Employee getEmployee() {
-               
+
         return getFinanceManager().getEmployee();
     }
 
@@ -1884,9 +1884,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             parameters.put("totalCost", getSelectedPurchaseRequisition().getConvertedTotalCost());
 
             em.getTransaction().begin();
-            
+
             Connection con = BusinessEntityUtils.getConnection(em);
-            
+
             if (con != null) {
                 try {
                     StreamedContent streamedContent;
@@ -1913,7 +1913,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     System.out.println("Error compiling purchase requisition: " + e);
                 }
             }
-            
+
             em.getTransaction().commit();
 
             return null;
@@ -1943,9 +1943,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         HashMap parameters = new HashMap();
 
         try {
-            
+
             String logoURL = (String) SystemOption.getOptionValueObject(
-                    getSystemManager().getEntityManager1(), "logoURL");            
+                    getSystemManager().getEntityManager1(), "logoURL");
             String footNote1 = (String) SystemOption.getOptionValueObject(
                     getSystemManager().getEntityManager1(), "QEMS_PO_Footnote1");
             String footNote2 = (String) SystemOption.getOptionValueObject(
@@ -2117,14 +2117,21 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return selectedPurchaseRequisition;
     }
 
-    public void setSelectedPurchaseRequisition(PurchaseRequisition selectedPurchaseRequisition) {
+    public void setSelectedPurchaseRequisition(
+            PurchaseRequisition selectedPurchaseRequisition) {
 
-        this.selectedPurchaseRequisition = selectedPurchaseRequisition;
+        // tk org selectedPurchaseRequisition;
+        this.selectedPurchaseRequisition = 
+                getSavedPurchaseRequisition(selectedPurchaseRequisition);
+        
     }
 
     public PurchaseRequisition getSavedPurchaseRequisition(PurchaseRequisition pr) {
+        
         int i = 0;
-        PurchaseRequisition foundPurchaseRequisition = PurchaseRequisition.findById(getEntityManager1(), pr.getId());
+        PurchaseRequisition foundPurchaseRequisition = 
+                PurchaseRequisition.findById(getEntityManager1(), pr.getId());
+       
         for (PurchaseRequisition purchaseRequisition : foundPurchaseReqs) {
             if (Objects.equals(purchaseRequisition.getId(), foundPurchaseRequisition.getId())) {
                 foundPurchaseReqs.set(i, foundPurchaseRequisition);
@@ -2355,10 +2362,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 case CREATE:
                     System.out.println("Processing CREATE action...");
                     notifyDepartmentHead(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             purchaseRequisition, "created");
                     emailDepartmentHead(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             purchaseRequisition, "created");
                     break;
                 case EDIT:
@@ -2367,19 +2374,19 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 case APPROVE:
                     System.out.println("Processing APPROVE action...");
                     notifyProcurementOfficers(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             purchaseRequisition, "approved");
                     emailProcurementOfficers(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             purchaseRequisition, "approved");
                     break;
                 case RECOMMEND:
                     System.out.println("Processing RECOMMEND action...");
                     notifyDivisionalHead(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             purchaseRequisition, "recommended");
                     emailDivisionalHead(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             purchaseRequisition, "recommended");
                     break;
                 case COMPLETE:
