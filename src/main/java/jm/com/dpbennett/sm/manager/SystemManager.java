@@ -158,7 +158,12 @@ public final class SystemManager extends GeneralManager {
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
-        return Employee.findById(hrmem, getUser().getEmployee().getId());
+        if (getUser().getEmployee().getId() != null) {
+
+            return Employee.findById(hrmem, getUser().getEmployee().getId());
+        }
+
+        return new Employee();
     }
 
     public HumanResourceManager getHumanResourceManager() {
