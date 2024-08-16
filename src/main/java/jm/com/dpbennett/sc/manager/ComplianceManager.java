@@ -224,14 +224,16 @@ public class ComplianceManager extends GeneralManager
     public void handleKeepAlive() {
 
         updateUserActivity("SCv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "SCv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(), "SCv"),
                 "Logged in");
 
         if (getUser().getId() != null) {
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
@@ -254,7 +256,8 @@ public class ComplianceManager extends GeneralManager
     public void completeLogout() {
 
         updateUserActivity("SCv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "SCv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(), "SCv"),
                 "Logged out");
 
         if (getUser().getId() != null) {
@@ -273,7 +276,8 @@ public class ComplianceManager extends GeneralManager
 
         if (getUser().getId() != null) {
             updateUserActivity("SCv"
-                    + SystemOption.getString(getSystemManager().getEntityManager1(), "SCv"),
+                    + SystemOption.getString(
+                            getSystemManager().getEntityManager1(), "SCv"),
                     "Logged in");
             getUser().save(getSystemManager().getEntityManager1());
         }
@@ -576,7 +580,8 @@ public class ComplianceManager extends GeneralManager
             // send error message to developer's email            
             MailUtils.postMail(
                     null, null,
-                    SystemOption.getString(getSystemManager().getEntityManager1(),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailName"),
                     null, subject, message,
                     "text/plain", getSystemManager().getEntityManager1());
@@ -1964,7 +1969,8 @@ public class ComplianceManager extends GeneralManager
     public void updateCIF() {
 
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "defaultPercentageOfCIF");
+                getSystemManager().getEntityManager1(), 
+                "defaultPercentageOfCIF");
 
         if (percentOfCIF != null) {
             getCurrentComplianceSurvey().getEntryDocumentInspection().
@@ -3169,7 +3175,6 @@ public class ComplianceManager extends GeneralManager
 
     public StreamedContent getComplianceDailyReportPDFFile() {
 
-        EntityManager em = getSystemManager().getEntityManager1();
         HashMap parameters = new HashMap();
 
         try {
@@ -3183,7 +3188,7 @@ public class ComplianceManager extends GeneralManager
                 StreamedContent streamContent;
 
                 String reportFileURL = SystemOption.getString(
-                        em,
+                        getSystemManager().getEntityManager1(),
                         "complianceDailyReport");
 
                 // make sure is parameter is set for all forms

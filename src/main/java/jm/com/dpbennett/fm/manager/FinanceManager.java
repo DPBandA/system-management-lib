@@ -124,15 +124,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public FinanceManager() {
         init();
     }
-    
+
     public HumanResourceManager getHumanResourceManager() {
-        
+
         return BeanUtils.findBean("humanResourceManager");
     }
-    
+
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
-        
+
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
@@ -286,12 +286,14 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public String getJobManagerEmailName() {
 
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "jobManagerEmailName");
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "jobManagerEmailName");
     }
 
     public String getJobManagerEmailAddress() {
 
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "jobManagerEmailAddress");
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "jobManagerEmailAddress");
     }
 
     public void openDashboardTab() {
@@ -365,8 +367,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public String getApplicationFooter() {
 
-        return getApplicationHeader() + ", v" + SystemOption.getString(getSystemManager().getEntityManager1(),
-                "FMv");
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "FMv");
     }
 
     @Override
@@ -382,7 +385,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public Boolean getUseMulticurrency() {
-        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), "useMulticurrency");
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), 
+                "useMulticurrency");
     }
 
     public SystemManager getSystemManager() {
@@ -440,7 +444,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<ProcurementMethod> getFoundProcurementMethods() {
         if (foundProcurementMethods == null) {
-           
+
             foundProcurementMethods = new ArrayList<>();
         }
 
@@ -645,7 +649,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<MarketProduct> getFoundMarketProducts() {
         if (foundMarketProducts == null) {
-           
+
             foundMarketProducts = new ArrayList<>();
         }
 
@@ -808,7 +812,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Service> getFoundServices() {
         if (foundServices == null) {
-            
+
             foundServices = new ArrayList<>();
         }
 
@@ -970,7 +974,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Classification> getFoundClassifications() {
         if (foundClassifications == null) {
-            
+
             foundClassifications = new ArrayList<>();
         }
 
@@ -1500,7 +1504,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<JobCategory> getFoundJobCategories() {
         if (foundJobCategories == null) {
-            
+
             foundJobCategories = new ArrayList<>();
         }
 
@@ -1566,7 +1570,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<JobSubCategory> getFoundJobSubcategories() {
         if (foundJobSubcategories == null) {
-            
+
             foundJobSubcategories = new ArrayList<>();
         }
 
@@ -1661,7 +1665,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public List<Sector> getFoundSectors() {
         if (foundSectors == null) {
-            
+
             foundSectors = new ArrayList<>();
         }
 
@@ -1984,7 +1988,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
@@ -2078,7 +2083,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void login() {
         login(getSystemManager().getEntityManager1());
     }
-    
+
     @Override
     public void logout() {
         completeLogout();
@@ -2124,7 +2129,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void setManagerUser() {
 
         getManager("systemManager").setUser(getUser());
-        getManager("inventoryManager").setUser(getUser());       
+        getManager("inventoryManager").setUser(getUser());
         getManager("purchasingManager").setUser(getUser());
 
     }

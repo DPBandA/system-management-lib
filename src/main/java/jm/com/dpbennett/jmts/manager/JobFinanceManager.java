@@ -2550,7 +2550,8 @@ public class JobFinanceManager extends GeneralManager
 
         EntityManager em = getSystemManager().getEntityManager1();
 
-        int days = (Integer) SystemOption.getOptionValueObject(em, "maxDaysPassInvoiceDate");
+        int days = (Integer) SystemOption.getOptionValueObject(
+                em, "maxDaysPassInvoiceDate");
 
         return days;
     }
@@ -2715,7 +2716,8 @@ public class JobFinanceManager extends GeneralManager
             if (getCurrentJob().getClient().getCreditLimit() > 0) {
                 parameters.put("standardNote",
                         (String) SystemOption.getOptionValueObject(
-                                getSystemManager().getEntityManager1(), "creditClientProformaStandardNote"));
+                                getSystemManager().getEntityManager1(), 
+                                "creditClientProformaStandardNote"));
             } else {
                 parameters.put("standardNote",
                         (String) SystemOption.getOptionValueObject(

@@ -329,12 +329,16 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public boolean getApplyTax() {
 
-        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), "applyTaxToPR");
+        return SystemOption.getBoolean(
+                getSystemManager().getEntityManager1(), 
+                "applyTaxToPR");
     }
 
     public boolean getApplyDiscount() {
 
-        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), "applyDiscountToPR");
+        return SystemOption.getBoolean(
+                getSystemManager().getEntityManager1(), 
+                "applyDiscountToPR");
     }
 
     public List<SelectItem> getDocumentTypes() {
@@ -1892,7 +1896,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     StreamedContent streamedContent;
 
                     JasperReport jasperReport = JasperCompileManager
-                            .compileReport((String) SystemOption.getOptionValueObject(em, "purchaseRequisition"));
+                            .compileReport((String) SystemOption.getOptionValueObject(
+                                    getSystemManager().getEntityManager1(), 
+                                    "purchaseRequisition"));
 
                     JasperPrint print = JasperFillManager.fillReport(
                             jasperReport,
@@ -2023,7 +2029,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     StreamedContent streamedContent;
 
                     JasperReport jasperReport = JasperCompileManager
-                            .compileReport((String) SystemOption.getOptionValueObject(em, "purchaseOrder"));
+                            .compileReport((String) SystemOption.getOptionValueObject(
+                                    getSystemManager().getEntityManager1(), 
+                                    "purchaseOrder"));
 
                     JasperPrint print = JasperFillManager.fillReport(
                             jasperReport,
@@ -2058,7 +2066,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void updateTotalCost() {
 
         Double currencyExchangeRate = SystemOption.getDouble(
-                getEntityManager1(), getCurrencyExchangeRateName());
+                getSystemManager().getEntityManager1(), 
+                getCurrencyExchangeRateName());
 
         if (currencyExchangeRate > 0.0) {
             getSelectedPurchaseRequisition().setCurrencyExchangeRate(currencyExchangeRate);
@@ -2303,7 +2312,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String prNum = purchaseRequisition.getNumber();
         String department = purchaseRequisition.
                 getOriginatingDepartment().getName();
-        String JMTSURL = (String) SystemOption.getOptionValueObject(em, "appURL");
+        String JMTSURL = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), 
+                "appURL");
         String originator = purchaseRequisition.getOriginator().getFirstName()
                 + " " + purchaseRequisition.getOriginator().getLastName();
         String requisitionDate = BusinessEntityUtils.
@@ -2312,8 +2323,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String approversAndRecommendersList = purchaseRequisition.getApproversAndRecommendersList();
 
         MailUtils.postMail(null,
-                SystemOption.getString(em, "jobManagerEmailAddress"),
-                SystemOption.getString(em, "jobManagerEmailName"),
+                SystemOption.getString(
+                        getSystemManager().getEntityManager1(), 
+                        "jobManagerEmailAddress"),
+                SystemOption.getString(
+                        getSystemManager().getEntityManager1(), 
+                        "jobManagerEmailName"),
                 employee.getInternet().getEmail1(),
                 email.getSubject().
                         replace("{action}", action).
@@ -2826,13 +2841,15 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             // required number of approvals received.            
             if (purchaseRequisition.getExpectedDateOfCompletion() == null) {
                 int requiredApprovals
-                        = (Integer) SystemOption.getOptionValueObject(em,
+                        = (Integer) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
                                 "requiredPRApprovals");
 
                 if (purchaseRequisition.getApprovals() >= requiredApprovals) {
 
                     int daysAfterPRApprovalForEDOC
-                            = (Integer) SystemOption.getOptionValueObject(em,
+                            = (Integer) SystemOption.getOptionValueObject(
+                                    getSystemManager().getEntityManager1(),
                                     "daysAfterPRApprovalForEDOC");
 
                     purchaseRequisition
@@ -2917,13 +2934,15 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             // required number of approvals received.            
             if (purchaseRequisition.getExpectedDateOfCompletion() == null) {
                 int requiredApprovals
-                        = (Integer) SystemOption.getOptionValueObject(em,
+                        = (Integer) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
                                 "requiredPRApprovals");
 
                 if (purchaseRequisition.getApprovals() >= requiredApprovals) {
 
                     int daysAfterPRApprovalForEDOC
-                            = (Integer) SystemOption.getOptionValueObject(em,
+                            = (Integer) SystemOption.getOptionValueObject(
+                                    getSystemManager().getEntityManager1(),
                                     "daysAfterPRApprovalForEDOC");
 
                     purchaseRequisition

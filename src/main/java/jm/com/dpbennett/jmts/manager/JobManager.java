@@ -479,8 +479,11 @@ public class JobManager extends GeneralManager
 
         try {
             MailUtils.postMail(null,
-                    SystemOption.getString(em, "jobManagerEmailAddress"),
-                    SystemOption.getString(em, "jobManagerEmailName"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailAddress"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -513,7 +516,8 @@ public class JobManager extends GeneralManager
 
         String jobNumber = getCurrentJob().getJobNumber();
         String department = getCurrentJob().getDepartmentAssignedToJob().getName();
-        String APPURL = (String) SystemOption.getOptionValueObject(em, "appURL");
+        String APPURL = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "appURL");
         String assignee = getCurrentJob().getAssignedTo().getFirstName()
                 + " " + getCurrentJob().getAssignedTo().getLastName();
         String paymentAmount = "$0.00";
@@ -531,8 +535,12 @@ public class JobManager extends GeneralManager
 
         try {
             MailUtils.postMail(null,
-                    SystemOption.getString(em, "jobManagerEmailAddress"),
-                    SystemOption.getString(em, "jobManagerEmailName"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailAddress"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -565,7 +573,9 @@ public class JobManager extends GeneralManager
 
         String jobNumber = getCurrentJob().getJobNumber();
         String department = getCurrentJob().getDepartmentAssignedToJob().getName();
-        String APPURL = (String) SystemOption.getOptionValueObject(em, "appURL");
+        String APPURL = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), 
+                "appURL");
         String assignee = getCurrentJob().getAssignedTo().getFirstName()
                 + " " + getCurrentJob().getAssignedTo().getLastName();
         String approvalAmount = formatAsCurrency(getCurrentJob().getJobCostingAndPayment().getFinalCost(), "$");
@@ -575,8 +585,12 @@ public class JobManager extends GeneralManager
 
         try {
             MailUtils.postMail(null,
-                    SystemOption.getString(em, "jobManagerEmailAddress"),
-                    SystemOption.getString(em, "jobManagerEmailName"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailAddress"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -608,7 +622,8 @@ public class JobManager extends GeneralManager
 
         String jobNumber = getCurrentJob().getJobNumber();
         String department = getCurrentJob().getDepartmentAssignedToJob().getName();
-        String APPURL = (String) SystemOption.getOptionValueObject(em, "appURL");
+        String APPURL = (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "appURL");
         String head = sendTo.getFirstName()
                 + " " + sendTo.getLastName();
         String amount = formatAsCurrency(getCurrentJob().getJobCostingAndPayment().getFinalCost(), "$");
@@ -618,8 +633,11 @@ public class JobManager extends GeneralManager
 
         try {
             MailUtils.postMail(null,
-                    SystemOption.getString(em, "jobManagerEmailAddress"),
-                    SystemOption.getString(em, "jobManagerEmailName"),
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailAddress"),
+                    SystemOption.getString(getSystemManager().getEntityManager1(), 
+                            "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
                             replace("{action}", action).
@@ -2742,8 +2760,10 @@ public class JobManager extends GeneralManager
             if (mailSession == null) {
                 //Set the host smtp address
                 Properties props = new Properties();
-                String mailServer = (String) SystemOption.getOptionValueObject(em, "mail.smtp.host");
-                String trust = (String) SystemOption.getOptionValueObject(em, "mail.smtp.ssl.trust");
+                String mailServer = (String) SystemOption.getOptionValueObject(
+                        em, "mail.smtp.host");
+                String trust = (String) SystemOption.getOptionValueObject(
+                        em, "mail.smtp.ssl.trust");
                 props.put("mail.smtp.host", mailServer);
                 props.setProperty("mail.smtp.ssl.trust", trust);
 
@@ -2756,8 +2776,10 @@ public class JobManager extends GeneralManager
             }
 
             // set the from and to address
-            String email = (String) SystemOption.getOptionValueObject(em, "jobManagerEmailAddress");
-            String name = (String) SystemOption.getOptionValueObject(em, "jobManagerEmailName");
+            String email = (String) SystemOption.getOptionValueObject(
+                    em, "jobManagerEmailAddress");
+            String name = (String) SystemOption.getOptionValueObject(
+                    em, "jobManagerEmailName");
             InternetAddress addressFrom = new InternetAddress(email, name);
             msg.setFrom(addressFrom);
 
@@ -3106,7 +3128,8 @@ public class JobManager extends GeneralManager
 
         if (getUser().getId() != null) {
             super.updateUserActivity("JMTSv"
-                    + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
+                    + SystemOption.getString(
+                            getSystemManager().getEntityManager1(), "JMTSv"),
                     "Logged in");
             getUser().save(getSystemManager().getEntityManager1());
         }

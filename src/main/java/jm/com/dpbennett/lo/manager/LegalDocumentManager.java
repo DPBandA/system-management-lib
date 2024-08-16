@@ -908,14 +908,16 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void handleKeepAlive() {
 
         updateUserActivity("LOv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "LOv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(), "LOv"),
                 "Logged in");
 
         if (getUser().getId() != null) {
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }

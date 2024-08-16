@@ -77,10 +77,10 @@ public class ClientManager extends GeneralManager implements Serializable {
     public ClientManager() {
         init();
     }
-    
+
     private Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
-        
+
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
@@ -131,14 +131,15 @@ public class ClientManager extends GeneralManager implements Serializable {
         return BeanUtils.findBean("financeManager");
 
     }
-    
+
     public HumanResourceManager getHumanResourceManager() {
-        
+
         return BeanUtils.findBean("humanResourceManager");
     }
 
     public List<Client> completeActiveClient(String query) {
-        int maxResult = SystemOption.getInteger(getSystemManager().getEntityManager1(),
+        int maxResult = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
                 "maxSearchResults");
 
         try {
@@ -659,7 +660,8 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public List<Client> completeClient(String query) {
         EntityManager em = getEntityManager1();
-        int maxResult = SystemOption.getInteger(getSystemManager().getEntityManager1(),
+        int maxResult = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
                 "maxSearchResults");
 
         try {
@@ -685,7 +687,8 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         switch (searchType) {
             case "Clients":
-                int maxResult = SystemOption.getInteger(getSystemManager().getEntityManager1(),
+                int maxResult = SystemOption.getInteger(
+                        getSystemManager().getEntityManager1(),
                         "maxSearchResults");
 
                 if (getIsActiveClientsOnly()) {
@@ -745,7 +748,8 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "appShortcutIconURL");
+                getSystemManager().getEntityManager1(),
+                "appShortcutIconURL");
     }
 
     @Override
@@ -806,14 +810,16 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void handleKeepAlive() {
 
         super.updateUserActivity("CMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "CMv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(), "CMv"),
                 "Logged in");
 
         if (getUser().getId() != null) {
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
@@ -826,7 +832,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void login() {
         login(getSystemManager().getEntityManager1());
     }
-    
+
     @Override
     public void logout() {
         completeLogout();
@@ -836,7 +842,8 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void completeLogout() {
 
         super.updateUserActivity("CMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "CMv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(), "CMv"),
                 "Logged out");
 
         if (getUser().getId() != null) {
@@ -855,7 +862,8 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         if (getUser().getId() != null) {
             super.updateUserActivity("CMv"
-                    + SystemOption.getString(getSystemManager().getEntityManager1(), "CMv"),
+                    + SystemOption.getString(
+                            getSystemManager().getEntityManager1(), "CMv"),
                     "Logged in");
             getUser().save(getSystemManager().getEntityManager1());
         }

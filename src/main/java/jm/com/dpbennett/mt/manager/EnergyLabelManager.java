@@ -335,7 +335,7 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     public void createNewEnergyLabel() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         selectedEnergyLabel = new EnergyLabel();
 
         String defaultProductType = SystemOption.getString(em, "defaultProductType");
@@ -366,7 +366,8 @@ public class EnergyLabelManager extends GeneralManager
 
     public String getApplicationFooter() {
 
-        return "LabelPrint, v" + SystemOption.getString(getSystemManager().getEntityManager1(),
+        return "LabelPrint, v" + SystemOption.getString(
+                getSystemManager().getEntityManager1(),
                 "LPv");
     }
 
@@ -382,7 +383,8 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "LabelPrintAppShortcutIconURL");
+                getSystemManager().getEntityManager1(),
+                "LabelPrintAppShortcutIconURL");
     }
 
     @Override
@@ -569,14 +571,16 @@ public class EnergyLabelManager extends GeneralManager
     public void handleKeepAlive() {
 
         updateUserActivity("LPv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "LPv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(), "LPv"),
                 "Logged in");
 
         if (getUser().getId() != null) {
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
@@ -650,7 +654,9 @@ public class EnergyLabelManager extends GeneralManager
                     // Annual consumption
                     setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "middle");
                     // Batch code/serial number
-                    if (SystemOption.getBoolean(em, "useSerialNumber")) {
+                    if (SystemOption.getBoolean(
+                            getSystemManager().getEntityManager1(),
+                            "useSerialNumber")) {
                         if (!getSelectedEnergyLabel().getSerialNumber().trim().isEmpty()) {
                             setElementText("batchCodeLabel", "Serial No.", "");
                             setElementText("batchCode", getSelectedEnergyLabel().getSerialNumber(), "");
@@ -734,9 +740,13 @@ public class EnergyLabelManager extends GeneralManager
                     } else {
                         int length = getSelectedEnergyLabel().getAnnualConsumption().length();
                         int annualConsumptionUnitXMulConst
-                                = SystemOption.getInteger(em, "annualConsumptionUnitXMulConst");
+                                = SystemOption.getInteger(
+                                        getSystemManager().getEntityManager1(), 
+                                        "annualConsumptionUnitXMulConst");
                         double annualConsumptionUnitXMul
-                                = SystemOption.getDouble(em, "annualConsumptionUnitXMul");
+                                = SystemOption.getDouble(
+                                        getSystemManager().getEntityManager1(), 
+                                        "annualConsumptionUnitXMul");
 
                         annualConsumptionUnitXMulConst = length - annualConsumptionUnitXMulConst;
 
@@ -751,7 +761,9 @@ public class EnergyLabelManager extends GeneralManager
                                         * annualConsumptionUnitXMul));
                     }
                     // Batch code/serial number
-                    if (SystemOption.getBoolean(em, "useSerialNumber")) {
+                    if (SystemOption.getBoolean(
+                            getSystemManager().getEntityManager1(), 
+                            "useSerialNumber")) {
                         if (!getSelectedEnergyLabel().getSerialNumber().trim().isEmpty()) {
                             setElementText("batchCodeLabel", "Serial No.", "");
                             setElementText("batchCode", getSelectedEnergyLabel().getSerialNumber(), "");
@@ -771,7 +783,8 @@ public class EnergyLabelManager extends GeneralManager
                                 "data:image/png;base64,"
                                 + QRCodeGenerator.getQRCodeImageData(
                                         getQRCodeData(),
-                                        SystemOption.getInteger(em,
+                                        SystemOption.getInteger(
+                                                getSystemManager().getEntityManager1(),
                                                 "qRCodeImageSize")));
                     } catch (WriterException | IOException ex) {
                         System.out.println(ex);
@@ -916,11 +929,15 @@ public class EnergyLabelManager extends GeneralManager
 
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
 
-                svgFile = new File(SystemOption.getString(em, "aCLabelTemplate"));
+                svgFile = new File(SystemOption.getString(
+                        getSystemManager().getEntityManager1(), 
+                        "aCLabelTemplate"));
 
             } else {
 
-                svgFile = new File(SystemOption.getString(em, "refrigeratorLabelTemplate"));
+                svgFile = new File(SystemOption.getString(
+                        getSystemManager().getEntityManager1(), 
+                        "refrigeratorLabelTemplate"));
             }
             svgDocument = f.createDocument(svgFile.toURI().toString());
 
@@ -932,19 +949,29 @@ public class EnergyLabelManager extends GeneralManager
             JPEGTranscoder t = new JPEGTranscoder();
 
             t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
-                    new Float(SystemOption.getDouble(em, "jPEGTranscoderKeyQuality")).floatValue());
+                    new Float(SystemOption.getDouble(
+                            getSystemManager().getEntityManager1(), 
+                            "jPEGTranscoderKeyQuality")).floatValue());
 
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
                 t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
-                        Float.valueOf(SystemOption.getString(em, "aCImageWidth")));
+                        Float.valueOf(SystemOption.getString(
+                                getSystemManager().getEntityManager1(), 
+                                "aCImageWidth")));
                 t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
-                        Float.valueOf(SystemOption.getString(em, "aCImageHeight")));
+                        Float.valueOf(SystemOption.getString(
+                                getSystemManager().getEntityManager1(), 
+                                "aCImageHeight")));
                 t.transcode(input, output);
             } else {
                 t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
-                        Float.valueOf(SystemOption.getString(em, "fridgeImageWidth")));
+                        Float.valueOf(SystemOption.getString(
+                                getSystemManager().getEntityManager1(), 
+                                "fridgeImageWidth")));
                 t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
-                        Float.valueOf(SystemOption.getString(em, "fridgeImageHeight")));
+                        Float.valueOf(SystemOption.getString(
+                                getSystemManager().getEntityManager1(), 
+                                "fridgeImageHeight")));
                 t.transcode(input, output);
             }
 

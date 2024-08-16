@@ -796,8 +796,10 @@ public class ReportManager extends GeneralManager {
             if (con != null) {
                 StreamedContent streamContent;
                 byte[] fileBytes;
-                String logoURL = (String) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(),
-                        "logoURL");
+                String logoURL
+                        = (String) SystemOption.getOptionValueObject(
+                                getSystemManager().getEntityManager1(),
+                                "logoURL");
 
                 // Provide report parameters
                 parameters.put("reportTitle", selectedReport.getName());
@@ -2474,7 +2476,8 @@ public class ReportManager extends GeneralManager {
             getUser().save(getSystemManager().getEntityManager1());
         }
 
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+        if ((Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode")) {
             System.out.println(getApplicationHeader()
                     + " keeping session alive: " + getUser().getPollTime());
         }
@@ -2516,7 +2519,8 @@ public class ReportManager extends GeneralManager {
 
         if (getUser().getId() != null) {
             updateUserActivity("RMv"
-                    + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
+                    + SystemOption.getString(
+                            getSystemManager().getEntityManager1(), "RMv"),
                     "Logged in");
             getUser().save(getSystemManager().getEntityManager1());
         }
