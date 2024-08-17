@@ -31,7 +31,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
  *
  * @author desbenn
  */
-@FacesValidator("requiredFieldValidator")
+@FacesValidator("nameFieldValidator")
 public class NameFieldValidator implements Validator {
 
     @Override
