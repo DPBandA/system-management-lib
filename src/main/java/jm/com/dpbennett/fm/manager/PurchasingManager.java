@@ -330,14 +330,14 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public boolean getApplyTax() {
 
         return SystemOption.getBoolean(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "applyTaxToPR");
     }
 
     public boolean getApplyDiscount() {
 
         return SystemOption.getBoolean(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "applyDiscountToPR");
     }
 
@@ -1897,7 +1897,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
                     JasperReport jasperReport = JasperCompileManager
                             .compileReport((String) SystemOption.getOptionValueObject(
-                                    getSystemManager().getEntityManager1(), 
+                                    getSystemManager().getEntityManager1(),
                                     "purchaseRequisition"));
 
                     JasperPrint print = JasperFillManager.fillReport(
@@ -1991,17 +1991,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                             getDeliveryDateRequired()));
 
             if (getSelectedPurchaseRequisition().getPleaseSupplyNote().isEmpty()) {
-                if (getSelectedPurchaseRequisition().getSupplier().getIdentificationType().contains("TRN")) {
-                    parameters.put("pleaseSupply",
-                            "TRN: " + getSelectedPurchaseRequisition().getSupplier().getIdentification());
-                }
+                String companyTRN = SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "companyTRN");
+                parameters.put("pleaseSupply", "TRN: " + companyTRN);
             } else {
-                if (getSelectedPurchaseRequisition().getSupplier().getIdentificationType().contains("TRN")) {
-                    parameters.put("pleaseSupply",
-                            getSelectedPurchaseRequisition().getPleaseSupplyNote() + ", TRN: " + getSelectedPurchaseRequisition().getSupplier().getIdentification());
-                } else {
-                    parameters.put("pleaseSupply", getSelectedPurchaseRequisition().getPleaseSupplyNote());
-                }
+                parameters.put("pleaseSupply", getSelectedPurchaseRequisition().getPleaseSupplyNote());
             }
 
             parameters.put("importLicenseDate",
@@ -2030,7 +2024,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
                     JasperReport jasperReport = JasperCompileManager
                             .compileReport((String) SystemOption.getOptionValueObject(
-                                    getSystemManager().getEntityManager1(), 
+                                    getSystemManager().getEntityManager1(),
                                     "purchaseOrder"));
 
                     JasperPrint print = JasperFillManager.fillReport(
@@ -2066,7 +2060,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void updateTotalCost() {
 
         Double currencyExchangeRate = SystemOption.getDouble(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 getCurrencyExchangeRateName());
 
         if (currencyExchangeRate > 0.0) {
@@ -2130,17 +2124,17 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             PurchaseRequisition selectedPurchaseRequisition) {
 
         // tk org selectedPurchaseRequisition;
-        this.selectedPurchaseRequisition = 
-                getSavedPurchaseRequisition(selectedPurchaseRequisition);
-        
+        this.selectedPurchaseRequisition
+                = getSavedPurchaseRequisition(selectedPurchaseRequisition);
+
     }
 
     public PurchaseRequisition getSavedPurchaseRequisition(PurchaseRequisition pr) {
-        
+
         int i = 0;
-        PurchaseRequisition foundPurchaseRequisition = 
-                PurchaseRequisition.findById(getEntityManager1(), pr.getId());
-       
+        PurchaseRequisition foundPurchaseRequisition
+                = PurchaseRequisition.findById(getEntityManager1(), pr.getId());
+
         for (PurchaseRequisition purchaseRequisition : foundPurchaseReqs) {
             if (Objects.equals(purchaseRequisition.getId(), foundPurchaseRequisition.getId())) {
                 foundPurchaseReqs.set(i, foundPurchaseRequisition);
@@ -2313,7 +2307,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String department = purchaseRequisition.
                 getOriginatingDepartment().getName();
         String JMTSURL = (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "appURL");
         String originator = purchaseRequisition.getOriginator().getFirstName()
                 + " " + purchaseRequisition.getOriginator().getLastName();
@@ -2324,10 +2318,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         MailUtils.postMail(null,
                 SystemOption.getString(
-                        getSystemManager().getEntityManager1(), 
+                        getSystemManager().getEntityManager1(),
                         "jobManagerEmailAddress"),
                 SystemOption.getString(
-                        getSystemManager().getEntityManager1(), 
+                        getSystemManager().getEntityManager1(),
                         "jobManagerEmailName"),
                 employee.getInternet().getEmail1(),
                 email.getSubject().
