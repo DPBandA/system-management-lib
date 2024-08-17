@@ -2716,7 +2716,7 @@ public class JobFinanceManager extends GeneralManager
             if (getCurrentJob().getClient().getCreditLimit() > 0) {
                 parameters.put("standardNote",
                         (String) SystemOption.getOptionValueObject(
-                                getSystemManager().getEntityManager1(), 
+                                getSystemManager().getEntityManager1(),
                                 "creditClientProformaStandardNote"));
             } else {
                 parameters.put("standardNote",
@@ -2756,7 +2756,12 @@ public class JobFinanceManager extends GeneralManager
             }
             parameters.put("approvalDate",
                     BusinessEntityUtils.getDateInMediumDateFormat(
-                            getCurrentJob().getJobStatusAndTracking().getDateCostingApproved()));
+                            getCurrentJob().getJobStatusAndTracking().
+                                    getDateCostingApproved()));
+            parameters.put("signatureURL",
+                    SystemOption.getString(
+                            getSystemManager().getEntityManager1(),
+                            "signatureURL"));
 
             em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);

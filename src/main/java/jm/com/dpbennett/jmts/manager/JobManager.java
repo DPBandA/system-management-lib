@@ -3016,20 +3016,6 @@ public class JobManager extends GeneralManager
             }
         }
 
-        // Human Resource
-        if (getUser().hasModule("humanResourceManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "humanResourceManager");
-            if (module != null) {
-                openModuleMainTab("humanResourceManager");
-
-                if (firstModule == null) {
-                    firstModule = "humanResourceManager";
-                }
-            }
-        }
-
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
