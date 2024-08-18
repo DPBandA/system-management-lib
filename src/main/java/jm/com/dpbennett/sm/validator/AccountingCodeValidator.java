@@ -45,16 +45,25 @@ public class AccountingCodeValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch(componentId) {
             case "accountingCodeName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Name Required", "Please enter a name.");            
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Name", 
+                        "The Name cannot be blank or contain the ' or \" character.");            
             case "accountingCodeAccount":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Account Required", "Please enter an account.");                
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Account", 
+                        "The Account cannot be blank or contain the ' or \" character.");             
             case "accountingCodeType":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Type Required", "Please enter a type.");               
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Type", 
+                        "The Type cannot be blank or contain the ' or \" character.");              
             case "accountingCodeDescription":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Description Required", "Please enter a description.");      
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Description", 
+                        "The Description cannot be blank or contain the ' or \" character.");    
             default:
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", 
-                        "Please enter a valid field value.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Field", 
+                         "The Field cannot be blank or contain the ' or \" character.");
         }
     }
 }

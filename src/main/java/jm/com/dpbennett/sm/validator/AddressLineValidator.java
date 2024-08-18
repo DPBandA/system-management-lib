@@ -50,15 +50,25 @@ public class AddressLineValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "addressType":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Address Type Required", "Please enter a valid type. The characters \" ' and ; are NOT allowed.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Address Type", 
+                        "Please enter a valid Address Type. The ; character is not allowed.");
             case "addressLine1":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Address Line 1 Required", "Please enter a valid address line. The characters \" ' and ; are NOT allowed.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Address Line 1 Required", 
+                        "Please enter a valid address line. The characters \" ' and ; are NOT allowed.");
             case "addressCity":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "City/Town Required", "Please enter a valid city. The characters \" ' and ; are NOT allowed.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "City/Town Required", 
+                        "Please enter a valid city. The characters \" ' and ; are NOT allowed.");
             case "parishStateProvince":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Parish/State/Province Required", "Please enter a valid parish/state/province. The characters \" ' and ; are NOT allowed.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Parish/State/Province Required", 
+                        "Please enter a valid parish/state/province. The characters \" ' and ; are NOT allowed.");
             default:
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Field Value Required", 
+                        "Please enter all required fields.");
         }
     }
 }

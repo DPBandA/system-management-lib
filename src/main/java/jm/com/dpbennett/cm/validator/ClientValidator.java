@@ -50,12 +50,17 @@ public class ClientValidator implements Validator {
     private FacesMessage getMessage(String componentId) {
         switch (componentId) {
             case "clientName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Name",
-                        "The character ' is not allowed in the field value. Use the apostrophe (`) character instead.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Name",
+                        "The Name cannot be blank.");
             case "trn":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Taxpayer Registration Number (TRN)", 
+                        "The TRN cannot be blank.");
             default:
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Field", 
+                        "The field cannot be blank.");
         }
     }
 }

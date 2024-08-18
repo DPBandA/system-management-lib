@@ -52,11 +52,17 @@ public class SupplierValidator implements Validator {
         switch (componentId) {
             case "supplier":
             case "supplierName":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Supplier Name", "Please enter a valid name for the suppier. The character ' is not allowed in the name. Use the apostrophe (`) character instead.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Supplier Name", 
+                        "The supplier's name cannot be blank.");
             case "trn":
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Invalid Taxpayer Registration Number", "Please enter a valid Taxpayer Registration Number or N/A.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Taxpayer Registration Number (TRN)", 
+                        "The TRN cannot be blank.");
             default:
-                return new FacesMessage(FacesMessage.SEVERITY_ERROR, "Field Value Required", "Please enter all required fields.");
+                return new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                        "Invalid Field", 
+                        "The field cannot be blank.");
         }
     }
 }
