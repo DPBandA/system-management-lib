@@ -393,10 +393,14 @@ public class JobFinanceManager extends GeneralManager
 
         getCurrentJob().setType("Proforma Invoice");
         getCurrentJob().setAssignedTo(getEmployee());
+        
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
-        // tk job type field to be used where applicable instead of setting progress to cancelled
-        getCurrentJob().getJobStatusAndTracking().setWorkProgress("Cancelled");
-        getCurrentJob().getJobCostingAndPayment().setEstimate(true);
+        getCurrentJob().getJobStatusAndTracking().setExpectedStartDate(new Date());
+        getCurrentJob().getJobStatusAndTracking().setExpectedDateOfCompletion(new Date());
+        getCurrentJob().getJobStatusAndTracking().setStartDate(new Date());
+        getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
+        
+        getCurrentJob().getJobCostingAndPayment().setEstimate(true);        
         getCurrentJob().getJobCostingAndPayment().
                 setTax(Tax.findByName(
                         getFinanceManager().getEntityManager1(),
@@ -433,7 +437,7 @@ public class JobFinanceManager extends GeneralManager
                                 "defaultJobClassification")));
         getCurrentJob().setAssignedTo(getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
-        getCurrentJob().getJobStatusAndTracking().setWorkProgress("Cancelled");
+       
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
@@ -4223,7 +4227,7 @@ public class JobFinanceManager extends GeneralManager
     public ArrayList<SelectItem> getDateSearchFields() {
 
         // tk implement search fields specific to this manager.
-        return getJobManager().getDateSearchFields();
+        return getJobManager().getDateSearchFields(getSearchType());
     }
 
     public List<JobCostingAndPayment> completeJobCostingAndPaymentName(String query) {

@@ -32,7 +32,7 @@ import javax.faces.model.SelectItem;
  */
 public class DateUtils {
 
-    public static ArrayList getDateSearchFields() {
+    public static ArrayList getJobDateSearchFields() {
         ArrayList dateSearchFields = new ArrayList();
 
         dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
@@ -44,6 +44,16 @@ public class DateUtils {
         dateSearchFields.add(new SelectItem("dateSamplesCollected", "Date sample(s) collected"));
         dateSearchFields.add(new SelectItem("dateDocumentCollected", "Date document(s) collected"));
 
+        return dateSearchFields;
+    }
+    
+    public static ArrayList getProformaDateSearchFields() {
+        ArrayList dateSearchFields = new ArrayList();
+
+        dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
+        dateSearchFields.add(new SelectItem("dateCostingApproved", "Date costing approved"));
+        dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
+       
         return dateSearchFields;
     }
 
@@ -65,9 +75,9 @@ public class DateUtils {
                 dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Agreed delivery date"));
                 break;
             case "All":
-                return getDateSearchFields();
+                return getJobDateSearchFields();
             default:
-                return getDateSearchFields();
+                return getJobDateSearchFields();
         }
 
         return dateSearchFields;

@@ -118,10 +118,10 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
+
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
-        
+
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
@@ -425,9 +425,13 @@ public class JobManager extends GeneralManager
             return true;
         } else if (tab.equals("Grouping") && getCurrentJob().getType().equals("Job")) {
             return true;
-        } else if (tab.equals("StatusAndTracking") && getCurrentJob().getType().equals("Job")) {
+        } else if (tab.equals("StatusAndTracking")
+                && (getCurrentJob().getType().equals("Job")
+                || // tk remove Proforma Invoice after testing
+                getCurrentJob().getType().equals("Proforma Invoice"))) {
             return true;
-        } else if (tab.equals("Reporting") && getCurrentJob().getType().equals("Job")) {
+        } else if (tab.equals("Reporting")
+                && (getCurrentJob().getType().equals("Job"))) {
             return true;
         }
 
@@ -480,7 +484,7 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailAddress"),
                     SystemOption.getString(
                             getSystemManager().getEntityManager1(), "jobManagerEmailName"),
@@ -536,10 +540,10 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailAddress"),
                     SystemOption.getString(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
@@ -574,7 +578,7 @@ public class JobManager extends GeneralManager
         String jobNumber = getCurrentJob().getJobNumber();
         String department = getCurrentJob().getDepartmentAssignedToJob().getName();
         String APPURL = (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "appURL");
         String assignee = getCurrentJob().getAssignedTo().getFirstName()
                 + " " + getCurrentJob().getAssignedTo().getLastName();
@@ -586,10 +590,10 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailAddress"),
                     SystemOption.getString(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
@@ -634,9 +638,9 @@ public class JobManager extends GeneralManager
         try {
             MailUtils.postMail(null,
                     SystemOption.getString(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jobManagerEmailAddress"),
-                    SystemOption.getString(getSystemManager().getEntityManager1(), 
+                    SystemOption.getString(getSystemManager().getEntityManager1(),
                             "jobManagerEmailName"),
                     sendTo.getInternet().getEmail1(),
                     email.getSubject().
@@ -1110,7 +1114,7 @@ public class JobManager extends GeneralManager
     }
 
     public ReportManager getReportManager() {
-        
+
         return BeanUtils.findBean("reportManager");
     }
 
@@ -1120,7 +1124,7 @@ public class JobManager extends GeneralManager
     }
 
     public HumanResourceManager getHumanResourceManager() {
-        
+
         return BeanUtils.findBean("humanResourceManager");
     }
 
@@ -2917,10 +2921,10 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-                dateSearchFields = DateUtils.getDateSearchFields();
+                dateSearchFields = DateUtils.getJobDateSearchFields();
                 break;
             case "My dept's proforma invoices":
-                dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
+                dateSearchFields = DateUtils.getProformaDateSearchFields();
                 break;
             default:
                 break;
