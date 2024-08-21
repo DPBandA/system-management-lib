@@ -203,20 +203,6 @@ public class ComplianceManager extends GeneralManager
             }
         }
 
-        // Clients
-        if (getUser().hasModule("clientManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "clientManager");
-            if (module != null) {
-                openModuleMainTab("clientManager");
-
-                if (firstModule == null) {
-                    firstModule = "clientManager";
-                }
-            }
-        }
-
         openModuleMainTab(firstModule);
     }
 
