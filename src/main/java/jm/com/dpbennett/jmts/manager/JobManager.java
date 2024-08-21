@@ -1657,7 +1657,8 @@ public class JobManager extends GeneralManager
 
             // Do not allow flagging job as completed unless job costing is approved
             if (!job.getJobCostingAndPayment().getCostingApproved()
-                    && job.getJobStatusAndTracking().getWorkProgress().equals("Completed")) {
+                    && job.getJobStatusAndTracking().
+                            getWorkProgress().equals("Completed")) {
 
                 PrimeFacesUtils.addMessage(job.getType()
                         + " Work Progress Cannot Be As Marked Completed",

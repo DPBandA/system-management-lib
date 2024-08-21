@@ -393,14 +393,14 @@ public class JobFinanceManager extends GeneralManager
 
         getCurrentJob().setType("Proforma Invoice");
         getCurrentJob().setAssignedTo(getEmployee());
-        
+
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
         getCurrentJob().getJobStatusAndTracking().setExpectedStartDate(new Date());
         getCurrentJob().getJobStatusAndTracking().setExpectedDateOfCompletion(new Date());
         getCurrentJob().getJobStatusAndTracking().setStartDate(new Date());
         getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
-        
-        getCurrentJob().getJobCostingAndPayment().setEstimate(true);        
+
+        getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().getJobCostingAndPayment().
                 setTax(Tax.findByName(
                         getFinanceManager().getEntityManager1(),
@@ -437,7 +437,7 @@ public class JobFinanceManager extends GeneralManager
                                 "defaultJobClassification")));
         getCurrentJob().setAssignedTo(getEmployee());
         getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
-       
+
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
@@ -3364,6 +3364,12 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentJob().getJobCostingAndPayment().setCostingApprovedBy(
                         getEmployee());
 
+                if (getCurrentJob().getType().equals("Proforma Invoice")) {
+                    // tk
+                    System.out.println("Setting proforma work progress as completed...");
+                    getCurrentJob().getJobStatusAndTracking().setWorkProgress("Completed");
+                }
+
                 BusinessEntityActionUtils.addAction(BusinessEntity.Action.APPROVE,
                         getCurrentJob().getActions());
 
@@ -3372,13 +3378,28 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentJob().getJobCostingAndPayment().setCostingApprovedBy(null);
                 BusinessEntityActionUtils.removeAction(BusinessEntity.Action.APPROVE,
                         getCurrentJob().getActions());
+                
+                if (getCurrentJob().getType().equals("Proforma Invoice")) {
+                    // tk
+                    System.out.println("Setting proforma work progress as ongoing...");
+                    getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
+                }
             }
+
             setJobCostingAndPaymentDirty(true);
+
         } else {
             // Reset the costing status
             getCurrentJob().getJobCostingAndPayment().
                     setCostingApproved(!getCurrentJob().getJobCostingAndPayment().getCostingApproved());
         }
+
+        // tk for proforma try to flag it as completed.
+        if (getCurrentJob().getType().equals("Proforma Invoice")) {
+            System.out.println("Updating proforma work progress..."); // tk
+            getJobManager().updateWorkProgress();
+        }
+
     }
 
     private Boolean areThereUnapprovedSubcontracts(Job job) {

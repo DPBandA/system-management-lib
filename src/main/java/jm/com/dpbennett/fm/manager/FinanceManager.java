@@ -311,10 +311,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
 //        openDashboardTab();
         getMainTabView().openTab("Purchase Requisitions");
         getMainTabView().openTab("Inventory Requisitions");//
-        getMainTabView().openTab("Inventory Products");
+//        getMainTabView().openTab("Inventory Products");
 //        getMainTabView().openTab("Market Products");
-        getMainTabView().openTab("Inventory");
-        getMainTabView().openTab("Suppliers");
+//        getMainTabView().openTab("Inventory");
+//        getMainTabView().openTab("Suppliers");
 //        getMainTabView().openTab("System Administration");
 //        getMainTabView().openTab("Trades");
 //        getMainTabView().openTab("Financial Administration");

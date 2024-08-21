@@ -446,8 +446,29 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return selectedInventoryRequisition;
     }
 
-    public void setSelectedInventoryRequisition(InventoryRequisition selectedInventoryRequisition) {
-        this.selectedInventoryRequisition = selectedInventoryRequisition;
+    public void setSelectedInventoryRequisition(
+            InventoryRequisition selectedInventoryRequisition) {
+        
+        this.selectedInventoryRequisition = 
+                getSavedInventoryRequisition(selectedInventoryRequisition);;
+    }
+    
+    public InventoryRequisition getSavedInventoryRequisition(
+            InventoryRequisition ir) {
+
+        int i = 0;
+        InventoryRequisition foundInventoryRequisition
+                = InventoryRequisition.findById(getEntityManager1(), ir.getId());
+
+        for (InventoryRequisition inventoryRequisition : foundInventoryRequisitions) {
+            if (Objects.equals(inventoryRequisition.getId(), foundInventoryRequisition.getId())) {
+                foundInventoryRequisitions.set(i, foundInventoryRequisition);
+                break;
+            }
+            ++i;
+        }
+
+        return foundInventoryRequisition;
     }
 
     public void deleteCostComponent() {
@@ -1423,6 +1444,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedInventoryRequisition() {
+        
+        
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
