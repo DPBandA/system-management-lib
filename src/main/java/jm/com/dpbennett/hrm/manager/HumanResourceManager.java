@@ -306,6 +306,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         String code = department.getCode();
 
         Subgroup subgroup = Subgroup.findByDepartment(em, department);
+        
         if (subgroup != null) {
             code = code + "-" + subgroup.getCode();
             Division division = Division.findBySubgroup(em, subgroup);

@@ -1992,6 +1992,7 @@ public class JobFinanceManager extends GeneralManager
         prepareToInvoiceJobCosting(job);
 
         codes.add(getRevenueCodeAbbreviation(job));
+        
         if (getTax(job).getTaxValue() > 0.0) {
             codes.add(getTaxCodeAbbreviation(job));
         }
@@ -2065,7 +2066,8 @@ public class JobFinanceManager extends GeneralManager
         if (!job.getServices().isEmpty()) {
             revenueCode = job.getServices().get(0).getAccountingCode().getCode();
 
-            String deptFullCode = HumanResourceManager.getDepartmentFullCode(getEntityManager1(),
+            String deptFullCode = HumanResourceManager.getDepartmentFullCode(
+                    getEntityManager1(),
                     job.getDepartmentAssignedToJob());
 
             // Find an accounting code that contains the department's full code

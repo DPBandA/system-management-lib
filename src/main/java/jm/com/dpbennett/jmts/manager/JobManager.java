@@ -2002,6 +2002,7 @@ public class JobManager extends GeneralManager
         }
 
         // Ensure that at least 1 service is selected
+        // tk commment out
 //        if (job.getServices().isEmpty()) {
 //            PrimeFacesUtils.addMessage("Service(s) NOT Selected",
 //                    "Please select at least one service",

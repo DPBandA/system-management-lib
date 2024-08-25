@@ -202,29 +202,31 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         List<PurchaseRequisition> activePRs
                 = PurchaseRequisition.findAllActive(em, 5); // tk make system option
 
-        for (PurchaseRequisition activePR : activePRs) {
+        if (activePRs != null) {
+            for (PurchaseRequisition activePR : activePRs) {
 
-            // Check that the PR is not already in the list before adding it.
-            // Add the orginator's PRs
-            if (activePR.getOriginator().equals(getEmployee())) {
-                procurementTasks.add(activePR);
-            } else {
-                // Add PRs for persons with various positions
-                List<String> PRApproverPositions
-                        = (List<String>) SystemOption.
-                                getOptionValueObject(
-                                        getSystemManager().getEntityManager1(),
-                                        "PRApproverPositions");
+                // Check that the PR is not already in the list before adding it.
+                // Add the orginator's PRs
+                if (activePR.getOriginator().equals(getEmployee())) {
+                    procurementTasks.add(activePR);
+                } else {
+                    // Add PRs for persons with various positions
+                    List<String> PRApproverPositions
+                            = (List<String>) SystemOption.
+                                    getOptionValueObject(
+                                            getSystemManager().getEntityManager1(),
+                                            "PRApproverPositions");
 
-                for (String position : PRApproverPositions) {
-                    if (getEmployee().hasEmploymentPosition(position)) {
-                        procurementTasks.add(activePR);
+                    for (String position : PRApproverPositions) {
+                        if (getEmployee().hasEmploymentPosition(position)) {
+                            procurementTasks.add(activePR);
 
-                        break;
+                            break;
+                        }
                     }
                 }
-            }
 
+            }
         }
 
         return procurementTasks;

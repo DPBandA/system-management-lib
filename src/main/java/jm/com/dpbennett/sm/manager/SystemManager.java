@@ -1148,10 +1148,10 @@ public final class SystemManager extends GeneralManager {
 
     public void createNewUser() {
 
-        EntityManager em = getHumanResourceManager().getEntityManager1();
+        EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         selectedUser = new User();
-        selectedUser.setEmployee(Employee.findDefault(em, "--", "--", true));
+        selectedUser.setEmployee(Employee.findDefault(hrmem, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
 
         editUser();
