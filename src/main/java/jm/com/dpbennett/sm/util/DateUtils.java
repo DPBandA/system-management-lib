@@ -37,23 +37,23 @@ public class DateUtils {
 
         dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
         dateSearchFields.add(new SelectItem("dateSubmitted", "Date submitted"));
+        dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
         dateSearchFields.add(new SelectItem("dateCostingApproved", "Date costing approved"));
         dateSearchFields.add(new SelectItem("dateCostingInvoiced", "Date job invoiced"));
         dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-        dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
         dateSearchFields.add(new SelectItem("dateSamplesCollected", "Date sample(s) collected"));
         dateSearchFields.add(new SelectItem("dateDocumentCollected", "Date document(s) collected"));
 
         return dateSearchFields;
     }
-    
+
     public static ArrayList getProformaDateSearchFields() {
         ArrayList dateSearchFields = new ArrayList();
 
         dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
         dateSearchFields.add(new SelectItem("dateCostingApproved", "Date costing approved"));
         dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-       
+
         return dateSearchFields;
     }
 
@@ -62,13 +62,7 @@ public class DateUtils {
 
         switch (category) {
             case "Job":
-                dateSearchFields.add(new SelectItem("dateAndTimeEntered", "Date entered"));
-                dateSearchFields.add(new SelectItem("dateSubmitted", "Date submitted"));
-                dateSearchFields.add(new SelectItem("dateCostingApproved", "Date costing approved"));
-                dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-                dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-                dateSearchFields.add(new SelectItem("dateSamplesCollected", "Date sample(s) collected"));
-                dateSearchFields.add(new SelectItem("dateDocumentCollected", "Date document(s) collected"));
+                return getJobDateSearchFields();
             case "Legal":
                 dateSearchFields.add(new SelectItem("dateReceived", "Date received"));
                 dateSearchFields.add(new SelectItem("dateOfCompletion", "Date delivered"));
@@ -132,17 +126,17 @@ public class DateUtils {
         } else {
             sec = "" + sec_int;
         }
-        
-        dateAndTime = year + "-" + month  + "-" + day + " " + 
-                hour  + ":" + min  + ":" + sec;
+
+        dateAndTime = year + "-" + month + "-" + day + " "
+                + hour + ":" + min + ":" + sec;
 
         return dateAndTime;
     }
-    
+
     public static String formatDate(Date date) {
         DateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy");
-        
+
         return dateFormatter.format(date);
-        
+
     }
 }

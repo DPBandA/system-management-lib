@@ -2351,9 +2351,13 @@ public class JobManager extends GeneralManager
     }
 
     public void doJobSearch() {
-
+        
         if (getUser().getId() != null) {
-            jobSearchResultList = findJobs(0);
+            int maxResult = SystemOption.getInteger(
+                        getSystemManager().getEntityManager1(),
+                        "maxSearchResults");
+            
+            jobSearchResultList = findJobs(maxResult);
         } else {
             jobSearchResultList = new ArrayList<>();
         }
