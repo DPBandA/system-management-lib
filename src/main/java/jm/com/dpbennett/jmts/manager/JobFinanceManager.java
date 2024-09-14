@@ -233,7 +233,7 @@ public class JobFinanceManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostingAndPaymentDialog", options, null);
-
+        
     }
 
     public Integer getDialogHeight() {
