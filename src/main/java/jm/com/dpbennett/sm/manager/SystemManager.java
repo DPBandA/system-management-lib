@@ -171,6 +171,11 @@ public final class SystemManager extends GeneralManager {
     }
 
     @Override
+    public void logout() {
+        completeLogout();
+    }
+
+    @Override
     public void completeLogout() {
 
         super.updateUserActivity("SMv"
