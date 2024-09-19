@@ -3084,7 +3084,7 @@ public class ComplianceManager extends GeneralManager
             int year = BusinessEntityUtils.getCurrentYear();
             currentComplianceSurvey. // tk BSJ-D42- to be made option?
                     setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
-                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+                            + BusinessEntityUtils.getIntegerString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year), 4));
 
             em.getTransaction().commit();
             //}
@@ -3096,7 +3096,7 @@ public class ComplianceManager extends GeneralManager
             int year = BusinessEntityUtils.getCurrentYear();
             currentComplianceSurvey. // tk BSJ-DM42- to be made option?
                     setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
-                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+                            + BusinessEntityUtils.getIntegerString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year), 4));
 
             em.getTransaction().commit();
             //}

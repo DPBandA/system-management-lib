@@ -37,6 +37,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -67,6 +69,11 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.Utils;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
@@ -76,6 +83,7 @@ import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
+import org.json.JSONObject;
 
 /**
  *
@@ -440,6 +448,49 @@ public final class SystemManager extends GeneralManager {
         }
 
         return new ArrayList<>();
+    }
+
+    // tk
+    public void submitIssue() {
+        try {
+            submitGitHubIssue("Issue Title", "This is a test issue from Java!");
+        } catch (IOException ex) {
+            System.out.println("submitIssue: " + ex);
+        }
+    }
+    
+    public void submitGitHubIssue(String title, String body) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        // tk get from system options
+        String GITHUB_API_URL = "https://api.github.com/repos/DPBandA/job-management-tracking-system/issues";
+        String TOKEN = SystemOption.getString(getEntityManager1(), "GitHubIssueToken");
+
+        // Create JSON payload for the issue
+        JSONObject issueDetails = new JSONObject();
+        issueDetails.put("title", title);
+        issueDetails.put("body", body);
+
+        // Create the request body
+        RequestBody requestBody = RequestBody.create(
+                issueDetails.toString(),
+                MediaType.parse("application/json")
+        );
+
+        // Build the request
+        Request request = new Request.Builder()
+                .url(GITHUB_API_URL)
+                .header("Authorization", "token " + TOKEN)
+                .post(requestBody)
+                .build();
+
+        // tk display growl message here?
+        // Execute the request and get the response
+        Response response = client.newCall(request).execute();
+        if (response.isSuccessful()) {
+            System.out.println("Issue created successfully: " + response.body());
+        } else {
+            System.out.println("Failed to create issue: " + response.code() + " - " + response.message());
+        }
     }
 
     public void createNewUserRegistration() {
