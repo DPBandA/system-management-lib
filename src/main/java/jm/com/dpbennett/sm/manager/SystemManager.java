@@ -37,8 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -75,6 +73,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
@@ -83,7 +82,6 @@ import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
-import org.json.JSONObject;
 
 /**
  *
