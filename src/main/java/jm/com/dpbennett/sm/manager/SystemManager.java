@@ -54,6 +54,7 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
+import jm.com.dpbennett.business.entity.dm.Issue;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
@@ -145,9 +146,9 @@ public final class SystemManager extends GeneralManager {
     private String emailSearchText;
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
+    private Issue issue;
 
-    // tk
-    // end tk
+    // tk    
     // Get these from the database
     private static final String GITHUB_CLIENT_ID = "";
     private static final String GITHUB_CLIENT_SECRET = "";
@@ -156,11 +157,20 @@ public final class SystemManager extends GeneralManager {
     private static final String GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String GITHUB_USER_URL = "https://api.github.com/user";
     private HttpRequestFactory requestFactory;
+    // end tk
 
     public SystemManager() {
         init();
     }
 
+    public Issue getIssue() {
+        return issue;
+    }
+
+    public void setIssue(Issue issue) {
+        this.issue = issue;
+    }
+    
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
@@ -448,16 +458,25 @@ public final class SystemManager extends GeneralManager {
         return new ArrayList<>();
     }
 
-    // tk
-    public void submitIssue() {
-        try {
-            submitGitHubIssue("Issue Title", "This is a test issue from Java!");
-        } catch (IOException ex) {
-            System.out.println("submitIssue: " + ex);
-        }
+    
+    public void createIssue() {
+        
+        setIssue(new Issue());
+        
+        // open issu dialog.
+//        try {
+//            // tk get 
+//            submitGitHubIssue("Issue Title", "This is a test issue from Java!");
+//        } catch (IOException ex) {
+//            System.out.println("submitIssue: " + ex);
+//        }
     }
 
-    public void submitGitHubIssue(String title, String body) throws IOException {
+    // tk
+    public void submitGitHubIssue(
+            String title, 
+            String body) throws IOException {
+        
         OkHttpClient client = new OkHttpClient();
         // tk get from system options
         String GITHUB_API_URL = "https://api.github.com/repos/DPBandA/job-management-tracking-system/issues";
