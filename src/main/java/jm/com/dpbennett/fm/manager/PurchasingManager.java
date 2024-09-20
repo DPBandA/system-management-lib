@@ -2165,8 +2165,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             String msgSavedDetail) {
 
         EntityManager em = getEntityManager1();
+        EntityManager smem = getSystemManager().getEntityManager1();
 
-        ReturnMessage returnMessage = purchaseRequisition.prepareAndSave(em, getUser());
+        ReturnMessage returnMessage = purchaseRequisition.prepareAndSave(
+                em, 
+                smem,
+                getUser());
 
         if (returnMessage.isSuccess()) {
             PrimeFacesUtils.addMessage(msgSavedSummary, msgSavedDetail, FacesMessage.SEVERITY_INFO);

@@ -456,7 +456,7 @@ public final class SystemManager extends GeneralManager {
             System.out.println("submitIssue: " + ex);
         }
     }
-    
+
     public void submitGitHubIssue(String title, String body) throws IOException {
         OkHttpClient client = new OkHttpClient();
         // tk get from system options
@@ -481,14 +481,17 @@ public final class SystemManager extends GeneralManager {
                 .post(requestBody)
                 .build();
 
-        // tk display growl message here?
-        // Execute the request and get the response
-        Response response = client.newCall(request).execute();
-        if (response.isSuccessful()) {
-            System.out.println("Issue created successfully: " + response.body());
-        } else {
-            System.out.println("Failed to create issue: " + response.code() + " - " + response.message());
+        // tk display growl message here?        
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                System.out.println("Issue created successfully: " 
+                        + response.body().string());
+            } else {
+                System.out.println("Failed to create issue: " + response.code() 
+                        + " - " + response.message());
+            }
         }
+
     }
 
     public void createNewUserRegistration() {
