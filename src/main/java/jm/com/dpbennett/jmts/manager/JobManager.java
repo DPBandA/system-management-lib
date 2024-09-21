@@ -3001,8 +3001,8 @@ public class JobManager extends GeneralManager
     @Override
     public void initMainTabView() {
 
-        String firstModule;
-        firstModule = null;
+        // tk test if this is still necessary
+        String firstModule = null;
 
         getMainTabView().reset(getUser());
 
@@ -3068,6 +3068,7 @@ public class JobManager extends GeneralManager
             }
         }
 
+        // tk test if this is still necessary
         openModuleMainTab(firstModule);
     }
 

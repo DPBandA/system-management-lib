@@ -463,7 +463,7 @@ public final class SystemManager extends GeneralManager {
         
         setIssue(new Issue());
         
-        // open issu dialog.
+        // open issue dialog.
 //        try {
 //            // tk get 
 //            submitGitHubIssue("Issue Title", "This is a test issue from Java!");
