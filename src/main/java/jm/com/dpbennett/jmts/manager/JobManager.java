@@ -2968,15 +2968,13 @@ public class JobManager extends GeneralManager
             switch (moduleName) {
                 case "complianceManager":
                     getComplianceManager().openSurveysBrowser();
+                    
                     break;
                 case "humanResourceManager":
                     getHumanResourceManager().openHumanResourceBrowser();
+                    
                     break;
-                case "jobManager":
-                    // tk remove after testing
-//                    getJobFinanceManager().openProformaInvoicesTab();
-//                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
-
+                case "jobManager":                   
                     openJobBrowser();
                     getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
 
@@ -2986,11 +2984,14 @@ public class JobManager extends GeneralManager
                     break;
                 case "purchasingManager":
                     getPurchasingManager().openPurchaseReqsTab();
+                    
                     break;
                 case "inventoryManager":
+                    
                     getInventoryManager().openInventoryProductBrowser();
                     getInventoryManager().openInventoryTab();
                     getInventoryManager().openInventoryRequisitionTab();
+                    
                     break;
                 default:
                     break;
@@ -3007,7 +3008,7 @@ public class JobManager extends GeneralManager
         getMainTabView().reset(getUser());
 
         // Finance dashboard
-        if (getUser().hasModule("purchasingManager")) {
+        if (getUser().hasModule("purchasingManager") || getUser().hasModule("inventoryManager")) {
             getFinanceManager().openDashboardTab();
         }
 
@@ -3016,6 +3017,7 @@ public class JobManager extends GeneralManager
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),
                     "complianceManager");
+            
             if (module != null) {
                 openModuleMainTab("complianceManager");
 
