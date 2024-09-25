@@ -141,12 +141,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public Boolean getRenderCurrencyExchangeRate() {
 
-        EntityManager em = getSystemManager().getEntityManager1();
+        String defaultCurrency = getSelectedPurchaseRequisition().getCurrency().getName();
+        String paymentCurrency = getSelectedPurchaseRequisition().getPaymentCurrency().getName();
 
-        String defaultCurrency = SystemOption.getString(em, "defaultCurrency");
-        String selectedCurrency = getSelectedPurchaseRequisition().getCurrency().getName();
-
-        return !defaultCurrency.equals(selectedCurrency);
+        return !defaultCurrency.equals(paymentCurrency);
     }
 
     public String getCurrencyExchangeRateName() {
@@ -156,6 +154,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         String defaultCurrencyName = SystemOption.getString(
                 getSystemManager().getEntityManager1(),
                 "defaultCurrency");
+
         Currency defaultCurrency = Currency.findByName(em, defaultCurrencyName);
         String selectedCurrencyName = getSelectedPurchaseRequisition().getCurrency().getName();
         Currency selectedCurrency = Currency.findByName(em, selectedCurrencyName);
@@ -168,9 +167,35 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return name;
     }
 
+    public String getDefaultToPaymentCurrencyExchangeRateName() {
+
+        EntityManager em = getEntityManager1();
+        String defaultCurrencyName = SystemOption.getString(
+                getSystemManager().getEntityManager1(),
+                "defaultCurrency");
+        Currency defaultCurrency = Currency.findByName(em, defaultCurrencyName);
+
+        String currencyName = getSelectedPurchaseRequisition().getCurrency().getName();
+        Currency selectedCurrency = Currency.findByName(em, currencyName);
+
+        String paymentCurrencyName = getSelectedPurchaseRequisition().getPaymentCurrency().getName();
+        Currency paymentCurrency = Currency.findByName(em, paymentCurrencyName);
+
+        if (selectedCurrency == null) {
+            selectedCurrency = defaultCurrency;
+        }
+
+        if (paymentCurrency == null) {
+            paymentCurrency = defaultCurrency;
+        }
+
+        return selectedCurrency.getCode() + "-" + paymentCurrency.getCode();
+       
+    }
+
     public String getCurrencyExchangeRateLabel() {
 
-        return getCurrencyExchangeRateName() + " exchange rate";
+        return getDefaultToPaymentCurrencyExchangeRateName();
     }
 
     public void okCashPayment() {
@@ -1091,6 +1116,16 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         Currency defaultCurrency = Currency.findByName(em, defaultCurrencyName);
 
         return defaultCurrency.getSymbol();
+    }
+    
+    public String getCostingCurrencySymbol() {
+
+         return getSelectedPurchaseRequisition().getCurrency().getSymbol();
+    }
+    
+    public String getPaymentCurrencySymbol() {
+
+         return getSelectedPurchaseRequisition().getPaymentCurrency().getSymbol();
     }
 
     public String getSelectedPRJustificationStatusNote() {
@@ -2059,17 +2094,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     }
 
-    public void updateTotalCost() {
-
-        Double currencyExchangeRate = SystemOption.getDouble(
-                getSystemManager().getEntityManager1(),
-                getCurrencyExchangeRateName());
-
-        if (currencyExchangeRate > 0.0) {
-            getSelectedPurchaseRequisition().setCurrencyExchangeRate(currencyExchangeRate);
-        } else {
-            getSelectedPurchaseRequisition().setCurrencyExchangeRate(1.0);
-        }
+    public void updatePurchaseReq() {
 
         updatePurchaseReq(null);
     }
@@ -2168,7 +2193,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         EntityManager smem = getSystemManager().getEntityManager1();
 
         ReturnMessage returnMessage = purchaseRequisition.prepareAndSave(
-                em, 
+                em,
                 smem,
                 getUser());
 
