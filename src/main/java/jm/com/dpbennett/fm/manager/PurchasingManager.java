@@ -1743,7 +1743,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         
         HashMap parameters = new HashMap();
         String logoURL = (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURL");
+                getSystemManager().getEntityManager1(), "logoSRC");
         String footNote1 = (String) SystemOption.getOptionValueObject(
                 getSystemManager().getEntityManager1(), "QEMS_PR_Footnote1");
         String footNote2 = (String) SystemOption.getOptionValueObject(
@@ -1998,7 +1998,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         try {
             
             String logoURL = (String) SystemOption.getOptionValueObject(
-                    getSystemManager().getEntityManager1(), "logoURL");
+                    getSystemManager().getEntityManager1(), "logoSRC");
             String footNote1 = (String) SystemOption.getOptionValueObject(
                     getSystemManager().getEntityManager1(), "QEMS_PO_Footnote1");
             String footNote2 = (String) SystemOption.getOptionValueObject(
