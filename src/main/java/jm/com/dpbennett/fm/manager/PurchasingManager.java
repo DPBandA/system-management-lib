@@ -222,8 +222,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         
         EntityManager em = getEntityManager1();
         procurementTasks = new ArrayList<>();
+        int maxSearchResults = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");        
+        
         List<PurchaseRequisition> activePRs
-                = PurchaseRequisition.findAllActive(em, 5); // tk make system option
+                = PurchaseRequisition.findAllActive(em, maxSearchResults);
 
         if (activePRs != null) {
             for (PurchaseRequisition activePR : activePRs) {
@@ -844,7 +848,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     
     public List<Supplier> getFoundSuppliers() {
         if (foundSuppliers == null) {
-            //doSupplierSearch();
             foundSuppliers = new ArrayList<>();
         }
         return foundSuppliers;
