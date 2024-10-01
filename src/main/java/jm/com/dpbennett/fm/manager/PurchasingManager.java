@@ -126,11 +126,13 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void saveSequenceNumbers() {
-        
+
         EntityManager em = getEntityManager1();
 
         lastPurchaseReqNumber.save(em);
         lastPurchaseOrderNumber.save(em);
+        resetPRSequenceNumberYearly.save(em);
+        resetPOSequenceNumberYearly.save(em);
 
         PrimeFaces.current().dialog().closeDynamic(null);
 
@@ -145,6 +147,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         setLastPurchaseOrderNumber(PurchaseOrderNumber.findLastPurchaseOrderNumber(
                 em, BusinessEntityUtils.getCurrentYear()));
 
+        setResetPOSequenceNumberYearly(SystemOption.findSystemOptionByName(
+                em, "resetPOSequenceNumberYearly"));
+
+        setResetPRSequenceNumberYearly(SystemOption.findSystemOptionByName(
+                em, "resetPRSequenceNumberYearly"));
+
         openSequenceNumbersDialog();
     }
 
@@ -154,7 +162,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() - 350) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)

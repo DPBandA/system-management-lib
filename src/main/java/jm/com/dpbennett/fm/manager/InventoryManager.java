@@ -103,9 +103,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public InventoryManager() {
         init();
     }
-    
+
     private Employee getEmployee() {
-               
+
         return getFinanceManager().getEmployee();
     }
 
@@ -119,16 +119,19 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public List<SelectItem> getInventoryLocations() {
 
         return getStringListAsSelectItems(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "inventoryLocations");
     }
 
     public List<InventoryRequisition> getInventoryTasks() {
 
         EntityManager em = getEntityManager1();
+        int maxSearchResults = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");
         inventoryTasks = new ArrayList<>();
         List<InventoryRequisition> activeIRs
-                = InventoryRequisition.findAllActive(em, 5);
+                = InventoryRequisition.findAllActive(em, maxSearchResults);
 
         for (InventoryRequisition activeIR : activeIRs) {
             if (getEmployee().equals(activeIR.getContactPerson())
@@ -448,11 +451,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void setSelectedInventoryRequisition(
             InventoryRequisition selectedInventoryRequisition) {
-        
-        this.selectedInventoryRequisition = 
-                getSavedInventoryRequisition(selectedInventoryRequisition);;
+
+        this.selectedInventoryRequisition
+                = getSavedInventoryRequisition(selectedInventoryRequisition);;
     }
-    
+
     public InventoryRequisition getSavedInventoryRequisition(
             InventoryRequisition ir) {
 
@@ -774,7 +777,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public List<MarketProduct> getFoundInventoryProducts() {
-        
+
         if (foundInventoryProducts == null) {
             foundInventoryProducts = new ArrayList<>();
         }
@@ -989,7 +992,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         String subHeader;
 
         subHeader = (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "applicationSubheader");
 
         if (subHeader != null) {
@@ -1291,10 +1294,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 case CREATE:
                     System.out.println("Processing CREATE action...");
                     notifyDepartmentHead(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             inventory, "created");
                     emailDepartmentHead(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             inventory, "created");
                     break;
                 case EDIT:
@@ -1444,8 +1447,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedInventoryRequisition() {
-        
-        
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
