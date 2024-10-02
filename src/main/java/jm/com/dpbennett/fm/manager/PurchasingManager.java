@@ -1288,7 +1288,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         if (getSelectedPurchaseRequisition().getId() != null) {
 
-            // Find the currently stored PR and check it's work status
+            // Find the currently stored PR and check its work status
             PurchaseRequisition savedPurchaseRequisition
                     = PurchaseRequisition.findById(em, getSelectedPurchaseRequisition().getId());
 
@@ -1544,12 +1544,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public Boolean addApprover(PurchaseRequisition purchaseRequisition,
             Employee approver) {
 
-        // Check if the PR was recommended
-        // NB: This is always true for now until it is decided if this check is 
-        // to be done any at all.
-        //if (!purchaseRequisition.hasRecommender()) {
-        //    return false;
-        //}
+        // Check if the PR was recommended      
         // Add approver if user has TEAM LEADER position
         if ((purchaseRequisition.getApprover1() == null)
                 && (purchaseRequisition.getRecommender1() == null)
@@ -1847,7 +1842,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         try {
 
             parameters.put("prId", getSelectedPurchaseRequisition().getId());
-            parameters.put("logoURL", logoURL);
+            parameters.put("logoURL", logoURL); 
 
             // Shipping information
             if (getSelectedPurchaseRequisition().getAirFreight()) {
@@ -1927,7 +1922,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                     + getSelectedPurchaseRequisition()
                             .getOriginator().getLastName());
 
-            // Set recommenders, recommendation dates and recommenders' position
+            // Set recommenders, recommendation dates and recommenders' positions
             if (getSelectedPurchaseRequisition().getRecommender1() != null) {
                 parameters.put("teamLeaderRecommendation",
                         getSelectedPurchaseRequisition().getRecommender1().getFirstName() + " "
@@ -1974,7 +1969,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
             }
 
-            // Set approvers, approval dates and approvers' position
+            // Set approvers, approval dates and approvers' positions
             if (getSelectedPurchaseRequisition().getApprover1() != null) {
                 parameters.put("teamLeaderApproval",
                         getSelectedPurchaseRequisition().getApprover1().getFirstName() + " "
@@ -2255,7 +2250,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void setSelectedPurchaseRequisition(
             PurchaseRequisition selectedPurchaseRequisition) {
 
-        // tk org selectedPurchaseRequisition;
         this.selectedPurchaseRequisition
                 = getSavedPurchaseRequisition(selectedPurchaseRequisition);
 
@@ -2555,8 +2549,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return getFoundPurchaseReqs().size();
     }
 
-    // tk - should check for system admin?
-    // may have to put in try-catch to deal with null pointer.
     public String getPurchaseReqsTableHeader() {
         if (getUser().can("BeFinancialAdministrator")) {
             return "Search Results (found: " + getNumOfPurchaseReqsFound() + ")";
@@ -2931,8 +2923,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void approvePurchaseRequisition(PurchaseRequisition purchaseRequisition) {
 
-        EntityManager em = getEntityManager1();
-
         // Check if the approver is already in the list of approvers
         if (BusinessEntityUtils.isBusinessEntityInList(
                 purchaseRequisition.getApproversAndRecommenders(),
@@ -3052,59 +3042,55 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
 
-        // Check if total cost is within the approver's limit
-        // NB: This check is not done now. Option may be added to determine if the check is to be done. 
-        if (true /*isSelectedPRCostWithinApprovalLimit(getEmployee().getPositions())*/) {
+        if (!addRecommender(purchaseRequisition, getEmployee())) {
+            PrimeFacesUtils.addMessage("Not Recommended",
+                    "The maximum number of recommenders was reached for this purchase requisition "
+                    + "or you do not have the privilege to recommend purchase requisitions.",
+                    FacesMessage.SEVERITY_ERROR);
 
-            if (!addRecommender(purchaseRequisition, getEmployee())) {
-                PrimeFacesUtils.addMessage("Not Recommended",
-                        "The maximum number of recommenders was reached for this purchase requisition "
-                        + "or you do not have the privilege to recommend purchase requisitions.",
-                        FacesMessage.SEVERITY_ERROR);
+            return;
+        }
 
-                return;
-            }
+        // Set expected date of completion if it is not already set and the 
+        // required number of approvals received.            
+        if (purchaseRequisition.getExpectedDateOfCompletion() == null) {
+            int requiredApprovals
+                    = (Integer) SystemOption.getOptionValueObject(
+                            getSystemManager().getEntityManager1(),
+                            "requiredPRApprovals");
 
-            // Set expected date of completion if it is not already set and the 
-            // required number of approvals received.            
-            if (purchaseRequisition.getExpectedDateOfCompletion() == null) {
-                int requiredApprovals
+            if (purchaseRequisition.getApprovals() >= requiredApprovals) {
+
+                int daysAfterPRApprovalForEDOC
                         = (Integer) SystemOption.getOptionValueObject(
                                 getSystemManager().getEntityManager1(),
-                                "requiredPRApprovals");
+                                "daysAfterPRApprovalForEDOC");
 
-                if (purchaseRequisition.getApprovals() >= requiredApprovals) {
-
-                    int daysAfterPRApprovalForEDOC
-                            = (Integer) SystemOption.getOptionValueObject(
-                                    getSystemManager().getEntityManager1(),
-                                    "daysAfterPRApprovalForEDOC");
-
-                    purchaseRequisition
-                            .setExpectedDateOfCompletion(
-                                    BusinessEntityUtils.adjustDate(new Date(),
-                                            Calendar.DAY_OF_MONTH, daysAfterPRApprovalForEDOC));
-                }
+                purchaseRequisition
+                        .setExpectedDateOfCompletion(
+                                BusinessEntityUtils.adjustDate(new Date(),
+                                        Calendar.DAY_OF_MONTH, daysAfterPRApprovalForEDOC));
             }
+        }
 
-            purchaseRequisition.setIsDirty(true);
-            purchaseRequisition.setEditStatus("(edited)");
+        purchaseRequisition.setIsDirty(true);
+        purchaseRequisition.setEditStatus("(edited)");
 
-            if (purchaseRequisition.getId() != null) {
-                purchaseRequisition.addAction(BusinessEntity.Action.RECOMMEND);
+        if (purchaseRequisition.getId() != null) {
+            purchaseRequisition.addAction(BusinessEntity.Action.RECOMMEND);
 
-                savePurchaseRequisition(purchaseRequisition,
-                        "Recommended and Saved",
-                        "Recommendation for the approval of this purchase requisition was successful");
-
-            }
+            savePurchaseRequisition(purchaseRequisition,
+                    "Recommended and Saved",
+                    "Recommendation for the approval of this purchase requisition was successful");
 
         }
+
     }
 
     private Boolean isPRCostWithinApprovalLimit(
             PurchaseRequisition purchaseRequisition,
             List<EmployeePosition> positions) {
+        
         for (EmployeePosition position : positions) {
             if (position.getUpperApprovalLevel()
                     >= purchaseRequisition.getTotalCostComponentCosts()) {
