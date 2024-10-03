@@ -1451,7 +1451,7 @@ public class JobFinanceManager extends GeneralManager
                             "java.util.Date", dateCellStyle);
                     // INVCTYPE
                     ReportUtils.setExcelCellValue(wb, invoices, invoiceRow, invoiceCol++,
-                            1, // tk org. 2
+                            1,
                             "java.lang.Integer", integerCellStyle);
                     // SPECINST
                     if ((Boolean) SystemOption.getOptionValueObject(
@@ -3367,8 +3367,7 @@ public class JobFinanceManager extends GeneralManager
                         getEmployee());
 
                 if (getCurrentJob().getType().equals("Proforma Invoice")) {
-                    // tk
-                    System.out.println("Setting proforma work progress as completed...");
+                   
                     getCurrentJob().getJobStatusAndTracking().setWorkProgress("Completed");
                 }
 
@@ -3382,8 +3381,7 @@ public class JobFinanceManager extends GeneralManager
                         getCurrentJob().getActions());
                 
                 if (getCurrentJob().getType().equals("Proforma Invoice")) {
-                    // tk
-                    System.out.println("Setting proforma work progress as ongoing...");
+                    
                     getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
                 }
             }
@@ -3396,9 +3394,7 @@ public class JobFinanceManager extends GeneralManager
                     setCostingApproved(!getCurrentJob().getJobCostingAndPayment().getCostingApproved());
         }
 
-        // tk for proforma try to flag it as completed.
         if (getCurrentJob().getType().equals("Proforma Invoice")) {
-            System.out.println("Updating proforma work progress..."); // tk
             getJobManager().updateWorkProgress();
         }
 
@@ -4095,7 +4091,6 @@ public class JobFinanceManager extends GeneralManager
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
             // Reload cash payments if possible to avoid overwriting them 
             // when saving
-            // tk the following was commented out for testing
             EntityManager em = getEntityManager1();
             JobCostingAndPayment jcp
                     = JobCostingAndPayment.findJobCostingAndPaymentById(em,
@@ -4106,14 +4101,13 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
                 editJobCosting();
             }
-
-            //editJobCosting(); // tk commented out for testing
+            
         } else {
-            // tk try to save the job before editing 
+            
             if (getJobManager().getCurrentJob().getIsDirty()) {
                 getJobManager().saveCurrentJob();
             }
-            // tk edit costing if job was saved
+            
             if (getCurrentJob().getId() != null) {
                 editJobCosting();
             } else {
@@ -4249,7 +4243,6 @@ public class JobFinanceManager extends GeneralManager
 
     public ArrayList<SelectItem> getDateSearchFields() {
 
-        // tk implement search fields specific to this manager.
         return getJobManager().getDateSearchFields(getSearchType());
     }
 
@@ -4313,7 +4306,6 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
-    // tk use the one in ClientManager?
     public List<AccPacCustomer> completeAccPacClient(String query) {
         EntityManager em2;
 

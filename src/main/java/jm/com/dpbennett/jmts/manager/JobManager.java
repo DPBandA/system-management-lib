@@ -1156,8 +1156,6 @@ public class JobManager extends GeneralManager
             searchTypes.add(new SelectItem("Appr'd & uninv'd jobs", "Appr'd & uninv'd jobs"));
             searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
             searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
-            searchTypes.add(new SelectItem("My dept's proforma invoices",
-                    "My dept's proforma invoices"));
 
         } else {
 
