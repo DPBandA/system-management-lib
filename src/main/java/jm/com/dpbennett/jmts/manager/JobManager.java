@@ -1177,10 +1177,11 @@ public class JobManager extends GeneralManager
     }
 
     public void jobDialogReturn() {
+        
         if (currentJob.getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
             PrimeFaces.current().ajax().update("appForm:growl3");
-            currentJob.setIsDirty(false);
+             currentJob.setIsDirty(false);
         }
 
     }
@@ -2472,6 +2473,7 @@ public class JobManager extends GeneralManager
     public void setEditCurrentJob(Job currentJob) {
 
         this.currentJob = getSavedCurrentJob(currentJob);
+        this.currentJob.setIsDirty(false);
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);

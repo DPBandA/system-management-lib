@@ -4169,8 +4169,12 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public void doJobSearch() {
+        
+        int maxResult = SystemOption.getInteger(
+                        getSystemManager().getEntityManager1(),
+                        "maxSearchResults");
 
-        jobSearchResultList = findJobs(0);
+        jobSearchResultList = findJobs(maxResult);
 
     }
 
@@ -4232,12 +4236,16 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public List<Job> findJobs() {
+        int maxResult = SystemOption.getInteger(
+                        getSystemManager().getEntityManager1(),
+                        "maxSearchResults");        
+        
         return Job.findJobsByDateSearchField(getEntityManager1(),
                 getUser(),
                 getDateSearchPeriod(),
                 getSearchType(),
                 getProformaInvoiceSearchText(),
-                0, // tk make system option
+                maxResult,
                 true);
     }
 
