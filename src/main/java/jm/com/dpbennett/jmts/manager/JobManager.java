@@ -3007,26 +3007,26 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        // Finance dashboard
-//        if (getUser().hasModule("purchasingManager") || getUser().hasModule("inventoryManager")) {
-//            getFinanceManager().openDashboardTab();
-//        }
+        // Finance dashboard - tk to be JMTS dashboard
+        if (getUser().hasModule("purchasingManager") || getUser().hasModule("inventoryManager")) {
+            getFinanceManager().openDashboardTab();
+        }
 
-        // Compliance
-//        if (getUser().hasModule("complianceManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "complianceManager");
-//            
-//            if (module != null) {
-//                openModuleMainTab("complianceManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "complianceManager";
-//                }
-//
-//            }
-//        }
+        // Standards Compliance
+        if (getUser().hasModule("complianceManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "complianceManager");
+            
+            if (module != null) {
+                openModuleMainTab("complianceManager");
+
+                if (firstModule == null) {
+                    firstModule = "complianceManager";
+                }
+
+            }
+        }
 
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
@@ -3035,8 +3035,7 @@ public class JobManager extends GeneralManager
                     "jobManager");
             if (module != null) {
                 openModuleMainTab("jobManager");
-                getJobFinanceManager().openProformaInvoicesTab(); // tk
-
+                
                 if (firstModule == null) {
                     firstModule = "jobManager";
                 }
@@ -3044,32 +3043,32 @@ public class JobManager extends GeneralManager
         }
 
         // Procurement
-//        if (getUser().hasModule("purchasingManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "purchasingManager");
-//            if (module != null) {
-//                openModuleMainTab("purchasingManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "purchasingManager";
-//                }
-//            }
-//        }
+        if (getUser().hasModule("purchasingManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "purchasingManager");
+            if (module != null) {
+                openModuleMainTab("purchasingManager");
+
+                if (firstModule == null) {
+                    firstModule = "purchasingManager";
+                }
+            }
+        }
 
         // Inventory
-//        if (getUser().hasModule("inventoryManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "inventoryManager");
-//            if (module != null) {
-//                openModuleMainTab("inventoryManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "inventoryManager";
-//                }
-//            }
-//        }
+        if (getUser().hasModule("inventoryManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "inventoryManager");
+            if (module != null) {
+                openModuleMainTab("inventoryManager");
+
+                if (firstModule == null) {
+                    firstModule = "inventoryManager";
+                }
+            }
+        }
 
         // tk test if this is still necessary
         openModuleMainTab(firstModule);
