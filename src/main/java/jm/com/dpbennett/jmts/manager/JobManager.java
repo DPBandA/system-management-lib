@@ -2916,8 +2916,6 @@ public class JobManager extends GeneralManager
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
         ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
 
-        setSearchType(searchType);
-
         switch (searchType) {
             case "General":
             case "My jobs":
