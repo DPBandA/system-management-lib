@@ -93,6 +93,9 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
+import org.primefaces.model.dashboard.DashboardModel;
+import org.primefaces.model.dashboard.DefaultDashboardModel;
+import org.primefaces.model.dashboard.DefaultDashboardWidget;
 
 /**
  *
