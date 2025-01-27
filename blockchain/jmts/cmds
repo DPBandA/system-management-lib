@@ -1,4 +1,7 @@
-Address: 0x302B7590ccBA590F9D6Df6e3ccaE510A7B3a88fe
+# Continue pg 332
+
+geth account new
+Account address: 0x302B7590ccBA590F9D6Df6e3ccaE510A7B3a88fe
 
 geth --datadir jmts/ --networkid 786 --miner.etherbase 0x302B7590ccBA590F9D6Df6e3ccaE510A7B3a88fe --http --http.api admin,debug,web3,eth,txpool,miner,net --http.corsdomain '*'
 
