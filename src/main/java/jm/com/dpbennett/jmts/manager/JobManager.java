@@ -1772,7 +1772,10 @@ public class JobManager extends GeneralManager
         createJob(em, false, false);
     }
 
-    public Boolean createJob(EntityManager em, Boolean isSubcontract, Boolean copyCosting) {
+    public Boolean createJob(
+            EntityManager em, 
+            Boolean isSubcontract, 
+            Boolean copyCosting) {
 
         try {
             if (isSubcontract) {
@@ -1936,6 +1939,7 @@ public class JobManager extends GeneralManager
     private boolean prepareAndSaveJob(Job job) {
         ReturnMessage returnMessage;
 
+        // tk testing this
         returnMessage = job.prepareAndSave(getEntityManager1(), getUser());
 
         if (returnMessage.isSuccess()) {
