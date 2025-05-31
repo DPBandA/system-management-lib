@@ -84,6 +84,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DialogFrameworkOptions;
@@ -1213,9 +1214,9 @@ public class ReportManager extends GeneralManager {
             HSSFWorkbook wb = new HSSFWorkbook(fileSystem);
             HSSFCellStyle dataCellStyle = wb.createCellStyle();
             HSSFCellStyle headerCellStyle = wb.createCellStyle();
-            headerCellStyle.setFont(ReportUtils.createBoldFont(wb, (short) 14, HSSFColor.BLUE.index));
+            headerCellStyle.setFont(ReportUtils.createBoldFont(wb, (short) 14, IndexedColors.BLUE.getIndex()));
             HSSFCellStyle columnHeaderCellStyle = wb.createCellStyle();
-            columnHeaderCellStyle.setFont(ReportUtils.createBoldFont(wb, (short) 12, HSSFColor.BLUE.index));
+            columnHeaderCellStyle.setFont(ReportUtils.createBoldFont(wb, (short) 12, IndexedColors.BLUE.getIndex()));
 
             try ( // Create temp file for output
                     FileOutputStream out = new FileOutputStream("MonthlyReport" + user.getId() + ".xls")) {

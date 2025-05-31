@@ -42,10 +42,8 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -69,6 +67,8 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DialogFrameworkOptions;
 
@@ -1115,19 +1115,19 @@ public class JobContractManager extends GeneralManager
         font.setFontHeightInPoints((short) 12);
         font.setFontName("Arial");
         cellStyle.setFont(font);
-        cellStyle.setFillForegroundColor(HSSFColor.WHITE.index);
+        cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
         cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
         return cellStyle;
     }
 
-    public Font getWingdingsFont(HSSFWorkbook wb) {
-        Font font = wb.createFont();
-        font.setFontHeightInPoints((short) 14);
-        font.setFontName("Wingdings");
-
-        return font;
-    }
+//    public Font getWingdingsFont(HSSFWorkbook wb) {
+//        Font font = wbStyle.createFont();
+//        font.setFontHeightInPoints((short) 14);
+//        font.setFontName("Wingdings");
+//
+//        return font;
+//    }
 
     public Font getFont(HSSFWorkbook wb, String fontName, short fontsize) {
         Font font = wb.createFont();

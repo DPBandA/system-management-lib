@@ -160,7 +160,7 @@ public final class SystemManager extends GeneralManager {
     // end tk
 
     public SystemManager() {
-        init();
+        init();    
     }
 
     public Issue getIssue() {
