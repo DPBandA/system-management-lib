@@ -793,6 +793,19 @@ public class FinanceManager extends GeneralManager implements Serializable {
             return new ArrayList<>();
         }
     }
+    
+    public List<Service> getServices(String query) {
+
+        try {
+            
+            return Service.findAll(getEntityManager1());            
+            
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
 
     public Boolean getIsActiveServicesOnly() {
         return isActiveServicesOnly;
