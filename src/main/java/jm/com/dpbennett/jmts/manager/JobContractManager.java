@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -67,8 +67,10 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DialogFrameworkOptions;
 
@@ -87,9 +89,9 @@ public class JobContractManager extends GeneralManager
     public JobContractManager() {
         init();
     }
-    
+
     public Employee getEmployee() {
-               
+
         return getJobManager().getEmployee();
     }
 
@@ -193,7 +195,7 @@ public class JobContractManager extends GeneralManager
             // Set parameters
             // Logo URL
             String logoURL = (String) SystemOption.getOptionValueObject(
-                    getSystemManager().getEntityManager1(), 
+                    getSystemManager().getEntityManager1(),
                     "logoURL");
             parameters.put("logoURL", logoURL);
             // Job id
@@ -332,7 +334,7 @@ public class JobContractManager extends GeneralManager
             parameters.put("additionalSampleDetails", details);
 
             em.getTransaction().begin();
-            
+
             Connection con = BusinessEntityUtils.getConnection(em);
 
             if (con != null) {
@@ -407,7 +409,6 @@ public class JobContractManager extends GeneralManager
 //            return new ArrayList<>();
 //        }
 //    }
-
     public JobManager getJobManager() {
         if (jobManager == null) {
             jobManager = BeanUtils.findBean("jobManager");
@@ -441,7 +442,7 @@ public class JobContractManager extends GeneralManager
 
     public StreamedContent getServiceContractStreamContent() {
         EntityManager em;
-
+      
         try {
 
             em = getSystemManager().getEntityManager1();
@@ -495,86 +496,78 @@ public class JobContractManager extends GeneralManager
     }
 
     // service requested - calibration
-    public Boolean getServiceRequestedCalibration() {
-        if (getCurrentJob() != null) {
-            return getCurrentJob().getServiceContract().getServiceRequestedCalibration();
-        } else {
-            return false;
-        }
-    }
-
-    public void setServiceRequestedCalibration(Boolean b) {
-        getCurrentJob().getServiceContract().setServiceRequestedCalibration(b);
-    }
-
+//    public Boolean getServiceRequestedCalibration() {
+//        if (getCurrentJob() != null) {
+//            return getCurrentJob().getServiceContract().getServiceRequestedCalibration();
+//        } else {
+//            return false;
+//        }
+//    }
+//    public void setServiceRequestedCalibration(Boolean b) {
+//        getCurrentJob().getServiceContract().setServiceRequestedCalibration(b);
+//    }
     // service requested - label evaluation
-    public Boolean getServiceRequestedLabelEvaluation() {
-        if (getCurrentJob() != null) {
-            return getCurrentJob().getServiceContract().getServiceRequestedLabelEvaluation();
-        } else {
-            return false;
-        }
-    }
-
-    public void setServiceRequestedLabelEvaluation(Boolean b) {
-        getCurrentJob().getServiceContract().setServiceRequestedLabelEvaluation(b);
-    }
-
-    // service requested - inspection
-    public Boolean getServiceRequestedInspection() {
-        if (getCurrentJob() != null) {
-            return getCurrentJob().getServiceContract().getServiceRequestedInspection();
-        } else {
-            return false;
-        }
-    }
-
-    public void setServiceRequestedInspection(Boolean b) {
-        getCurrentJob().getServiceContract().setServiceRequestedInspection(b);
-    }
-
-    // service requested - consultancy
-    public Boolean getServiceRequestedConsultancy() {
-        if (getCurrentJob() != null) {
-            return getCurrentJob().getServiceContract().getServiceRequestedConsultancy();
-        } else {
-            return false;
-        }
-    }
-
-    public void setServiceRequestedConsultancy(Boolean b) {
-        getCurrentJob().getServiceContract().setServiceRequestedConsultancy(b);
-    }
-
-    // service requested - training
-    public Boolean getServiceRequestedTraining() {
-        if (getCurrentJob() != null) {
-            return getCurrentJob().getServiceContract().getServiceRequestedTraining();
-        } else {
-            return false;
-        }
-    }
-
-    public void setServiceRequestedTraining(Boolean b) {
-        getCurrentJob().getServiceContract().setServiceRequestedTraining(b);
-    }
-
-    // service requested - other
-    public Boolean getServiceRequestedOther() {
-        if (getCurrentJob() != null) {
-            return getCurrentJob().getServiceContract().getServiceRequestedOther();
-        } else {
-            return false;
-        }
-    }
-
-    public void setServiceRequestedOther(Boolean b) {
-        getCurrentJob().getServiceContract().setServiceRequestedOther(b);
-        if (!b) {
-            getCurrentJob().getServiceContract().setServiceRequestedOtherText(null);
-        }
-    }
-
+//    public Boolean getServiceRequestedLabelEvaluation() {
+//        if (getCurrentJob() != null) {
+//            return getCurrentJob().getServiceContract().getServiceRequestedLabelEvaluation();
+//        } else {
+//            return false;
+//        }
+//    }
+//    public void setServiceRequestedLabelEvaluation(Boolean b) {
+//        getCurrentJob().getServiceContract().setServiceRequestedLabelEvaluation(b);
+//    }
+//
+//    // service requested - inspection
+//    public Boolean getServiceRequestedInspection() {
+//        if (getCurrentJob() != null) {
+//            return getCurrentJob().getServiceContract().getServiceRequestedInspection();
+//        } else {
+//            return false;
+//        }
+//    }
+//    public void setServiceRequestedInspection(Boolean b) {
+//        getCurrentJob().getServiceContract().setServiceRequestedInspection(b);
+//    }
+//
+//    // service requested - consultancy
+//    public Boolean getServiceRequestedConsultancy() {
+//        if (getCurrentJob() != null) {
+//            return getCurrentJob().getServiceContract().getServiceRequestedConsultancy();
+//        } else {
+//            return false;
+//        }
+//    }
+//    public void setServiceRequestedConsultancy(Boolean b) {
+//        getCurrentJob().getServiceContract().setServiceRequestedConsultancy(b);
+//    }
+//
+//    // service requested - training
+//    public Boolean getServiceRequestedTraining() {
+//        if (getCurrentJob() != null) {
+//            return getCurrentJob().getServiceContract().getServiceRequestedTraining();
+//        } else {
+//            return false;
+//        }
+//    }
+//    public void setServiceRequestedTraining(Boolean b) {
+//        getCurrentJob().getServiceContract().setServiceRequestedTraining(b);
+//    }
+//
+//    // service requested - other
+//    public Boolean getServiceRequestedOther() {
+//        if (getCurrentJob() != null) {
+//            return getCurrentJob().getServiceContract().getServiceRequestedOther();
+//        } else {
+//            return false;
+//        }
+//    }
+//    public void setServiceRequestedOther(Boolean b) {
+//        getCurrentJob().getServiceContract().setServiceRequestedOther(b);
+//        if (!b) {
+//            getCurrentJob().getServiceContract().setServiceRequestedOtherText(null);
+//        }
+//    }
     //Intended Market
     //intended martket - local
     public Boolean getIntendedMarketLocal() {
@@ -705,20 +698,18 @@ public class JobContractManager extends GeneralManager
         setIsDirty(true);
     }
 
-    public void addService(String name) {
-        addService(getCurrentJob(), name);
-
-    }
-
+//    public void addService(String name) {
+//        addService(getCurrentJob(), name);
+//
+//    }
 //    public List<Service> getAllActiveServices() {
 //
 //        return Service.findAllActive(getEntityManager1());
 //    }
-    
     public FinanceManager getFinanceManager() {
 
         return BeanUtils.findBean("financeManager");
-        
+
     }
 
     public void addService(Job job, String name) {
@@ -757,10 +748,16 @@ public class JobContractManager extends GeneralManager
 
     public void updateService(AjaxBehaviorEvent event) {
 
-        enableAllServices(false);
-
-        addService(getCurrentJob().getServiceContract().getSelectedService().getName());
-
+//        enableAllServices(false);
+//
+//        addService(getCurrentJob().getServiceContract().getSelectedService().getName());
+        // tk add requested service to service contract
+//        System.out.println("Adding service...: " 
+//                + getCurrentJob().getServiceContract().getSelectedService());
+        //List<Service> s = getCurrentJob().getServices(); 
+//        getCurrentJob().getServices().set(0, 
+//                getCurrentJob().getServiceContract().getSelectedService());
+        //getCurrentJob().setServices(s);
         setIsDirty(true);
 
     }
@@ -774,188 +771,29 @@ public class JobContractManager extends GeneralManager
      * @param event
      */
     public void updateServices(AjaxBehaviorEvent event) {
-        Boolean bUpdatedService;
+        // tk
+        String message = "selectedOptions changed to: ";
+        for (int i = 0; i < getCurrentJob().getServices().size(); i++) {
+            if (i > 0) {
+                message += ", ";
+            }
 
-        switch (event.getComponent().getId()) {
-            case "testingService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedTesting();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedTesting(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Testing");
-                } else {
-                    removeService("Testing");
-                }
-                break;
-            case "calibrationService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedCalibration();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedCalibration(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Calibration");
-                } else {
-                    removeService("Calibration");
-                }
-                break;
-            case "labelEvaluationService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedLabelEvaluation();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedLabelEvaluation(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Label Evaluation");
-                } else {
-                    removeService("Label Evaluation");
-                }
-                break;
-            case "inspectionService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedInspection();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedInspection(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Inspection");
-                } else {
-                    removeService("Inspection");
-                }
-                break;
-            case "consultancyService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedConsultancy();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedConsultancy(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Consultancy");
-                } else {
-                    removeService("Consultancy");
-                }
-                break;
-            case "trainingService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedTraining();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedTraining(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Training");
-                } else {
-                    removeService("Training");
-                }
-                break;
-            case "serviceRequestedFoodInspectorate":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedFoodInspectorate();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedFoodInspectorate(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Food Inspectorate");
-                } else {
-                    removeService("Food Inspectorate");
-                }
-                break;
-            case "serviceRequestedLegalMetrology":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedLegalMetrology();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedLegalMetrology(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Legal Metrology");
-                } else {
-                    removeService("Legal Metrology");
-                }
-                break;
-            case "serviceRequestedSaleOfPublication":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedSaleOfPublication();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedSaleOfPublication(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Sale of Publication");
-                } else {
-                    removeService("Sale of Publication");
-                }
-                break;
-            case "serviceRequestedStationeryOrPhotocopy":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedStationeryOrPhotocopy();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedStationeryOrPhotocopy(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Stationery or Photocopy");
-                } else {
-                    removeService("Stationery or Photocopy");
-                }
-                break;
-            case "serviceRequestedCertification":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedCertification();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedCertification(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Certification");
-                } else {
-                    removeService("Certification");
-                }
-                break;
-            case "serviceRequestedCertificationStandards":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedCertificationStandards();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedCertificationStandards(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Certification Mark Programme");
-                } else {
-                    removeService("Certification Mark Programme");
-                }
-                break;
-            case "serviceRequestedDetentionRehabInspection":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedDetentionRehabInspection();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedDetentionRehabInspection(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Detention, Rehabilitation & Inspection");
-                } else {
-                    removeService("Detention, Rehabilitation & Inspection");
-                }
-                break;
-            case "serviceRequestedFacilitiesManagement":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedFacilitiesManagement();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedFacilitiesManagement(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Facilities Management");
-                } else {
-                    removeService("Facilities Management");
-                }
-                break;
-            case "serviceRequestedCementTesting":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedCementTesting();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedCementTesting(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Cement Testing");
-                } else {
-                    removeService("Cement Testing");
-                }
-                break;
-            case "serviceRequestedPetrolSampling":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedPetrolSampling();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedPetrolSampling(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Petrol Sampling");
-                } else {
-                    removeService("Petrol Sampling");
-                }
-                break;
-            case "otherService":
-                bUpdatedService = getCurrentJob().getServiceContract().getServiceRequestedOther();
-                enableAllServices(false);
-                getCurrentJob().getServiceContract().setServiceRequestedOther(bUpdatedService);
-                if (bUpdatedService) {
-                    addService("Other");
-                } else {
-                    removeService("Other");
-                }
-                break;
+            getCurrentJob().getServiceContract().setSelectedService(
+                    getCurrentJob().getServices().get(0));
+            
+            message += getCurrentJob().getServices().get(i);
         }
+        System.out.println(message);
 
         setIsDirty(true);
     }
 
+    /*
     public void addServices() {
         addServices(getCurrentJob());
     }
-
+     */
+ /*
     public void addServices(Job job) {
 
         if (job.getServiceContract().getServiceRequestedTesting()) {
@@ -1027,40 +865,38 @@ public class JobContractManager extends GeneralManager
         }
 
     }
-
-    public void enableAllServices(Boolean b) {
-        enableAllServices(getCurrentJob(), b);
-    }
-
-    public void enableAllServices(Job job, Boolean b) {
-
-        job.getServiceContract().setServiceRequestedTesting(b);
-        job.getServiceContract().setServiceRequestedCalibration(b);
-        job.getServiceContract().setServiceRequestedLabelEvaluation(b);
-        job.getServiceContract().setServiceRequestedInspection(b);
-        job.getServiceContract().setServiceRequestedConsultancy(b);
-        job.getServiceContract().setServiceRequestedTraining(b);
-        job.getServiceContract().setServiceRequestedFoodInspectorate(b);
-        job.getServiceContract().setServiceRequestedLegalMetrology(b);
-        job.getServiceContract().setServiceRequestedSaleOfPublication(b);
-        job.getServiceContract().setServiceRequestedStationeryOrPhotocopy(b);
-        job.getServiceContract().setServiceRequestedCertification(b);
-        job.getServiceContract().setServiceRequestedCertificationStandards(b);
-        job.getServiceContract().setServiceRequestedDetentionRehabInspection(b);
-        job.getServiceContract().setServiceRequestedFacilitiesManagement(b);
-        job.getServiceContract().setServiceRequestedCementTesting(b);
-        job.getServiceContract().setServiceRequestedPetrolSampling(b);
-        job.getServiceContract().setServiceRequestedOther(b);
-
-        // Add/remove all services
-        if (b) {
-            addServices(job);
-        } else {
-            job.getServices().clear();
-        }
-
-    }
-
+     */
+//    public void enableAllServices(Boolean b) {
+//        enableAllServices(getCurrentJob(), b);
+//    }
+//    public void enableAllServices(Job job, Boolean b) {
+//
+//        job.getServiceContract().setServiceRequestedTesting(b);
+//        job.getServiceContract().setServiceRequestedCalibration(b);
+//        job.getServiceContract().setServiceRequestedLabelEvaluation(b);
+//        job.getServiceContract().setServiceRequestedInspection(b);
+//        job.getServiceContract().setServiceRequestedConsultancy(b);
+//        job.getServiceContract().setServiceRequestedTraining(b);
+//        job.getServiceContract().setServiceRequestedFoodInspectorate(b);
+//        job.getServiceContract().setServiceRequestedLegalMetrology(b);
+//        job.getServiceContract().setServiceRequestedSaleOfPublication(b);
+//        job.getServiceContract().setServiceRequestedStationeryOrPhotocopy(b);
+//        job.getServiceContract().setServiceRequestedCertification(b);
+//        job.getServiceContract().setServiceRequestedCertificationStandards(b);
+//        job.getServiceContract().setServiceRequestedDetentionRehabInspection(b);
+//        job.getServiceContract().setServiceRequestedFacilitiesManagement(b);
+//        job.getServiceContract().setServiceRequestedCementTesting(b);
+//        job.getServiceContract().setServiceRequestedPetrolSampling(b);
+//        job.getServiceContract().setServiceRequestedOther(b);
+//
+//        // Add/remove all services
+//        if (b) {
+//            addServices(job);
+//        } else {
+//            job.getServices().clear();
+//        }
+//
+//    }
     @Override
     public void setIsDirty(Boolean dirty) {
         getCurrentJob().setIsDirty(dirty);
@@ -1076,11 +912,11 @@ public class JobContractManager extends GeneralManager
     public Boolean getIsDirty() {
         return getCurrentJob().getIsDirty();
     }
-    
-     public HumanResourceManager getHumanResourceManager() {
-         
+
+    public HumanResourceManager getHumanResourceManager() {
+
         return BeanUtils.findBean("humanResourceManager");
-        
+
     }
 
     /**
@@ -1116,7 +952,7 @@ public class JobContractManager extends GeneralManager
         font.setFontName("Arial");
         cellStyle.setFont(font);
         cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         return cellStyle;
     }
@@ -1128,7 +964,6 @@ public class JobContractManager extends GeneralManager
 //
 //        return font;
 //    }
-
     public Font getFont(HSSFWorkbook wb, String fontName, short fontsize) {
         Font font = wb.createFont();
         font.setFontHeightInPoints(fontsize);
@@ -1157,7 +992,7 @@ public class JobContractManager extends GeneralManager
             Font defaultFont = getFont(wb, "Arial", (short) 10);
             Font samplesFont = getFont(wb, "Arial", (short) 9);
             Font samplesRefFont = getFont(wb, "Arial", (short) 9);
-            samplesRefFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            samplesRefFont.setBold(true);
             Font jobNumberFont = getFont(wb, "Arial Black", (short) 14);
 
             // Cell style
@@ -1174,9 +1009,9 @@ public class JobContractManager extends GeneralManager
             // Fill in job data
             // Job number
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderLeft((short) 2);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(jobNumberFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "A6", // A = 0 , 6 = 5
                     getCurrentJob().getJobNumber(),
@@ -1184,11 +1019,11 @@ public class JobContractManager extends GeneralManager
 
             // Contracting business office       
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderLeft((short) 1);
-            dataCellStyle.setBorderBottom((short) 1);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "K6",
                     getCurrentJob().getBusinessOffice().getName(),
@@ -1200,13 +1035,13 @@ public class JobContractManager extends GeneralManager
 
             // Job entry agent:
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F9",
                     getCurrentJob().getJobStatusAndTracking().getEnteredBy().getName(),
@@ -1214,13 +1049,13 @@ public class JobContractManager extends GeneralManager
 
             // Date agent prepared contract:   
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F10",
                     getCurrentJob().getJobStatusAndTracking().getDateAndTimeEntered(),
@@ -1228,13 +1063,13 @@ public class JobContractManager extends GeneralManager
 
             // Department in charge of job (Parent department):   
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F11",
                     getCurrentJob().getDepartment().getName(),
@@ -1242,13 +1077,13 @@ public class JobContractManager extends GeneralManager
 
             // Estimated turn around time:
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F12",
                     getCurrentJob().getEstimatedTurnAroundTimeInDays(),
@@ -1256,26 +1091,26 @@ public class JobContractManager extends GeneralManager
 
             // Estimated Sub Total:
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F13",
                     getCurrentJob().getJobCostingAndPayment().getEstimatedCost(),
                     "Currency", dataCellStyle);
             // Estimated Tax
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F14",
                     getCurrentJob().getJobCostingAndPayment().getEstimatedCost()
@@ -1284,13 +1119,13 @@ public class JobContractManager extends GeneralManager
 
             // Estimated Total Cost
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F15",
                     getCurrentJob().getJobCostingAndPayment().getCalculatedCostEstimate(),
@@ -1298,12 +1133,12 @@ public class JobContractManager extends GeneralManager
 
             // Minimum First Deposit
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "F16",
                     getCurrentJob().getJobCostingAndPayment().getCalculatedMinDeposit(),
@@ -1311,12 +1146,12 @@ public class JobContractManager extends GeneralManager
 
             // RECEIPT #
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             dataCellStyle.setWrapText(true);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "R9",
@@ -1325,12 +1160,12 @@ public class JobContractManager extends GeneralManager
 
             // TOTAL PAID
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             dataCellStyle.setWrapText(true);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "V9",
@@ -1344,20 +1179,20 @@ public class JobContractManager extends GeneralManager
             Double tax = getCurrentJob().getJobCostingAndPayment().getTotalPayment() - payment;
             // Tax
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AC9",
                     tax,
                     "Currency", dataCellStyle);
             // Payment
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AC10",
                     payment,
@@ -1366,10 +1201,10 @@ public class JobContractManager extends GeneralManager
             // DATE PAID (date of last payment)
             if (getCurrentJob().getJobCostingAndPayment().getLastPaymentDate() != null) {
                 dataCellStyle = getDefaultCellStyle(wb);
-                dataCellStyle.setBorderBottom((short) 1);
+                dataCellStyle.setBorderBottom(BorderStyle.THIN);
                 dataCellStyle.setFont(defaultFont);
-                dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-                dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+                dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
+                dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "AH9",
                         getCurrentJob().getJobCostingAndPayment().getLastPaymentDate(),
@@ -1379,8 +1214,8 @@ public class JobContractManager extends GeneralManager
             // BALANCE (amount due) 
             dataCellStyle = getDefaultCellStyle(wb);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             if (getCurrentJob().getJobCostingAndPayment().getFinalCost() > 0.0) {
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "AL9",
@@ -1404,13 +1239,13 @@ public class JobContractManager extends GeneralManager
 
             // PAYMENT TERMS/INFORMATION
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderLeft((short) 1);
-            dataCellStyle.setBorderRight((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
+            dataCellStyle.setBorderRight(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.TOP);
             if (!getCurrentJob().getJobCostingAndPayment().getAllPaymentTerms().trim().equals("")) {
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "R12",
@@ -1426,13 +1261,13 @@ public class JobContractManager extends GeneralManager
             // THE INFORMATION IN SECTION 3
             // AGENT/CASHIER
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
-            dataCellStyle.setBorderBottom((short) 1);
-            dataCellStyle.setBorderLeft((short) 1);
-            dataCellStyle.setBorderRight((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
+            dataCellStyle.setBorderRight(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AL12",
                     getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy().getName(),
@@ -1441,10 +1276,10 @@ public class JobContractManager extends GeneralManager
             // CLIENT NAME & BILLING ADDRESS
             // Name
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "A20",
                     client.getName(),
@@ -1473,10 +1308,10 @@ public class JobContractManager extends GeneralManager
             // Name
             Contact contactPerson = getCurrentJob().getContact();
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "M20",
                     contactPerson,
@@ -1484,11 +1319,11 @@ public class JobContractManager extends GeneralManager
 
             // Email
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "M22",
                     contactPerson.getInternet().getEmail1(),
@@ -1496,10 +1331,10 @@ public class JobContractManager extends GeneralManager
 
             // Phone
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "Z20",
                     contactPerson.getMainPhoneNumber(),
@@ -1507,10 +1342,10 @@ public class JobContractManager extends GeneralManager
 
             // Fax
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderBottom((short) 1);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_BOTTOM);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "Z22",
                     contactPerson.getMainFaxNumber(),
@@ -1521,10 +1356,10 @@ public class JobContractManager extends GeneralManager
             getCurrentJob().getServiceContract().setJob(getCurrentJob());
             String services = getCurrentJob().getServiceContract().getSelectedServiceForContract().getName() + " ";
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.TOP);
             dataCellStyle.setWrapText(true);
             // NB: Gathering services like this will no longer be necessary
             /*
@@ -1560,11 +1395,11 @@ public class JobContractManager extends GeneralManager
 
             // Fax/Email report?:
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderRight((short) 1);
-            dataCellStyle.setBorderBottom((short) 1);
+            dataCellStyle.setBorderRight(BorderStyle.THIN);
+            dataCellStyle.setBorderBottom(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_BOTTOM);
+            dataCellStyle.setAlignment(HorizontalAlignment.RIGHT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
             if (getCurrentJob().getServiceContract().getAdditionalServiceFaxResults()) {
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "AN21",
@@ -1605,10 +1440,10 @@ public class JobContractManager extends GeneralManager
 
             // CLIENT INSTRUCTION/DETAILS FOR JOB
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderTop((short) 1);
+            dataCellStyle.setBorderTop(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_TOP);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.TOP);
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "M24",
                     getCurrentJob().getInstructions(),
@@ -1619,20 +1454,20 @@ public class JobContractManager extends GeneralManager
             if (!getCurrentJob().getJobSamples().isEmpty()) {
                 for (JobSample jobSample : getCurrentJob().getJobSamples()) {
                     dataCellStyle = getDefaultCellStyle(wb);
-                    dataCellStyle.setBorderLeft((short) 1);
+                    dataCellStyle.setBorderLeft(BorderStyle.THIN);
                     dataCellStyle.setFont(samplesRefFont);
-                    dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-                    dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+                    dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+                    dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                     dataCellStyle.setWrapText(true);
                     ReportUtils.setExcelCellValue(
                             wb, serviceContractSheet, "A" + samplesStartngRow,
                             jobSample.getReference(),
                             "java.lang.String", dataCellStyle);
                     dataCellStyle = getDefaultCellStyle(wb);
-                    dataCellStyle.setBorderLeft((short) 1);
+                    dataCellStyle.setBorderLeft(BorderStyle.THIN);
                     dataCellStyle.setFont(samplesFont);
-                    dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-                    dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+                    dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+                    dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                     dataCellStyle.setWrapText(true);
                     ReportUtils.setExcelCellValue(
                             wb, serviceContractSheet, "B" + samplesStartngRow,
@@ -1684,20 +1519,20 @@ public class JobContractManager extends GeneralManager
                 }
             } else {
                 dataCellStyle = getDefaultCellStyle(wb);
-                dataCellStyle.setBorderLeft((short) 1);
+                dataCellStyle.setBorderLeft(BorderStyle.THIN);
                 dataCellStyle.setFont(samplesRefFont);
-                dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-                dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+                dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+                dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                 dataCellStyle.setWrapText(true);
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "A" + samplesStartngRow,
                         "",
                         "java.lang.String", dataCellStyle);
                 dataCellStyle = getDefaultCellStyle(wb);
-                dataCellStyle.setBorderLeft((short) 1);
+                dataCellStyle.setBorderLeft(BorderStyle.THIN);
                 dataCellStyle.setFont(samplesFont);
-                dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-                dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+                dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+                dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
                 dataCellStyle.setWrapText(true);
                 ReportUtils.setExcelCellValue(
                         wb, serviceContractSheet, "B" + samplesStartngRow,
@@ -1737,10 +1572,10 @@ public class JobContractManager extends GeneralManager
             // ADDITIONAL DETAILS FOR SAMPLE(S) 
             String details = "";
             dataCellStyle = getDefaultCellStyle(wb);
-            dataCellStyle.setBorderLeft((short) 1);
+            dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
-            dataCellStyle.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-            dataCellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
+            dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             if (getCurrentJob().getJobSamples().isEmpty()) {
                 details = "Not applicable";
             } else {

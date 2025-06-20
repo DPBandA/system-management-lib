@@ -40,6 +40,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 //import org.apache.poi.hssf.util.CellRangeAddress;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 //import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -135,12 +138,12 @@ public class ReportUtils {
         // Create column header font
         HSSFFont columnHeaderFont = wb.createFont();
         columnHeaderFont.setFontHeightInPoints(fontSize);
-        columnHeaderFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        columnHeaderFont.setBold(true);
         HSSFRow columnHeaderRow = sheet.createRow(fontSize);
         // Setup header style
         HSSFCellStyle headerColumnCellStyle = wb.createCellStyle();
         headerColumnCellStyle.setFont(columnHeaderFont);
-        headerColumnCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        headerColumnCellStyle.setAlignment(HorizontalAlignment.CENTER);
         for (int i = 0; i < headers.length; i++) {
             columnHeaderRow.createCell(i).setCellValue(new HSSFRichTextString(headers[i]));
             columnHeaderRow.getCell(i).setCellStyle(headerColumnCellStyle);
@@ -157,15 +160,15 @@ public class ReportUtils {
         // Create header font
         HSSFFont headerFont = wb.createFont();
         headerFont.setFontHeightInPoints(fontSize);
-        headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
 
         HSSFRow headerRow = sheet.createRow(rowIndex);
         // Setup header style
         HSSFCellStyle headerCellStyle = wb.createCellStyle();
         headerCellStyle.setFont(headerFont);
-        headerCellStyle.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
-        headerCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        headerCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        headerCellStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
         for (int i = 0; i < widthInColumns; i++) {
             headerRow.createCell(i);
             // Set cell style
@@ -297,7 +300,7 @@ public class ReportUtils {
     public static HSSFFont createBoldFont(HSSFWorkbook wb, short size, short color) {
         HSSFFont font = wb.createFont();
         font.setFontHeightInPoints(size);
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         font.setColor(color);
 
         return font;
@@ -306,7 +309,7 @@ public class ReportUtils {
     public static XSSFFont createBoldFont(XSSFWorkbook wb, short size, short color) {
         XSSFFont font = wb.createFont();
         font.setFontHeightInPoints(size);
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         font.setColor(color);
 
         return font;

@@ -59,6 +59,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 //import org.apache.poi.hssf.util.CellRangeAddress;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
@@ -717,12 +720,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         HSSFRow header = sheet.getRow(0);
         HSSFFont headerFont = wb.createFont();
         headerFont.setFontHeightInPoints((short) 12);
-        headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        headerFont.setBold(true);
         HSSFCellStyle headerCellStyle = wb.createCellStyle();
         headerCellStyle.setFont(headerFont);
-        headerCellStyle.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
-        headerCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        headerCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        headerCellStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
         for (int i = 0; i < numCols; i++) {
             header.createCell(i);
             HSSFCell cell = header.getCell(i);
@@ -741,8 +744,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         // get columns row
         HSSFRow cols = sheet.getRow(1);
         HSSFCellStyle cellStyle = wb.createCellStyle();
-        cellStyle.setFillForegroundColor(HSSFColor.YELLOW.index);
-        cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        cellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         // set columns widths
         for (int i = 0; i < cols.getPhysicalNumberOfCells(); i++) {

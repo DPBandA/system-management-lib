@@ -794,11 +794,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
         }
     }
     
-    public List<Service> getServices(String query) {
+    public List<Service> getServices() {
 
         try {
             
-            return Service.findAll(getEntityManager1());            
+            return Service.findAllActive(getEntityManager1());            
             
         } catch (Exception e) {
             System.out.println(e);

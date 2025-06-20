@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -2876,7 +2876,7 @@ public class JobFinanceManager extends GeneralManager
     private void prepareToInvoiceJobCosting(Job job) {
 
         // Ensure that services are added based on the service contract
-        getJobContractManager().addServices(job);
+//        getJobContractManager().addServices(job);
         // Ensure that an accounting Id is added for the client  
         AccPacCustomer financialAccount = AccPacCustomer.findByName(
                 getEntityManager2(), job.getClient().getName());
