@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -442,7 +443,7 @@ public class JobContractManager extends GeneralManager
 
     public StreamedContent getServiceContractStreamContent() {
         EntityManager em;
-      
+
         try {
 
             em = getSystemManager().getEntityManager1();
@@ -712,6 +713,12 @@ public class JobContractManager extends GeneralManager
 
     }
 
+    public List<Service> getServices() {
+        
+        return getFinanceManager().getServices();
+
+    }
+
     public void addService(Job job, String name) {
         Service service = Service.findActiveByExactName(
                 getFinanceManager().getEntityManager1(),
@@ -771,19 +778,19 @@ public class JobContractManager extends GeneralManager
      * @param event
      */
     public void updateServices(AjaxBehaviorEvent event) {
+
         // tk
-        String message = "selectedOptions changed to: ";
-        for (int i = 0; i < getCurrentJob().getServices().size(); i++) {
-            if (i > 0) {
-                message += ", ";
+        // Set primary service if it is null and 
+        // remove selected service from the services list
+        if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
+            for (int i = 0; i < getCurrentJob().getServices().size(); i++) {
+
+                getCurrentJob().getServiceContract().setSelectedService(
+                        getCurrentJob().getServices().get(0));
+
             }
 
-            getCurrentJob().getServiceContract().setSelectedService(
-                    getCurrentJob().getServices().get(0));
-            
-            message += getCurrentJob().getServices().get(i);
         }
-        System.out.println(message);
 
         setIsDirty(true);
     }
