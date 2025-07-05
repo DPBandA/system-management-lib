@@ -165,6 +165,8 @@ public interface Manager {
     public void updateAllForms();
 
     public void onMainViewTabClose(TabCloseEvent event);
+    
+    public void onDashboardTabChange(TabChangeEvent event);
 
     public void onMainViewTabChange(TabChangeEvent event);
 

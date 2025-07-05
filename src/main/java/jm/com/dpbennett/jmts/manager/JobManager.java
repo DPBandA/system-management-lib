@@ -87,6 +87,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.UnselectEvent;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
 import jm.com.dpbennett.sm.util.MainTabView;
@@ -368,13 +369,14 @@ public class JobManager extends GeneralManager
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
+            case "Job Management":
             case "Job Browser":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
                 return true;
 
             case "Proforma Invoices":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:proformaSearchButton");
+                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
                 return true;
 
@@ -1180,11 +1182,11 @@ public class JobManager extends GeneralManager
     }
 
     public void jobDialogReturn() {
-        
+
         if (currentJob.getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
-             currentJob.setIsDirty(false);
+            PrimeFaces.current().ajax().update("headerForm:growl3");
+            currentJob.setIsDirty(false);
         }
 
     }
@@ -1217,7 +1219,7 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
     }
 
@@ -1265,7 +1267,7 @@ public class JobManager extends GeneralManager
             getUser().setJobTableViewPreference("Job Costings");
         }
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
         getMainTabView().openTab("Job Browser");
 
@@ -1773,8 +1775,8 @@ public class JobManager extends GeneralManager
     }
 
     public Boolean createJob(
-            EntityManager em, 
-            Boolean isSubcontract, 
+            EntityManager em,
+            Boolean isSubcontract,
             Boolean copyCosting) {
 
         try {
@@ -2357,12 +2359,12 @@ public class JobManager extends GeneralManager
     }
 
     public void doJobSearch() {
-        
+
         if (getUser().getId() != null) {
             int maxResult = SystemOption.getInteger(
-                        getSystemManager().getEntityManager1(),
-                        "maxSearchResults");
-            
+                    getSystemManager().getEntityManager1(),
+                    "maxSearchResults");
+
             jobSearchResultList = findJobs(maxResult);
         } else {
             jobSearchResultList = new ArrayList<>();
@@ -2543,7 +2545,7 @@ public class JobManager extends GeneralManager
     }
 
     public void updateJobSearch() {
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
     }
 
     public void updateBillingAddress() {
@@ -2951,11 +2953,11 @@ public class JobManager extends GeneralManager
 
                 try {
 
-            } catch (NumberFormatException e) {
-                System.out.println(e);
-            }
+                } catch (NumberFormatException e) {
+                    System.out.println(e);
+                }
 
-            break;
+                break;
 
             default:
                 System.out.println("Unkown type");
@@ -2973,15 +2975,15 @@ public class JobManager extends GeneralManager
             switch (moduleName) {
                 case "complianceManager":
                     getComplianceManager().openSurveysBrowser();
-                    
+
                     break;
                 case "humanResourceManager":
                     getHumanResourceManager().openHumanResourceBrowser();
-                    
+
                     break;
-                case "jobManager":                   
+                case "jobManager":
                     openJobBrowser();
-                    getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:jobSearchButton");
+                    getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
                     break;
                 case "clientManager":
@@ -2989,19 +2991,43 @@ public class JobManager extends GeneralManager
                     break;
                 case "purchasingManager":
                     getPurchasingManager().openPurchaseReqsTab();
-                    
+
                     break;
                 case "inventoryManager":
-                    
+
                     getInventoryManager().openInventoryProductBrowser();
                     getInventoryManager().openInventoryTab();
                     getInventoryManager().openInventoryRequisitionTab();
-                    
+
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    @Override
+    public Dashboard getDashboard() {
+        
+        return getSystemManager().getDashboard();
+    }   
+    
+
+    @Override
+    public void initDashboard() {
+        
+        // tk
+        //System.out.println("Dashboard");
+
+        //super.initDashboard();
+
+        getDashboard().reset(getUser(), true);
+        
+
+        //if (getUser().hasModule("jobManager")) {
+           //getDashboard().addTab("Job Management", true);
+           getDashboard().openTab("Job Management");
+        //}
     }
 
     @Override
@@ -3012,17 +3038,16 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        // Finance dashboard - tk to be JMTS dashboard
-        if (getUser().hasModule("purchasingManager") || getUser().hasModule("inventoryManager")) {
-            getFinanceManager().openDashboardTab();
-        }
-
+//        // Finance dashboard - tk to be JMTS dashboard
+//        if (getUser().hasModule("purchasingManager") || getUser().hasModule("inventoryManager")) {
+//            getFinanceManager().openDashboardTab();
+//        }
         // Standards Compliance
         if (getUser().hasModule("complianceManager")) {
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),
                     "complianceManager");
-            
+
             if (module != null) {
                 openModuleMainTab("complianceManager");
 
@@ -3040,7 +3065,7 @@ public class JobManager extends GeneralManager
                     "jobManager");
             if (module != null) {
                 openModuleMainTab("jobManager");
-                
+
                 if (firstModule == null) {
                     firstModule = "jobManager";
                 }
@@ -3095,7 +3120,7 @@ public class JobManager extends GeneralManager
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 
@@ -3143,6 +3168,8 @@ public class JobManager extends GeneralManager
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+
+        initDashboard();
 
     }
 

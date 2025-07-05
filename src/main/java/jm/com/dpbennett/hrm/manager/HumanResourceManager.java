@@ -271,7 +271,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void openManufacturerBrowser() {
         getMainTabView().openTab("Manufacturers");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
     }
 
     public List<Manufacturer> completeManufacturer(String query) {
@@ -799,7 +799,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         getMainTabView().openTab("Human Resource");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
     }
 
@@ -1741,31 +1741,31 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         switch (tabTitle) {
             case "Human Resource":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
                 return true;
             case "Employees":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeeSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
                 return true;
             case "Positions":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:employeePositionSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeePositionSearchButton");
                 return true;
             case "Departments":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:departmentSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:departmentSearchButton");
                 return true;
             case "Divisions":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:divisionSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:divisionSearchButton");
                 return true;
             case "Subgroups":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:subgroupSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:subgroupSearchButton");
                 return true;
             case "Organizations":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:businessSearchButton");
                 return true;
             case "Business Offices":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:businessOfficeSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:businessOfficeSearchButton");
                 return true;
             case "Manufacturers":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
                 return true;
             default:
                 return false;
@@ -1808,7 +1808,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 

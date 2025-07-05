@@ -100,7 +100,7 @@ public class BasicManager extends GeneralManager implements Serializable {
             getUser().save(getEntityManager1());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
     }
 
     @Override

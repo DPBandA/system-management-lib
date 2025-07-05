@@ -212,7 +212,9 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void updateAllForms() {
-        PrimeFaces.current().ajax().update(":appForm");
+        PrimeFaces.current().ajax().update(":headerForm");
+        PrimeFaces.current().ajax().update(":dashboardForm");
+        PrimeFaces.current().ajax().update(":mainTabViewForm");
     }
 
     @Override
@@ -866,6 +868,13 @@ public class GeneralManager implements Manager, Serializable {
 
         throw new UnsupportedOperationException("Not supported yet.");
 
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+        
+        setTabTitle(event.getTab().getTitle());
+        
     }
 
 }

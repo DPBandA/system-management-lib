@@ -125,7 +125,7 @@ public class ReportManager extends GeneralManager {
 
         switch (tabTitle) {
             case "Report Templates":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:reportTemplateSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
                 return true;
             default:
                 return false;
@@ -335,7 +335,7 @@ public class ReportManager extends GeneralManager {
 
     public void openReportTemplatesTab() {
 
-        getSystemManager().setDocumentTypeSearchText(":appForm:mainTabView:reportTemplateSearchButton");
+        getSystemManager().setDocumentTypeSearchText(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
 
         getMainTabView().openTab("Report Templates");
     }
@@ -2483,7 +2483,7 @@ public class ReportManager extends GeneralManager {
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 

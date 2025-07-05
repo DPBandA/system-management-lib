@@ -89,7 +89,7 @@ public class EnergyLabelManager extends GeneralManager
 
         switch (tabTitle) {
             case "Label Browser":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
                 return true;
 
@@ -156,7 +156,7 @@ public class EnergyLabelManager extends GeneralManager
 
         getMainTabView().openTab("Label Browser");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
     }
 
@@ -186,7 +186,7 @@ public class EnergyLabelManager extends GeneralManager
         if (selectedEnergyLabel.getIsDirty()) {
             PrimeFacesUtils.addMessage("Energy Label was NOT saved!",
                     "The recently edited energy label was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            PrimeFaces.current().ajax().update("headerForm:growl3");
             selectedEnergyLabel.setIsDirty(false);
         } else {
             doEnergyLabelSearch();
@@ -403,7 +403,7 @@ public class EnergyLabelManager extends GeneralManager
 
         setSearchType("Energy labels");
         setSearchText("");
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:energyLabelSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
         setModuleNames(new String[]{
             "energyLabelManager",
             "systemManager"
@@ -585,7 +585,7 @@ public class EnergyLabelManager extends GeneralManager
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 

@@ -528,10 +528,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Suppliers":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:supplierSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:supplierSearchButton");
                 return true;
             case "Purchase Requisitions":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
                 return true;
             default:
                 return false;
@@ -1021,7 +1021,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void openSuppliersTab() {
         getMainTabView().openTab("Suppliers");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:supplierSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:supplierSearchButton");
     }
 
     public Boolean getCanExportPurchaseReqForm() {
@@ -1702,7 +1702,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void openPurchaseReqsTab() {
         getMainTabView().openTab("Purchase Requisitions");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
     }
 
     public void editPurchReqGeneralEmail() {
@@ -2577,7 +2577,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             PrimeFacesUtils.addMessage("Purchase requisition NOT saved",
                     "The recently edited purchase requisition was not saved",
                     FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            PrimeFaces.current().ajax().update("headerForm:growl3");
 
         }
         /*
@@ -2725,7 +2725,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         setSearchType("Purchase requisitions");
         setSearchText("");
-        setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",

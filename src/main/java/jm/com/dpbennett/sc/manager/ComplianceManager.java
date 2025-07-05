@@ -224,7 +224,7 @@ public class ComplianceManager extends GeneralManager
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 
@@ -394,31 +394,31 @@ public class ComplianceManager extends GeneralManager
 
         switch (tabTitle) {
             case "Survey Browser":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:surveySearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
 
                 return true;
 
             case "Standard Browser":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:standardSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:standardSearchButton");
 
                 return true;
 
             case "Complaint Browser":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:complaintSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:complaintSearchButton");
 
                 return true;
 
             case "Market Products":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:marketProductSearchButton");
 
                 return true;
 
 //            case "Manufacturers":
-//                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
+//                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
 //
 //                return true;
             case "Factory Inspections":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
 
                 return true;
 
@@ -479,7 +479,7 @@ public class ComplianceManager extends GeneralManager
         } else {
             PrimeFacesUtils.addMessage("Job NOT found!",
                     "The job was not found", FacesMessage.SEVERITY_ERROR);
-            //PrimeFaces.current().ajax().update("appForm:growl3");
+            //PrimeFaces.current().ajax().update("headerForm:growl3");
             //getJobManager().getCurrentJob().setIsDirty(false);
         }
     }
@@ -488,7 +488,7 @@ public class ComplianceManager extends GeneralManager
         if (getJobManager().getCurrentJob().getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved",
                     "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            //PrimeFaces.current().ajax().update("appForm:growl3");
+            //PrimeFaces.current().ajax().update("headerForm:growl3");
             //getJobManager().getCurrentJob().setIsDirty(false);
         } else {
             updateDialogJobNumber(dialog);
@@ -505,7 +505,7 @@ public class ComplianceManager extends GeneralManager
 //        } else {
 //            PrimeFacesUtils.addMessage("Job NOT found!",
 //                    "The job was not found", FacesMessage.SEVERITY_ERROR);
-//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            PrimeFaces.current().ajax().update("headerForm:growl3");
 //            getJobManager().getCurrentJob().setIsDirty(false);
 //        }
 //    }
@@ -513,7 +513,7 @@ public class ComplianceManager extends GeneralManager
 //        if (getJobManager().getCurrentJob().getIsDirty()) {
 //            PrimeFacesUtils.addMessage("Job was NOT saved",
 //                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            PrimeFaces.current().ajax().update("headerForm:growl3");
 //            getJobManager().getCurrentJob().setIsDirty(false);
 //        } else {
 //            getCurrentComplaint().
@@ -527,7 +527,7 @@ public class ComplianceManager extends GeneralManager
 //        if (getJobManager().getCurrentJob().getIsDirty()) {
 //            PrimeFacesUtils.addMessage("Job was NOT saved",
 //                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("appForm:growl3");
+//            PrimeFaces.current().ajax().update("headerForm:growl3");
 //            getJobManager().getCurrentJob().setIsDirty(false);
 //        } else {
 //            getCurrentFactoryInspection().
@@ -539,13 +539,13 @@ public class ComplianceManager extends GeneralManager
     public void openMarketProductBrowser() {
         getFinanceManager().openMarketProductBrowser();
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:marketProductSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:marketProductSearchButton");
     }
 
 //    public void openManufacturerBrowser() {
 //        getHumanResourceManager().openManufacturerBrowser();
 //
-//        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:manufacturerSearchButton");
+//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
 //    }
     public Integer getDialogHeight() {
         return 400;
@@ -1170,7 +1170,7 @@ public class ComplianceManager extends GeneralManager
 
     public String getTablesToUpdateAfterSearch() {
 
-        return ":appForm:mainTabView:complianceSurveysTable,:appForm:mainTabView:documentInspectionsTable";
+        return ":mainTabViewForm:mainTabView:complianceSurveysTable,:mainTabViewForm:mainTabView:documentInspectionsTable";
     }
 
     public List<SelectItem> getDocumentStamps() {
@@ -1284,7 +1284,7 @@ public class ComplianceManager extends GeneralManager
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
 
-        complianceSurveyTableToUpdate = "appForm:mainTabView:complianceSurveysTable";
+        complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
         isActiveMarketProductsOnly = true;
         surveyEstablishmentsDialogHeader = "Establishment";
@@ -1500,21 +1500,21 @@ public class ComplianceManager extends GeneralManager
 
         getMainTabView().openTab("Survey Browser");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:surveySearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
     }
 
     public void openStandardsBrowser() {
 
         getMainTabView().openTab("Standard Browser");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:standardSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:standardSearchButton");
     }
 
     public void openComplaintsBrowser() {
 
         getMainTabView().openTab("Complaint Browser");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:complaintSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:complaintSearchButton");
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -3302,7 +3302,7 @@ public class ComplianceManager extends GeneralManager
 
         getMainTabView().openTab("Factory Inspections");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:factoryInspectionSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
     }
 
     public DocumentStandard getCurrentDocumentStandard() {
@@ -3492,7 +3492,7 @@ public class ComplianceManager extends GeneralManager
         if (currentFactoryInspection.getIsDirty()) {
             PrimeFacesUtils.addMessage("Factory inspection was NOT saved",
                     "The recently edited factory inspection was not saved", FacesMessage.SEVERITY_WARN);
-            //PrimeFaces.current().ajax().update("appForm:growl3");
+            //PrimeFaces.current().ajax().update("headerForm:growl3");
         }
     }
 

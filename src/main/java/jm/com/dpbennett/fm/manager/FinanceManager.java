@@ -325,40 +325,40 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Financial Administration":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
                 return true;
             case "Accounting Codes":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
                 return true;
             case "Currencies":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:currencySearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:currencySearchButton");
                 return true;
             case "Discounts":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:discountSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:discountSearchButton");
                 return true;
             case "Taxes":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:taxSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:taxSearchButton");
                 return true;
             case "Classifications":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:classificationSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:classificationSearchButton");
                 return true;
             case "Sectors":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:sectorSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:sectorSearchButton");
                 return true;
             case "Job Categories":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:jobCategorySearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:jobCategorySearchButton");
                 return true;
             case "Job Subcategories":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:jobSubCategorySearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:jobSubCategorySearchButton");
                 return true;
             case "Services":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:serviceSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:serviceSearchButton");
                 return true;
             case "Procurement":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:procurementMethodSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:procurementMethodSearchButton");
                 return true;
             case "Settings":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:settingSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:settingSearchButton");
                 return true;
             default:
                 return false;
@@ -1117,7 +1117,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void openFinancialAdministration() {
         getMainTabView().openTab("Financial Administration");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1813,7 +1813,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setSearchType("Accounting Codes");
         setSearchText("");
         getSystemManager().
-                setDefaultCommandTarget(":appForm:mainTabView:purchaseReqSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",
@@ -2007,7 +2007,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 

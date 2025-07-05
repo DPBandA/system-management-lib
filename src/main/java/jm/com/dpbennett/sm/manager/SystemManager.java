@@ -160,7 +160,7 @@ public final class SystemManager extends GeneralManager {
     // end tk
 
     public SystemManager() {
-        init();    
+        init();
     }
 
     public Issue getIssue() {
@@ -170,7 +170,7 @@ public final class SystemManager extends GeneralManager {
     public void setIssue(Issue issue) {
         this.issue = issue;
     }
-    
+
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
@@ -458,11 +458,10 @@ public final class SystemManager extends GeneralManager {
         return new ArrayList<>();
     }
 
-    
     public void createIssue() {
-        
+
         setIssue(new Issue());
-        
+
         // open issue dialog.
 //        try {
 //            // tk get 
@@ -474,9 +473,9 @@ public final class SystemManager extends GeneralManager {
 
     // tk
     public void submitGitHubIssue(
-            String title, 
+            String title,
             String body) throws IOException {
-        
+
         OkHttpClient client = new OkHttpClient();
         // tk get from system options
         String GITHUB_API_URL = "https://api.github.com/repos/DPBandA/job-management-tracking-system/issues";
@@ -503,10 +502,10 @@ public final class SystemManager extends GeneralManager {
         // tk display growl message here?        
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                System.out.println("Issue created successfully: " 
+                System.out.println("Issue created successfully: "
                         + response.body().string());
             } else {
-                System.out.println("Failed to create issue: " + response.code() 
+                System.out.println("Failed to create issue: " + response.code()
                         + " - " + response.message());
             }
         }
@@ -564,50 +563,57 @@ public final class SystemManager extends GeneralManager {
 
         switch (tabTitle) {
             case "System Administration":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
                 return true;
             case "Users":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
                 return true;
             case "Modules":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:moduleSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:moduleSearchButton");
                 return true;
             case "Privileges":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:privilegeSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:privilegeSearchButton");
                 return true;
             case "Categories":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:categorySearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:categorySearchButton");
                 return true;
             case "Countries":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:countrySearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:countrySearchButton");
                 return true;
             case "Document Types":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:documentTypeSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:documentTypeSearchButton");
                 return true;
             case "Authentication":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:ldapSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:ldapSearchButton");
                 return true;
             case "Attachments":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:attachmentSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:attachmentSearchButton");
                 return true;
             case "Email Templates":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:emailTemplateSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:emailTemplateSearchButton");
                 return true;
             case "Notifications":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:notificationSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:notificationSearchButton");
                 return true;
             case "Posts":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:postSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:postSearchButton");
                 return true;
             case "System Settings":
-                setDefaultCommandTarget(":appForm:mainTabView:centerTabView:systemOptionSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:systemOptionSearchButton");
                 return true;
             case "Report Templates":
-                setDefaultCommandTarget(":appForm:mainTabView:reportTemplateSearchButton");
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
                 return true;
             default:
                 return false;
         }
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+
     }
 
     @Override
@@ -1301,14 +1307,18 @@ public final class SystemManager extends GeneralManager {
 
     public void closePreferencesDialog(ActionEvent actionEvent) {
 
-        PrimeFaces.current().ajax().update("appForm");
+        PrimeFaces.current().ajax().update(":headerForm");
+        PrimeFaces.current().ajax().update(":dashboardForm");
+        PrimeFaces.current().ajax().update(":mainTabViewForm");
 
         PrimeFaces.current().executeScript("PF('preferencesDialog').hide();");
     }
 
     public void closeUserProfileDialog(ActionEvent actionEvent) {
 
-        PrimeFaces.current().ajax().update("appForm");
+        PrimeFaces.current().ajax().update(":headerForm");
+        PrimeFaces.current().ajax().update(":dashboardForm");
+        PrimeFaces.current().ajax().update(":mainTabViewForm");
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
     }
@@ -2106,7 +2116,7 @@ public final class SystemManager extends GeneralManager {
         getSelectedNotification().delete(em);
 
         doNotificationSearch();
-        PrimeFaces.current().ajax().update("appForm:mainTabView", "appForm:notificationBadge");
+        PrimeFaces.current().ajax().update("mainTabViewForm:mainTabView", "headerForm:notificationBadge");
 
     }
 
@@ -2287,7 +2297,7 @@ public final class SystemManager extends GeneralManager {
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
-        setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
         setTabTitle("Users");
 
         // tk
@@ -2448,7 +2458,7 @@ public final class SystemManager extends GeneralManager {
 
     public void openSystemBrowser() {
 
-        setDefaultCommandTarget(":appForm:mainTabView:centerTabView:userSearchButton");
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
 
         getMainTabView().openTab("System Administration");
 

@@ -179,7 +179,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         getMainTabView().openTab("Clients");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:clientSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
     }
 
     @Override
@@ -187,7 +187,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Clients":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:clientSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
                 return true;
             default:
                 return false;
@@ -824,7 +824,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 

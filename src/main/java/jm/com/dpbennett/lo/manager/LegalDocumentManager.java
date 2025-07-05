@@ -167,7 +167,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         switch (tabTitle) {
             case "Document Browser":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:legalDocumentSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:legalDocumentSearchButton");
 
                 return true;
 
@@ -572,7 +572,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void openDocumentBrowser() {
         getMainTabView().openTab("Document Browser");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:legalDocumentSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:legalDocumentSearchButton");
     }
 
     public LegalDocument createNewLegalDocument(EntityManager em,
@@ -926,7 +926,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                     + " keeping session alive: " + getUser().getPollTime());
         }
 
-        PrimeFaces.current().ajax().update(":appForm:notificationBadge");
+        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
 
     }
 

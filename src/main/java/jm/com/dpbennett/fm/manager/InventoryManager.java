@@ -159,13 +159,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Inventory Products":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryProductSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryProductSearchButton");
                 return true;
             case "Inventory":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventorySearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventorySearchButton");
                 return true;
             case "Inventory Requisitions":
-                getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryRequisitionSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryRequisitionSearchButton");
                 return true;
             default:
                 return false;
@@ -821,7 +821,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         getFinanceManager().getMainTabView().openTab("Inventory Products");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryProductSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryProductSearchButton");
     }
 
     public void createNewInventoryProduct() {
@@ -1033,13 +1033,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void openInventoryTab() {
         getMainTabView().openTab("Inventory");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventorySearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventorySearchButton");
     }
 
     public void openInventoryRequisitionTab() {
         getMainTabView().openTab("Inventory Requisitions");
 
-        getSystemManager().setDefaultCommandTarget(":appForm:mainTabView:inventoryRequisitionSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryRequisitionSearchButton");
     }
 
     public void updateCost() {
@@ -1403,7 +1403,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
             PrimeFacesUtils.addMessage("Inventory NOT saved",
                     "The recently edited inventory was not saved",
                     FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            PrimeFaces.current().ajax().update("headerForm:growl3");
 
         } else {
             if (!getSearchText().isEmpty()) {
@@ -1418,7 +1418,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
             PrimeFacesUtils.addMessage("Inventory Requisition NOT Saved",
                     "The recently edited inventory requisition was not saved",
                     FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("appForm:growl3");
+            PrimeFaces.current().ajax().update("headerForm:growl3");
 
         } else {
             if (!getSearchText().isEmpty()) {
