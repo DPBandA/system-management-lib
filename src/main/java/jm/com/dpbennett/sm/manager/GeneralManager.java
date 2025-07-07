@@ -258,7 +258,7 @@ public class GeneralManager implements Manager, Serializable {
         setTabTitle(event.getTab().getTitle());
 
     }
-
+    
     @Override
     public void initMainTabView() {
 

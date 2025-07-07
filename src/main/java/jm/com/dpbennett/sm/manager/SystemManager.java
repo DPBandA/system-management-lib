@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -607,6 +607,7 @@ public final class SystemManager extends GeneralManager {
             default:
                 return false;
         }
+
     }
 
     @Override
@@ -2778,6 +2779,38 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+
+        initDashboard();
+
+    }
+
+    @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
+
+    }
+
+    @Override
+    public void initMainTabView() {
+
+        getMainTabView().reset(getUser());
+
+        // System Administration
+        if (getUser().hasModule("systemManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getEntityManager1(),
+                    "systemManager");
+
+            if (module != null) {
+                openSystemBrowser();
+            }
+        }
+
     }
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {

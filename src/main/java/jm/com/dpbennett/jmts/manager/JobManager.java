@@ -2313,6 +2313,7 @@ public class JobManager extends GeneralManager
     }
 
     public void doDefaultSearch() {
+        
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -2320,6 +2321,8 @@ public class JobManager extends GeneralManager
                 getSearchText(),
                 getDateSearchPeriod().getStartDate(),
                 getDateSearchPeriod().getEndDate());
+        
+        openModuleMainTab("jobManager");
     }
 
     @Override
@@ -3015,19 +3018,18 @@ public class JobManager extends GeneralManager
 
     @Override
     public void initDashboard() {
-        
-        // tk
-        //System.out.println("Dashboard");
-
-        //super.initDashboard();
-
+      
         getDashboard().reset(getUser(), true);
         
 
-        //if (getUser().hasModule("jobManager")) {
-           //getDashboard().addTab("Job Management", true);
+        if (getUser().hasModule("jobManager")) {
            getDashboard().openTab("Job Management");
-        //}
+        }
+        
+        if (getUser().hasModule("systemManager")) {
+           getDashboard().openTab("System Administration");
+        }
+        
     }
 
     @Override
@@ -3038,25 +3040,21 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-//        // Finance dashboard - tk to be JMTS dashboard
-//        if (getUser().hasModule("purchasingManager") || getUser().hasModule("inventoryManager")) {
-//            getFinanceManager().openDashboardTab();
-//        }
         // Standards Compliance
-        if (getUser().hasModule("complianceManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "complianceManager");
-
-            if (module != null) {
-                openModuleMainTab("complianceManager");
-
-                if (firstModule == null) {
-                    firstModule = "complianceManager";
-                }
-
-            }
-        }
+//        if (getUser().hasModule("complianceManager")) {
+//            Module module = Module.findActiveModuleByName(
+//                    getSystemManager().getEntityManager1(),
+//                    "complianceManager");
+//
+//            if (module != null) {
+//                openModuleMainTab("complianceManager");
+//
+//                if (firstModule == null) {
+//                    firstModule = "complianceManager";
+//                }
+//
+//            }
+//        }
 
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
@@ -3071,34 +3069,49 @@ public class JobManager extends GeneralManager
                 }
             }
         }
+        
+        // tk
+        if (getUser().hasModule("systemManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "systemManager");
+            
+            if (module != null) {
+                getSystemManager().openSystemBrowser();
+
+                if (firstModule == null) {
+                    firstModule = "systemManager";
+                }
+            }
+        }
 
         // Procurement
-        if (getUser().hasModule("purchasingManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "purchasingManager");
-            if (module != null) {
-                openModuleMainTab("purchasingManager");
-
-                if (firstModule == null) {
-                    firstModule = "purchasingManager";
-                }
-            }
-        }
+//        if (getUser().hasModule("purchasingManager")) {
+//            Module module = Module.findActiveModuleByName(
+//                    getSystemManager().getEntityManager1(),
+//                    "purchasingManager");
+//            if (module != null) {
+//                openModuleMainTab("purchasingManager");
+//
+//                if (firstModule == null) {
+//                    firstModule = "purchasingManager";
+//                }
+//            }
+//        }
 
         // Inventory
-        if (getUser().hasModule("inventoryManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "inventoryManager");
-            if (module != null) {
-                openModuleMainTab("inventoryManager");
-
-                if (firstModule == null) {
-                    firstModule = "inventoryManager";
-                }
-            }
-        }
+//        if (getUser().hasModule("inventoryManager")) {
+//            Module module = Module.findActiveModuleByName(
+//                    getSystemManager().getEntityManager1(),
+//                    "inventoryManager");
+//            if (module != null) {
+//                openModuleMainTab("inventoryManager");
+//
+//                if (firstModule == null) {
+//                    firstModule = "inventoryManager";
+//                }
+//            }
+//        }
 
         // tk test if this is still necessary
         openModuleMainTab(firstModule);
