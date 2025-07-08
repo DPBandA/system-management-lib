@@ -1542,6 +1542,7 @@ public final class SystemManager extends GeneralManager {
     public void editPreferences() {
     }
 
+    @Override
     public void viewUserProfile() {
     }
 
@@ -2143,6 +2144,7 @@ public final class SystemManager extends GeneralManager {
         return myNotifications.subList(0, subListIndex);
     }
 
+    @Override
     public List<Notification> getNotifications() {
         notifications = getNotificationsByOwnerId();
 
@@ -2157,6 +2159,7 @@ public final class SystemManager extends GeneralManager {
         return notifications;
     }
 
+    @Override
     public void setNotifications(List<Notification> notifications) {
         this.notifications = notifications;
     }
@@ -2170,11 +2173,13 @@ public final class SystemManager extends GeneralManager {
 
     }
 
+    @Override
     public int getSizeOfActiveNotifications() {
 
         return getActiveNotifications().size();
     }
 
+    @Override
     public boolean getHasActiveNotifications() {
         return (!getActiveNotifications().isEmpty());
     }

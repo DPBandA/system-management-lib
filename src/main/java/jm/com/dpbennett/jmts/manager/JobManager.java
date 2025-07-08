@@ -93,10 +93,8 @@ import jm.com.dpbennett.sm.util.JobDataModel;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
-import org.primefaces.model.dashboard.DashboardModel;
-import org.primefaces.model.dashboard.DefaultDashboardModel;
-import org.primefaces.model.dashboard.DefaultDashboardWidget;
 
 /**
  *
@@ -121,6 +119,46 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+    
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     public Employee getEmployee() {
@@ -2313,7 +2351,7 @@ public class JobManager extends GeneralManager
     }
 
     public void doDefaultSearch() {
-        
+
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -2321,7 +2359,7 @@ public class JobManager extends GeneralManager
                 getSearchText(),
                 getDateSearchPeriod().getStartDate(),
                 getDateSearchPeriod().getEndDate());
-        
+
         openModuleMainTab("jobManager");
     }
 
@@ -3011,25 +3049,23 @@ public class JobManager extends GeneralManager
 
     @Override
     public Dashboard getDashboard() {
-        
+
         return getSystemManager().getDashboard();
-    }   
-    
+    }
 
     @Override
     public void initDashboard() {
-      
+
         getDashboard().reset(getUser(), true);
-        
 
         if (getUser().hasModule("jobManager")) {
-           getDashboard().openTab("Job Management");
+            getDashboard().openTab("Job Management");
         }
-        
+
         if (getUser().hasModule("systemManager")) {
-           getDashboard().openTab("System Administration");
+            getDashboard().openTab("System Administration");
         }
-        
+
     }
 
     @Override
@@ -3055,7 +3091,6 @@ public class JobManager extends GeneralManager
 //
 //            }
 //        }
-
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
@@ -3069,13 +3104,13 @@ public class JobManager extends GeneralManager
                 }
             }
         }
-        
+
         // tk
         if (getUser().hasModule("systemManager")) {
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),
                     "systemManager");
-            
+
             if (module != null) {
                 getSystemManager().openSystemBrowser();
 
@@ -3098,7 +3133,6 @@ public class JobManager extends GeneralManager
 //                }
 //            }
 //        }
-
         // Inventory
 //        if (getUser().hasModule("inventoryManager")) {
 //            Module module = Module.findActiveModuleByName(
@@ -3112,7 +3146,6 @@ public class JobManager extends GeneralManager
 //                }
 //            }
 //        }
-
         // tk test if this is still necessary
         openModuleMainTab(firstModule);
     }

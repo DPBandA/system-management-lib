@@ -21,6 +21,7 @@ package jm.com.dpbennett.sm.manager;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
@@ -189,5 +190,15 @@ public interface Manager {
     public void handleSelectedNotification(Notification notification);
 
     public boolean handleTabChange(String tabTitle);
+    
+    public int getSizeOfActiveNotifications();
+    
+    public boolean getHasActiveNotifications();
+    
+    public List<Notification> getNotifications();
+    
+    public void setNotifications(List<Notification> notifications);
+    
+    public void viewUserProfile();
 
 }

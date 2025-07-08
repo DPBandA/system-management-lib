@@ -1,6 +1,6 @@
 /*
 Human Resource Management (HRM) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -63,6 +63,8 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
+import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 
@@ -116,30 +118,70 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     @Override
+    public void setDefaultCommandTarget(String defaultCommandTarget) {
+        
+        getSystemManager().setDefaultCommandTarget(defaultCommandTarget);
+        
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+        
+        return getSystemManager().getDefaultCommandTarget();
+        
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getEntityManager1(), "organizationWebsite");
+    }
+
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
+    @Override
     public final void init() {
         reset();
     }
 
     public void onEmployeeRowEdit(RowEditEvent<Employee> event) {
-        
+
         FacesMessage msg;
         ReturnMessage rm = event.getObject().save(getEntityManager1());
-        
+
         if (rm.isSuccess()) {
             msg = new FacesMessage("Employee Saved", "");
-        }
-        else {
+        } else {
             msg = new FacesMessage("Employee NOT Saved");
-            
-        }        
-        
+
+        }
+
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public void onEmployeeRowCancel(RowEditEvent<Employee> event) {
-        
+
         FacesMessage msg = new FacesMessage("Employee edit cancelled", "");
-        
+
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
@@ -306,7 +348,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         String code = department.getCode();
 
         Subgroup subgroup = Subgroup.findByDepartment(em, department);
-        
+
         if (subgroup != null) {
             code = code + "-" + subgroup.getCode();
             Division division = Division.findBySubgroup(em, subgroup);
@@ -1712,6 +1754,23 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
     public Integer getLogoURLImageWidth() {
         return (Integer) SystemOption.getOptionValueObject(
                 getSystemManager().getEntityManager1(), "logoURLImageWidth");
@@ -1734,6 +1793,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             notification.setActive(false);
             notification.save(em);
         }
+    }
+
+    @Override
+    public void viewUserProfile() {
     }
 
     @Override
@@ -1855,6 +1918,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+
+        initDashboard();
+
+    }
+
+    @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        getDashboard().openTab("Human Resource");
 
     }
 

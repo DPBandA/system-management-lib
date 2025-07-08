@@ -79,10 +79,6 @@ public class GeneralManager implements Manager, Serializable {
         init();
     }
 
-    /**
-     * NB: A manager must call this method to set the User field of all managers
-     * on which it depends.
-     */
     public void setManagerUser() {
 
         throw new UnsupportedOperationException("Not supported yet.");
@@ -875,6 +871,31 @@ public class GeneralManager implements Manager, Serializable {
         
         setTabTitle(event.getTab().getTitle());
         
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    @Override
+    public void setNotifications(List<Notification> notifications) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    @Override
+    public void viewUserProfile() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }
