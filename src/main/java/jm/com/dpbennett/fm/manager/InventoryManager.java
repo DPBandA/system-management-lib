@@ -1,6 +1,6 @@
 /*
 Inventory Management
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -66,6 +66,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.ResponsiveOption;
@@ -102,6 +103,46 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public InventoryManager() {
         init();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     private Employee getEmployee() {
@@ -453,7 +494,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
             InventoryRequisition selectedInventoryRequisition) {
 
         this.selectedInventoryRequisition
-                = getSavedInventoryRequisition(selectedInventoryRequisition);;
+                = getSavedInventoryRequisition(selectedInventoryRequisition);
     }
 
     public InventoryRequisition getSavedInventoryRequisition(
@@ -1270,8 +1311,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     private synchronized void processInventoryActions(Inventory inventory) {
 
-        EntityManager em = getEntityManager1();
-
         if (inventory.getId() != null) {
             new Thread() {
                 @Override
@@ -1612,7 +1651,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
         this.edit = edit;
     }
 
-    @Override
     public final void init() {
         reset();
     }

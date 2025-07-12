@@ -1,6 +1,6 @@
 /*
 Trade Management (TM) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -24,8 +24,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Random;
 import javax.persistence.EntityManager;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -35,6 +37,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.tm.chart.FxMarketPxFeeder;
 import jm.com.dpbennett.tm.chart.JfreeCandlestickChart;
 import org.jfree.chart.ChartUtils;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -53,6 +56,45 @@ public class TradeManager extends GeneralManager implements Serializable {
     }
 
     @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
     public final void init() {
         reset();
     }

@@ -1,6 +1,6 @@
 /*
 Purchase Management
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -84,6 +84,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.file.UploadedFile;
@@ -123,6 +124,46 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public PurchasingManager() {
         init();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     public void saveSequenceNumbers() {
@@ -1842,7 +1883,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         try {
 
             parameters.put("prId", getSelectedPurchaseRequisition().getId());
-            parameters.put("logoURL", logoURL); 
+            parameters.put("logoURL", logoURL);
 
             // Shipping information
             if (getSelectedPurchaseRequisition().getAirFreight()) {
@@ -2714,7 +2755,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.edit = edit;
     }
 
-    @Override
     public final void init() {
         reset();
     }
@@ -3090,7 +3130,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     private Boolean isPRCostWithinApprovalLimit(
             PurchaseRequisition purchaseRequisition,
             List<EmployeePosition> positions) {
-        
+
         for (EmployeePosition position : positions) {
             if (position.getUpperApprovalLevel()
                     >= purchaseRequisition.getTotalCostComponentCosts()) {

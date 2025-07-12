@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -119,6 +119,12 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+    
+    public String getLastSystemNotificationContent () {
+        
+        // tk get actual notification first
+        return ""; //"<p>This is an <a href='https://example.com'>example link</a>.</p>";
     }
 
     @Override
@@ -1112,40 +1118,20 @@ public class JobManager extends GeneralManager
 
     }
 
-    /**
-     * Handles the initialization of the JobManager session bean.
-     *
-     */
-    @Override
     public final void init() {
         reset();
     }
 
-    /**
-     * Get JobContractManager SessionScoped bean.
-     *
-     * @return
-     */
     public JobContractManager getJobContractManager() {
 
         return BeanUtils.findBean("jobContractManager");
     }
 
-    /**
-     * Get JobSampleManager SessionScoped bean.
-     *
-     * @return
-     */
     public JobSampleManager getJobSampleManager() {
 
         return BeanUtils.findBean("jobSampleManager");
     }
 
-    /**
-     * Get JobFinanceManager SessionScoped bean.
-     *
-     * @return
-     */
     public JobFinanceManager getJobFinanceManager() {
 
         return BeanUtils.findBean("jobFinanceManager");
@@ -3060,6 +3046,10 @@ public class JobManager extends GeneralManager
 
         if (getUser().hasModule("jobManager")) {
             getDashboard().openTab("Job Management");
+        }
+        
+        if (getUser().hasModule("humanResourceManager")) {
+            getDashboard().openTab("Human Resource");
         }
 
         if (getUser().hasModule("systemManager")) {

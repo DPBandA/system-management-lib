@@ -102,6 +102,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
@@ -147,6 +148,46 @@ public class JobFinanceManager extends GeneralManager
 
     public JobFinanceManager() {
         init();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     public Employee getEmployee() {
@@ -233,7 +274,7 @@ public class JobFinanceManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/finance/jobCostingAndPaymentDialog", options, null);
-        
+
     }
 
     public Integer getDialogHeight() {
@@ -1992,7 +2033,7 @@ public class JobFinanceManager extends GeneralManager
         prepareToInvoiceJobCosting(job);
 
         codes.add(getRevenueCodeAbbreviation(job));
-        
+
         if (getTax(job).getTaxValue() > 0.0) {
             codes.add(getTaxCodeAbbreviation(job));
         }
@@ -2144,19 +2185,12 @@ public class JobFinanceManager extends GeneralManager
         return jobContractManager;
     }
 
-    /**
-     * Initializes an instance of the JobFinanceManger class.
-     */
-    @Override
     public final void init() {
 
         reset();
 
     }
 
-    /**
-     * Resets an instance of this class.
-     */
     @Override
     public void reset() {
         super.reset();
@@ -3367,7 +3401,7 @@ public class JobFinanceManager extends GeneralManager
                         getEmployee());
 
                 if (getCurrentJob().getType().equals("Proforma Invoice")) {
-                   
+
                     getCurrentJob().getJobStatusAndTracking().setWorkProgress("Completed");
                 }
 
@@ -3379,9 +3413,9 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentJob().getJobCostingAndPayment().setCostingApprovedBy(null);
                 BusinessEntityActionUtils.removeAction(BusinessEntity.Action.APPROVE,
                         getCurrentJob().getActions());
-                
+
                 if (getCurrentJob().getType().equals("Proforma Invoice")) {
-                    
+
                     getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
                 }
             }
@@ -4101,13 +4135,13 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentJob().getJobCostingAndPayment().setCashPayments(jcp.getCashPayments());
                 editJobCosting();
             }
-            
+
         } else {
-            
+
             if (getJobManager().getCurrentJob().getIsDirty()) {
                 getJobManager().saveCurrentJob();
             }
-            
+
             if (getCurrentJob().getId() != null) {
                 editJobCosting();
             } else {
@@ -4169,10 +4203,10 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public void doJobSearch() {
-        
+
         int maxResult = SystemOption.getInteger(
-                        getSystemManager().getEntityManager1(),
-                        "maxSearchResults");
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");
 
         jobSearchResultList = findJobs(maxResult);
 
@@ -4237,9 +4271,9 @@ public class JobFinanceManager extends GeneralManager
 
     public List<Job> findJobs() {
         int maxResult = SystemOption.getInteger(
-                        getSystemManager().getEntityManager1(),
-                        "maxSearchResults");        
-        
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");
+
         return Job.findJobsByDateSearchField(getEntityManager1(),
                 getUser(),
                 getDateSearchPeriod(),

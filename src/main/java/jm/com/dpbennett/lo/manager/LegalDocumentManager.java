@@ -1,6 +1,6 @@
 /*
 LegalOffice (LO) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -58,13 +58,13 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 //import org.apache.poi.hssf.util.CellRangeAddress;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
@@ -83,10 +83,50 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public LegalDocumentManager() {
         init();
     }
-    
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
-        
+
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
@@ -270,7 +310,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     }
 
-    @Override
     public final void init() {
         reset();
 
@@ -934,7 +973,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void login() {
         login(getSystemManager().getEntityManager1());
     }
-    
+
     @Override
     public void logout() {
         completeLogout();

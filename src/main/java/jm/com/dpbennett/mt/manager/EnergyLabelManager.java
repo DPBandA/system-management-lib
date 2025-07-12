@@ -1,6 +1,6 @@
 /*
 LabelPrint 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -37,7 +37,6 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
-import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
@@ -392,7 +391,6 @@ public class EnergyLabelManager extends GeneralManager
         return getSystemManager().getMainTabView();
     }
 
-    @Override
     public final void init() {
         reset();
     }
@@ -741,11 +739,11 @@ public class EnergyLabelManager extends GeneralManager
                         int length = getSelectedEnergyLabel().getAnnualConsumption().length();
                         int annualConsumptionUnitXMulConst
                                 = SystemOption.getInteger(
-                                        getSystemManager().getEntityManager1(), 
+                                        getSystemManager().getEntityManager1(),
                                         "annualConsumptionUnitXMulConst");
                         double annualConsumptionUnitXMul
                                 = SystemOption.getDouble(
-                                        getSystemManager().getEntityManager1(), 
+                                        getSystemManager().getEntityManager1(),
                                         "annualConsumptionUnitXMul");
 
                         annualConsumptionUnitXMulConst = length - annualConsumptionUnitXMulConst;
@@ -762,7 +760,7 @@ public class EnergyLabelManager extends GeneralManager
                     }
                     // Batch code/serial number
                     if (SystemOption.getBoolean(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "useSerialNumber")) {
                         if (!getSelectedEnergyLabel().getSerialNumber().trim().isEmpty()) {
                             setElementText("batchCodeLabel", "Serial No.", "");
@@ -930,13 +928,13 @@ public class EnergyLabelManager extends GeneralManager
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
 
                 svgFile = new File(SystemOption.getString(
-                        getSystemManager().getEntityManager1(), 
+                        getSystemManager().getEntityManager1(),
                         "aCLabelTemplate"));
 
             } else {
 
                 svgFile = new File(SystemOption.getString(
-                        getSystemManager().getEntityManager1(), 
+                        getSystemManager().getEntityManager1(),
                         "refrigeratorLabelTemplate"));
             }
             svgDocument = f.createDocument(svgFile.toURI().toString());
@@ -950,27 +948,27 @@ public class EnergyLabelManager extends GeneralManager
 
             t.addTranscodingHint(JPEGTranscoder.KEY_QUALITY,
                     new Float(SystemOption.getDouble(
-                            getSystemManager().getEntityManager1(), 
+                            getSystemManager().getEntityManager1(),
                             "jPEGTranscoderKeyQuality")).floatValue());
 
             if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
                 t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
                         Float.valueOf(SystemOption.getString(
-                                getSystemManager().getEntityManager1(), 
+                                getSystemManager().getEntityManager1(),
                                 "aCImageWidth")));
                 t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
                         Float.valueOf(SystemOption.getString(
-                                getSystemManager().getEntityManager1(), 
+                                getSystemManager().getEntityManager1(),
                                 "aCImageHeight")));
                 t.transcode(input, output);
             } else {
                 t.addTranscodingHint(JPEGTranscoder.KEY_WIDTH,
                         Float.valueOf(SystemOption.getString(
-                                getSystemManager().getEntityManager1(), 
+                                getSystemManager().getEntityManager1(),
                                 "fridgeImageWidth")));
                 t.addTranscodingHint(JPEGTranscoder.KEY_HEIGHT,
                         Float.valueOf(SystemOption.getString(
-                                getSystemManager().getEntityManager1(), 
+                                getSystemManager().getEntityManager1(),
                                 "fridgeImageHeight")));
                 t.transcode(input, output);
             }

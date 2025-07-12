@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -33,21 +33,25 @@ import jm.com.dpbennett.business.entity.jmts.JobSample;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JobSampleDataModel;
+import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class JobSampleManager implements Serializable, BusinessEntityManagement {
+public class JobSampleManager extends GeneralManager
+        implements Serializable, BusinessEntityManagement {
 
     private JobSample selectedJobSample;
     private Integer jobSampleDialogTabViewActiveIndex;
@@ -58,7 +62,47 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
         init();
     }
 
-    private void init() {
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
+    public final void init() {
         selectedJobSample = new JobSample();
         jobSampleDialogTabViewActiveIndex = 0;
     }
@@ -586,7 +630,7 @@ public class JobSampleManager implements Serializable, BusinessEntityManagement 
         return Job.generateJobNumber(getCurrentJob(), getEntityManager1());
     }
 
-    private EntityManager getEntityManager1() {
+    public EntityManager getEntityManager1() {
         return getJobManager().getEntityManager1();
     }
 

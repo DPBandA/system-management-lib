@@ -40,8 +40,6 @@ import org.primefaces.event.TabCloseEvent;
  */
 public interface Manager {
 
-    public void init();
-
     public void reset();
 
     public SelectItemGroup getSearchTypesGroup();

@@ -410,8 +410,7 @@ public class GeneralManager implements Manager, Serializable {
         this.allDateSearchFields = allDateSearchFields;
     }
 
-    @Override
-    public void init() {
+    private void init() {
 
         reset();
     }

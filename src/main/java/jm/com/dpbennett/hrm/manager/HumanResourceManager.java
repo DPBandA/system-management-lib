@@ -158,7 +158,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         getSystemManager().onMainViewTabChange(event);
     }
 
-    @Override
     public final void init() {
         reset();
     }

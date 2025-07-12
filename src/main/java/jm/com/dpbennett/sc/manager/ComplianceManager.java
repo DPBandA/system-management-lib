@@ -1,6 +1,6 @@
 /*
 Standards Compliance (SC) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -81,6 +81,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
@@ -135,14 +136,53 @@ public class ComplianceManager extends GeneralManager
     public ComplianceManager() {
         init();
     }
-    
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
     public Employee getEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
-    @Override
     public final void init() {
         reset();
     }
@@ -232,7 +272,7 @@ public class ComplianceManager extends GeneralManager
     public void login() {
         login(getSystemManager().getEntityManager1());
     }
-    
+
     @Override
     public void logout() {
         completeLogout();
@@ -1177,7 +1217,7 @@ public class ComplianceManager extends GeneralManager
         ArrayList stamps = new ArrayList();
         stamps.add(new SelectItem("", ""));
         stamps.addAll(getStringListAsSelectItems(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "portOfEntryDocumentStampList"));
 
         return stamps;
@@ -1187,7 +1227,7 @@ public class ComplianceManager extends GeneralManager
         ArrayList flags = new ArrayList();
         flags.add(new SelectItem("", ""));
         flags.addAll(getStringListAsSelectItems(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "profileFlags"));
 
         return flags;
@@ -1219,7 +1259,7 @@ public class ComplianceManager extends GeneralManager
         ArrayList types = new ArrayList();
 
         types.addAll(getStringListAsSelectItems(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "complianceSurveyLocationTypes"));
 
         return types;
@@ -1231,12 +1271,12 @@ public class ComplianceManager extends GeneralManager
         switch (getCurrentComplianceSurvey().getSurveyLocationType()) {
             case "Site":
                 types.addAll(getStringListAsSelectItems(
-                        getSystemManager().getEntityManager1(), 
+                        getSystemManager().getEntityManager1(),
                         "siteTypesOfEstablishment"));
                 break;
             case "Commercial Marketplace":
                 types.addAll(getStringListAsSelectItems(
-                        getSystemManager().getEntityManager1(), 
+                        getSystemManager().getEntityManager1(),
                         "commercialTypesOfEstablishment"));
                 break;
         }
@@ -1246,7 +1286,7 @@ public class ComplianceManager extends GeneralManager
 
     public List<SelectItem> getTypesOfPortOfEntry() {
         return getStringListAsSelectItems(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "portOfEntryTypeList");
     }
 
@@ -1955,7 +1995,7 @@ public class ComplianceManager extends GeneralManager
     public void updateCIF() {
 
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "defaultPercentageOfCIF");
 
         if (percentOfCIF != null) {

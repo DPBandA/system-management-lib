@@ -52,6 +52,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Employee;
+import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import static jm.com.dpbennett.business.entity.util.NumberUtils.formatAsCurrency;
@@ -73,6 +74,7 @@ import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.primefaces.PrimeFaces;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
@@ -89,6 +91,46 @@ public class JobContractManager extends GeneralManager
 
     public JobContractManager() {
         init();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     public Employee getEmployee() {
@@ -421,7 +463,6 @@ public class JobContractManager extends GeneralManager
         return getJobManager().getCurrentJob();
     }
 
-    @Override
     public final void init() {
         reset();
     }
@@ -714,7 +755,7 @@ public class JobContractManager extends GeneralManager
     }
 
     public List<Service> getServices() {
-        
+
         return getFinanceManager().getServices();
 
     }

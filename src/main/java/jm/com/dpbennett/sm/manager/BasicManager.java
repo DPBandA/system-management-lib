@@ -1,6 +1,6 @@
 /*
 Basic Manager (BM)
-Copyright (C) 2023  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -22,15 +22,18 @@ package jm.com.dpbennett.sm.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 
 /**
  *
@@ -38,11 +41,58 @@ import org.primefaces.event.SelectEvent;
  */
 public class BasicManager extends GeneralManager implements Serializable {
 
-    /**
-     * Creates a new instance of SystemManager
-     */
+    private SystemManager systemManager;
+
     public BasicManager() {
         init();
+    }
+
+    public SystemManager getSystemManager() {
+
+        if (systemManager == null) {
+            systemManager = BeanUtils.findBean("systemManager");
+        }
+        return systemManager;
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     @Override
@@ -135,7 +185,7 @@ public class BasicManager extends GeneralManager implements Serializable {
                 dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
                 dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
 
-                return dateSearchFields;           
+                return dateSearchFields;
             default:
                 break;
         }
@@ -143,7 +193,6 @@ public class BasicManager extends GeneralManager implements Serializable {
         return dateSearchFields;
     }
 
-    @Override
     public final void init() {
 
         reset();
@@ -189,8 +238,8 @@ public class BasicManager extends GeneralManager implements Serializable {
 
     @Override
     public void reset() {
-        super.reset();  
-        
+        super.reset();
+
         setSearchType("Basics");
         setSearchText("");
         setModuleNames(new String[]{
@@ -199,7 +248,7 @@ public class BasicManager extends GeneralManager implements Serializable {
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
-        
+
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
 Financial Management (FM) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -57,6 +57,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.dashboard.DashboardModel;
 import org.primefaces.model.dashboard.DefaultDashboardModel;
@@ -123,6 +124,46 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public void viewUserProfile() {
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -385,7 +426,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public Boolean getUseMulticurrency() {
-        return SystemOption.getBoolean(getSystemManager().getEntityManager1(), 
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
                 "useMulticurrency");
     }
 
@@ -793,13 +834,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
             return new ArrayList<>();
         }
     }
-    
+
     public List<Service> getServices() {
 
         try {
-            
-            return Service.findAllActive(getEntityManager1());            
-            
+
+            return Service.findAllActive(getEntityManager1());
+
         } catch (Exception e) {
             System.out.println(e);
 
@@ -1494,7 +1535,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         this.edit = edit;
     }
 
-    @Override
     public final void init() {
         reset();
     }
