@@ -1673,6 +1673,12 @@ public final class SystemManager extends GeneralManager {
         return getStringListAsSelectItems(getEntityManager1(),
                 "workProgressList");
     }
+    
+    public List<SelectItem> getNotificationTypeList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "notificationTypeList");
+    }
 
     public List<SelectItem> getAttachmentTypeList() {
 

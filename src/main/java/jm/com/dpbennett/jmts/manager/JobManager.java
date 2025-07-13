@@ -120,11 +120,12 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
-    public String getLastSystemNotificationContent () {
-        
-        // tk get actual notification first
-        return ""; //"<p>This is an <a href='https://example.com'>example link</a>.</p>";
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
     }
 
     @Override
@@ -160,7 +161,7 @@ public class JobManager extends GeneralManager
         return getSystemManager().getDefaultCommandTarget();
 
     }
-    
+
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
@@ -1007,15 +1008,24 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getApplicationHeader() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSName");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), 
+                "JMTSName");
+    }
+    
+    public String getSupportURL () {
+        return SystemOption.getString(getSystemManager().getEntityManager1(), 
+                "supportURL");
     }
 
     public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "copyrightOrganization");
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "copyrightOrganization");
+
     }
 
     public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "organizationWebsite");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), 
+                "organizationWebsite");
     }
 
     /**
@@ -3047,7 +3057,7 @@ public class JobManager extends GeneralManager
         if (getUser().hasModule("jobManager")) {
             getDashboard().openTab("Job Management");
         }
-        
+
         if (getUser().hasModule("humanResourceManager")) {
             getDashboard().openTab("Human Resource");
         }
