@@ -126,6 +126,29 @@ public class FinanceManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
+    }
+
     @Override
     public int getSizeOfActiveNotifications() {
 
