@@ -365,6 +365,21 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getMainTabView().openTab("Dashboard");
 
     }
+    
+    @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("financeManager")) {
+            getDashboard().openTab("Financial Administration");
+        }
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
+
+    }
 
     @Override
     public void initMainTabView() {
@@ -372,16 +387,16 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getMainTabView().reset(getUser());
         // tk 
         // Use open*() after checking for module access or privilege as is done in JMTS.        
-        openDashboardTab();
+        //openDashboardTab();
         getMainTabView().openTab("Purchase Requisitions");
         getMainTabView().openTab("Inventory Requisitions");//
-//        getMainTabView().openTab("Inventory Products");
-//        getMainTabView().openTab("Market Products");
-//        getMainTabView().openTab("Inventory");
-//        getMainTabView().openTab("Suppliers");
-//        getMainTabView().openTab("System Administration");
-//        getMainTabView().openTab("Trades");
-//        getMainTabView().openTab("Financial Administration");
+        getMainTabView().openTab("Inventory Products");
+        getMainTabView().openTab("Market Products");
+        getMainTabView().openTab("Inventory");
+        getMainTabView().openTab("Suppliers");
+        getMainTabView().openTab("System Administration");
+        getMainTabView().openTab("Trades");
+        getMainTabView().openTab("Financial Administration");
     }
 
     @Override
@@ -2198,6 +2213,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+        
+        initDashboard();
 
     }
 

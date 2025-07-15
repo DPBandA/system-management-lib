@@ -1008,23 +1008,23 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getApplicationHeader() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), 
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
                 "JMTSName");
     }
-    
-    public String getSupportURL () {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), 
+
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
                 "supportURL");
     }
 
     public String getCopyrightOrganization() {
         return SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "copyrightOrganization");
+                "copyrightOrganization");
 
     }
 
     public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), 
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
                 "organizationWebsite");
     }
 
@@ -3062,6 +3062,10 @@ public class JobManager extends GeneralManager
             getDashboard().openTab("Human Resource");
         }
 
+        if (getUser().hasModule("financeManager")) {
+            getDashboard().openTab("Financial Administration");
+        }
+
         if (getUser().hasModule("systemManager")) {
             getDashboard().openTab("System Administration");
         }
@@ -3106,46 +3110,44 @@ public class JobManager extends GeneralManager
         }
 
         // tk
-        if (getUser().hasModule("systemManager")) {
+//        if (getUser().hasModule("systemManager")) {
+//            Module module = Module.findActiveModuleByName(
+//                    getSystemManager().getEntityManager1(),
+//                    "systemManager");
+//
+//            if (module != null) {
+//                getSystemManager().openSystemBrowser();
+//
+//                if (firstModule == null) {
+//                    firstModule = "systemManager";
+//                }
+//            }
+//        }
+        if (getUser().hasModule("purchasingManager")) {
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),
-                    "systemManager");
-
+                    "purchasingManager");
             if (module != null) {
-                getSystemManager().openSystemBrowser();
+                openModuleMainTab("purchasingManager");
 
                 if (firstModule == null) {
-                    firstModule = "systemManager";
+                    firstModule = "purchasingManager";
                 }
             }
         }
 
-        // Procurement
-//        if (getUser().hasModule("purchasingManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "purchasingManager");
-//            if (module != null) {
-//                openModuleMainTab("purchasingManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "purchasingManager";
-//                }
-//            }
-//        }
-        // Inventory
-//        if (getUser().hasModule("inventoryManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "inventoryManager");
-//            if (module != null) {
-//                openModuleMainTab("inventoryManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "inventoryManager";
-//                }
-//            }
-//        }
+        if (getUser().hasModule("inventoryManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "inventoryManager");
+            if (module != null) {
+                openModuleMainTab("inventoryManager");
+
+                if (firstModule == null) {
+                    firstModule = "inventoryManager";
+                }
+            }
+        }
         // tk test if this is still necessary
         openModuleMainTab(firstModule);
     }
