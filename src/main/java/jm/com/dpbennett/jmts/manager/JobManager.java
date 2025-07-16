@@ -3059,7 +3059,7 @@ public class JobManager extends GeneralManager
         }
         
         if (getUser().hasModule("clientManager")) {
-            getDashboard().openTab("Clients");
+            getDashboard().openTab("Client Management");
         }
 
         if (getUser().hasModule("humanResourceManager")) {
