@@ -79,6 +79,36 @@ public class ClientManager extends GeneralManager implements Serializable {
         init();
     }
 
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
+    }
+
     @Override
     public int getSizeOfActiveNotifications() {
 
@@ -126,11 +156,30 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("clientManager")) {
+            getDashboard().openTab("Clients");
+        }
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
+
+    }
+
+    @Override
     public void initMainTabView() {
 
         getMainTabView().reset(getUser());
 
-        openClientsTab();
+        if (getUser().hasModule("clientManager")) {
+
+            openClientsTab();
+            
+        }
     }
 
     public LazyClientDataModel getLazyClientDataModel() {
@@ -913,6 +962,8 @@ public class ClientManager extends GeneralManager implements Serializable {
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+
+        initDashboard();
 
     }
 

@@ -3057,6 +3057,10 @@ public class JobManager extends GeneralManager
         if (getUser().hasModule("jobManager")) {
             getDashboard().openTab("Job Management");
         }
+        
+        if (getUser().hasModule("clientManager")) {
+            getDashboard().openTab("Clients");
+        }
 
         if (getUser().hasModule("humanResourceManager")) {
             getDashboard().openTab("Human Resource");
@@ -3080,7 +3084,6 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-        // Standards Compliance
 //        if (getUser().hasModule("complianceManager")) {
 //            Module module = Module.findActiveModuleByName(
 //                    getSystemManager().getEntityManager1(),
@@ -3109,20 +3112,6 @@ public class JobManager extends GeneralManager
             }
         }
 
-        // tk
-//        if (getUser().hasModule("systemManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "systemManager");
-//
-//            if (module != null) {
-//                getSystemManager().openSystemBrowser();
-//
-//                if (firstModule == null) {
-//                    firstModule = "systemManager";
-//                }
-//            }
-//        }
         if (getUser().hasModule("purchasingManager")) {
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),
