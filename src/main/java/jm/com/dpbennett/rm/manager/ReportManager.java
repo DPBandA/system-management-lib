@@ -109,6 +109,36 @@ public class ReportManager extends GeneralManager {
         init();
     }
 
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
+    }
+
     @Override
     public int getSizeOfActiveNotifications() {
 
@@ -659,7 +689,7 @@ public class ReportManager extends GeneralManager {
     }
 
     public final void init() {
-        
+
         reset();
 
     }
@@ -681,6 +711,21 @@ public class ReportManager extends GeneralManager {
         reportSearchText = "";
         columnsToExclude = "";
         reportCategory = "Job";
+
+    }
+    
+     @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("reportManager")) {
+            getDashboard().openTab("Report Management");
+        }
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
 
     }
 
@@ -2392,12 +2437,12 @@ public class ReportManager extends GeneralManager {
         }
     }
 
-    @Override
-    public void initDashboard() {
-
-        initSearchPanel();
-
-    }
+//    @Override
+//    public void initDashboard() {
+//
+//        initSearchPanel();
+//
+//    }
 
     @Override
     public SelectItemGroup getSearchTypesGroup() {
@@ -2421,7 +2466,7 @@ public class ReportManager extends GeneralManager {
 
     @Override
     public String getApplicationSubheader() {
-        return "Report Administration &amp; Management";
+        return "Report Administration & Management";
     }
 
     @Override
@@ -2571,6 +2616,8 @@ public class ReportManager extends GeneralManager {
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+        
+        initDashboard();
 
     }
 

@@ -161,7 +161,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         getDashboard().reset(getUser(), true);
 
         if (getUser().hasModule("clientManager")) {
-            getDashboard().openTab("Clients");
+            getDashboard().openTab("Client Management");
         }
 
         if (getUser().hasModule("systemManager")) {
@@ -831,7 +831,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     @Override
     public String getApplicationSubheader() {
-        return "Client Administration &amp; Management";
+        return "Client Administration & Management";
     }
 
     @Override
