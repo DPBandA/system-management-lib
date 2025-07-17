@@ -713,8 +713,8 @@ public class ReportManager extends GeneralManager {
         reportCategory = "Job";
 
     }
-    
-     @Override
+
+    @Override
     public void initDashboard() {
 
         getDashboard().reset(getUser(), true);
@@ -2443,7 +2443,6 @@ public class ReportManager extends GeneralManager {
 //        initSearchPanel();
 //
 //    }
-
     @Override
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Reporting");
@@ -2616,7 +2615,7 @@ public class ReportManager extends GeneralManager {
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
-        
+
         initDashboard();
 
     }

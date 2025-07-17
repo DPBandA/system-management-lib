@@ -3012,30 +3012,24 @@ public class JobManager extends GeneralManager
             switch (moduleName) {
                 case "complianceManager":
                     getComplianceManager().openSurveysBrowser();
-
                     break;
                 case "humanResourceManager":
                     getHumanResourceManager().openHumanResourceBrowser();
-
                     break;
                 case "jobManager":
                     openJobBrowser();
                     getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
-
                     break;
                 case "clientManager":
                     getClientManager().openClientsTab();
                     break;
                 case "purchasingManager":
                     getPurchasingManager().openPurchaseReqsTab();
-
                     break;
                 case "inventoryManager":
-
                     getInventoryManager().openInventoryProductBrowser();
                     getInventoryManager().openInventoryTab();
                     getInventoryManager().openInventoryRequisitionTab();
-
                     break;
                 default:
                     break;
@@ -3056,6 +3050,10 @@ public class JobManager extends GeneralManager
 
         if (getUser().hasModule("jobManager")) {
             getDashboard().openTab("Job Management");
+        }
+        
+        if (getUser().hasModule("complianceManager")) {
+            getDashboard().openTab("Standards Compliance");
         }
         
         if (getUser().hasModule("clientManager")) {
@@ -3084,20 +3082,21 @@ public class JobManager extends GeneralManager
 
         getMainTabView().reset(getUser());
 
-//        if (getUser().hasModule("complianceManager")) {
-//            Module module = Module.findActiveModuleByName(
-//                    getSystemManager().getEntityManager1(),
-//                    "complianceManager");
-//
-//            if (module != null) {
-//                openModuleMainTab("complianceManager");
-//
-//                if (firstModule == null) {
-//                    firstModule = "complianceManager";
-//                }
-//
-//            }
-//        }
+        if (getUser().hasModule("complianceManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "complianceManager");
+
+            if (module != null) {
+                openModuleMainTab("complianceManager");
+
+                if (firstModule == null) {
+                    firstModule = "complianceManager";
+                }
+
+            }
+        }
+        
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
@@ -3213,6 +3212,7 @@ public class JobManager extends GeneralManager
     @Override
     public void setManagerUser() {
 
+        // tk do this in a loop with setModuleNames[]
         getManager("systemManager").setUser(getUser());
         getManager("clientManager").setUser(getUser());
         getManager("reportManager").setUser(getUser());

@@ -137,6 +137,36 @@ public class ComplianceManager extends GeneralManager
         init();
     }
 
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
+    }
+
     @Override
     public int getSizeOfActiveNotifications() {
 
@@ -211,6 +241,9 @@ public class ComplianceManager extends GeneralManager
                     openFactoryInspectionBrowser();
                     openMarketProductBrowser();
                     openDocumentStandardDialog();
+
+                    getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
+
                     break;
                 case "clientManager":
                     getClientManager().openClientsTab();
@@ -219,6 +252,21 @@ public class ComplianceManager extends GeneralManager
                     break;
             }
         }
+    }
+
+    @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("complianceManager")) {
+            getDashboard().openTab("Standards Compliance");
+        }
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
+
     }
 
     @Override
@@ -313,6 +361,8 @@ public class ComplianceManager extends GeneralManager
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+
+        initDashboard();
 
     }
 
@@ -1328,6 +1378,8 @@ public class ComplianceManager extends GeneralManager
         isActiveDocumentStandardsOnly = true;
         isActiveMarketProductsOnly = true;
         surveyEstablishmentsDialogHeader = "Establishment";
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
     }
 
     public List<FactoryInspection> getFactoryInspections() {
