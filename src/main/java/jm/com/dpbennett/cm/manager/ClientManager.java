@@ -30,6 +30,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.cm.Client;
@@ -62,6 +64,8 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class ClientManager extends GeneralManager implements Serializable {
 
+    @PersistenceUnit(unitName = "JMTS3PU")
+    private EntityManagerFactory CMPU;
     private Boolean isActiveClientsOnly;
     private Client selectedClient;
     private Contact selectedContact;
@@ -77,6 +81,11 @@ public class ClientManager extends GeneralManager implements Serializable {
      */
     public ClientManager() {
         init();
+    }
+
+    public EntityManagerFactory getCMPU() {
+
+       return CMPU;
     }
 
     public String getApplicationFooter() {
@@ -149,7 +158,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         getSystemManager().onMainViewTabChange(event);
     }
 
-    private Employee getEmployee() {
+    private Employee getUserEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         return Employee.findById(hrmem, getUser().getEmployee().getId());
@@ -178,7 +187,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getUser().hasModule("clientManager")) {
 
             openClientsTab();
-            
+
         }
     }
 
@@ -582,14 +591,14 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("CMEM");
+        return getCMPU().createEntityManager();
 
     }
 
     @Override
     public EntityManager getEntityManager2() {
 
-        return getSystemManager().getEntityManager2();
+        return getFinanceManager().getFINPU().createEntityManager();
 
     }
 
@@ -630,16 +639,21 @@ public class ClientManager extends GeneralManager implements Serializable {
                 getSelectedClient().setDateEntered(new Date());
                 getSelectedClient().setDateEdited(new Date());
                 if (getUser() != null) {
-                    selectedClient.setEnteredBy(getEmployee());
-                    selectedClient.setEditedBy(getEmployee());
+                    selectedClient.setEnteredBy(getUserEmployee());
+                    selectedClient.setEditedBy(getUserEmployee());
                 }
             }
+            
 
             // Do save
             if (getIsDirty()) {
                 getSelectedClient().setDateEdited(new Date());
                 if (getUser() != null) {
-                    selectedClient.setEditedBy(getEmployee());
+                    selectedClient.setEditedBy(getUserEmployee());
+                   
+                    if (selectedClient.getEnteredBy() == null) {
+                        selectedClient.setEnteredBy(getUserEmployee());
+                    }
                 }
                 selectedClient.save(getEntityManager1());
                 setIsDirty(false);

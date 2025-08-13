@@ -31,6 +31,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
@@ -64,7 +66,6 @@ import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.TabCloseEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 
@@ -74,6 +75,8 @@ import org.primefaces.model.DualListModel;
  */
 public class HumanResourceManager extends GeneralManager implements Serializable {
 
+    @PersistenceUnit(unitName = "JMTS3PU")
+    private EntityManagerFactory HRMPU;
     private Boolean isActiveEmployeesOnly;
     private Boolean isActiveEmployeePositionsOnly;
     private Boolean isActiveDepartmentsOnly;
@@ -115,6 +118,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public HumanResourceManager() {
         init();
+    }
+
+    public EntityManagerFactory getHRMPU() {
+        
+        return HRMPU;
     }
 
     @Override
@@ -1285,7 +1293,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("HRMEM");
+        return getHRMPU().createEntityManager();
 
     }
 

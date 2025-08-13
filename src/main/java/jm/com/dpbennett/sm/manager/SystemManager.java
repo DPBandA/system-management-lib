@@ -90,14 +90,8 @@ import org.primefaces.model.file.UploadedFile;
  */
 public final class SystemManager extends GeneralManager {
 
-    @PersistenceUnit(unitName = "FINPU")
-    private EntityManagerFactory FIN;
     @PersistenceUnit(unitName = "JMTSPU")
-    private EntityManagerFactory JMTS;
-    @PersistenceUnit(unitName = "JMTS3PU")
-    private EntityManagerFactory JMTS3;
-    @PersistenceUnit(unitName = "JMTS5PU")
-    private EntityManagerFactory JMTS5;
+    private EntityManagerFactory SMPU;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
     private Boolean isActiveDocumentTypesOnly;
@@ -161,6 +155,11 @@ public final class SystemManager extends GeneralManager {
 
     public SystemManager() {
         init();
+    }
+
+    public EntityManagerFactory getSMPU() {
+
+        return SMPU;
     }
 
     public Issue getIssue() {
@@ -410,28 +409,27 @@ public final class SystemManager extends GeneralManager {
         }
     }
 
-    public EntityManager getEntityManager() {
-
-        return getEntityManager("SMEM");
-
-    }
-
-    public EntityManager getEntityManager(String emname) {
-
-        String em = SystemOption.getString(getDefaultEntityManager(), emname);
-
-        switch (em) {
-            case "JMTS3":
-                return JMTS3.createEntityManager();
-            case "JMTS5":
-                return JMTS5.createEntityManager();
-            case "JMTS":
-            default:
-                return JMTS.createEntityManager();
-        }
-
-    }
-
+//    public EntityManager getEntityManager() {
+//
+//        return getEntityManager("SMEM");
+//
+//    }
+//
+//    public EntityManager getEntityManager(String emname) {
+//
+//        String em = SystemOption.getString(getDefaultEntityManager(), emname);
+//
+//        switch (em) {
+//            case "JMTS3":
+//                return JMTS3.createEntityManager();
+//            case "JMTS5":
+//                return JMTS5.createEntityManager();
+//            case "JMTS":
+//            default:
+//                return JMTS.createEntityManager();
+//        }
+//
+//    }
     public String getCountrySearchText() {
         return countrySearchText;
     }
@@ -1673,7 +1671,7 @@ public final class SystemManager extends GeneralManager {
         return getStringListAsSelectItems(getEntityManager1(),
                 "workProgressList");
     }
-    
+
     public List<SelectItem> getNotificationTypeList() {
 
         return getStringListAsSelectItems(getEntityManager1(),
@@ -2707,27 +2705,28 @@ public final class SystemManager extends GeneralManager {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getEntityManager("SMEM");
+        return getSMPU().createEntityManager();
 
     }
 
     public EntityManager getDefaultEntityManager() {
-        return JMTS.createEntityManager();
-    }
 
-    @Override
-    public EntityManager getEntityManager2() {
-        return FIN.createEntityManager();
+        return getSMPU().createEntityManager();
     }
+    
+//
+//    @Override
+//    public EntityManager getEntityManager2() {
+//        return FIN.createEntityManager();
+//    }
+//
+//    public EntityManager getEntityManager3() {
+//        return JMTS3.createEntityManager();
+//    }
 
-    public EntityManager getEntityManager3() {
-        return JMTS3.createEntityManager();
-    }
-
-    public EntityManager getEntityManager5() {
-        return JMTS5.createEntityManager();
-    }
-
+//    public EntityManager getEntityManager5() {
+//        return JMTS5.createEntityManager();
+//    }
     public Date getCurrentDate() {
         return new Date();
     }

@@ -20,7 +20,7 @@
     
     <description>The System Management Library for the System Management web application.</description>
     
-    <name>SM Lib</name>
+    <name>b.SM Lib</name>
     
     <build>
         <plugins>

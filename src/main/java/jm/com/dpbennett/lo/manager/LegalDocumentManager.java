@@ -29,6 +29,8 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.fm.Classification;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.Department;
@@ -73,6 +75,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class LegalDocumentManager extends GeneralManager implements Serializable {
 
+    private EntityManagerFactory LOPU;
     private List<LegalDocument> documentSearchResultList;
     private LegalDocument selectedDocument;
     private LegalDocument currentDocument;
@@ -82,6 +85,23 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public LegalDocumentManager() {
         init();
+    }
+
+     public EntityManagerFactory getLOPU() {
+
+        if (LOPU == null) {
+
+            // tk NB: modilfy to get it from the users org. first. 
+            // tk insert code to get it from the users org. here.
+            // tk Check that the user is logged in before getting the PU
+            // tk from their org.
+            String pu = SystemOption.getString(
+                    getSystemManager().getDefaultEntityManager(), "LOPU");
+
+            Persistence.createEntityManagerFactory(pu);
+        }
+
+        return LOPU;
     }
 
     @Override
@@ -852,7 +872,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("LOEM");
+        return getLOPU().createEntityManager();
     }
 
     @Override

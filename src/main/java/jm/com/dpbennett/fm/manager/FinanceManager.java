@@ -28,6 +28,9 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.fm.AccountingCode;
 import jm.com.dpbennett.business.entity.fm.Classification;
 import jm.com.dpbennett.business.entity.fm.Currency;
@@ -69,6 +72,10 @@ import org.primefaces.model.dashboard.DefaultDashboardWidget;
  */
 public class FinanceManager extends GeneralManager implements Serializable {
 
+    @PersistenceUnit(unitName = "FINPU")
+    private EntityManagerFactory FINPU;
+    @PersistenceUnit(unitName = "JMTS3PU")
+    private EntityManagerFactory FMPU;
     private AccountingCode selectedAccountingCode;
     private Tax selectedTax;
     private Discount selectedDiscount;
@@ -124,6 +131,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
+    }    
+    
+    public EntityManagerFactory getFINPU() {
+        return FINPU;
+    }
+
+    public EntityManagerFactory getFMPU() {
+
+        return FMPU;
     }
 
     public String getSupportURL() {
@@ -365,7 +381,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         getMainTabView().openTab("Dashboard");
 
     }
-    
+
     @Override
     public void initDashboard() {
 
@@ -1942,14 +1958,14 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("FMEM");
+        return getFMPU().createEntityManager();
 
     }
 
     @Override
     public EntityManager getEntityManager2() {
 
-        return getSystemManager().getEntityManager2();
+        return getFMPU().createEntityManager();
     }
 
     @Override
@@ -2213,7 +2229,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
-        
+
         initDashboard();
 
     }

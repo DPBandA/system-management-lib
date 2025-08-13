@@ -1,5 +1,5 @@
 /*
-Financial Management (FM) 
+Accounting Management (AM) 
 Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,11 @@ package jm.com.dpbennett.fm.manager;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.fm.FinancialAccount;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -38,12 +41,25 @@ import org.primefaces.model.TreeNode;
  */
 public class AccountingManager extends GeneralManager implements Serializable {
 
+    private EntityManagerFactory AMPU;
     private TreeNode<FinancialAccount> chartOfAccounts;
     private List<SortMeta> sortBy;
     private FinancialAccount selectedFinancialAccount;
 
     public AccountingManager() {
         init();
+    }
+
+    public EntityManagerFactory getAMPU() {
+
+        if (AMPU == null) {
+            String pu = SystemOption.getString(
+                    getSystemManager().getDefaultEntityManager(), "AMPU");
+            
+            Persistence.createEntityManagerFactory(pu);
+        }
+
+        return AMPU;
     }
 
     @Override
@@ -97,7 +113,7 @@ public class AccountingManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("FMEM");
+        return getAMPU().createEntityManager();
 
     }
 

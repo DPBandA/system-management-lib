@@ -72,9 +72,7 @@ public class GeneralManager implements Manager, Serializable {
     private String registrationMessage;
     private String confirmedPassword;
 
-    /**
-     * Creates a new instance of SystemManager
-     */
+   
     public GeneralManager() {
         init();
     }

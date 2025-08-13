@@ -38,6 +38,9 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.Department;
@@ -95,6 +98,8 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class ReportManager extends GeneralManager {
 
+    @PersistenceUnit(unitName = "JMTS5PU")
+    private EntityManagerFactory RMPU;
     private String columnsToExclude;
     private String reportSearchText;
     private List<Report> foundReports;
@@ -179,7 +184,7 @@ public class ReportManager extends GeneralManager {
         getSystemManager().onMainViewTabChange(event);
     }
 
-    public Employee getEmployee() {
+    public Employee getUserEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         return Employee.findById(hrmem, getUser().getEmployee().getId());
@@ -757,16 +762,21 @@ public class ReportManager extends GeneralManager {
         closeDialog(null);
     }
 
+    public EntityManagerFactory getRMPU() {
+
+        return RMPU;
+    }
+
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("RMEM");
+        return getRMPU().createEntityManager();
 
     }
 
     public Employee getReportEmployee1() {
         if (selectedReport.getEmployees().isEmpty()) {
-            selectedReport.getEmployees().add(getEmployee());
+            selectedReport.getEmployees().add(getUserEmployee());
         }
         return selectedReport.getEmployees().get(0);
     }
@@ -777,7 +787,7 @@ public class ReportManager extends GeneralManager {
 
     public Department getReportingDepartment1() {
         if (selectedReport.getDepartments().isEmpty()) {
-            selectedReport.getDepartments().add(getEmployee().getDepartment());
+            selectedReport.getDepartments().add(getUserEmployee().getDepartment());
         }
         return selectedReport.getDepartments().get(0);
     }

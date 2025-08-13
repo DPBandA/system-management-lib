@@ -1,5 +1,5 @@
 /*
-Financial Management (FM) 
+Asset Management (FM) 
 Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -84,7 +84,8 @@ public class AssetManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("FMEM");
+        // tk for now
+        return getSystemManager().getEntityManager1();
 
     }
 

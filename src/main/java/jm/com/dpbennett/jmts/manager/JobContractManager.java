@@ -133,9 +133,9 @@ public class JobContractManager extends GeneralManager
         getSystemManager().onMainViewTabChange(event);
     }
 
-    public Employee getEmployee() {
+    public Employee getUserEmployee() {
 
-        return getJobManager().getEmployee();
+        return getJobManager().getUserEmployee();
     }
 
     public void okJobServiceContract(ActionEvent actionEvent) {
@@ -981,10 +981,10 @@ public class JobContractManager extends GeneralManager
 
         Job foundJob = Job.findJobById(em, job.getId());
 
-        if (Department.findAssignedToJob(foundJob, em).getHead().getId().longValue() == getEmployee().getId().longValue()) {
+        if (Department.findAssignedToJob(foundJob, em).getHead().getId().longValue() == getUserEmployee().getId().longValue()) {
             return true;
         } else {
-            return (Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getEmployee().getId().longValue())
+            return (Department.findAssignedToJob(foundJob, em).getActingHead().getId().longValue() == getUserEmployee().getId().longValue())
                     && Department.findAssignedToJob(foundJob, em).getActingHeadActive();
         }
     }

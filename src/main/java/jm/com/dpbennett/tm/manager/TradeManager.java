@@ -213,7 +213,7 @@ public class TradeManager extends GeneralManager implements Serializable {
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("FMEM");
+        return getSystemManager().getEntityManager1();
 
     }
 

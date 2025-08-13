@@ -41,6 +41,9 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.BusinessEntity;
 import jm.com.dpbennett.business.entity.StatusNote;
 import jm.com.dpbennett.business.entity.fm.Classification;
@@ -103,6 +106,8 @@ import org.primefaces.model.DialogFrameworkOptions;
 public class JobManager extends GeneralManager
         implements Serializable, BusinessEntityManagement {
 
+    @PersistenceUnit(unitName = "JMTS3PU")
+    private EntityManagerFactory JMTSPU;
     private JMTSApplication application;
     private Job currentJob;
     private Job selectedJob;
@@ -119,6 +124,11 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+
+    public EntityManagerFactory getJMTSPU() {
+
+        return JMTSPU;
     }
 
     public String getLastSystemNotificationContent() {
@@ -168,7 +178,7 @@ public class JobManager extends GeneralManager
         getSystemManager().onMainViewTabChange(event);
     }
 
-    public Employee getEmployee() {
+    public Employee getUserEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         return Employee.findById(hrmem, getUser().getEmployee().getId());
@@ -818,7 +828,7 @@ public class JobManager extends GeneralManager
         selectedStatusNote = new StatusNote();
 
         selectedStatusNote.setEntityId(getCurrentJob().getId());
-        selectedStatusNote.setCreatedBy(getEmployee());
+        selectedStatusNote.setCreatedBy(getUserEmployee());
         selectedStatusNote.setDateCreated(new Date());
         selectedStatusNote.setHeader("Enter a status note below");
 
@@ -1104,7 +1114,7 @@ public class JobManager extends GeneralManager
 
         // Set edited by
         getJobSearchResultList().get(event.getRowIndex()).
-                getClient().setEditedBy(getEmployee());
+                getClient().setEditedBy(getUserEmployee());
 
         // Set date edited
         getJobSearchResultList().get(event.getRowIndex()).
@@ -1277,7 +1287,7 @@ public class JobManager extends GeneralManager
     @Override
     public EntityManager getEntityManager1() {
 
-        return getSystemManager().getEntityManager("JMTSEM");
+        return getJMTSPU().createEntityManager();
     }
 
     public void prepareToCloseJobDetail() {
@@ -1330,11 +1340,11 @@ public class JobManager extends GeneralManager
     private Boolean isJobAssignedToUserDepartment() {
 
         if (getUser() != null) {
-            if (currentJob.getDepartment().getId().longValue() == getEmployee().getDepartment().getId().longValue()) {
+            if (currentJob.getDepartment().getId().longValue() == getUserEmployee().getDepartment().getId().longValue()) {
                 return true;
             } else {
                 return currentJob.getSubContractedDepartment().getId().longValue()
-                        == getEmployee().getDepartment().getId().longValue();
+                        == getUserEmployee().getDepartment().getId().longValue();
             }
         } else {
             return false;
@@ -1782,7 +1792,7 @@ public class JobManager extends GeneralManager
                 job.getJobStatusAndTracking().setCompleted(true);
                 job.getJobStatusAndTracking().setDateOfCompletion(new Date());
                 job.getJobStatusAndTracking().
-                        setCompletedBy(getEmployee());
+                        setCompletedBy(getUserEmployee());
             }
 
             setIsDirty(true);
@@ -2070,7 +2080,7 @@ public class JobManager extends GeneralManager
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
                 // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                 || (getUser().can("EnterOwnJob")
-                && Objects.equals(getEmployee().getId(), job.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
+                && Objects.equals(getUserEmployee().getId(), job.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
                 // Can the user enter any job?
                 || getUser().can("EnterJob"))) {
@@ -2086,7 +2096,7 @@ public class JobManager extends GeneralManager
                     && (getUser().isMemberOf(em, savedJob.getDepartment()) || getUser().isMemberOf(em, savedJob.getSubContractedDepartment())))
                     // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                     || (getUser().can("EditOwnJob")
-                    && Objects.equals(getEmployee().getId(), savedJob.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
+                    && Objects.equals(getUserEmployee().getId(), savedJob.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
                     && (getUser().isMemberOf(em, savedJob.getDepartment()) || getUser().isMemberOf(em, savedJob.getSubContractedDepartment())))
                     // Can the user edit any job?
                     || getUser().can("EditJob")) {
@@ -3051,11 +3061,11 @@ public class JobManager extends GeneralManager
         if (getUser().hasModule("jobManager")) {
             getDashboard().openTab("Job Management");
         }
-        
+
         if (getUser().hasModule("complianceManager")) {
             getDashboard().openTab("Standards Compliance");
         }
-        
+
         if (getUser().hasModule("clientManager")) {
             getDashboard().openTab("Client Management");
         }
@@ -3096,7 +3106,7 @@ public class JobManager extends GeneralManager
 
             }
         }
-        
+
         // Proformas | Jobs
         if (getUser().hasModule("jobManager")) {
             Module module = Module.findActiveModuleByName(
@@ -3144,7 +3154,9 @@ public class JobManager extends GeneralManager
     public void handleKeepAlive() {
 
         super.updateUserActivity("JMTSv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
+                + SystemOption.getString(
+                        getSystemManager().getEntityManager1(),
+                        "JMTSv"),
                 "Logged in");
 
         if (getUser().getId() != null) {
