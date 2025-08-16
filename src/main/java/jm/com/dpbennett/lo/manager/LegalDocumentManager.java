@@ -31,6 +31,7 @@ import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.fm.Classification;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.hrm.Department;
@@ -75,6 +76,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class LegalDocumentManager extends GeneralManager implements Serializable {
 
+    @PersistenceUnit(unitName = "JMTS5PU")
     private EntityManagerFactory LOPU;
     private List<LegalDocument> documentSearchResultList;
     private LegalDocument selectedDocument;
@@ -88,18 +90,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
      public EntityManagerFactory getLOPU() {
-
-        if (LOPU == null) {
-
-            // tk NB: modilfy to get it from the users org. first. 
-            // tk insert code to get it from the users org. here.
-            // tk Check that the user is logged in before getting the PU
-            // tk from their org.
-            String pu = SystemOption.getString(
-                    getSystemManager().getDefaultEntityManager(), "LOPU");
-
-            Persistence.createEntityManagerFactory(pu);
-        }
 
         return LOPU;
     }

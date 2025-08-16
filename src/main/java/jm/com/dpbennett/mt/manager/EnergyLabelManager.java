@@ -33,7 +33,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Module;
@@ -73,6 +73,7 @@ import org.w3c.dom.svg.SVGRect;
 public class EnergyLabelManager extends GeneralManager
         implements Serializable {
 
+    @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory LPPU;
     private List<EnergyLabel> foundEnergyLabels;
     private EnergyLabel selectedEnergyLabel;
@@ -526,14 +527,7 @@ public class EnergyLabelManager extends GeneralManager
     
     public EntityManagerFactory getLPPU() {
         
-        if (LPPU == null) {
-            
-            String pu = SystemOption.getString(
-                    getSystemManager().getDefaultEntityManager(), "LPPU");
-            
-            Persistence.createEntityManagerFactory(pu);
-        }
-        
+          
         return LPPU;
     }
 

@@ -83,6 +83,16 @@ import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.fm.manager.FinanceManager;
+import jm.com.dpbennett.jmts.manager.JobManager;
+import jm.com.dpbennett.lo.manager.LegalDocumentManager;
+import jm.com.dpbennett.mt.manager.EnergyLabelManager;
+import jm.com.dpbennett.rm.manager.ReportManager;
+import jm.com.dpbennett.sc.manager.ComplianceManager;
 
 /**
  *
@@ -156,7 +166,7 @@ public final class SystemManager extends GeneralManager {
     public SystemManager() {
         init();
     }
-
+   
     public EntityManagerFactory getSMPU() {
 
         return SMPU;
@@ -2675,14 +2685,13 @@ public final class SystemManager extends GeneralManager {
         editSystemOption();
     }
 
-    public void editEM(String em) {
-
-        selectedSystemOption = SystemOption.findSystemOptionByName(
-                getDefaultEntityManager(), em);
-
-        editSystemOption("/admin/systemDefaultOptionDialog");
-    }
-
+//    public void editEM(String em) {
+//
+//        selectedSystemOption = SystemOption.findSystemOptionByName(
+//                getDefaultEntityManager(), em);
+//
+//        editSystemOption("/admin/systemDefaultOptionDialog");
+//    }
     public void createNewSystemOption(String category) {
 
         selectedSystemOption = new SystemOption();
@@ -2699,7 +2708,47 @@ public final class SystemManager extends GeneralManager {
     }
 
     public String getSystemInfo() {
-        return "";
+
+        String systemInfo = "";
+
+        String unitNames[] = {"SMPU", "HRMPU",
+            "FMPU", "CMPU",
+            "JMTSPU", "LOPU",
+            "RMPU", "SCPU", "LPPU"};
+        Class classes[] = {SystemManager.class, HumanResourceManager.class,
+            FinanceManager.class, ClientManager.class,
+            JobManager.class, LegalDocumentManager.class,
+            ReportManager.class, ComplianceManager.class, EnergyLabelManager.class
+        };
+        ArrayList<Field> fields = new ArrayList<>();
+        ArrayList<PersistenceUnit> annotations = new ArrayList<>();
+
+        try {
+
+            int i = 0;
+
+            for (String unitName : unitNames) {
+                fields.add(classes[i].getDeclaredField(unitName));
+                annotations.add(fields.get(i).getAnnotation(PersistenceUnit.class));
+
+                if (annotations.get(i) != null) {
+                    if (i == 0) {
+                        systemInfo = systemInfo
+                                + unitNames[i] + " - " + annotations.get(i).unitName();
+                    } else {
+                        systemInfo = systemInfo
+                                + ", " + unitNames[i] + " - " + annotations.get(i).unitName();
+                    }
+                }
+
+                ++i;
+            }
+
+        } catch (NoSuchFieldException | SecurityException ex) {
+            Logger.getLogger(SystemManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return systemInfo;
     }
 
     @Override
@@ -2713,20 +2762,7 @@ public final class SystemManager extends GeneralManager {
 
         return getSMPU().createEntityManager();
     }
-    
-//
-//    @Override
-//    public EntityManager getEntityManager2() {
-//        return FIN.createEntityManager();
-//    }
-//
-//    public EntityManager getEntityManager3() {
-//        return JMTS3.createEntityManager();
-//    }
 
-//    public EntityManager getEntityManager5() {
-//        return JMTS5.createEntityManager();
-//    }
     public Date getCurrentDate() {
         return new Date();
     }
