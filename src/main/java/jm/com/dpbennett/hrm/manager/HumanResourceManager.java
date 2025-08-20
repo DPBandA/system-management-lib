@@ -121,22 +121,22 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public EntityManagerFactory getHRMPU() {
-        
+
         return HRMPU;
     }
 
     @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
-        
+
         getSystemManager().setDefaultCommandTarget(defaultCommandTarget);
-        
+
     }
 
     @Override
     public String getDefaultCommandTarget() {
-        
+
         return getSystemManager().getDefaultCommandTarget();
-        
+
     }
 
     public String getCopyrightOrganization() {
@@ -465,6 +465,21 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             List<BusinessOffice> businessOffices = BusinessOffice.findActiveBusinessOfficesByName(em, query);
 
             return businessOffices;
+
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<Business> completeActiveBusiness(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<Business> businesses = Business.findAllActiveByName(em, query);
+
+            return businesses;
 
         } catch (Exception e) {
             return new ArrayList<>();
@@ -1707,10 +1722,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 break;
             case "Organizations":
                 if (getIsActiveBusinessesOnly()) {
-                    foundBusinesses = Business.findActiveBusinessesByName(getEntityManager1(),
+                    foundBusinesses = Business.findAllActiveByName(getEntityManager1(),
                             searchText);
                 } else {
-                    foundBusinesses = Business.findBusinessesByName(getEntityManager1(),
+                    foundBusinesses = Business.findAllByName(getEntityManager1(),
                             searchText);
                 }
 
