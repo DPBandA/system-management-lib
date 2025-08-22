@@ -1304,6 +1304,7 @@ public final class SystemManager extends GeneralManager {
                 selectedUser.setPassword(selectedUser.getNewPassword());
 
                 System.out.println("Will attempt to add user");
+                
                 return LdapContext.addUser(em, context, selectedUser);
             } else {
                 return false;
