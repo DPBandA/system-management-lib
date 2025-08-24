@@ -1240,10 +1240,14 @@ public final class SystemManager extends GeneralManager {
     public void createNewUser() {
 
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
+        EntityManager em = getEntityManager1();
+        String defaultUserPassword = SystemOption.getString(em, "defaultUserPassword");
 
         selectedUser = new User();
         selectedUser.setEmployee(Employee.findDefault(hrmem, "--", "--", true));
         selectedUser.setUpdateLDAPUser(getEnableUpdateLDAPUser());
+        selectedUser.setNewPassword(defaultUserPassword);
+        selectedUser.setConfirmedNewPassword(defaultUserPassword);
 
         editUser();
     }
