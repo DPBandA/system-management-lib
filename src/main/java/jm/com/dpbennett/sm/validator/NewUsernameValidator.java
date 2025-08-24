@@ -52,7 +52,7 @@ public class NewUsernameValidator implements Validator {
                 em = emf.createEntityManager();
 
                 // Find active user by username
-                User foundUser = User.findActiveJobManagerUserByUsername(em, value.toString().trim());
+                User foundUser = User.findActiveByUsername(em, value.toString().trim());
                 if (foundUser != null) {
                     throw new ValidatorException(getMessage("Username Exists"));
                 }

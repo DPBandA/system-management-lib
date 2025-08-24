@@ -396,7 +396,7 @@ public final class SystemManager extends GeneralManager {
         try {
             em = getEntityManager1();
 
-            List<DocumentType> documentTypes = DocumentType.findActiveDocumentTypesByName(em, query);
+            List<DocumentType> documentTypes = DocumentType.findAllActiveByName(em, query);
 
             return documentTypes;
 
@@ -950,7 +950,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void addModulePrivileges() {
-        List<Privilege> source = Privilege.findActivePrivileges(getEntityManager1(), "");
+        List<Privilege> source = Privilege.findAllActive(getEntityManager1(), "");
         List<Privilege> target = selectedModule.getPrivileges();
 
         source.removeAll(target);
@@ -1196,7 +1196,7 @@ public final class SystemManager extends GeneralManager {
         EntityManager em = getEntityManager1();
 
         if (selectedUser.getId() != null) {
-            selectedUser = User.findJobManagerUserById(em, selectedUser.getId());
+            selectedUser = User.findById(em, selectedUser.getId());
         }
     }
 
@@ -1204,7 +1204,7 @@ public final class SystemManager extends GeneralManager {
 
         EntityManager em = getEntityManager1();
 
-        User u = User.findJobManagerUserByUsername(em, foundUser.getUsername().trim());
+        User u = User.findByUsername(em, foundUser.getUsername().trim());
         if (u != null) {
             foundUser = u;
             selectedUser = u;
@@ -1217,7 +1217,7 @@ public final class SystemManager extends GeneralManager {
                 "maxSearchResults");
 
         try {
-            List<User> users = User.findJobManagerUsersByUsername(
+            List<User> users = User.findAllByUsername(
                     getEntityManager1(), query, maxSearchResults);
             List<String> suggestions = new ArrayList<>();
             if (users != null) {
@@ -1459,17 +1459,17 @@ public final class SystemManager extends GeneralManager {
         switch (searchType) {
             case "Users":
                 if (getIsActiveUsersOnly()) {
-                    foundUsers = User.findActiveJobManagerUsersByName(getEntityManager1(),
+                    foundUsers = User.findAllActiveByName(getEntityManager1(),
                             searchText, maxSearchResults);
                 } else {
-                    foundUsers = User.findJobManagerUsersByName(getEntityManager1(),
+                    foundUsers = User.findAllByName(getEntityManager1(),
                             searchText, maxSearchResults);
                 }
 
                 break;
             case "Privileges":
                 if (getIsActivePrivilegesOnly()) {
-                    foundPrivileges = Privilege.findActivePrivileges(getEntityManager1(),
+                    foundPrivileges = Privilege.findAllActive(getEntityManager1(),
                             searchText);
                 } else {
                     foundPrivileges = Privilege.findPrivileges(getEntityManager1(),
@@ -1495,10 +1495,10 @@ public final class SystemManager extends GeneralManager {
                 break;
             case "Document Types":
                 if (getIsActiveDocumentTypesOnly()) {
-                    foundDocumentTypes = DocumentType.findActiveDocumentTypesByName(getEntityManager1(),
+                    foundDocumentTypes = DocumentType.findAllActiveByName(getEntityManager1(),
                             searchText);
                 } else {
-                    foundDocumentTypes = DocumentType.findDocumentTypesByName(getEntityManager1(),
+                    foundDocumentTypes = DocumentType.findAllByName(getEntityManager1(),
                             searchText);
                 }
 
@@ -2264,7 +2264,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public List<DocumentType> getDocumentTypes() {
-        return DocumentType.findAllDocumentTypes(getEntityManager1());
+        return DocumentType.findAll(getEntityManager1());
     }
 
     public Boolean getIsActiveLdapsOnly() {

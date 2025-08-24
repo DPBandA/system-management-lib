@@ -642,7 +642,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         legalDocument.setRequestingDepartment(Department.findDefault(em, "--"));
         legalDocument.setSubmittedBy(Employee.findDefault(getHumanResourceManager().getEntityManager1(), "--", "--", true));
-        legalDocument.setDocumentType(DocumentType.findDefaultDocumentType(em, "--"));
+        legalDocument.setDocumentType(DocumentType.findDefault(em, "--"));
         legalDocument.setClassification(Classification.findClassificationByName(em, "--"));
         legalDocument.setDocumentForm("H");
         legalDocument.setNumber(LegalDocument.getLegalDocumentNumber(legalDocument, "ED"));

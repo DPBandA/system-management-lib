@@ -36,7 +36,7 @@ public class DocumentTypeConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        DocumentType documentType = DocumentType.findDocumentTypeByName(em, value);
+        DocumentType documentType = DocumentType.findByName(em, value);
 
         if (documentType == null) {
             documentType = new DocumentType(value);

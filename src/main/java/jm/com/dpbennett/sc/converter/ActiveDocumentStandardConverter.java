@@ -37,7 +37,7 @@ public class ActiveDocumentStandardConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        DocumentStandard documentStandard = DocumentStandard.findActiveDocumentStandardByName(em,
+        DocumentStandard documentStandard = DocumentStandard.findActiveByName(em,
                 submittedValue, Boolean.FALSE);
 
         if (documentStandard == null) {

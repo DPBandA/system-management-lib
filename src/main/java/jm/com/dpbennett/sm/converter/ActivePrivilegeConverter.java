@@ -36,7 +36,7 @@ public class ActivePrivilegeConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Privilege privilege = Privilege.findActivePrivilegeByName(em, value);
+        Privilege privilege = Privilege.findActiveByName(em, value);
 
         if (privilege == null) {
             privilege = new Privilege(value);

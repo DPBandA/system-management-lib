@@ -756,7 +756,7 @@ public class GeneralManager implements Manager, Serializable {
         try {
 
             // Find user and determine if authentication is required for this user
-            user = User.findActiveJobManagerUserByUsername(em, username);
+            user = User.findActiveByUsername(em, username);
 
             if (user != null) {
                 em.refresh(user);

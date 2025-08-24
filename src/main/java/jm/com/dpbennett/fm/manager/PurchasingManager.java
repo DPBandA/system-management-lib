@@ -2401,7 +2401,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         "Procurement Officer");
 
         for (Employee procurementOfficer : procurementOfficers) {
-            User user = User.findActiveJobManagerUserByEmployeeId(em,
+            User user = User.findActiveByEmployeeId(em,
                     procurementOfficer.getId());
 
             notifyUserRePurchaseRequisition(em, purchaseRequisition, user, action);
@@ -2423,7 +2423,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         Employee head = purchaseRequisition.getOriginatingDepartment().getHead();
 
         if (head != null) {
-            User user = User.findActiveJobManagerUserByEmployeeId(em,
+            User user = User.findActiveByEmployeeId(em,
                     head.getId());
 
             notifyUserRePurchaseRequisition(em, purchaseRequisition, user, action);
@@ -2457,7 +2457,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 purchaseRequisition.getOriginatingDepartment());
 
         if (head != null) {
-            User user = User.findActiveJobManagerUserByEmployeeId(em,
+            User user = User.findActiveByEmployeeId(em,
                     head.getId());
 
             notifyUserRePurchaseRequisition(em, purchaseRequisition, user, action);

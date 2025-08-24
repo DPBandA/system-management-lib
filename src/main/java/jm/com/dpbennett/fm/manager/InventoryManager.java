@@ -1256,7 +1256,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         Employee head = inventory.getEditedBy().getDepartment().getHead();
 
         if (head != null) {
-            User user = User.findActiveJobManagerUserByEmployeeId(em,
+            User user = User.findActiveByEmployeeId(em,
                     head.getId());
 
             notifyUserReInventory(em, inventory, user, action);

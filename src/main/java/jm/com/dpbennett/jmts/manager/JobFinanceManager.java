@@ -4900,7 +4900,7 @@ public class JobFinanceManager extends GeneralManager
                     getSystemManager().getEntityManager1(), "domainNames");
             String domainNames[] = listAsString.split(";");
 
-            User user1 = User.findActiveJobManagerUserByEmployeeId(
+            User user1 = User.findActiveByEmployeeId(
                     getSystemManager().getEntityManager1(),
                     employee.getId());
 
