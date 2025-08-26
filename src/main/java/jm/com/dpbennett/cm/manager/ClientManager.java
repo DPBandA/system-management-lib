@@ -44,6 +44,7 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.model.LazyClientDataModel;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
@@ -85,7 +86,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public EntityManagerFactory getCMPU() {
 
-       return CMPU;
+        return CMPU;
     }
 
     public String getApplicationFooter() {
@@ -643,19 +644,29 @@ public class ClientManager extends GeneralManager implements Serializable {
                     selectedClient.setEditedBy(getUserEmployee());
                 }
             }
-            
 
             // Do save
             if (getIsDirty()) {
                 getSelectedClient().setDateEdited(new Date());
                 if (getUser() != null) {
                     selectedClient.setEditedBy(getUserEmployee());
-                   
+
                     if (selectedClient.getEnteredBy() == null) {
                         selectedClient.setEnteredBy(getUserEmployee());
                     }
                 }
-                selectedClient.save(getEntityManager1());
+
+                ReturnMessage rm = selectedClient.saveUnique(getEntityManager1());
+                
+                if (!rm.isSuccess()) {
+                    PrimeFacesUtils.addMessage(
+                            rm.getHeader(),
+                            rm.getMessage(),
+                            FacesMessage.SEVERITY_ERROR);
+
+                    return;
+                }
+
                 setIsDirty(false);
             }
 

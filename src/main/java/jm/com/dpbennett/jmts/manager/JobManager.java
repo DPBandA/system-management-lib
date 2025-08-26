@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -133,11 +134,15 @@ public class JobManager extends GeneralManager
         try {
             if (getCurrentJob().getIsSubContract()) {
 
-                employees.addAll(getCurrentJob().getSubContractedDepartment().getStaff());
+                employees.addAll(
+                        getCurrentJob().getSubContractedDepartment().getStaff());
+
             } else {
 
                 employees.addAll(getCurrentJob().getDepartment().getStaff());
             }
+
+            Collections.sort(employees);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -148,7 +153,7 @@ public class JobManager extends GeneralManager
     }
 
     public List<Business> completeActiveBusiness(String query) {
-        EntityManager em = getHumanResourceManager().getEntityManager1();
+        EntityManager hrem = getHumanResourceManager().getEntityManager1();
         Boolean userCanEnterJob = getUser().can("EnterJob");
         List<Business> businesses = new ArrayList<>();
 
@@ -157,18 +162,23 @@ public class JobManager extends GeneralManager
             if ((userCanEnterJob || getCurrentJob().getIsToBeSubcontracted())
                     && getCurrentJob().getIsNew()) {
 
-                businesses = Business.findAllActiveByName(em, query);
+                businesses = Business.findAllActiveByName(hrem, query);
+
+            } else if (getCurrentJob().getIsNew()) {
+
+                Business userOrg = User.getUserOrganizationByDepartment(
+                        hrem, getUser());
+                businesses.add(Business.findByName(hrem, userOrg.getName()));
+
+            } else if (!getCurrentJob().getIsNew() && !getCurrentJob().getIsSubContract()) {
+
+                Business userOrg = User.getUserOrganizationByDepartment(
+                        hrem, getUser());
+                businesses.add(Business.findByName(hrem, userOrg.getName()));
+
             } else {
 
-                // tk - test if this solves the invalid dept. issue
-                // tk - get assignee's org. instead?
-                if (getCurrentJob().getIsSubContract()) {
-                    businesses.add(Employee.getEmployeeOrganizationByDepartment(
-                            em, getCurrentJob().getAssignedTo()));
-                } else {
-                    businesses.add(User.getUserOrganizationByDepartment(
-                            em, getUser()));
-                }
+                businesses = Business.findAllActiveByName(hrem, query);
 
             }
 
@@ -193,6 +203,8 @@ public class JobManager extends GeneralManager
                 }
 
             }
+
+            Collections.sort(departments);
 
             return departments;
 
@@ -959,14 +971,12 @@ public class JobManager extends GeneralManager
         Boolean jobIsNotNew = job.getId() != null;
 
         switch (field) {
-            case "businessOffice":
             case "classification":
             case "client":
             case "clientActionsMenu":
             case "billingAddress":
             case "clientContact":
             case "dateSubmitted":
-            case "subContractedDepartment":
             case "estimatedTAT":
             case "tatRequired":
             case "instructions":
@@ -980,6 +990,14 @@ public class JobManager extends GeneralManager
                 return fieldDisablingActive
                         && !userHasPrivilege
                         && jobIsNotNew;
+            case "organization":
+            case "businessOffice":
+            case "subContractedDepartment":
+                if (job.getIsSubContract()) {
+                    return true;
+                }
+
+                return false;
             case "department":
                 if (getUser().can("CreateDirectSubcontract")) {
                     return false;
@@ -3172,14 +3190,6 @@ public class JobManager extends GeneralManager
 
         if (getUser().hasModule("complianceManager")) {
             getDashboard().openTab("Standards Compliance");
-        }
-
-        if (getUser().hasModule("clientManager")) {
-            getDashboard().openTab("Client Management");
-        }
-
-        if (getUser().hasModule("humanResourceManager")) {
-            getDashboard().openTab("Human Resource");
         }
 
         if (getUser().hasModule("financeManager")) {
