@@ -4100,7 +4100,10 @@ public class JobFinanceManager extends GeneralManager
 
     public Boolean getCanApplyDiscount() {
 
-        return getUser().can("ApplyDiscountsToJobCosting");
+        // tk Not used for now
+        // return getUser().can("ApplyDiscountsToJobCosting");
+        
+        return true;
 
     }
 

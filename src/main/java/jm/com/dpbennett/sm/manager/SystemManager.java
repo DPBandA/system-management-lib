@@ -1135,12 +1135,12 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void editUser() {
-
+        
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() + 150) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -1159,6 +1159,14 @@ public final class SystemManager extends GeneralManager {
         }
 
         return selectedUser;
+    }
+    
+    public void setEditSelectedUser(User selectedUser) {
+        
+         // tk
+        selectedUser.loadNotificationSettings(getEntityManager1());
+        
+        this.selectedUser = selectedUser;
     }
 
     public void setSelectedUser(User selectedUser) {
@@ -1261,7 +1269,16 @@ public final class SystemManager extends GeneralManager {
     public void saveSelectedUser() {
 
         ReturnMessage rm = getSelectedUser().saveUnique(getEntityManager1());
+        if (!rm.isSuccess()) {
+            PrimeFacesUtils.addMessage(
+                    rm.getHeader(),
+                    rm.getMessage(),
+                    FacesMessage.SEVERITY_ERROR);
 
+            return;
+        }
+        
+        rm = getSelectedUser().saveNotificationSettings(getEntityManager1());
         if (!rm.isSuccess()) {
             PrimeFacesUtils.addMessage(
                     rm.getHeader(),
@@ -1291,7 +1308,6 @@ public final class SystemManager extends GeneralManager {
 
     public void registerSelectedUser(ActionEvent actionEvent) {
 
-        // tk
         System.out.println("Impl. user reg: maybe save user can be used here");
 
     }
@@ -1335,6 +1351,8 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().ajax().update(":mainTabViewForm");
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
+        
+        getUser().saveNotificationSettings(getEntityManager1());
     }
 
     public void saveUserSecurityProfile() {
@@ -1557,6 +1575,8 @@ public final class SystemManager extends GeneralManager {
 
     @Override
     public void viewUserProfile() {
+        
+        getUser().loadNotificationSettings(getEntityManager1());
     }
 
     public void handleLayoutUnitToggle(ToggleEvent event) {
