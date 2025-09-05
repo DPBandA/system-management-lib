@@ -243,10 +243,6 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
         onMainViewTabChange(event);
