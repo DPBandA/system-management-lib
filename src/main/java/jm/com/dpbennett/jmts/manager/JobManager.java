@@ -807,58 +807,164 @@ public class JobManager extends GeneralManager
     }
 
     public void processJobActions() {
+
+        User employeeUser;
+
         for (BusinessEntity.Action action : getCurrentJob().getActions()) {
             switch (action) {
                 case CREATE:
                     if (!Objects.equals(getCurrentJob().getAssignedTo().getId(),
                             getCurrentJob().getJobStatusAndTracking().getEnteredBy().getId())) {
 
-                        sendJobEntryEmail(getSystemManager().getEntityManager1(),
-                                getCurrentJob().getAssignedTo(),
-                                "job assignee", "entered");
+                        employeeUser
+                                = User.findActiveByEmployeeId(
+                                        getSystemManager().getEntityManager1(),
+                                        getCurrentJob().getAssignedTo().getId());
+
+                        if (employeeUser != null) {
+                            if (User.isNotificationActive(employeeUser,
+                                    getSystemManager().getEntityManager1(),
+                                    "jobAssigned")) {
+
+                                sendJobEntryEmail(getSystemManager().getEntityManager1(),
+                                        getCurrentJob().getAssignedTo(),
+                                        "job assignee", "entered");
+
+                            }
+                        }
                     }
                     break;
                 case PREPARE:
                     if (getCurrentJob().getIsSubContract()) {
 
-                        sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
-                                getCurrentJob().getSubContractedDepartment().getHead(),
-                                "head", "prepared");
+                        employeeUser
+                                = User.findActiveByEmployeeId(
+                                        getSystemManager().getEntityManager1(),
+                                        getCurrentJob().getSubContractedDepartment().getHead().getId());
+
+                        if (employeeUser != null) {
+                            if (User.isNotificationActive(employeeUser,
+                                    getSystemManager().getEntityManager1(),
+                                    "jobCostingPrepared")) {
+
+                                sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
+                                        getCurrentJob().getSubContractedDepartment().getHead(),
+                                        "head", "prepared");
+
+                            }
+                        }
 
                         if (getCurrentJob().getSubContractedDepartment().getActingHeadActive()) {
-                            sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
-                                    getCurrentJob().getSubContractedDepartment().getHead(),
-                                    "acting head", "prepared");
+
+                            employeeUser
+                                    = User.findActiveByEmployeeId(
+                                            getSystemManager().getEntityManager1(),
+                                            getCurrentJob().getSubContractedDepartment().getActingHead().getId());
+
+                            if (employeeUser != null) {
+                                if (User.isNotificationActive(employeeUser,
+                                        getSystemManager().getEntityManager1(),
+                                        "jobCostingPrepared")) {
+
+                                    sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
+                                            getCurrentJob().getSubContractedDepartment().getActingHead(),
+                                            "acting head", "prepared");
+
+                                }
+                            }
+
                         }
 
                     } else {
 
-                        sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
-                                getCurrentJob().getDepartment().getHead(),
-                                "head", "prepared");
+                        employeeUser = User.findActiveByEmployeeId(
+                                getSystemManager().getEntityManager1(),
+                                getCurrentJob().getDepartment().getHead().getId());
+
+                        if (employeeUser != null) {
+
+                            if (User.isNotificationActive(employeeUser,
+                                    getSystemManager().getEntityManager1(),
+                                    "jobCostingPrepared")) {
+
+                                sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
+                                        getCurrentJob().getDepartment().getHead(),
+                                        "head", "prepared");
+
+                            }
+                        }
 
                         if (getCurrentJob().getDepartment().getActingHeadActive()) {
-                            sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
-                                    getCurrentJob().getDepartment().getHead(),
-                                    "acting head", "prepared");
+
+                            employeeUser = User.findActiveByEmployeeId(
+                                    getSystemManager().getEntityManager1(),
+                                    getCurrentJob().getDepartment().getActingHead().getId());
+
+                            if (employeeUser != null) {
+
+                                if (User.isNotificationActive(employeeUser,
+                                        getSystemManager().getEntityManager1(),
+                                        "jobCostingPrepared")) {
+
+                                    sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
+                                            getCurrentJob().getDepartment().getActingHead(),
+                                            "acting head", "prepared");
+
+                                }
+                            }
+
                         }
 
                     }
 
                     break;
                 case APPROVE:
+
+                    // NB: This notifies only the assignee of the parent job when the 
+                    // child job costing is approved
                     if (getCurrentJob().getIsSubContract()) {
+
                         if (getCurrentJob().getParent() != null) {
-                            sendChildJobCostingApprovalEmail(getSystemManager().getEntityManager1(),
-                                    getCurrentJob().getParent().getAssignedTo(),
-                                    "assignee", "approved");
+
+                            employeeUser = User.findActiveByEmployeeId(
+                                    getSystemManager().getEntityManager1(),
+                                    getCurrentJob().getParent().getAssignedTo().getId());
+
+                            if (employeeUser != null) {
+
+                                if (User.isNotificationActive(employeeUser,
+                                        getSystemManager().getEntityManager1(),
+                                        "jobCostingApproved")) {
+
+                                    sendChildJobCostingApprovalEmail(getSystemManager().getEntityManager1(),
+                                            getCurrentJob().getParent().getAssignedTo(),
+                                            "assignee", "approved");
+
+                                }
+                            }
+
                         }
                     }
                     break;
                 case PAYMENT:
-                    sendJobPaymentEmail(getSystemManager().getEntityManager1(),
-                            getCurrentJob().getAssignedTo(),
-                            "job assignee", "payment");
+
+                    employeeUser = User.findActiveByEmployeeId(
+                            getSystemManager().getEntityManager1(),
+                            getCurrentJob().getAssignedTo().getId());
+
+                    if (employeeUser != null) {
+
+                        if (User.isNotificationActive(employeeUser,
+                                getSystemManager().getEntityManager1(),
+                                "cashPaymentMade")) {
+                            
+                            sendJobPaymentEmail(getSystemManager().getEntityManager1(),
+                                    getCurrentJob().getAssignedTo(),
+                                    "job assignee", "payment");
+                            
+                        }
+
+                    }
                     break;
                 default:
                     break;

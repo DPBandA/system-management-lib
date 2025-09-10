@@ -1164,7 +1164,7 @@ public final class SystemManager extends GeneralManager {
     public void setEditSelectedUser(User selectedUser) {
         
          // tk
-        selectedUser.loadNotificationSettings(getEntityManager1());
+        selectedUser.loadSettings(getEntityManager1());
         
         this.selectedUser = selectedUser;
     }
@@ -1576,7 +1576,7 @@ public final class SystemManager extends GeneralManager {
     @Override
     public void viewUserProfile() {
         
-        getUser().loadNotificationSettings(getEntityManager1());
+        getUser().loadSettings(getEntityManager1());
     }
 
     public void handleLayoutUnitToggle(ToggleEvent event) {
