@@ -1771,7 +1771,8 @@ public class JobManager extends GeneralManager
     @Override
     public EntityManager getEntityManager2() {
 
-        return getSystemManager().getEntityManager2();
+        //return getSystemManager().getEntityManager2        
+        return getFinanceManager().getFINPU().createEntityManager();
     }
 
     public void updateJobCategory() {

@@ -40,11 +40,6 @@ public class JobDataModel extends ListDataModel<Job> implements SelectableDataMo
         this.list = list;
     }
 
-//    @Override
-//    public Object getRowKey(Job job) {
-//        return job.getId();
-//    }
-
     @Override
     public Job getRowData(String rowKey) {
         for (Job job : list) {
