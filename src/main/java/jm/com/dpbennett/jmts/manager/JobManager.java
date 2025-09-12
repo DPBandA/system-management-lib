@@ -83,6 +83,7 @@ import jm.com.dpbennett.fm.manager.InventoryManager;
 import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
+import jm.com.dpbennett.mt.manager.EnergyLabelManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sc.manager.ComplianceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -957,11 +958,11 @@ public class JobManager extends GeneralManager
                         if (User.isNotificationActive(employeeUser,
                                 getSystemManager().getEntityManager1(),
                                 "cashPaymentMade")) {
-                            
+
                             sendJobPaymentEmail(getSystemManager().getEntityManager1(),
                                     getCurrentJob().getAssignedTo(),
                                     "job assignee", "payment");
-                            
+
                         }
 
                     }
@@ -1367,6 +1368,12 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("clientManager");
     }
 
+    public EnergyLabelManager getEnergyLabelManager() {
+
+        return BeanUtils.findBean("energyLabelManager");
+
+    }
+
     public HumanResourceManager getHumanResourceManager() {
 
         return BeanUtils.findBean("humanResourceManager");
@@ -1448,7 +1455,8 @@ public class JobManager extends GeneralManager
             "inventoryManager",
             "humanResourceManager",
             "purchasingManager",
-            "complianceManager"
+            "complianceManager",
+            "energyLabelManager"
         });
 
         setDateSearchPeriod(new DatePeriod("This month", "month",
@@ -1459,7 +1467,7 @@ public class JobManager extends GeneralManager
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
-
+        
     }
 
     public void openSystemBrowser() {
@@ -3446,12 +3454,17 @@ public class JobManager extends GeneralManager
     public void setManagerUser() {
 
         // tk do this in a loop with setModuleNames[]
-        getManager("systemManager").setUser(getUser());
-        getManager("clientManager").setUser(getUser());
-        getManager("reportManager").setUser(getUser());
-        getManager("financeManager").setUser(getUser());
-        getManager("humanResourceManager").setUser(getUser());
-        getManager("complianceManager").setUser(getUser());
+//        getManager("systemManager").setUser(getUser());
+//        getManager("clientManager").setUser(getUser());
+//        getManager("reportManager").setUser(getUser());
+//        getManager("financeManager").setUser(getUser());
+//        getManager("humanResourceManager").setUser(getUser());
+//        getManager("complianceManager").setUser(getUser());
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
+            }
+        }
 
     }
 

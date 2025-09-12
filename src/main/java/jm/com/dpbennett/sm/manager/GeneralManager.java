@@ -77,6 +77,7 @@ public class GeneralManager implements Manager, Serializable {
         init();
     }
 
+    @Override
     public void setManagerUser() {
 
         throw new UnsupportedOperationException("Not supported yet.");
