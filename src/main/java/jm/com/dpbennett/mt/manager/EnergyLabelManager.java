@@ -45,6 +45,7 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
@@ -57,6 +58,7 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
@@ -85,6 +87,76 @@ public class EnergyLabelManager extends GeneralManager
      */
     public EnergyLabelManager() {
         init();
+    }
+
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public String getDefaultCommandTarget() {
+
+        return getSystemManager().getDefaultCommandTarget();
+
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public Dashboard getDashboard() {
+
+        return getSystemManager().getDashboard();
+    }
+
+    @Override
+    public List<Notification> getNotifications() {
+
+        return getSystemManager().getNotifications();
+    }
+
+    @Override
+    public boolean getHasActiveNotifications() {
+        return getSystemManager().getHasActiveNotifications();
+    }
+
+    @Override
+    public int getSizeOfActiveNotifications() {
+
+        return getSystemManager().getActiveNotifications().size();
+    }
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
     }
 
     @Override
@@ -390,11 +462,6 @@ public class EnergyLabelManager extends GeneralManager
                 "LabelPrintAppShortcutIconURL");
     }
 
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
     public final void init() {
         reset();
     }
@@ -524,10 +591,9 @@ public class EnergyLabelManager extends GeneralManager
 
         foundEnergyLabels = findLabels(getEnergyLabelSearchText());
     }
-    
+
     public EntityManagerFactory getLPPU() {
-        
-          
+
         return LPPU;
     }
 
@@ -603,6 +669,11 @@ public class EnergyLabelManager extends GeneralManager
     }
 
     @Override
+    public void logout() {
+        completeLogout();
+    }
+
+    @Override
     public void completeLogout() {
 
         updateUserActivity("LPv"
@@ -635,6 +706,19 @@ public class EnergyLabelManager extends GeneralManager
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
         initMainTabView();
+
+        initDashboard();
+
+    }
+
+    @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
 
     }
 
