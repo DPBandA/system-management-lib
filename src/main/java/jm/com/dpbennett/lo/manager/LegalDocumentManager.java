@@ -30,7 +30,6 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.fm.Classification;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -52,6 +51,7 @@ import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -60,7 +60,6 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-//import org.apache.poi.hssf.util.CellRangeAddress;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -89,7 +88,58 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         init();
     }
 
-     public EntityManagerFactory getLOPU() {
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
+    public String getSupportURL() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    @Override
+    public void initDashboard() {
+
+        getDashboard().reset(getUser(), true);
+
+        if (getUser().hasModule("legalDocumentManager")) {
+            getDashboard().openTab("Legal Office");
+        }
+
+        if (getUser().hasModule("systemManager")) {
+            getDashboard().openTab("System Administration");
+        }
+
+    }
+
+    @Override
+    public Dashboard getDashboard() {
+
+        return getSystemManager().getDashboard();
+    }
+
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
+    }
+
+    public EntityManagerFactory getLOPU() {
 
         return LOPU;
     }
@@ -167,20 +217,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             }
         }
 
-        // Clients
-        if (getUser().hasModule("clientManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "clientManager");
-            if (module != null) {
-                openModuleMainTab("clientManager");
-
-                if (firstModule == null) {
-                    firstModule = "clientManager";
-                }
-            }
-        }
-
         openModuleMainTab(firstModule);
     }
 
@@ -217,7 +253,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         switch (tabTitle) {
             case "Document Browser":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:legalDocumentSearchButton");
+                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
                 return true;
 
@@ -321,6 +357,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public final void init() {
+
         reset();
 
     }
@@ -339,10 +376,13 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             "systemManager",
             "humanResourceManager",
             "reportManager",
+            "clientManager",
             "legalDocumentManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateReceived", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
+
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
     }
 
@@ -404,6 +444,14 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getClientManager().editSelectedClient();
 
+    }
+
+    public void createNewClient() {
+        getClientManager().createNewClient(true);
+
+        getClientManager().openClientsTab();
+
+        getClientManager().editSelectedClient();
     }
 
     public DocumentReport getDocumentReport() {
@@ -621,7 +669,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void openDocumentBrowser() {
         getMainTabView().openTab("Document Browser");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:legalDocumentSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
     }
 
     public LegalDocument createNewLegalDocument(EntityManager em,
@@ -1023,14 +1071,18 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         initMainTabView();
 
+        initDashboard();
+
     }
 
     @Override
     public void setManagerUser() {
 
-        getManager("systemManager").setUser(getUser());
-        getManager("humanResourceManager").setUser(getUser());
-        getManager("reportManager").setUser(getUser());
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
+            }
+        }
 
     }
 

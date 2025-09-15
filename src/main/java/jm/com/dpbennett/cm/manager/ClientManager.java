@@ -321,12 +321,15 @@ public class ClientManager extends GeneralManager implements Serializable {
         selectedAddress = null;
         clientSearchText = "";
         lazyClientDataModel = new LazyClientDataModel();
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
     }
 
     public Client getSelectedClient() {
         if (selectedClient == null) {
             return new Client("");
         }
+
         return selectedClient;
     }
 
@@ -657,7 +660,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 }
 
                 ReturnMessage rm = selectedClient.saveUnique(getEntityManager1());
-                
+
                 if (!rm.isSuccess()) {
                     PrimeFacesUtils.addMessage(
                             rm.getHeader(),
@@ -995,8 +998,11 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public void setManagerUser() {
 
-        getManager("systemManager").setUser(getUser());
-        getManager("financeManager").setUser(getUser());
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
+            }
+        }
 
     }
 

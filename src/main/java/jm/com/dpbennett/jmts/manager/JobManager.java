@@ -3453,13 +3453,6 @@ public class JobManager extends GeneralManager
     @Override
     public void setManagerUser() {
 
-        // tk do this in a loop with setModuleNames[]
-//        getManager("systemManager").setUser(getUser());
-//        getManager("clientManager").setUser(getUser());
-//        getManager("reportManager").setUser(getUser());
-//        getManager("financeManager").setUser(getUser());
-//        getManager("humanResourceManager").setUser(getUser());
-//        getManager("complianceManager").setUser(getUser());
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
                 getManager(moduleName).setUser(getUser());
