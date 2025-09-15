@@ -252,6 +252,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
+            case "Legal Office":
             case "Document Browser":
                 getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
@@ -466,11 +467,11 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void handleStartSearchDateSelect(SelectEvent event) {
-        doLegalDocumentSearch();
+        doDefaultSearch();
     }
 
     public void handleEndSearchDateSelect(SelectEvent event) {
-        doLegalDocumentSearch();
+        doDefaultSearch();
     }
 
     public int getNumberOfDocumentsFound() {
@@ -490,7 +491,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         em.flush();
         em.getTransaction().commit();
 
-        doLegalDocumentSearch();
+        doDefaultSearch();
 
         closeDialog(null);
     }
@@ -615,7 +616,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
                 PrimeFaces.current().dialog().closeDynamic(null);
 
-                doLegalDocumentSearch();
+                doDefaultSearch();
 
             } catch (Exception e) {
                 System.out.println(e);
@@ -657,7 +658,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void updateDocumentReport() {
         if (documentReport.getId() != null) {
             documentReport = DocumentReport.findDocumentReportById(getReportManager().getEntityManager1(), documentReport.getId());
-            doLegalDocumentSearch();
+            doDefaultSearch();
         }
     }
 
@@ -751,20 +752,20 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void updateDatePeriodSearch() {
         getDateSearchPeriod().initDatePeriod();
 
-        doLegalDocumentSearch();
+        doDefaultSearch();
     }
 
-    public void doLegalDocumentSearch() {
-
-        setDefaultCommandTarget("@this");
+    public void doDefaultSearch() {
 
         doDefaultSearch(
                 getMainTabView(),
                 getDateSearchPeriod().getDateField(),
-                "Legal Documents",
+                getSearchType(),
                 getSearchText(),
                 getDateSearchPeriod().getStartDate(),
                 getDateSearchPeriod().getEndDate());
+
+        openModuleMainTab("legalDocumentManager");
 
     }
 
@@ -882,6 +883,15 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         return matchedGoals;
 
+    }
+
+    @Override
+    public ArrayList<SelectItem> getGroupedSearchTypes() {
+        ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
+
+        groupedSearchTypes.add(getSearchTypesGroup());
+
+        return groupedSearchTypes;
     }
 
     @Override
