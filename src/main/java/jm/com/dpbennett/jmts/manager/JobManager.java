@@ -83,6 +83,7 @@ import jm.com.dpbennett.fm.manager.InventoryManager;
 import jm.com.dpbennett.fm.manager.PurchasingManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JMTSApplication;
+import jm.com.dpbennett.lo.manager.LegalDocumentManager;
 import jm.com.dpbennett.mt.manager.EnergyLabelManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sc.manager.ComplianceManager;
@@ -1391,6 +1392,10 @@ public class JobManager extends GeneralManager
         return BeanUtils.findBean("complianceManager");
     }
 
+    public LegalDocumentManager getLegalDocumentManager() {
+        return BeanUtils.findBean("legalDocumentManager");
+    }
+
     public ArrayList<SelectItem> getAuthorizedSearchTypes() {
 
         ArrayList searchTypes = new ArrayList();
@@ -1456,6 +1461,7 @@ public class JobManager extends GeneralManager
             "humanResourceManager",
             "purchasingManager",
             "complianceManager",
+            "legalDocumentManager",
             "energyLabelManager"
         });
 
@@ -1467,7 +1473,7 @@ public class JobManager extends GeneralManager
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
-        
+
     }
 
     public void openSystemBrowser() {
@@ -3257,6 +3263,9 @@ public class JobManager extends GeneralManager
 
         if (moduleName != null) {
             switch (moduleName) {
+                case "legalDocumentManager":
+                    getLegalDocumentManager().openDocumentBrowser();
+                    break;
                 case "complianceManager":
                     getComplianceManager().openSurveysBrowser();
                     break;
@@ -3265,7 +3274,6 @@ public class JobManager extends GeneralManager
                     break;
                 case "jobManager":
                     openJobBrowser();
-                    getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
                     break;
                 case "clientManager":
                     getClientManager().openClientsTab();
@@ -3295,6 +3303,10 @@ public class JobManager extends GeneralManager
 
         getDashboard().reset(getUser(), true);
 
+        if (getUser().hasModule("legalDocumentManager")) {
+            getDashboard().openTab("Legal Office");
+        }
+        
         if (getUser().hasModule("jobManager")) {
             getDashboard().openTab("Job Management");
         }
@@ -3320,6 +3332,21 @@ public class JobManager extends GeneralManager
         String firstModule = null;
 
         getMainTabView().reset(getUser());
+
+        if (getUser().hasModule("legalDocumentManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "legalDocumentManager");
+
+            if (module != null) {
+                openModuleMainTab("legalDocumentManager");
+
+                if (firstModule == null) {
+                    firstModule = "legalDocumentManager";
+                }
+
+            }
+        }
 
         if (getUser().hasModule("complianceManager")) {
             Module module = Module.findActiveModuleByName(

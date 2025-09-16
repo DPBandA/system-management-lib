@@ -358,9 +358,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public final void init() {
-
         reset();
-
     }
 
     public void openReportsTab() {
@@ -664,6 +662,9 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void createNewLegalDocument(ActionEvent action) {
         currentDocument = createNewLegalDocument(getEntityManager1(), getUser());
+        
+        openDocumentBrowser();
+        
         editDocument();
     }
 
