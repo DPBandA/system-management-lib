@@ -1472,6 +1472,7 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
+        
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
     }

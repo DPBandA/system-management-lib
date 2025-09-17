@@ -241,16 +241,9 @@ public class ComplianceManager extends GeneralManager
             switch (moduleName) {
                 case "complianceManager":
                     openSurveysBrowser();
-                    openComplaintsBrowser();
-                    openFactoryInspectionBrowser();
-                    openMarketProductBrowser();
-                    openDocumentStandardDialog();
-
-                    getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
-
                     break;
-                case "clientManager":
-                    getClientManager().openClientsTab();
+                case "foodSafetyManager":
+                    openFactoryBrowser();
                     break;
                 default:
                     break;
@@ -373,12 +366,11 @@ public class ComplianceManager extends GeneralManager
     @Override
     public void setManagerUser() {
 
-        // tk use the list modules to do this
-        getManager("systemManager").setUser(getUser());
-        getManager("clientManager").setUser(getUser());
-        getManager("reportManager").setUser(getUser());
-        getManager("humanResourceManager").setUser(getUser());
-        getManager("financeManager").setUser(getUser());
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
+            }
+        }
 
     }
 
@@ -489,12 +481,8 @@ public class ComplianceManager extends GeneralManager
 
         switch (tabTitle) {
             case "Survey Browser":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
-
-                return true;
-
             case "Standard Browser":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:standardSearchButton");
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
 
                 return true;
 
@@ -852,7 +840,7 @@ public class ComplianceManager extends GeneralManager
             marketProducts = MarketProduct.findAllActiveMarketProducts(
                     getFinanceManager().getEntityManager1());
         }
-        
+
         return marketProducts;
     }
 
@@ -1367,7 +1355,6 @@ public class ComplianceManager extends GeneralManager
 
         setSearchType("Surveys");
         setSearchText("");
-        setDefaultCommandTarget("doSearch");
         setModuleNames(new String[]{
             "clientManager",
             "reportManager",
@@ -1599,6 +1586,13 @@ public class ComplianceManager extends GeneralManager
         getMainTabView().openTab("Survey Browser");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
+    }
+
+    public void openFactoryBrowser() {
+
+        getMainTabView().openTab("Factory Browser");
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
     }
 
     public void openStandardsBrowser() {
@@ -2276,8 +2270,6 @@ public class ComplianceManager extends GeneralManager
         }
 
     }
-    
-    
 
     public void saveComplianceSurvey() {
         EntityManager em = getEntityManager1();
@@ -2285,9 +2277,9 @@ public class ComplianceManager extends GeneralManager
 
         try {
 
-            Employee inspector = 
-                    Employee.findByName(
-                            hrem, 
+            Employee inspector
+                    = Employee.findByName(
+                            hrem,
                             currentComplianceSurvey.getInspector().getName());
             if (inspector != null) {
                 currentComplianceSurvey.setInspector(inspector);

@@ -21,6 +21,8 @@ package jm.com.dpbennett.hrm.manager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -140,11 +142,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public String getCopyrightOrganization() {
-        return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "copyrightOrganization");
     }
 
     public String getOrganizationWebsite() {
-        return SystemOption.getString(getEntityManager1(), "organizationWebsite");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "organizationWebsite");
     }
 
     public String getApplicationFooter() {
@@ -290,6 +292,18 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 "factoryStatusList"));
 
         return statuses;
+    }
+
+    public List<SelectItem> getManufacturerTypes() {
+        ArrayList types = new ArrayList();
+
+        types.addAll(getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
+                "manufacturerTypes"));
+
+        Collections.sort(types, Comparator.comparing(SelectItem::getLabel));
+
+        return types;
     }
 
     public List<SelectItem> getRegistrationStatuses() {
@@ -1317,6 +1331,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         if (selectedManufacturer == null) {
             return new Manufacturer();
         }
+        
         return selectedManufacturer;
     }
 

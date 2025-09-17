@@ -1832,7 +1832,6 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void init() {
-
         reset();
     }
 
