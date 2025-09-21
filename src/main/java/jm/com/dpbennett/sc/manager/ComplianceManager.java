@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,7 @@ import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
@@ -136,9 +138,90 @@ public class ComplianceManager extends GeneralManager
     private Boolean edit;
     private SystemManager systemManager;
     private String surveyEstablishmentsDialogHeader;
+    private List<Manufacturer> manufacturers;
+    private String manufacturerSearchText;
+    private Manufacturer selectedManufacturer;
+    private Boolean isActiveManufacturersOnly;
 
     public ComplianceManager() {
         init();
+    }
+
+    public Boolean getIsActiveManufacturersOnly() {
+        return isActiveManufacturersOnly;
+    }
+
+    public void setIsActiveManufacturersOnly(Boolean isActiveManufacturersOnly) {
+        
+        this.isActiveManufacturersOnly = isActiveManufacturersOnly;
+        
+        getHumanResourceManager().setIsActiveManufacturersOnly(isActiveManufacturersOnly);
+    }
+
+    public Manufacturer getSelectedManufacturer() {
+
+        if (selectedManufacturer == null) {
+            return new Manufacturer();
+        }
+
+        return selectedManufacturer;
+    }
+
+    public void setSelectedManufacturer(Manufacturer selectedManufacturer) {
+        this.selectedManufacturer = selectedManufacturer;
+
+        getHumanResourceManager().setSelectedManufacturer(selectedManufacturer);
+    }
+
+    public void editSelectedManufacturer() {
+
+        getHumanResourceManager().editSelectedManufacturer();
+
+    }
+
+    public int getNumManufacturersFound() {
+
+        return getHumanResourceManager().getFoundManufacturers().size();
+    }
+
+    public String getManufacturerSearchText() {
+
+        if (manufacturerSearchText == null) {
+            manufacturerSearchText = getHumanResourceManager().getManufacturerSearchText();
+        }
+
+        return manufacturerSearchText;
+    }
+
+    public void setManufacturerSearchText(String manufacturerSearchText) {
+        
+        getHumanResourceManager().setManufacturerSearchText(manufacturerSearchText);
+        
+        this.manufacturerSearchText = manufacturerSearchText;       
+        
+    }
+
+    public List<Manufacturer> getManufacturers() {
+        Collections.sort(manufacturers);
+
+        return manufacturers;
+    }
+
+    public void setManufacturers(List<Manufacturer> manufacturers) {
+        this.manufacturers = manufacturers;
+    }
+
+    public void doManufacturerSearch() {
+
+        if (getIsActiveManufacturersOnly()) {
+            manufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(
+                    getHumanResourceManager().getEntityManager1(),
+                    getHumanResourceManager().getManufacturerSearchText());
+        } else {
+            manufacturers = Manufacturer.findManufacturersByAnyPartOfName(
+                    getHumanResourceManager().getEntityManager1(),
+                    getHumanResourceManager().getManufacturerSearchText());
+        }
     }
 
     public String getApplicationFooter() {
@@ -242,8 +325,8 @@ public class ComplianceManager extends GeneralManager
                 case "complianceManager":
                     openSurveysBrowser();
                     break;
-                case "foodSafetyManager":
-                    openFactoryBrowser();
+                case "foodFactoryManager":
+                    //openFactoryBrowser();
                     break;
                 default:
                     break;
@@ -259,6 +342,10 @@ public class ComplianceManager extends GeneralManager
         if (getUser().hasModule("complianceManager")) {
             getDashboard().openTab("Standards Compliance");
         }
+        
+        if (getUser().hasModule("foodSafetyManager")) {
+            getDashboard().openTab("Food Safety");
+        }
 
         if (getUser().hasModule("systemManager")) {
             getDashboard().openTab("System Administration");
@@ -269,8 +356,7 @@ public class ComplianceManager extends GeneralManager
     @Override
     public void initMainTabView() {
 
-        String firstModule;
-        firstModule = null;
+        String firstModule = null;
 
         getMainTabView().reset(getUser());
 
@@ -278,11 +364,29 @@ public class ComplianceManager extends GeneralManager
             Module module = Module.findActiveModuleByName(
                     getSystemManager().getEntityManager1(),
                     "complianceManager");
+
             if (module != null) {
+
                 openModuleMainTab("complianceManager");
 
                 if (firstModule == null) {
                     firstModule = "complianceManager";
+                }
+
+            }
+        }
+
+        if (getUser().hasModule("foodSafetyManager")) {
+            Module module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(),
+                    "foodSafetyManager");
+
+            if (module != null) {
+
+                openModuleMainTab("foodSafetyManager");
+
+                if (firstModule == null) {
+                    firstModule = "foodSafetyManager";
                 }
 
             }
@@ -480,31 +584,34 @@ public class ComplianceManager extends GeneralManager
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
-            case "Survey Browser":
-            case "Standard Browser":
+            case "Surveys":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
 
                 return true;
+            case "Standards":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:standardSearchButton");
 
-            case "Complaint Browser":
+                return true;
+            case "Complaints":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:complaintSearchButton");
 
                 return true;
-
             case "Market Products":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:marketProductSearchButton");
 
                 return true;
+            case "Manufacturers":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
 
-//            case "Manufacturers":
-//                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
-//
-//                return true;
+                return true;
+            case "Factories":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
+
+                return true;    
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
 
                 return true;
-
             default:
                 return false;
         }
@@ -625,11 +732,12 @@ public class ComplianceManager extends GeneralManager
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:marketProductSearchButton");
     }
 
-//    public void openManufacturerBrowser() {
-//        getHumanResourceManager().openManufacturerBrowser();
-//
-//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
-//    }
+    public void openManufacturerBrowser() {
+        getHumanResourceManager().openManufacturerBrowser();
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
+    }
+
     public Integer getDialogHeight() {
         return 400;
     }
@@ -1096,7 +1204,6 @@ public class ComplianceManager extends GeneralManager
         getHumanResourceManager().createNewManufacturer(true);
 
         getHumanResourceManager().editSelectedManufacturer();
-
     }
 
     public void createNewRetailOutlet() {
@@ -1347,6 +1454,7 @@ public class ComplianceManager extends GeneralManager
         super.reset();
 
         documentInspections = new ArrayList<>();
+        manufacturers = new ArrayList<>();
         surveySearchText = "";
         standardSearchText = "";
         complaintSearchText = "";
@@ -1362,6 +1470,8 @@ public class ComplianceManager extends GeneralManager
             "humanResourceManager",
             "jobManager",
             "financeManager",
+            "foodSafetyManager",
+            "foodFactoryManager",
             "complianceManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
@@ -1370,6 +1480,7 @@ public class ComplianceManager extends GeneralManager
         complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
         isActiveMarketProductsOnly = true;
+        isActiveManufacturersOnly = true;
         surveyEstablishmentsDialogHeader = "Establishment";
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
@@ -1583,28 +1694,21 @@ public class ComplianceManager extends GeneralManager
 
     public void openSurveysBrowser() {
 
-        getMainTabView().openTab("Survey Browser");
+        getMainTabView().openTab("Surveys");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
     }
-
-    public void openFactoryBrowser() {
-
-        getMainTabView().openTab("Factory Browser");
-
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
-    }
-
+    
     public void openStandardsBrowser() {
 
-        getMainTabView().openTab("Standard Browser");
+        getMainTabView().openTab("Standards");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:standardSearchButton");
     }
 
     public void openComplaintsBrowser() {
 
-        getMainTabView().openTab("Complaint Browser");
+        getMainTabView().openTab("Complaints");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:complaintSearchButton");
     }

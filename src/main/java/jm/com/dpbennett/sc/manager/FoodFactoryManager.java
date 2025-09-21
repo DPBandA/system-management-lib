@@ -29,15 +29,22 @@ import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class FoodSafetyManager extends GeneralManager implements Serializable {
-  
-    public FoodSafetyManager() {
+public class FoodFactoryManager extends GeneralManager implements Serializable {
+
+    private List<Manufacturer> factories;
+    private String foodFactorySearchText;
+    private Manufacturer selectedFactory;
+    private Boolean isActiveFactoriesOnly;
+
+    public FoodFactoryManager() {
         init();
     }
 
@@ -50,6 +57,91 @@ public class FoodSafetyManager extends GeneralManager implements Serializable {
 
         super.reset();
 
+        factories = new ArrayList<>();
+        isActiveFactoriesOnly = true;
+
+    }
+
+    public Boolean getIsActiveFactoriesOnly() {
+        return isActiveFactoriesOnly;
+    }
+
+    public void setIsActiveFactoriesOnly(Boolean isActiveFactoriesOnly) {
+        this.isActiveFactoriesOnly = isActiveFactoriesOnly;
+        
+        getHumanResourceManager().setIsActiveManufacturersOnly(isActiveFactoriesOnly);
+    }
+
+    public SystemManager getSystemManager() {
+
+        return BeanUtils.findBean("systemManager");
+
+    }
+
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
+    }
+
+    public void openFactoryBrowser() {
+
+        getMainTabView().openTab("Factories");
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
+    }
+
+    public Manufacturer getSelectedFactory() {
+
+        if (selectedFactory == null) {
+            return new Manufacturer();
+        }
+
+        return selectedFactory;
+    }
+
+    public void setSelectedFactory(Manufacturer selectedFactory) {
+        this.selectedFactory = selectedFactory;
+
+        getHumanResourceManager().setSelectedManufacturer(selectedFactory);
+    }
+
+    public void editSelectedFactory() {
+
+        getHumanResourceManager().editSelectedManufacturer();
+
+    }
+
+    public int getNumFactoriesFound() {
+        return getHumanResourceManager().getFoundManufacturers().size();
+    }
+
+    public String getFoodFactorySearchText() {
+
+        if (foodFactorySearchText == null) {
+            foodFactorySearchText = getHumanResourceManager().getManufacturerSearchText();
+        }
+
+        return foodFactorySearchText;
+    }
+
+    public void setFoodFactorySearchText(String foodFactorySearchText) {
+
+        getHumanResourceManager().setManufacturerSearchText(foodFactorySearchText);
+
+        this.foodFactorySearchText = foodFactorySearchText;
+    }
+
+    public void doFoodFactorySearch() {
+
+        if (getHumanResourceManager().getIsActiveManufacturersOnly()) {
+            factories = Manufacturer.findActiveManufacturersByAnyPartOfName(
+                    getHumanResourceManager().getEntityManager1(),
+                    getHumanResourceManager().getManufacturerSearchText());
+        } else {
+            factories = Manufacturer.findManufacturersByAnyPartOfName(
+                    getHumanResourceManager().getEntityManager1(),
+                    getHumanResourceManager().getManufacturerSearchText());
+        }
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -67,7 +159,26 @@ public class FoodSafetyManager extends GeneralManager implements Serializable {
         return getComplianceManager().getEntityManager1();
     }
 
-    // tk Check if this will be used considering that inspections are handled by SC.
+    public List<Manufacturer> getFactories() {
+        Collections.sort(factories);
+
+        return factories;
+    }
+
+    public void setFactories(List<Manufacturer> factories) {
+        this.factories = factories;
+    }
+
+    public void createNewFoodFactory() {
+
+        getHumanResourceManager().createNewManufacturer(true);
+        getHumanResourceManager().getSelectedManufacturer().setType("Food Factory");
+        getHumanResourceManager().editSelectedManufacturer();
+        
+        openFactoryBrowser();
+    }
+
+    // tk Check if it will be used
     public void createFactoryInspectionComponents(FactoryInspection inspection) {
         // ESTABLISHMENT ENVIRONS category
         FactoryInspectionComponent component = new FactoryInspectionComponent("ESTABLISHMENT ENVIRONS", "Location", false);
