@@ -1472,6 +1472,7 @@ public class ComplianceManager extends GeneralManager
             "financeManager",
             "foodSafetyManager",
             "foodFactoryManager",
+            "legalMetrologyManager",
             "complianceManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));

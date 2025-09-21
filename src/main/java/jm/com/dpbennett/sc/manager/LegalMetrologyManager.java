@@ -28,9 +28,7 @@ import java.util.List;
 import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cert.Certification;
-import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.hrm.Contact;
-import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.mt.PetrolCompany;
 import jm.com.dpbennett.business.entity.mt.PetrolPump;
@@ -45,15 +43,11 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.SearchParameters;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import org.apache.commons.fileupload.RequestContext;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
-import static org.apache.poi.hssf.usermodel.HSSFShapeTypes.Seal;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import static org.apache.poi.poifs.filesystem.FileMagic.EMF;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import static org.apache.poi.poifs.filesystem.POIFSFileSystem.main;
 import org.primefaces.event.CloseEvent;
 
 /**
@@ -73,9 +67,37 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     private Boolean addPetrolPump;
     private Boolean addPetrolPumpNozzle;
     private int legalMetTabViewActiveIndex;
+    private String petrolStationSearchText;
+    private Boolean isActivePetrolStationsOnly;
 
     public LegalMetrologyManager() {
         init();
+    }
+
+    public Boolean getIsActivePetrolStationsOnly() {
+
+        if (isActivePetrolStationsOnly == null) {
+            isActivePetrolStationsOnly = true;
+        }
+
+        return isActivePetrolStationsOnly;
+    }
+
+    public void setIsActivePetrolStationsOnly(Boolean isActivePetrolStationsOnly) {
+        this.isActivePetrolStationsOnly = isActivePetrolStationsOnly;
+    }
+
+    public String getPetrolStationSearchText() {
+
+        if (petrolStationSearchText == null) {
+            petrolStationSearchText = "";
+        }
+
+        return petrolStationSearchText;
+    }
+
+    public void setPetrolStationSearchText(String petrolStationSearchText) {
+        this.petrolStationSearchText = petrolStationSearchText;
     }
 
     public final void init() {
@@ -193,6 +215,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return getComplianceManager().getEntityManager1();
     }
 
+    public void doPetrolStationSearch() {
+        // tk
+        System.out.println("Petrol station search to be implemented.");
+    }
+
     public void doPetrolStationSearch(SearchParameters currentSearchParameters) {
 
         this.currentSearchParameters = currentSearchParameters;
@@ -258,8 +285,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //        RequestContext context = RequestContext.getCurrentInstance();
 
 //        try {
-
-            // Validate client
+        // Validate client
 //            if (!BusinessEntityUtils.validateName(currentPetrolStation.getClient().getName())) {
 //                main.setInvalidFormFieldMessage("Please enter a valid client name. If the client does not exist in the list, press the 'add/edit' button to enter a new client.");
 //                context.update("invalidFieldDialogForm");
@@ -379,7 +405,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         currentPetrolStation.getCertification().setExpiryDate(expDate);
 
 //        em.close();
-
         setDirty(false);
     }
 
@@ -389,7 +414,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //        if (client != null) {
 //            currentPetrolStation.setClient(client);
 //        }
-
         setDirty(true);
     }
 
@@ -399,7 +423,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //        if (client != null) {
 //            currentScale.setClient(client);
 //        }
-
         setDirty(true);
     }
 
@@ -586,7 +609,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //        currentPetrolPump.setNumber("?");
 //
 //        context.update("unitDialogForms:petrolPumpTable");
-
         setDirty(true);
     }
 
@@ -600,7 +622,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //        currentPetrolPumpNozzle.setNumber("?");
 //
 //        context.update("unitDialogForms:petrolPumpNozzleTable");
-
         setDirty(true);
     }
 
@@ -645,7 +666,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //            if (manufacturer != null) {
 //                getCurrentPetrolPump().setManufacturer(manufacturer);
 //            } else {
-////                getCurrentPetrolPump().setManufacturer(App.getDefaultManufacturer(em, "--"));
+            ////                getCurrentPetrolPump().setManufacturer(App.getDefaultManufacturer(em, "--"));
 //            }
 //            em.close();
 
