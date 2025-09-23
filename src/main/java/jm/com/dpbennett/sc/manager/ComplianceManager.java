@@ -152,9 +152,9 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void setIsActiveManufacturersOnly(Boolean isActiveManufacturersOnly) {
-        
+
         this.isActiveManufacturersOnly = isActiveManufacturersOnly;
-        
+
         getHumanResourceManager().setIsActiveManufacturersOnly(isActiveManufacturersOnly);
     }
 
@@ -194,11 +194,11 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void setManufacturerSearchText(String manufacturerSearchText) {
-        
+
         getHumanResourceManager().setManufacturerSearchText(manufacturerSearchText);
-        
-        this.manufacturerSearchText = manufacturerSearchText;       
-        
+
+        this.manufacturerSearchText = manufacturerSearchText;
+
     }
 
     public List<Manufacturer> getManufacturers() {
@@ -263,7 +263,7 @@ public class ComplianceManager extends GeneralManager
                     openSurveysBrowser();
                     break;
                 case "foodFactoryManager":
-                    //openFactoryBrowser();
+                    getFoodFactoryManager().openFactoryBrowser();
                     break;
                 default:
                     break;
@@ -279,9 +279,13 @@ public class ComplianceManager extends GeneralManager
         if (getUser().hasModule("complianceManager")) {
             getDashboard().openTab("Standards Compliance");
         }
-        
+
         if (getUser().hasModule("foodSafetyManager")) {
             getDashboard().openTab("Food Safety");
+        }
+
+        if (getUser().hasModule("legalMetrologyManager")) {
+            getDashboard().openTab("Legal Metrology");
         }
 
         if (getUser().hasModule("systemManager")) {
@@ -293,43 +297,20 @@ public class ComplianceManager extends GeneralManager
     @Override
     public void initMainTabView() {
 
-        String firstModule = null;
-
         getMainTabView().reset(getUser());
 
         if (getUser().hasModule("complianceManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "complianceManager");
-
-            if (module != null) {
-
-                openModuleMainTab("complianceManager");
-
-                if (firstModule == null) {
-                    firstModule = "complianceManager";
-                }
-
-            }
+            openSurveysBrowser();
         }
 
         if (getUser().hasModule("foodSafetyManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "foodSafetyManager");
-
-            if (module != null) {
-
-                openModuleMainTab("foodSafetyManager");
-
-                if (firstModule == null) {
-                    firstModule = "foodSafetyManager";
-                }
-
-            }
+            getFoodFactoryManager().openFactoryBrowser();
         }
 
-        openModuleMainTab(firstModule);
+        if (getUser().hasModule("legalMetrologyManager")) {
+            getLegalMetrologyManager().openPetrolStationBrowser();
+        }
+
     }
 
     @Override
@@ -404,7 +385,6 @@ public class ComplianceManager extends GeneralManager
 //        }
 //
 //    }
-
     public void okSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
@@ -534,7 +514,7 @@ public class ComplianceManager extends GeneralManager
             case "Factories":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
 
-                return true;    
+                return true;
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
 
@@ -678,7 +658,6 @@ public class ComplianceManager extends GeneralManager
 //        return (String) SystemOption.getOptionValueObject(
 //                getSystemManager().getEntityManager1(), "appShortcutIconURL");
 //    }
-
     public void sendErrorEmail(String subject, String message) {
         try {
             // send error message to developer's email            
@@ -1627,7 +1606,7 @@ public class ComplianceManager extends GeneralManager
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
     }
-    
+
     public void openStandardsBrowser() {
 
         getMainTabView().openTab("Standards");
@@ -1655,6 +1634,24 @@ public class ComplianceManager extends GeneralManager
     public ClientManager getClientManager() {
 
         return BeanUtils.findBean("clientManager");
+
+    }
+
+    public FoodFactoryManager getFoodFactoryManager() {
+
+        return BeanUtils.findBean("foodFactoryManager");
+
+    }
+
+    public FoodSafetyManager getFoodSafetyManager() {
+
+        return BeanUtils.findBean("foodSafetyManager");
+
+    }
+
+    public LegalMetrologyManager getLegalMetrologyManager() {
+
+        return BeanUtils.findBean("legalMetrologyManager");
 
     }
 

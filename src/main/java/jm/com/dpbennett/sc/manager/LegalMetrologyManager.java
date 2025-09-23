@@ -75,7 +75,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public LegalMetrologyManager() {
         init();
     }
-    
+
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
@@ -221,10 +221,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public ComplianceManager getComplianceManager() {
-        
+
         return BeanUtils.findBean("complianceManager");
     }
-    
+
     public EntityManager getEntityManager() {
         return getComplianceManager().getEntityManager1();
     }
@@ -232,6 +232,14 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void doPetrolStationSearch() {
         // tk
         System.out.println("Petrol station search to be implemented.");
+    }
+
+    public void openPetrolStationBrowser() {
+
+        getMainTabView().openTab("Petrol Stations");
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
+
     }
 
     public void doPetrolStationSearch(SearchParameters currentSearchParameters) {
