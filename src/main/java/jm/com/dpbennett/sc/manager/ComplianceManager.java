@@ -224,74 +224,11 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "JMTSv");
-    }
-
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
-
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
-
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
-    }
-
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
     @Override
     public String getDefaultCommandTarget() {
 
         return getSystemManager().getDefaultCommandTarget();
 
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
     }
 
     public Employee getUserEmployee() {
@@ -418,16 +355,6 @@ public class ComplianceManager extends GeneralManager
     }
 
     @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-    @Override
     public void completeLogout() {
 
         updateUserActivity("SCv"
@@ -467,16 +394,16 @@ public class ComplianceManager extends GeneralManager
 
     }
 
-    @Override
-    public void setManagerUser() {
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                getManager(moduleName).setUser(getUser());
-            }
-        }
-
-    }
+//    @Override
+//    public void setManagerUser() {
+//
+//        for (String moduleName : getModuleNames()) {
+//            if (getManager(moduleName) != null) {
+//                getManager(moduleName).setUser(getUser());
+//            }
+//        }
+//
+//    }
 
     public void okSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
@@ -746,11 +673,11 @@ public class ComplianceManager extends GeneralManager
         return 500;
     }
 
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "appShortcutIconURL");
-    }
+//    @Override
+//    public String getAppShortcutIconURL() {
+//        return (String) SystemOption.getOptionValueObject(
+//                getSystemManager().getEntityManager1(), "appShortcutIconURL");
+//    }
 
     public void sendErrorEmail(String subject, String message) {
         try {
@@ -1537,6 +1464,7 @@ public class ComplianceManager extends GeneralManager
         this.isActiveDocumentStandardsOnly = isActiveDocumentStandardsOnly;
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         if (systemManager == null) {

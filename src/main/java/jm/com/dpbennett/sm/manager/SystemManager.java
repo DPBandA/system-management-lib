@@ -166,7 +166,7 @@ public final class SystemManager extends GeneralManager {
     public SystemManager() {
         init();
     }
-   
+
     public EntityManagerFactory getSMPU() {
 
         return SMPU;

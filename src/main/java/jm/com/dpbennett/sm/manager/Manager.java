@@ -41,7 +41,7 @@ import org.primefaces.event.TabCloseEvent;
 public interface Manager {
 
     public void reset();
-    
+
     public void setManagerUser();
 
     public SelectItemGroup getSearchTypesGroup();
@@ -166,7 +166,7 @@ public interface Manager {
     public void updateAllForms();
 
     public void onMainViewTabClose(TabCloseEvent event);
-    
+
     public void onDashboardTabChange(TabChangeEvent event);
 
     public void onMainViewTabChange(TabChangeEvent event);
@@ -190,15 +190,27 @@ public interface Manager {
     public void handleSelectedNotification(Notification notification);
 
     public boolean handleTabChange(String tabTitle);
-    
+
     public int getSizeOfActiveNotifications();
-    
+
     public boolean getHasActiveNotifications();
-    
+
     public List<Notification> getNotifications();
-    
+
     public void setNotifications(List<Notification> notifications);
-    
+
     public void viewUserProfile();
+
+    public SystemManager getSystemManager();
+    
+    public String getApplicationFooter();
+    
+    public String getSupportURL();
+    
+    public String getCopyrightOrganization();
+    
+    public String getOrganizationWebsite();
+    
+    public String getLastSystemNotificationContent();
 
 }

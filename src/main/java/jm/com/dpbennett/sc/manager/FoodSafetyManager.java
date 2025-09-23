@@ -29,14 +29,16 @@ import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
 
 /**
  *
  * @author Desmond Bennett
  */
 public class FoodSafetyManager extends GeneralManager implements Serializable {
-  
+
     public FoodSafetyManager() {
         init();
     }
@@ -52,6 +54,17 @@ public class FoodSafetyManager extends GeneralManager implements Serializable {
 
     }
 
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public SystemManager getSystemManager() {
+
+        return getComplianceManager().getSystemManager();
+    }
+
     public HumanResourceManager getHumanResourceManager() {
 
         return BeanUtils.findBean("humanResourceManager");
@@ -59,12 +72,6 @@ public class FoodSafetyManager extends GeneralManager implements Serializable {
 
     public ComplianceManager getComplianceManager() {
         return BeanUtils.findBean("complianceManager");
-    }
-
-    @Override
-    public EntityManager getEntityManager1() {
-
-        return getComplianceManager().getEntityManager1();
     }
 
     // tk Check if this will be used considering that inspections are handled by SC.

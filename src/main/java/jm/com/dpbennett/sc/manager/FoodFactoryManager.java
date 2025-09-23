@@ -47,7 +47,7 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
     public FoodFactoryManager() {
         init();
     }
-
+    
     public final void init() {
         reset();
     }
@@ -71,13 +71,13 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
         
         getHumanResourceManager().setIsActiveManufacturersOnly(isActiveFactoriesOnly);
     }
-
+    
+    @Override
     public SystemManager getSystemManager() {
-
-        return BeanUtils.findBean("systemManager");
-
+        
+        return getComplianceManager().getSystemManager();
     }
-
+    
     @Override
     public MainTabView getMainTabView() {
         return getSystemManager().getMainTabView();
@@ -151,12 +151,6 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
 
     public ComplianceManager getComplianceManager() {
         return BeanUtils.findBean("complianceManager");
-    }
-
-    @Override
-    public EntityManager getEntityManager1() {
-
-        return getComplianceManager().getEntityManager1();
     }
 
     public List<Manufacturer> getFactories() {

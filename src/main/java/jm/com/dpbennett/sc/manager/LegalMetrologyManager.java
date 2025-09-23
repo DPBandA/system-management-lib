@@ -42,7 +42,9 @@ import jm.com.dpbennett.business.entity.sc.Distributor;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.SearchParameters;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -72,6 +74,17 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public LegalMetrologyManager() {
         init();
+    }
+    
+    @Override
+    public MainTabView getMainTabView() {
+        return getSystemManager().getMainTabView();
+    }
+
+    @Override
+    public SystemManager getSystemManager() {
+
+        return getComplianceManager().getSystemManager();
     }
 
     public Boolean getIsActivePetrolStationsOnly() {
@@ -208,9 +221,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public ComplianceManager getComplianceManager() {
+        
         return BeanUtils.findBean("complianceManager");
     }
-
+    
     public EntityManager getEntityManager() {
         return getComplianceManager().getEntityManager1();
     }

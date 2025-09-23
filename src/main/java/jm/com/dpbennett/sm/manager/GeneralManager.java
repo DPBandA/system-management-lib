@@ -1,6 +1,6 @@
 /*
 General Management (GM)
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -72,7 +72,6 @@ public class GeneralManager implements Manager, Serializable {
     private String registrationMessage;
     private String confirmedPassword;
 
-   
     public GeneralManager() {
         init();
     }
@@ -80,7 +79,11 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void setManagerUser() {
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
+            }
+        }
 
     }
 
@@ -138,7 +141,7 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public String getAppShortcutIconURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
+                getSystemManager().getEntityManager1(), "appShortcutIconURL");
     }
 
     @Override
@@ -215,15 +218,15 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void logout() {
 
-        throw new UnsupportedOperationException("Not supported yet.");
-        
+        completeLogout();
+
     }
 
     @Override
     public Boolean renderUserMenu() {
-        
+
         return getUser().getId() != null;
-        
+
     }
 
     @Override
@@ -250,10 +253,10 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-        setTabTitle(event.getTab().getTitle());
+        getSystemManager().onMainViewTabChange(event);
 
     }
-    
+
     @Override
     public void initMainTabView() {
 
@@ -578,7 +581,8 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void login() {
-        login(getEntityManager1());
+
+        login(getSystemManager().getEntityManager1());
     }
 
     @Override
@@ -817,11 +821,13 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getDefaultCommandTarget() {
+
         return defaultCommandTarget;
     }
 
     @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
+
         this.defaultCommandTarget = defaultCommandTarget;
     }
 
@@ -866,34 +872,77 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-        
-        setTabTitle(event.getTab().getTitle());
-        
+
+        onMainViewTabChange(event);
+
     }
 
     @Override
     public int getSizeOfActiveNotifications() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+
+        return getSystemManager().getActiveNotifications().size();
     }
 
     @Override
     public boolean getHasActiveNotifications() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        return getSystemManager().getHasActiveNotifications();
     }
 
     @Override
     public List<Notification> getNotifications() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+
+        return getSystemManager().getNotifications();
     }
 
     @Override
     public void setNotifications(List<Notification> notifications) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void viewUserProfile() {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+    }
+
+    @Override
+    public SystemManager getSystemManager() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public String getApplicationFooter() {
+
+        return getApplicationHeader() + ", v"
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
+    @Override
+    public String getSupportURL() {
+
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "supportURL");
+    }
+
+    @Override
+    public String getCopyrightOrganization() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "copyrightOrganization");
+
+    }
+
+    @Override
+    public String getOrganizationWebsite() {
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "organizationWebsite");
+    }
+
+    @Override
+    public String getLastSystemNotificationContent() {
+
+        return Notification.findLastActiveSystemNotificationMessage(
+                getSystemManager().getEntityManager1());
+
     }
 
 }
