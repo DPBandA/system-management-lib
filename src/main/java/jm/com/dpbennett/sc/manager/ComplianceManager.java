@@ -309,6 +309,7 @@ public class ComplianceManager extends GeneralManager
 
         if (getUser().hasModule("legalMetrologyManager")) {
             getLegalMetrologyManager().openPetrolStationBrowser();
+            getLegalMetrologyManager().openScaleBrowser();
         }
 
     }

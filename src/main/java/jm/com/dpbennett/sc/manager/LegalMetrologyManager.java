@@ -45,12 +45,15 @@ import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
+import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.CloseEvent;
+import org.primefaces.model.DialogFrameworkOptions;
 
 /**
  *
@@ -64,16 +67,40 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     private PetrolPump currentPetrolPump;
     private PetrolPumpNozzle currentPetrolPumpNozzle;
     private Scale currentScale;
-    private SearchParameters currentSearchParameters;
     private Boolean dirty;
     private Boolean addPetrolPump;
     private Boolean addPetrolPumpNozzle;
     private int legalMetTabViewActiveIndex;
     private String petrolStationSearchText;
+    private String scaleSearchText;
     private Boolean isActivePetrolStationsOnly;
+    private Boolean isActiveScalesOnly;
 
     public LegalMetrologyManager() {
         init();
+    }
+
+    public Boolean getIsActiveScalesOnly() {
+
+        if (isActiveScalesOnly == null) {
+            isActiveScalesOnly = true;
+        }
+
+        return isActiveScalesOnly;
+    }
+
+    public void setIsActiveScalesOnly(Boolean isActiveScalesOnly) {
+        this.isActiveScalesOnly = isActiveScalesOnly;
+    }
+
+    public int getNumPetrolStationsFound() {
+
+        return getPetrolStationSearchResultsList().size();
+    }
+
+    public int getNumScalesFound() {
+
+        return getScaleSearchResultsList().size();
     }
 
     @Override
@@ -111,6 +138,19 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void setPetrolStationSearchText(String petrolStationSearchText) {
         this.petrolStationSearchText = petrolStationSearchText;
+    }
+
+    public String getScaleSearchText() {
+
+        if (scaleSearchText == null) {
+            scaleSearchText = "";
+        }
+
+        return scaleSearchText;
+    }
+
+    public void setScaleSearchText(String scaleSearchText) {
+        this.scaleSearchText = scaleSearchText;
     }
 
     public final void init() {
@@ -180,22 +220,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         this.currentPetrolStation = currentPetrolStation;
     }
 
-    public String getPetrolStationSearchResultsTableHeader() {
-
-        return "App.getSearchResultsTableHeader(currentSearchParameters, getPetrolStationSearchResultsList())";
-    }
-
     public String getScaleSearchResultsTableHeader() {
 
         return "App.getSearchResultsTableHeader(currentSearchParameters, getScaleSearchResultsList())";
-    }
-
-    public SearchParameters getCurrentSearchParameters() {
-        return currentSearchParameters;
-    }
-
-    public void setCurrentSearchParameters(SearchParameters currentSearchParameters) {
-        this.currentSearchParameters = currentSearchParameters;
     }
 
     public Boolean getDirty() {
@@ -242,64 +269,32 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     }
 
-    public void doPetrolStationSearch(SearchParameters currentSearchParameters) {
+    public void openScaleBrowser() {
 
-        this.currentSearchParameters = currentSearchParameters;
+        getMainTabView().openTab("Scales");
 
-        petrolStationSearchResultsList = PetrolStation.findPetrolStationsByDateSearchField(getEntityManager(),
-                null,
-                currentSearchParameters.getDateField(),
-                currentSearchParameters.getSearchType(),
-                currentSearchParameters.getSearchText(),
-                currentSearchParameters.getDatePeriod().getStartDate(),
-                currentSearchParameters.getDatePeriod().getEndDate(), false);
-
-        if (petrolStationSearchResultsList == null) {
-            petrolStationSearchResultsList = new ArrayList<>();
-        }
-    }
-
-    public void doScaleSearch(SearchParameters currentSearchParameters) {
-
-        this.currentSearchParameters = currentSearchParameters;
-
-        scaleSearchResultsList = Scale.findScalesByDateSearchField(getEntityManager(),
-                null,
-                currentSearchParameters.getDateField(),
-                currentSearchParameters.getSearchType(),
-                currentSearchParameters.getSearchText(),
-                currentSearchParameters.getDatePeriod().getStartDate(),
-                currentSearchParameters.getDatePeriod().getEndDate(), false);
-
-        if (scaleSearchResultsList == null) {
-            scaleSearchResultsList = new ArrayList<>();
-        }
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:scaleSearchButton");
 
     }
 
-    public void closePetrolStationDialog2() {
-        closePetrolStationDialog1();
+    public void doScaleSearch() {
+
+        //this.currentSearchParameters = currentSearchParameters;
+//        scaleSearchResultsList = Scale.findScalesByDateSearchField(getEntityManager(),
+//                null,
+//                currentSearchParameters.getDateField(),
+//                currentSearchParameters.getSearchType(),
+//                currentSearchParameters.getSearchText(),
+//                currentSearchParameters.getDatePeriod().getStartDate(),
+//                currentSearchParameters.getDatePeriod().getEndDate(), false);
+//
+//        if (scaleSearchResultsList == null) {
+//            scaleSearchResultsList = new ArrayList<>();
+//        }
     }
 
-    public void closePetrolStationDialog1() {
-        // Redo search to reloasd stored jobs including
-        // RequestContext context = RequestContext.getCurrentInstance();
-
-        // prompt to save modified job before attempting to create new job
-        if (getDirty()) {
-            // context.update("unitDialogForms:petrolStationSaveConfirm");
-            // context.execute("petrolStationSaveConfirmDialog.show();petrolStationDialog.hide();");
-
-            return;
-        } else {
-            // context.execute("petrolStationDialog.hide();");
-        }
-
-        setDirty(false);
-        // refresh search if possible
-        if (currentSearchParameters != null) {
-            doPetrolStationSearch(currentSearchParameters);
-        }
+    public void closeDialog() {
+        PrimeFacesUtils.closeDialog(null);
     }
 
     public void savePetrolStation() {
@@ -384,26 +379,16 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void createNewScale() {
-//        RequestContext context = RequestContext.getCurrentInstance();
-//
-//        currentScale = new Scale();
-//        context.update("unitDialogForms:scaleDetailDialog");
-//        context.execute("scaleDialog.show();");
+
+        currentScale = new Scale();
 
         setDirty(false);
     }
 
     public void createNewPetrolStation() {
-        // handle user privilege and return if the user does not have
-        // the privilege to do what they wish
-//        RequestContext context = RequestContext.getCurrentInstance();
-//        EntityManager em = getEntityManager();
-//
-//        currentPetrolStation = new PetrolStation();
-//        context.update("unitDialogForms:petrolStationDetailDialog");
-//        context.execute("petrolStationDialog.show();");
 
-        // add pump and nozzles
+        currentPetrolStation = new PetrolStation();
+
         PetrolPump pump = new PetrolPump();
         pump.setNumber("1");
 
@@ -419,15 +404,19 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         currentPetrolStation.getPetrolPumps().add(pump);
 
-        // set default cert. dates
+        //tk 6 shud be in options?
         Date certDate = new Date();
-        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); //tk 6 shud be in options
+        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); 
 
         currentPetrolStation.getCertification().setDateIssued(certDate);
         currentPetrolStation.getCertification().setExpiryDate(expDate);
 
-//        em.close();
         setDirty(false);
+
+        editPetrolStation();
+
+        openPetrolStationBrowser();
+
     }
 
     public void updatePetrolStationClient() {
@@ -448,21 +437,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         setDirty(true);
     }
 
-    // Edit the client via the ClientManager
     public void editPetrolStationClient() {
-
-        //ClientManager clientManager = Application.findBean("clientManager");
-        // Try to retrieve the client from the database if it exists
-//        Client client = Client.findClientByName(getEntityManager(), currentPetrolStation.getClient().getName(), true);
-//        if (client != null) {
-//            currentPetrolStation.setClient(client);
-//            clientManager.setClient(client);
-//        } else {
-//            clientManager.setClient(currentPetrolStation.getClient());
-//        }
-//
-//        clientManager.setComponentsToUpdate(":unitDialogForms:petrolStationClient");
-        setDirty(true);
+       
+        System.out.println("tk See how it's done for surveys");
     }
 
     // Edit the client via the ClientManager
@@ -483,23 +460,17 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void updatePetrolStationLastAssignee() {
-//        currentPetrolStation.setLastAssignee(getEmployeeByName(getEntityManager(), currentPetrolStation.getLastAssignee().getName()));
-//
-//        setDirty(true);
+        
+        // tk check if the following is still necessary
+        //currentPetrolStation.setLastAssignee(getEmployeeByName(getEntityManager(), currentPetrolStation.getLastAssignee().getName()));
+
+        setDirty(true);
     }
 
-    public void cancelPetrolStationEdit() {
+    public void cancelEdit() {
+        
         setDirty(false);
-        if (currentSearchParameters != null) {
-            doPetrolStationSearch(currentSearchParameters);
-        }
-    }
-
-    public void cancelScaleEdit() {
-        setDirty(false);
-        if (currentSearchParameters != null) {
-            doScaleSearch(currentSearchParameters);
-        }
+  
     }
 
     public void updatePetrolStation() {
@@ -602,23 +573,40 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         setDirty(true);
     }
 
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
     public void editPetrolStation() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolStationDialog",
+                options, null);
+
     }
 
     public void editScale() {
     }
 
-    /**
-     * Do not allow deletion if its the only one left
-     *
-     * @return
-     */
     public Boolean getCanDeletePetrolPump() {
-        if (getCurrentPetrolStation().getPetrolPumps().size() == 1) {
-            return false;
-        } else {
-            return true;
-        }
+
+        return getCurrentPetrolStation().getPetrolPumps().size() != 1;
     }
 
     public void deletePetrolPump() {
@@ -648,8 +636,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void createNewPump() {
-
-        // this means the pump will added to the station when oked.
+        
+        // tk this means the pump will added to the station when oked.
+        // check if this is still need
         addPetrolPump = true;
 
         currentPetrolPump = new PetrolPump();
@@ -663,6 +652,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         nozzle.setNumber("2");
         nozzle.setTestMeasures("5,20");
         currentPetrolPump.getNozzles().add(nozzle);
+        
+        // tk open external dialog here
+        System.out.println("tk external dialog to be implemented...");
+        
     }
 
     public void createNewNozzle() {
@@ -720,26 +713,16 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void cancelPetrolPumpEdit() {
+        
         addPetrolPump = false;
 
-        if (currentSearchParameters != null) {
-            doPetrolStationSearch(currentSearchParameters);
-        }
     }
 
     public void cancelPetrolPumpNozzleEdit() {
         addPetrolPumpNozzle = false;
 
-        if (currentSearchParameters != null) {
-            doPetrolStationSearch(currentSearchParameters);
-        }
     }
 
-    /**
-     * Do not allow deletion if its the only one left
-     *
-     * @return
-     */
     public Boolean getCanDeletePetrolPumpNozzle() {
         if (getCurrentPetrolPump().getNozzles().size() == 1) {
             return false;
@@ -848,9 +831,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         setDirty(false);
         // refresh search if possible
-        if (currentSearchParameters != null) {
-            doScaleSearch(currentSearchParameters);
-        }
+//        if (currentSearchParameters != null) {
+//            doScaleSearch(currentSearchParameters);
+//        }
     }
 
     public void updateScale() {
@@ -1192,11 +1175,13 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void insertStickers(EntityManager em, Date dateAssigned, Integer startNumber, Integer endNumber) {
         em.getTransaction().begin();
+        
         for (int i = startNumber; i < endNumber + 1; i++) {
             System.out.println("Inserting sticker number: " + i);
             Sticker sticker = new Sticker(Integer.toString(i), dateAssigned);
             BusinessEntityUtils.saveBusinessEntity(em, sticker);
         }
+        
         em.getTransaction().commit();
     }
 
