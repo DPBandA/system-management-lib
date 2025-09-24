@@ -40,7 +40,7 @@ import jm.com.dpbennett.business.entity.mt.Sticker;
 import jm.com.dpbennett.business.entity.mt.TestMeasure;
 import jm.com.dpbennett.business.entity.sc.Distributor;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.business.entity.util.SearchParameters;
+import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -78,6 +78,44 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public LegalMetrologyManager() {
         init();
+    }
+
+    public ClientManager getClientManager() {
+
+        return BeanUtils.findBean("clientManager");
+
+    }
+
+    public void editPetrolCompany() {
+        getClientManager().setSelectedClient(getCurrentPetrolStation().getClient());
+        getClientManager().setClientDialogTitle("Petrol Company Detail");
+
+        editClient();
+
+    }
+
+    public void petrolCompanyDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentPetrolStation().setClient(getClientManager().getSelectedClient());
+        }
+    }
+    
+    public void createNewPetrolCompany() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Consignee Detail");
+
+        editClient();
+
+    }
+
+    public void editClient() {
+
+        getClientManager().editSelectedClient();
+
+    }
+
+    public Boolean getIsPetrolStationClientNameValid() {
+        return BusinessEntityUtils.validateText(currentPetrolStation.getClient().getName());
     }
 
     public Boolean getIsActiveScalesOnly() {
@@ -406,7 +444,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         //tk 6 shud be in options?
         Date certDate = new Date();
-        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); 
+        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6);
 
         currentPetrolStation.getCertification().setDateIssued(certDate);
         currentPetrolStation.getCertification().setExpiryDate(expDate);
@@ -438,7 +476,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void editPetrolStationClient() {
-       
+
         System.out.println("tk See how it's done for surveys");
     }
 
@@ -460,17 +498,16 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void updatePetrolStationLastAssignee() {
-        
+
         // tk check if the following is still necessary
         //currentPetrolStation.setLastAssignee(getEmployeeByName(getEntityManager(), currentPetrolStation.getLastAssignee().getName()));
-
         setDirty(true);
     }
 
     public void cancelEdit() {
-        
+
         setDirty(false);
-  
+
     }
 
     public void updatePetrolStation() {
@@ -636,7 +673,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void createNewPump() {
-        
+
         // tk this means the pump will added to the station when oked.
         // check if this is still need
         addPetrolPump = true;
@@ -652,10 +689,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         nozzle.setNumber("2");
         nozzle.setTestMeasures("5,20");
         currentPetrolPump.getNozzles().add(nozzle);
-        
+
         // tk open external dialog here
         System.out.println("tk external dialog to be implemented...");
-        
+
     }
 
     public void createNewNozzle() {
@@ -713,7 +750,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void cancelPetrolPumpEdit() {
-        
+
         addPetrolPump = false;
 
     }
@@ -1175,13 +1212,13 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void insertStickers(EntityManager em, Date dateAssigned, Integer startNumber, Integer endNumber) {
         em.getTransaction().begin();
-        
+
         for (int i = startNumber; i < endNumber + 1; i++) {
             System.out.println("Inserting sticker number: " + i);
             Sticker sticker = new Sticker(Integer.toString(i), dateAssigned);
             BusinessEntityUtils.saveBusinessEntity(em, sticker);
         }
-        
+
         em.getTransaction().commit();
     }
 
