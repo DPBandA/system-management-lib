@@ -20,6 +20,7 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sc.manager;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +68,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     private PetrolPump currentPetrolPump;
     private PetrolPumpNozzle currentPetrolPumpNozzle;
     private Scale currentScale;
+    private Certification currentCertification;
     private Boolean dirty;
     private Boolean addPetrolPump;
     private Boolean addPetrolPumpNozzle;
@@ -75,9 +77,26 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     private String scaleSearchText;
     private Boolean isActivePetrolStationsOnly;
     private Boolean isActiveScalesOnly;
+    private List<Certification> certifications;
 
     public LegalMetrologyManager() {
         init();
+    }
+
+    public Certification getCurrentCertification() {
+        return currentCertification;
+    }
+
+    public void setCurrentCertification(Certification currentCertification) {
+        this.currentCertification = currentCertification;
+    }
+
+    public List<Certification> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(List<Certification> certifications) {
+        this.certifications = certifications;
     }
 
     public ClientManager getClientManager() {
@@ -203,6 +222,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         dirty = false;
         addPetrolPump = false;
         addPetrolPumpNozzle = false;
+        
+        certifications = new ArrayList<>();
 
     }
 
@@ -293,6 +314,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public EntityManager getEntityManager() {
         return getComplianceManager().getEntityManager1();
     }
+    
+     public void doCertificationSearch() {
+         // tk
+         System.out.println("Impl. cert. search");
+     }
 
     public void doPetrolStationSearch() {
         // tk
@@ -335,8 +361,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         PrimeFacesUtils.closeDialog(null);
     }
 
-    public void savePetrolStation() {
-        EntityManager em = getEntityManager();
+    public void saveCurrentPetrolStation() {
+//        EntityManager em = getEntityManager();
 //        RequestContext context = RequestContext.getCurrentInstance();
 
 //        try {
@@ -694,6 +720,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         System.out.println("tk external dialog to be implemented...");
 
     }
+    
+     public void createNewCertification() {
+         
+     }
 
     public void createNewNozzle() {
 
@@ -761,11 +791,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public Boolean getCanDeletePetrolPumpNozzle() {
-        if (getCurrentPetrolPump().getNozzles().size() == 1) {
-            return false;
-        } else {
-            return true;
-        }
+        
+        return getCurrentPetrolPump().getNozzles().size() != 1;
     }
 
     public void updatePetrolPumpNozzleManufacturer() {
@@ -1081,7 +1108,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
                     return;
                 }
             }
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println(ex);
         }
     }
