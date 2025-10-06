@@ -147,19 +147,20 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public String getLogoURL() {
         return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
+                getSystemManager().getEntityManager1(), "logoURL");
     }
 
     @Override
     public Integer getLogoURLImageHeight() {
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageHeight");
+                getSystemManager().getEntityManager1(), "logoURLImageHeight");
     }
 
     @Override
     public Integer getLogoURLImageWidth() {
+
         return (Integer) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURLImageWidth");
+                getSystemManager().getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
@@ -181,7 +182,7 @@ public class GeneralManager implements Manager, Serializable {
         for (String moduleName : moduleNames) {
 
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     moduleName);
 
             if (getUser().hasModule(moduleName)) {
@@ -205,7 +206,9 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void handleKeepAlive() {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        updateUserActivity("user active");
+
     }
 
     @Override
@@ -253,7 +256,17 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-        getSystemManager().onMainViewTabChange(event);
+        setTabTitle(event.getTab().getTitle());
+
+        for (Module module : getUser().getActiveModules()) {
+            Manager manager = getManager(module.getName());
+            if (manager != null) {
+                if (manager.handleTabChange(getTabTitle())) {
+
+                    return;
+                }
+            }
+        }
 
     }
 
@@ -262,20 +275,45 @@ public class GeneralManager implements Manager, Serializable {
 
         getMainTabView().reset(getUser());
 
-        for (String moduleName : moduleNames) {
-            Module module = Module.findActiveModuleByName(getEntityManager1(),
-                    moduleName);
-            if (module != null) {
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
                 if (getUser().hasModule(moduleName)) {
-                    getMainTabView().openTab(module.getDashboardTitle());
+                    Module module = Module.findActiveModuleByName(
+                            getSystemManager().getEntityManager1(),
+                            moduleName);
+
+                    if (module != null) {
+
+                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
+
+                    }
                 }
             }
         }
+
     }
 
     @Override
     public void initDashboard() {
-        initSearchPanel();
+
+        getDashboard().reset(getUser(), true);
+
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    Module module = Module.findActiveModuleByName(
+                            getSystemManager().getEntityManager1(),
+                            moduleName);
+
+                    if (module != null) {
+
+                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
+
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
@@ -304,7 +342,7 @@ public class GeneralManager implements Manager, Serializable {
         for (String moduleName : moduleNames) {
 
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     moduleName);
 
             if (getUser().hasModule(moduleName)) {
@@ -380,12 +418,6 @@ public class GeneralManager implements Manager, Serializable {
         return dashboard;
     }
 
-    /**
-     * Gets the SessionScoped bean that deals with user authentication.
-     *
-     * @param name
-     * @return
-     */
     @Override
     public Manager getManager(String name) {
 
@@ -438,7 +470,7 @@ public class GeneralManager implements Manager, Serializable {
         for (String moduleName : moduleNames) {
 
             Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
+                    getSystemManager().getEntityManager1(),
                     moduleName);
 
             if (getUser().hasModule(moduleName)) {
@@ -486,7 +518,7 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void onNotificationSelect(SelectEvent event) {
 
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
 
         Notification notification = Notification.findNotificationByNameAndOwnerId(
                 em,
@@ -569,14 +601,37 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void completeLogin() {
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (getUser().getId() != null) {
+
+            updateUserActivity("logged in");
+
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+
+        setManagerUser();
+
+        initMainTabView();
+
+        initDashboard();
 
     }
 
     @Override
     public void completeLogout() {
 
-        throw new UnsupportedOperationException("Not supported yet.");
+        updateUserActivity("logged out");
+
+        if (getUser().getId() != null) {
+            getUser().save(getSystemManager().getEntityManager1());
+        }
+
+        getDashboard().removeAllTabs();
+        getMainTabView().removeAllTabs();
+
+        reset();
+
     }
 
     @Override
@@ -654,7 +709,9 @@ public class GeneralManager implements Manager, Serializable {
     }
 
     @Override
-    public Boolean checkForLDAPUser(EntityManager em, String username, javax.naming.ldap.LdapContext ctx) {
+    public Boolean checkForLDAPUser(EntityManager em, String username,
+            javax.naming.ldap.LdapContext ctx) {
+
         try {
             SearchControls constraints = new SearchControls();
             constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -731,21 +788,23 @@ public class GeneralManager implements Manager, Serializable {
 
             try {
                 // Send email to system administrator alert if activated
-                if ((Boolean) SystemOption.getOptionValueObject(getEntityManager1(),
+                if ((Boolean) SystemOption.getOptionValueObject(
+                        getSystemManager().getEntityManager1(),
                         "developerEmailAlertActivated")) {
                     MailUtils.postMail(null,
                             null,
-                            SystemOption.getString(getEntityManager1(), "jobManagerEmailName"),
+                            SystemOption.getString(getSystemManager().getEntityManager1(),
+                                    "jobManagerEmailName"),
                             null,
                             "Failed user login",
                             "Username: " + username + "\nDate/Time: " + new Date(),
                             "text/plain",
-                            getEntityManager1());
+                            getSystemManager().getEntityManager1());
                 }
             } catch (Exception ex) {
                 System.out.println(ex);
             }
-        } else if (loginAttempts > 2) {// tk # attempts to be made system option
+        } else if (loginAttempts > 2) {
             PrimeFaces.current().executeScript("PF('loginAttemptsDialog').show();");
         }
 
@@ -836,14 +895,20 @@ public class GeneralManager implements Manager, Serializable {
         setDefaultCommandTarget("doSearch");
     }
 
-    public void updateUserActivity(String appVersion, String activity) {
+    public void updateUserActivity(String activity) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy");
+        EntityManager em = getSystemManager().getEntityManager1();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy, HH:mm:ss");
 
-        getUser().setPollTime(new Date());
+        User existingUser = User.findById(em, getUser().getId());
+        if (existingUser != null) {
+            setUser(existingUser);
+            getUser().setPollTime(new Date());
+            getUser().setActivity(getUser().getName() + ": " + activity
+                    + " (" + formatter.format(getUser().getPollTime()) + ")");
+            getUser().save(getSystemManager().getEntityManager1());
 
-        getUser().setActivity(appVersion + " " + activity
-                + " (" + formatter.format(getUser().getPollTime()) + ")");
+        }
 
     }
 
@@ -944,5 +1009,57 @@ public class GeneralManager implements Manager, Serializable {
                 getSystemManager().getEntityManager1());
 
     }
+
+    @Override
+    public void openDashboardTab(String title) {
+        System.out.println("openDashboardTab(String title) not yet implemented!");
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+        System.out.println("openMainViewTab(String title) not yet implemented!");
+    }
+
+    @Override
+    public void onCentreViewTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public Integer getDialogHeight() {
+        return 400;
+    }
+
+    @Override
+    public Integer getDialogWidth() {
+        return 500;
+    }
+
+    @Override
+    public String getScrollPanelHeight() {
+        return "350px";
+    }
+
+    @Override
+    public Boolean getShowSupportURL() {
+
+        return (Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "showSupportURL");
+    }
+
+    @Override
+    public Boolean getIsDebugMode() {
+
+        return (Boolean) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "debugMode");
+    }  
+
+    @Override
+    public Integer getPollInterval() {
+        
+        return SystemOption.getInteger(getSystemManager().getEntityManager1(), "pollInterval");
+        
+    }   
 
 }

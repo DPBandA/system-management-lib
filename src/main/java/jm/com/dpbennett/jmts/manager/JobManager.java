@@ -510,7 +510,7 @@ public class JobManager extends GeneralManager
 
         switch (tabTitle) {
             case "Job Management":
-            case "Job Browser":
+            case "Jobs":
                 getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
                 return true;
@@ -1523,7 +1523,7 @@ public class JobManager extends GeneralManager
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
-        getMainTabView().openTab("Job Browser");
+        getMainTabView().openTab("Jobs");
 
     }
 
@@ -3407,27 +3407,27 @@ public class JobManager extends GeneralManager
         openModuleMainTab(firstModule);
     }
 
-    @Override
-    public void handleKeepAlive() {
-
-        super.updateUserActivity("JMTSv"
-                + SystemOption.getString(
-                        getSystemManager().getEntityManager1(),
-                        "JMTSv"),
-                "Logged in");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-
-    }
+//    @Override
+//    public void handleKeepAlive() {
+//
+//        super.updateUserActivity("JMTSv"
+//                + SystemOption.getString(
+//                        getSystemManager().getEntityManager1(),
+//                        "JMTSv"),
+//                "Logged in");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
+//            System.out.println(getApplicationHeader()
+//                    + " keeping session alive: " + getUser().getPollTime());
+//        }
+//
+//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
+//
+//    }
 
     @Override
     public void login() {
@@ -3439,44 +3439,44 @@ public class JobManager extends GeneralManager
         completeLogout();
     }
 
-    @Override
-    public void completeLogout() {
+//    @Override
+//    public void completeLogout() {
+//
+//        super.updateUserActivity("JMTSv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
+//                "Logged out");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        reset();
+//
+//    }
 
-        super.updateUserActivity("JMTSv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
-                "Logged out");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-    }
-
-    @Override
-    public void completeLogin() {
-
-        if (getUser().getId() != null) {
-            super.updateUserActivity("JMTSv"
-                    + SystemOption.getString(
-                            getSystemManager().getEntityManager1(), "JMTSv"),
-                    "Logged in");
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        setManagerUser();
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-
-        initDashboard();
-
-    }
+//    @Override
+//    public void completeLogin() {
+//
+//        if (getUser().getId() != null) {
+//            super.updateUserActivity("JMTSv"
+//                    + SystemOption.getString(
+//                            getSystemManager().getEntityManager1(), "JMTSv"),
+//                    "Logged in");
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        setManagerUser();
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        initMainTabView();
+//
+//        initDashboard();
+//
+//    }
 
     @Override
     public void setManagerUser() {

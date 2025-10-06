@@ -130,8 +130,14 @@ public class FinanceManager extends GeneralManager implements Serializable {
      */
     public FinanceManager() {
         init();
-    }    
-    
+    }
+
+    public List<SelectItem> getServiceLocationList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "serviceLocationList");
+    }
+
     public EntityManagerFactory getFINPU() {
         return FINPU;
     }
@@ -139,50 +145,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public EntityManagerFactory getFMPU() {
 
         return FMPU;
-    }
-
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
-
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
-
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
-    }
-
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public void viewUserProfile() {
     }
 
     @Override
@@ -386,12 +348,19 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         getDashboard().reset(getUser(), true);
 
-        if (getUser().hasModule("financeManager")) {
-            getDashboard().openTab("Financial Administration");
-        }
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
+                            getEntityManager1(),
+                            moduleName);
 
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
+                    if (module != null) {
+
+                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
+                    }
+                }
+            }
         }
 
     }
@@ -400,18 +369,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void initMainTabView() {
 
         getMainTabView().reset(getUser());
-        // tk 
-        // Use open*() after checking for module access or privilege as is done in JMTS.        
-        //openDashboardTab();
-        getMainTabView().openTab("Purchase Requisitions");
-        getMainTabView().openTab("Inventory Requisitions");//
-        getMainTabView().openTab("Inventory Products");
-        getMainTabView().openTab("Market Products");
-        getMainTabView().openTab("Inventory");
-        getMainTabView().openTab("Suppliers");
-        getMainTabView().openTab("System Administration");
-        getMainTabView().openTab("Trades");
-        getMainTabView().openTab("Financial Administration");
+
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
+                            getEntityManager1(),
+                            moduleName);
+
+                    if (module != null) {
+
+                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
@@ -459,6 +432,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         }
     }
 
+    @Override
     public String getApplicationFooter() {
 
         return getApplicationHeader() + ", v"
@@ -1205,6 +1179,22 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void setSelectedDiscount(Discount selectedDiscount) {
         this.selectedDiscount = selectedDiscount;
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
+        getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
+        getMainTabView().openTab("Financial Administration");
     }
 
     public void openFinancialAdministration() {
@@ -2082,27 +2072,26 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    @Override
-    public void handleKeepAlive() {
-
-        super.updateUserActivity("FMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
-                "Logged in");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        if ((Boolean) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-
-    }
-
+//    @Override
+//    public void handleKeepAlive() {
+//
+//        super.updateUserActivity("FMv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
+//                "Logged in");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        if ((Boolean) SystemOption.getOptionValueObject(
+//                getSystemManager().getEntityManager1(), "debugMode")) {
+//            System.out.println(getApplicationHeader()
+//                    + " keeping session alive: " + getUser().getPollTime());
+//        }
+//
+//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
+//
+//    }
     @Override
     public String getApplicationSubheader() {
         String subHeader;
@@ -2194,53 +2183,42 @@ public class FinanceManager extends GeneralManager implements Serializable {
         completeLogout();
     }
 
-    @Override
-    public void completeLogout() {
-
-        super.updateUserActivity("FMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
-                "Logged out");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-    }
-
-    @Override
-    public void completeLogin() {
-
-        if (getUser().getId() != null) {
-            super.updateUserActivity("FMv"
-                    + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
-                    "Logged in");
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        setManagerUser();
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-
-        initDashboard();
-
-    }
-
-    @Override
-    public void setManagerUser() {
-
-        getManager("systemManager").setUser(getUser());
-        getManager("inventoryManager").setUser(getUser());
-        getManager("purchasingManager").setUser(getUser());
-
-    }
-
+//    @Override
+//    public void completeLogout() {
+//
+//        super.updateUserActivity("FMv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
+//                "Logged out");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        reset();
+//
+//    }
+//    @Override
+//    public void completeLogin() {
+//
+//        if (getUser().getId() != null) {
+//            super.updateUserActivity("FMv"
+//                    + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
+//                    "Logged in");
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        setManagerUser();
+//
+//        initMainTabView();
+//
+//        initDashboard();
+//
+//    }
     public ArrayList<SelectItem> getPurchReqSearchTypes() {
         ArrayList purchReqSearchTypes = new ArrayList();
 

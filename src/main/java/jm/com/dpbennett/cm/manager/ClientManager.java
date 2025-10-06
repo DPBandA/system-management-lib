@@ -89,6 +89,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         return CMPU;
     }
 
+    @Override
     public String getApplicationFooter() {
 
         return getApplicationHeader() + ", v"
@@ -96,22 +97,26 @@ public class ClientManager extends GeneralManager implements Serializable {
                         "JMTSv");
     }
 
+    @Override
     public String getSupportURL() {
         return SystemOption.getString(getSystemManager().getEntityManager1(),
                 "supportURL");
     }
 
+    @Override
     public String getCopyrightOrganization() {
         return SystemOption.getString(getSystemManager().getEntityManager1(),
                 "copyrightOrganization");
 
     }
 
+    @Override
     public String getOrganizationWebsite() {
         return SystemOption.getString(getSystemManager().getEntityManager1(),
                 "organizationWebsite");
     }
 
+    @Override
     public String getLastSystemNotificationContent() {
 
         return Notification.findLastActiveSystemNotificationMessage(
@@ -220,6 +225,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         this.clientDialogTitle = clientDialogTitle;
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
@@ -280,6 +286,16 @@ public class ClientManager extends GeneralManager implements Serializable {
         getMainTabView().openTab("Clients");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+        super.openMainViewTab(title);
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+        super.openDashboardTab(title);
     }
 
     @Override
@@ -923,87 +939,76 @@ public class ClientManager extends GeneralManager implements Serializable {
         return getSystemManager().getMainTabView();
     }
 
-    @Override
-    public void handleKeepAlive() {
-
-        super.updateUserActivity("CMv"
-                + SystemOption.getString(
-                        getSystemManager().getEntityManager1(), "CMv"),
-                "Logged in");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        if ((Boolean) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-
-    }
-
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
+//    @Override
+//    public void handleKeepAlive() {
+//
+//        super.updateUserActivity("CMv"
+//                + SystemOption.getString(
+//                        getSystemManager().getEntityManager1(), "CMv"),
+//                "Logged in");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        if ((Boolean) SystemOption.getOptionValueObject(
+//                getSystemManager().getEntityManager1(), "debugMode")) {
+//            System.out.println(getApplicationHeader()
+//                    + " keeping session alive: " + getUser().getPollTime());
+//        }
+//
+//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
+//
+//    }
+//
+//    @Override
+//    public void login() {
+//        login(getSystemManager().getEntityManager1());
+//    }
 
     @Override
     public void logout() {
         completeLogout();
     }
 
-    @Override
-    public void completeLogout() {
+//    @Override
+//    public void completeLogout() {
+//
+//        super.updateUserActivity("CMv"
+//                + SystemOption.getString(
+//                        getSystemManager().getEntityManager1(), "CMv"),
+//                "Logged out");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        reset();
+//
+//    }
 
-        super.updateUserActivity("CMv"
-                + SystemOption.getString(
-                        getSystemManager().getEntityManager1(), "CMv"),
-                "Logged out");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-    }
-
-    @Override
-    public void completeLogin() {
-
-        if (getUser().getId() != null) {
-            super.updateUserActivity("CMv"
-                    + SystemOption.getString(
-                            getSystemManager().getEntityManager1(), "CMv"),
-                    "Logged in");
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        setManagerUser();
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-
-        initDashboard();
-
-    }
-
-    @Override
-    public void setManagerUser() {
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                getManager(moduleName).setUser(getUser());
-            }
-        }
-
-    }
+//    @Override
+//    public void completeLogin() {
+//
+//        if (getUser().getId() != null) {
+//            super.updateUserActivity("CMv"
+//                    + SystemOption.getString(
+//                            getSystemManager().getEntityManager1(), "CMv"),
+//                    "Logged in");
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        setManagerUser();
+//
+//        initMainTabView();
+//
+//        initDashboard();
+//
+//    }
 
 }

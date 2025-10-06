@@ -19,14 +19,6 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.UrlEncodedContent;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonObjectParser;
-import com.google.api.client.json.gson.GsonFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,12 +26,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -67,19 +55,10 @@ import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
-import jm.com.dpbennett.sm.util.Utils;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
-import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.file.UploadedFile;
@@ -152,19 +131,29 @@ public final class SystemManager extends GeneralManager {
     private SystemOption selectedSystemOptionText;
     private Issue issue;
 
-    // tk    
-    // Get these from the database
-    private static final String GITHUB_CLIENT_ID = "";
-    private static final String GITHUB_CLIENT_SECRET = "";
-    private static final String GITHUB_REDIRECT_URI = "http://localhost:8080/sm";
-    //private static final String GITHUB_OAUTH_URL = "https://github.com/login/oauth/authorize";
-    private static final String GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token";
-    private static final String GITHUB_USER_URL = "https://api.github.com/user";
-    private HttpRequestFactory requestFactory;
-    // end tk
-
     public SystemManager() {
         init();
+    }
+
+    @Override
+    public SystemManager getSystemManager() {
+        return BeanUtils.findBean("systemManager");
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
+
+        getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
+
+        getMainTabView().openTab(title);
     }
 
     public EntityManagerFactory getSMPU() {
@@ -193,162 +182,6 @@ public final class SystemManager extends GeneralManager {
 
     public HumanResourceManager getHumanResourceManager() {
         return BeanUtils.findBean("humanResourceManager");
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-    @Override
-    public void completeLogout() {
-
-        super.updateUserActivity("SMv"
-                + SystemOption.getString(getEntityManager1(), "SMv"),
-                "Logged out");
-
-        if (getUser().getId() != null) {
-            getUser().save(getEntityManager1());
-        }
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-    }
-
-    // tk
-    public void redirectToGitHub() throws IOException {
-
-        FacesContext.getCurrentInstance().getExternalContext().redirect(
-                "https://github.com/login/oauth/authorize?client_id="
-                + GITHUB_CLIENT_ID + "&redirect_uri=" + GITHUB_REDIRECT_URI
-        );
-
-    }
-
-    public void handleGitHubCallback() throws IOException {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = facesContext.getExternalContext();
-        Map<String, String> requestParameterMap = externalContext.getRequestParameterMap();
-        String code = requestParameterMap.get("code");
-
-        if (code != null) {
-            Map<String, String> params = new HashMap<>();
-            params.put("client_id", GITHUB_CLIENT_ID);
-            params.put("client_secret", GITHUB_CLIENT_SECRET);
-            params.put("code", code);
-
-            HttpRequest tokenRequest = requestFactory.buildPostRequest(
-                    new GenericUrl(GITHUB_TOKEN_URL),
-                    new UrlEncodedContent(params)
-            );
-            tokenRequest.getHeaders().setAccept("application/json");
-            HttpResponse tokenResponse = tokenRequest.execute();
-            Map<String, Object> tokenData = tokenResponse.parseAs(HashMap.class);
-            String accessToken = (String) tokenData.get("access_token");
-
-            HttpRequest userRequest = requestFactory.buildGetRequest(new GenericUrl(GITHUB_USER_URL));
-            userRequest.getHeaders().setAuthorization("token " + accessToken);
-            userRequest.getHeaders().setAccept("application/json");
-            HttpResponse userResponse = userRequest.execute();
-            Map<String, Object> userData = userResponse.parseAs(HashMap.class);
-
-            String username = (String) userData.get("login");
-            String avatarUrl = (String) userData.get("avatar_url");
-
-            externalContext.getSessionMap().put("username", username);
-            externalContext.getSessionMap().put("avatarUrl", avatarUrl);
-
-            // tk
-            // Do login() here.
-            externalContext.redirect("index.xhtml");
-        }
-    }
-
-    // end tk
-    public String entityManagerSetting(String setting) {
-
-        SystemOption option;
-
-        switch (setting) {
-            case "SMEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "SMEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "CMEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "CMEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "HRMEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "HRMEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "RMEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "RMEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "SCEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "SCEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "LOEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "LOEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "LPEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "LPEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "FMEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "FMEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            case "JMTSEM":
-                option = SystemOption.findSystemOptionByName(
-                        getDefaultEntityManager(), "JMTSEM");
-                if (option != null) {
-                    return option.getOptionValue();
-                } else {
-                    return "Entity manager: ?";
-                }
-            default:
-                return "Entity manager: ?";
-        }
-
     }
 
     public Boolean getIsActiveCategoriesOnly() {
@@ -419,27 +252,6 @@ public final class SystemManager extends GeneralManager {
         }
     }
 
-//    public EntityManager getEntityManager() {
-//
-//        return getEntityManager("SMEM");
-//
-//    }
-//
-//    public EntityManager getEntityManager(String emname) {
-//
-//        String em = SystemOption.getString(getDefaultEntityManager(), emname);
-//
-//        switch (em) {
-//            case "JMTS3":
-//                return JMTS3.createEntityManager();
-//            case "JMTS5":
-//                return JMTS5.createEntityManager();
-//            case "JMTS":
-//            default:
-//                return JMTS.createEntityManager();
-//        }
-//
-//    }
     public String getCountrySearchText() {
         return countrySearchText;
     }
@@ -464,60 +276,6 @@ public final class SystemManager extends GeneralManager {
         }
 
         return new ArrayList<>();
-    }
-
-    public void createIssue() {
-
-        setIssue(new Issue());
-
-        // open issue dialog.
-//        try {
-//            // tk get 
-//            submitGitHubIssue("Issue Title", "This is a test issue from Java!");
-//        } catch (IOException ex) {
-//            System.out.println("submitIssue: " + ex);
-//        }
-    }
-
-    // tk
-    public void submitGitHubIssue(
-            String title,
-            String body) throws IOException {
-
-        OkHttpClient client = new OkHttpClient();
-        // tk get from system options
-        String GITHUB_API_URL = "https://api.github.com/repos/DPBandA/job-management-tracking-system/issues";
-        String TOKEN = SystemOption.getString(getEntityManager1(), "GitHubIssueToken");
-
-        // Create JSON payload for the issue
-        JSONObject issueDetails = new JSONObject();
-        issueDetails.put("title", title);
-        issueDetails.put("body", body);
-
-        // Create the request body
-        RequestBody requestBody = RequestBody.create(
-                issueDetails.toString(),
-                MediaType.parse("application/json")
-        );
-
-        // Build the request
-        Request request = new Request.Builder()
-                .url(GITHUB_API_URL)
-                .header("Authorization", "token " + TOKEN)
-                .post(requestBody)
-                .build();
-
-        // tk display growl message here?        
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                System.out.println("Issue created successfully: "
-                        + response.body().string());
-            } else {
-                System.out.println("Failed to create issue: " + response.code()
-                        + " - " + response.message());
-            }
-        }
-
     }
 
     public void createNewUserRegistration() {
@@ -549,21 +307,6 @@ public final class SystemManager extends GeneralManager {
 
         PrimeFaces.current().dialog().openDynamic("registrationDialog", options, null);
 
-    }
-
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getEntityManager1(), "copyrightOrganization");
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getEntityManager1(), "organizationWebsite");
-    }
-
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getEntityManager1(),
-                        "JMTSv");
     }
 
     @Override
@@ -618,64 +361,6 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        setTabTitle(event.getTab().getTitle());
-
-        for (Module module : getUser().getActiveModules()) {
-            Manager manager = getManager(module.getName());
-            if (manager != null) {
-                if (manager.handleTabChange(getTabTitle())) {
-
-                    return;
-                }
-            }
-        }
-
-    }
-
-    public void onCentreViewTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "appShortcutIconURL");
-
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "logoURL");
-    }
-
-    public String getAdassaStoreShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "AdassaStoreLogo");
-    }
-
-    public String getDPBAShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "DPBALogo");
-    }
-
-    public String getCurrentYear() {
-
-        return "" + BusinessEntityUtils.getCurrentYear();
-    }
-
     public void removeSelectedSystemOptionText() {
 
         int index = 0;
@@ -720,31 +405,6 @@ public final class SystemManager extends GeneralManager {
 
         selectedSystemOption.updateOptionValueType();
 
-    }
-
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 500;
-    }
-
-    public String getScrollPanelHeight() {
-        return "350px";
-    }
-
-    public List getContactTypes() {
-
-        return getStringListAsSelectItems(getEntityManager1(), "personalContactTypes");
-    }
-
-    public List getPersonalTitles() {
-        return Utils.getPersonalTitles();
-    }
-
-    public List getSexes() {
-        return Utils.getSexes();
     }
 
     public boolean getEnableUpdateLDAPUser() {
@@ -1085,27 +745,6 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-//    public void doUserFilter() {
-//
-//        foundUsers = new ArrayList<>();
-//
-//        for (User filteredFoundUser : filteredFoundUsers) {
-//            if (filteredFoundUser != null) {
-//                if (filteredFoundUser.getUsername().contains(getUserSearchText())
-//                        || filteredFoundUser.getPFThemeName().contains(getUserSearchText())
-//                        || filteredFoundUser.getActivity().contains(getUserSearchText())
-//                        || filteredFoundUser.getEmployee().toString().contains(getUserSearchText())
-//                        || filteredFoundUser.getJobTableViewPreference().contains(getUserSearchText())) {
-//                    foundUsers.add(filteredFoundUser);
-//                }
-//            }
-//        }
-//
-//        if (foundUsers.isEmpty()) {
-//            doUserSearch();
-//        }
-//
-//    }
     public void doAttachmentSearch() {
 
         doDefaultSearch(
@@ -1135,7 +774,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void editUser() {
-        
+
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)
@@ -1160,12 +799,11 @@ public final class SystemManager extends GeneralManager {
 
         return selectedUser;
     }
-    
+
     public void setEditSelectedUser(User selectedUser) {
-        
-         // tk
+
         selectedUser.loadSettings(getEntityManager1());
-        
+
         this.selectedUser = selectedUser;
     }
 
@@ -1277,7 +915,7 @@ public final class SystemManager extends GeneralManager {
 
             return;
         }
-        
+
         rm = getSelectedUser().saveNotificationSettings(getEntityManager1());
         if (!rm.isSuccess()) {
             PrimeFacesUtils.addMessage(
@@ -1313,7 +951,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public boolean updateLDAPUser() {
-        EntityManager em = getEntityManager1();
+        EntityManager em = getSystemManager().getEntityManager1();
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
@@ -1324,7 +962,7 @@ public final class SystemManager extends GeneralManager {
                 selectedUser.setPassword(selectedUser.getNewPassword());
 
                 System.out.println("Will attempt to add user");
-                
+
                 return LdapContext.addUser(em, context, selectedUser);
             } else {
                 return false;
@@ -1351,7 +989,7 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().ajax().update(":mainTabViewForm");
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
-        
+
         getUser().saveNotificationSettings(getEntityManager1());
     }
 
@@ -1560,30 +1198,13 @@ public final class SystemManager extends GeneralManager {
         }
     }
 
-    public String getSupportURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getEntityManager1(), "supportURL");
-    }
-
-    public Boolean getShowSupportURL() {
-        return (Boolean) SystemOption.getOptionValueObject(
-                getEntityManager1(), "showSupportURL");
-    }
-
     public void editPreferences() {
     }
 
     @Override
     public void viewUserProfile() {
-        
+
         getUser().loadSettings(getEntityManager1());
-    }
-
-    public void handleLayoutUnitToggle(ToggleEvent event) {
-
-        if (event.getComponent().getId().equals("dashboard")) {
-
-        }
     }
 
     @Override
@@ -1591,11 +1212,6 @@ public final class SystemManager extends GeneralManager {
 
         return "System Management";
 
-    }
-
-    public Boolean getIsDebugMode() {
-        return (Boolean) SystemOption.getOptionValueObject(
-                getEntityManager1(), "debugMode");
     }
 
     @Override
@@ -1717,28 +1333,11 @@ public final class SystemManager extends GeneralManager {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "attachmentTypeList");
-    }
-
-    public List<SelectItem> getIdentificationTypeList() {
-
-        return getStringListAsSelectItems(getEntityManager1(),
-                "identificationTypeList");
-    }
-
-    public List<SelectItem> getServiceLocationList() {
-
-        return getStringListAsSelectItems(getEntityManager1(),
-                "serviceLocationList");
-    }
+    } 
 
     public List<SelectItem> getJamaicaParishes() {
 
         return getStringListAsSelectItems(getEntityManager1(), "jamaicaParishes");
-    }
-
-    public List<SelectItem> getTypesOfBusinessList() {
-
-        return getStringListAsSelectItems(getEntityManager1(), "typesOfBusinessList");
     }
 
     public static List<SelectItem> getStringListAsSelectItems(EntityManager em,
@@ -2343,12 +1942,6 @@ public final class SystemManager extends GeneralManager {
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
         setTabTitle("Users");
 
-        // tk
-        this.requestFactory = new NetHttpTransport().createRequestFactory(
-                request -> request.setParser(new JsonObjectParser(new GsonFactory()))
-        );
-        // end tk
-
     }
 
     public List<SystemOption> getFoundSystemOptionsByCategory() {
@@ -2709,13 +2302,6 @@ public final class SystemManager extends GeneralManager {
         editSystemOption();
     }
 
-//    public void editEM(String em) {
-//
-//        selectedSystemOption = SystemOption.findSystemOptionByName(
-//                getDefaultEntityManager(), em);
-//
-//        editSystemOption("/admin/systemDefaultOptionDialog");
-//    }
     public void createNewSystemOption(String category) {
 
         selectedSystemOption = new SystemOption();
@@ -2787,10 +2373,6 @@ public final class SystemManager extends GeneralManager {
         return getSMPU().createEntityManager();
     }
 
-    public Date getCurrentDate() {
-        return new Date();
-    }
-
     public Category getSelectedCategory() {
         return selectedCategory;
     }
@@ -2824,62 +2406,6 @@ public final class SystemManager extends GeneralManager {
         views.add(new SelectItem("Cashier View", "Cashier View"));
 
         return views;
-    }
-
-    @Override
-    public void handleKeepAlive() {
-
-        super.updateUserActivity("SMv"
-                + SystemOption.getString(getEntityManager1(), "SMv"),
-                "Logged in");
-
-    }
-
-    @Override
-    public void completeLogin() {
-
-        if (getUser().getId() != null) {
-            super.updateUserActivity("JMTSv"
-                    + SystemOption.getString(getEntityManager1(), "JMTSv"),
-                    "Logged in");
-            getUser().save(getEntityManager1());
-        }
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-
-        initDashboard();
-
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
-        }
-
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        // System Administration
-        if (getUser().hasModule("systemManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getEntityManager1(),
-                    "systemManager");
-
-            if (module != null) {
-                openSystemBrowser();
-            }
-        }
-
     }
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {

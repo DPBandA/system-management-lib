@@ -2560,26 +2560,26 @@ public class ReportManager extends GeneralManager {
         }
     }
 
-    @Override
-    public void handleKeepAlive() {
-
-        updateUserActivity("RMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
-                "Logged in");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        if ((Boolean) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-
-    }
+//    @Override
+//    public void handleKeepAlive() {
+//
+//        updateUserActivity("RMv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
+//                "Logged in");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        if ((Boolean) SystemOption.getOptionValueObject(
+//                getSystemManager().getEntityManager1(), "debugMode")) {
+//            System.out.println(getApplicationHeader()
+//                    + " keeping session alive: " + getUser().getPollTime());
+//        }
+//
+//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
+//
+//    }
 
     @Override
     public void login() {
@@ -2591,44 +2591,44 @@ public class ReportManager extends GeneralManager {
         completeLogout();
     }
 
-    @Override
-    public void completeLogout() {
-
-        updateUserActivity("RMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
-                "Logged out");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-    }
-
-    @Override
-    public void completeLogin() {
-
-        if (getUser().getId() != null) {
-            updateUserActivity("RMv"
-                    + SystemOption.getString(
-                            getSystemManager().getEntityManager1(), "RMv"),
-                    "Logged in");
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        setManagerUser();
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-
-        initDashboard();
-
-    }
+//    @Override
+//    public void completeLogout() {
+//
+//        updateUserActivity("RMv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
+//                "Logged out");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        reset();
+//
+//    }
+//
+//    @Override
+//    public void completeLogin() {
+//
+//        if (getUser().getId() != null) {
+//            updateUserActivity("RMv"
+//                    + SystemOption.getString(
+//                            getSystemManager().getEntityManager1(), "RMv"),
+//                    "Logged in");
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        setManagerUser();
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        initMainTabView();
+//
+//        initDashboard();
+//
+//    }
 
     @Override
     public void setManagerUser() {

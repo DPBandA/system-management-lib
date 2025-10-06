@@ -122,6 +122,12 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         init();
     }
 
+    public List<SelectItem> getIdentificationTypeList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "identificationTypeList");
+    }
+
     public EntityManagerFactory getHRMPU() {
 
         return HRMPU;
@@ -358,6 +364,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         }
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -875,10 +882,26 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public void openHumanResourceBrowser() {
 
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
+
         getMainTabView().openTab("Human Resource");
+
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
+        getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
+
+        getMainTabView().openTab("Human Resource");
     }
 
     @Override
@@ -886,7 +909,20 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         getMainTabView().reset(getUser());
 
-        openHumanResourceBrowser();
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
+                            getEntityManager1(),
+                            moduleName);
+
+                    if (module != null) {
+
+                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
+                    }
+                }
+            }
+        }
 
     }
 
@@ -1331,7 +1367,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         if (selectedManufacturer == null) {
             return new Manufacturer();
         }
-        
+
         return selectedManufacturer;
     }
 
@@ -1891,27 +1927,26 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         return getSystemManager().getMainTabView();
     }
 
-    @Override
-    public void handleKeepAlive() {
-
-        super.updateUserActivity("HRMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
-                "Logged in");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        if ((Boolean) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "debugMode")) {
-            System.out.println(getApplicationHeader()
-                    + " keeping session alive: " + getUser().getPollTime());
-        }
-
-        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-
-    }
-
+//    @Override
+//    public void handleKeepAlive() {
+//
+//        super.updateUserActivity("HRMv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
+//                "Logged in");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        if ((Boolean) SystemOption.getOptionValueObject(
+//                getSystemManager().getEntityManager1(), "debugMode")) {
+//            System.out.println(getApplicationHeader()
+//                    + " keeping session alive: " + getUser().getPollTime());
+//        }
+//
+//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
+//
+//    }
     @Override
     public void login() {
         login(getSystemManager().getEntityManager1());
@@ -1922,58 +1957,76 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         completeLogout();
     }
 
-    @Override
-    public void completeLogout() {
-
-        super.updateUserActivity("HRMv"
-                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
-                "Logged out");
-
-        if (getUser().getId() != null) {
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        getDashboard().removeAllTabs();
-        getMainTabView().removeAllTabs();
-
-        reset();
-
-    }
-
-    @Override
-    public void completeLogin() {
-
-        if (getUser().getId() != null) {
-            super.updateUserActivity("HRMv"
-                    + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
-                    "Logged in");
-            getUser().save(getSystemManager().getEntityManager1());
-        }
-
-        setManagerUser();
-
-        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-
-        initMainTabView();
-
-        initDashboard();
-
-    }
-
+//    @Override
+//    public void completeLogout() {
+//
+//        super.updateUserActivity("HRMv"
+//                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
+//                "Logged out");
+//
+//        if (getUser().getId() != null) {
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        getDashboard().removeAllTabs();
+//        getMainTabView().removeAllTabs();
+//
+//        reset();
+//
+//    }
+//    @Override
+//    public void completeLogin() {
+//
+//        if (getUser().getId() != null) {
+//            super.updateUserActivity("HRMv"
+//                    + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
+//                    "Logged in");
+//            getUser().save(getSystemManager().getEntityManager1());
+//        }
+//
+//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
+//
+//        setManagerUser();
+//
+//        initMainTabView();
+//
+//        initDashboard();
+//
+//    }
     @Override
     public void initDashboard() {
 
         getDashboard().reset(getUser(), true);
 
-        getDashboard().openTab("Human Resource");
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
+                            getEntityManager1(),
+                            moduleName);
+
+                    if (module != null) {
+
+                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
+                    }
+                }
+            }
+        }
 
     }
 
-    @Override
-    public void setManagerUser() {
+    public List getContactTypes() {
 
-        getManager("systemManager").setUser(getUser());
+        return getStringListAsSelectItems(getEntityManager1(), "personalContactTypes");
+    }
 
+    public List getPersonalTitles() {
+        return Utils.getPersonalTitles();
+    }
+
+    public List<SelectItem> getTypesOfBusinessList() {
+
+        return getStringListAsSelectItems(getEntityManager1(), "typesOfBusinessList");
     }
 
 }

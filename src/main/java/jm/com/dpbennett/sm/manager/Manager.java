@@ -1,6 +1,6 @@
 /*
 System Management (GM)
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -202,15 +202,33 @@ public interface Manager {
     public void viewUserProfile();
 
     public SystemManager getSystemManager();
-    
+
     public String getApplicationFooter();
-    
+
     public String getSupportURL();
-    
+
     public String getCopyrightOrganization();
-    
+
     public String getOrganizationWebsite();
-    
+
     public String getLastSystemNotificationContent();
+
+    public void openDashboardTab(String title);
+
+    public void openMainViewTab(String title);
+
+    public void onCentreViewTabChange(TabChangeEvent event);
+
+    public Integer getDialogHeight();
+
+    public Integer getDialogWidth();
+    
+    public String getScrollPanelHeight();
+    
+    public Boolean getShowSupportURL();
+    
+    public Boolean getIsDebugMode();
+    
+    public Integer getPollInterval ();
 
 }
