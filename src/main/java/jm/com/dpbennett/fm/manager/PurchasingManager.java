@@ -1801,44 +1801,44 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         editPurchReqGeneralEmail();
     }
 
-    public void openSendEmailDialog() {
-        getToEmployees().clear();
-        setPurchaseReqEmailSubject("");
-        setPurchaseReqEmailContent("");
-
-        editPurchReqGeneralEmail();
-    }
-
-    public void sendGeneralPurchaseReqEmail() {
-
-        try {
-            EntityManager em = getSystemManager().getEntityManager1();
-
-            for (Employee toEmployee : getToEmployees()) {
-
-                if (MailUtils.postMail(null,
-                        getFinanceManager().getJobManagerEmailAddress(),
-                        getFinanceManager().getJobManagerEmailName(),
-                        toEmployee.getInternet().getEmail1(),
-                        getPurchaseReqEmailSubject(),
-                        getPurchaseReqEmailContent(),
-                        "text/html",
-                        em).isSuccess()) {
-
-                    closeDialog();
-
-                } else {
-                    PrimeFacesUtils.addMessage("Error Sending Email",
-                            "An error occurred while sending email.",
-                            FacesMessage.SEVERITY_ERROR);
-                }
-            }
-        } catch (Exception e) {
-
-            System.out.println("Error sending PR email(s): " + e);
-        }
-
-    }
+//    public void openSendEmailDialog() {
+//        getToEmployees().clear();
+//        setPurchaseReqEmailSubject("");
+//        setPurchaseReqEmailContent("");
+//
+//        editPurchReqGeneralEmail();
+//    }
+//
+//    public void sendGeneralPurchaseReqEmail() {
+//
+//        try {
+//            EntityManager em = getSystemManager().getEntityManager1();
+//
+//            for (Employee toEmployee : getToEmployees()) {
+//
+//                if (MailUtils.postMail(null,
+//                        getFinanceManager().getJobManagerEmailAddress(),
+//                        getFinanceManager().getJobManagerEmailName(),
+//                        toEmployee.getInternet().getEmail1(),
+//                        getPurchaseReqEmailSubject(),
+//                        getPurchaseReqEmailContent(),
+//                        "text/html",
+//                        em).isSuccess()) {
+//
+//                    closeDialog();
+//
+//                } else {
+//                    PrimeFacesUtils.addMessage("Error Sending Email",
+//                            "An error occurred while sending email.",
+//                            FacesMessage.SEVERITY_ERROR);
+//                }
+//            }
+//        } catch (Exception e) {
+//
+//            System.out.println("Error sending PR email(s): " + e);
+//        }
+//
+//    }
 
     public List getCostTypeList() {
         return FinancialUtils.getCostTypeList(getSystemManager().getEntityManager1());

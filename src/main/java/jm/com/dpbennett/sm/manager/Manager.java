@@ -201,8 +201,6 @@ public interface Manager {
 
     public void viewUserProfile();
 
-    public SystemManager getSystemManager();
-
     public String getApplicationFooter();
 
     public String getSupportURL();
@@ -230,5 +228,7 @@ public interface Manager {
     public Boolean getIsDebugMode();
     
     public Integer getPollInterval ();
+    
+    public SystemManager getSystemManager();
 
 }

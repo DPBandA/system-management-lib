@@ -137,7 +137,9 @@ public final class SystemManager extends GeneralManager {
 
     @Override
     public SystemManager getSystemManager() {
+
         return BeanUtils.findBean("systemManager");
+
     }
 
     @Override
@@ -1333,7 +1335,7 @@ public final class SystemManager extends GeneralManager {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "attachmentTypeList");
-    } 
+    }
 
     public List<SelectItem> getJamaicaParishes() {
 

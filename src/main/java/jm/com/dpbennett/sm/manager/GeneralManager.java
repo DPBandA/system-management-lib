@@ -263,6 +263,9 @@ public class GeneralManager implements Manager, Serializable {
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
 
+                    // tk
+                    System.out.println("DCT: " + getDefaultCommandTarget());
+
                     return;
                 }
             }
@@ -273,7 +276,7 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void initMainTabView() {
 
-        getMainTabView().reset(getUser());
+        getSystemManager().getMainTabView().reset(getUser());
 
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
@@ -296,7 +299,7 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void initDashboard() {
 
-        getDashboard().reset(getUser(), true);
+        getSystemManager().getDashboard().reset(getUser(), true);
 
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
@@ -415,6 +418,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public Dashboard getDashboard() {
+        
         return dashboard;
     }
 
@@ -558,7 +562,7 @@ public class GeneralManager implements Manager, Serializable {
         String theme = getUser().getPFThemeName();
         user = new User();
         user.setPFThemeName(theme);
-        defaultCommandTarget = "doSearch";
+        defaultCommandTarget = "defaultCommandButton";
 
     }
 
@@ -585,6 +589,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public MainTabView getMainTabView() {
+                
         return mainTabView;
     }
 
@@ -880,13 +885,13 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getDefaultCommandTarget() {
-
+     
         return defaultCommandTarget;
     }
 
     @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
-
+      
         this.defaultCommandTarget = defaultCommandTarget;
     }
 
@@ -1017,6 +1022,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void openMainViewTab(String title) {
+
         System.out.println("openMainViewTab(String title) not yet implemented!");
     }
 
@@ -1053,13 +1059,13 @@ public class GeneralManager implements Manager, Serializable {
 
         return (Boolean) SystemOption.getOptionValueObject(
                 getSystemManager().getEntityManager1(), "debugMode");
-    }  
+    }
 
     @Override
     public Integer getPollInterval() {
-        
+
         return SystemOption.getInteger(getSystemManager().getEntityManager1(), "pollInterval");
-        
-    }   
+
+    }
 
 }

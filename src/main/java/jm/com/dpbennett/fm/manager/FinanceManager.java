@@ -53,13 +53,13 @@ import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.dashboard.DashboardModel;
 import org.primefaces.model.dashboard.DefaultDashboardModel;
@@ -121,13 +121,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private Boolean isActiveMarketProductsOnly;
     private List<ProcurementMethod> foundProcurementMethods;
     private ProcurementMethod selectedProcurementMethod;
-    private SystemManager systemManager;
     private static final String RESPONSIVE_CLASS = "col-12 lg:col-6 xl:col-6";
     private DashboardModel dashboardModel;
 
-    /**
-     * Creates a new instance of FinanceManager.
-     */
     public FinanceManager() {
         init();
     }
@@ -145,25 +141,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public EntityManagerFactory getFMPU() {
 
         return FMPU;
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -325,68 +302,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         }
     }
 
-    public String getJobManagerEmailName() {
-
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "jobManagerEmailName");
-    }
-
-    public String getJobManagerEmailAddress() {
-
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "jobManagerEmailAddress");
-    }
-
-    public void openDashboardTab() {
-
-        getMainTabView().openTab("Dashboard");
-
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                if (getUser().hasModule(moduleName)) {
-                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
-                            getEntityManager1(),
-                            moduleName);
-
-                    if (module != null) {
-
-                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
-                    }
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                if (getUser().hasModule(moduleName)) {
-                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
-                            getEntityManager1(),
-                            moduleName);
-
-                    if (module != null) {
-
-                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
-                    }
-                }
-            }
-        }
-
-    }
-
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -432,52 +347,20 @@ public class FinanceManager extends GeneralManager implements Serializable {
         }
     }
 
-    @Override
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "FMv");
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "FMlogo");
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "FMlogo");
-    }
-
     public Boolean getUseMulticurrency() {
         return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
                 "useMulticurrency");
     }
 
+    @Override
     public SystemManager getSystemManager() {
-        if (systemManager == null) {
-            systemManager = BeanUtils.findBean("systemManager");
-        }
-        return systemManager;
+
+        return BeanUtils.findBean("systemManager");
+
     }
 
     public void onRowSelect() {
         getSystemManager().setDefaultCommandTarget("@this");
-    }
-
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 500;
-    }
-
-    public String getScrollPanelHeight() {
-        return "350px";
     }
 
     public List<SelectItem> getProcurementMethods() {
@@ -560,7 +443,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doProcurementMethodSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Procurement",
                 getProcurementMethodSearchText(),
@@ -572,7 +455,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doSettingSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Settings",
                 getSettingSearchText(),
@@ -611,7 +494,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void selectTab(int innerTabIndex) {
 
-        getMainTabView().openTab("Financial Administration");
+        getSystemManager().getMainTabView().openTab("Financial Administration");
 
         PrimeFaces.current().executeScript("PF('" + "financialAdminTabVar" + "').select(" + innerTabIndex + ");");
 
@@ -769,7 +652,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void openMarketProductBrowser() {
 
-        getMainTabView().openTab("Market Products");
+        getSystemManager().getMainTabView().openTab("Market Products");
     }
 
     public void createNewMarketProduct() {
@@ -912,7 +795,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doServiceSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Services",
                 getServiceSearchText(),
@@ -1044,7 +927,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doClassificationSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Classifications",
                 getClassificationSearchText(),
@@ -1186,7 +1069,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
 
-        getDashboard().openTab(title);
+        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
@@ -1194,11 +1077,12 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
 
-        getMainTabView().openTab("Financial Administration");
+        getSystemManager().getMainTabView().openTab("Financial Administration");
     }
 
     public void openFinancialAdministration() {
-        getMainTabView().openTab("Financial Administration");
+
+        getSystemManager().getMainTabView().openTab("Financial Administration");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
@@ -1477,7 +1361,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doAccountingCodeSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Accounting Codes",
                 getAccountingCodeSearchText(),
@@ -1489,7 +1373,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doTaxSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Taxes",
                 getTaxSearchText(),
@@ -1501,7 +1385,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doCurrencySearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Currencies",
                 getCurrencySearchText(),
@@ -1513,7 +1397,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doDiscountSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Discounts",
                 getDiscountSearchText(),
@@ -1617,7 +1501,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doJobCategorySearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Job Categories",
                 getJobCategorySearchText(),
@@ -1696,7 +1580,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doJobSubcategorySearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Job Subcategories",
                 getJobSubcategorySearchText(),
@@ -1778,7 +1662,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void doSectorSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Sectors",
                 getSectorSearchText(),
@@ -1894,8 +1778,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         setSearchType("Accounting Codes");
         setSearchText("");
-        getSystemManager().
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
         setModuleNames(new String[]{
             "systemManager",
             "financeManager",
@@ -2072,26 +1955,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        super.updateUserActivity("FMv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
     @Override
     public String getApplicationSubheader() {
         String subHeader;
@@ -2168,57 +2031,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return dateSearchFields;
     }
 
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        super.updateUserActivity("FMv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            super.updateUserActivity("FMv"
-//                    + SystemOption.getString(getSystemManager().getEntityManager1(), "FMv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        setManagerUser();
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
     public ArrayList<SelectItem> getPurchReqSearchTypes() {
         ArrayList purchReqSearchTypes = new ArrayList();
 
