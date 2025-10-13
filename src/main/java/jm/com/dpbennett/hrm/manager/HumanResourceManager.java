@@ -50,8 +50,6 @@ import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.Notification;
-import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -66,8 +64,6 @@ import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectIte
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.DualListModel;
 
@@ -133,47 +129,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         return HRMPU;
     }
 
-    @Override
-    public void setDefaultCommandTarget(String defaultCommandTarget) {
-
-        getSystemManager().setDefaultCommandTarget(defaultCommandTarget);
-
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "copyrightOrganization");
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "organizationWebsite");
-    }
-
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "JMTSv");
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
-    }
-
+   
     public final void init() {
         reset();
     }
@@ -282,15 +238,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 "payCycles");
     }
 
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 700;
-    }
-
-    public List<SelectItem> getManufacturerStatuses() {
+     public List<SelectItem> getManufacturerStatuses() {
         ArrayList statuses = new ArrayList();
 
         statuses.addAll(getStringListAsSelectItems(
@@ -338,7 +286,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void openManufacturerBrowser() {
-        getMainTabView().openTab("Manufacturers");
+        getSystemManager().getMainTabView().openTab("Manufacturers");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
     }
@@ -366,6 +314,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     @Override
     public SystemManager getSystemManager() {
+        
         return BeanUtils.findBean("systemManager");
     }
 
@@ -803,7 +752,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doDepartmentSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Departments",
                 getDepartmentSearchText(),
@@ -815,7 +764,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doEmployeePositionSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Employee Positions",
                 getEmployeePositionSearchText(),
@@ -827,7 +776,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doSubgroupSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Subgroups",
                 getSubgroupSearchText(),
@@ -838,7 +787,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doDivisionSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Divisions",
                 getDivisionSearchText(),
@@ -849,7 +798,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doBusinessSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Organizations",
                 getBusinessSearchText(),
@@ -860,7 +809,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doBusinessOfficeSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Business Offices",
                 getBusinessOfficeSearchText(),
@@ -871,7 +820,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void doEmployeeSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Employees",
                 getEmployeeSearchText(),
@@ -884,7 +833,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
-        getMainTabView().openTab("Human Resource");
+        getSystemManager().getMainTabView().openTab("Human Resource");
 
     }
 
@@ -893,7 +842,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
-        getDashboard().openTab(title);
+        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
@@ -901,29 +850,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
-        getMainTabView().openTab("Human Resource");
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                if (getUser().hasModule(moduleName)) {
-                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
-                            getEntityManager1(),
-                            moduleName);
-
-                    if (module != null) {
-
-                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
-                    }
-                }
-            }
-        }
-
+        getSystemManager().getMainTabView().openTab("Human Resource");
     }
 
     public void selectHumanResourceTab(
@@ -1809,70 +1736,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageWidth");
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getSystemManager().getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
-    }
-
-    @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
@@ -1906,113 +1769,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             default:
                 return false;
         }
-    }
-
-    @Override
-    public void handleSelectedNotification(Notification notification) {
-
-        switch (notification.getType()) {
-            case "EmployeeSearch":
-
-                break;
-
-            default:
-                System.out.println("Unkown type");
-        }
-
-    }
-
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        super.updateUserActivity("HRMv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        super.updateUserActivity("HRMv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            super.updateUserActivity("HRMv"
-//                    + SystemOption.getString(getSystemManager().getEntityManager1(), "HRMv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        setManagerUser();
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                if (getUser().hasModule(moduleName)) {
-                    jm.com.dpbennett.business.entity.sm.Module module = jm.com.dpbennett.business.entity.sm.Module.findActiveModuleByName(
-                            getEntityManager1(),
-                            moduleName);
-
-                    if (module != null) {
-
-                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
-                    }
-                }
-            }
-        }
-
     }
 
     public List getContactTypes() {

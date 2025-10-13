@@ -263,9 +263,6 @@ public class GeneralManager implements Manager, Serializable {
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
 
-                    // tk
-                    System.out.println("DCT: " + getDefaultCommandTarget());
-
                     return;
                 }
             }
