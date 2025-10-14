@@ -89,112 +89,10 @@ public class ClientManager extends GeneralManager implements Serializable {
         return CMPU;
     }
 
-    @Override
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "JMTSv");
-    }
-
-    @Override
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
-
-    @Override
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
-
-    }
-
-    @Override
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
-    }
-
-    @Override
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
-    }
-
     private Employee getUserEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         return Employee.findById(hrmem, getUser().getEmployee().getId());
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        if (getUser().hasModule("clientManager")) {
-            getDashboard().openTab("Client Management");
-        }
-
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
-        }
-
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        if (getUser().hasModule("clientManager")) {
-
-            openClientsTab();
-
-        }
     }
 
     public LazyClientDataModel getLazyClientDataModel() {
@@ -283,19 +181,26 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public void openClientsTab() {
 
-        getMainTabView().openTab("Clients");
-
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
+
+        getSystemManager().getMainTabView().openTab("Clients");
+
     }
 
     @Override
     public void openMainViewTab(String title) {
-        super.openMainViewTab(title);
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
+
+        getSystemManager().getMainTabView().openTab(title);
     }
 
     @Override
     public void openDashboardTab(String title) {
-        super.openDashboardTab(title);
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
+
+        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
@@ -322,11 +227,9 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         setSearchType("Clients");
         setSearchText("");
-        setDefaultCommandTarget("@this");
         setModuleNames(new String[]{
             "systemManager",
-            "clientManager",
-            "financeManager"});
+            "clientManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -337,8 +240,6 @@ public class ClientManager extends GeneralManager implements Serializable {
         selectedAddress = null;
         clientSearchText = "";
         lazyClientDataModel = new LazyClientDataModel();
-
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
     }
 
     public Client getSelectedClient() {
@@ -406,7 +307,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Clients",
                 getClientSearchText(),
@@ -480,14 +381,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void editClient() {
     }
 
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 700;
-    }
-
     public void editSelectedClient() {
 
         setClientDialogTitle("Client");
@@ -552,7 +445,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void createNewClient() {
         createNewClient(true);
 
-        getMainTabView().openTab("Clients");
+        getSystemManager().getMainTabView().openTab("Clients");
 
         editSelectedClient();
     }
@@ -879,31 +772,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(),
-                "appShortcutIconURL");
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageWidth");
-    }
-
-    @Override
     public void onNotificationSelect(SelectEvent event) {
         EntityManager em = getSystemManager().getEntityManager1();
 
@@ -933,82 +801,5 @@ public class ClientManager extends GeneralManager implements Serializable {
                 System.out.println("Unkown type");
         }
     }
-
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        super.updateUserActivity("CMv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(), "CMv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-//
-//    @Override
-//    public void login() {
-//        login(getSystemManager().getEntityManager1());
-//    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        super.updateUserActivity("CMv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(), "CMv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            super.updateUserActivity("CMv"
-//                    + SystemOption.getString(
-//                            getSystemManager().getEntityManager1(), "CMv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        setManagerUser();
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
 
 }

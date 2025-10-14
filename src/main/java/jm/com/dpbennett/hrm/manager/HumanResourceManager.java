@@ -850,7 +850,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
 
-        getSystemManager().getMainTabView().openTab("Human Resource");
+        getSystemManager().getMainTabView().openTab(title);
     }
 
     public void selectHumanResourceTab(
