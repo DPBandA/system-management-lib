@@ -39,7 +39,6 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -55,7 +54,6 @@ import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.ComplianceSurvey;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
-import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -89,7 +87,6 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
@@ -114,74 +111,20 @@ public class ReportManager extends GeneralManager {
         init();
     }
 
-    public String getApplicationFooter() {
+    @Override
+    public void openMainViewTab(String title) {
 
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "JMTSv");
-    }
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
 
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
-
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
-
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
-    }
-
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
+        getSystemManager().getMainTabView().openTab(title);
     }
 
     @Override
-    public int getSizeOfActiveNotifications() {
+    public void openDashboardTab(String title) {
 
-        return getSystemManager().getActiveNotifications().size();
-    }
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
 
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
+        getSystemManager().getDashboard().openTab(title);
     }
 
     public Employee getUserEmployee() {
@@ -207,27 +150,16 @@ public class ReportManager extends GeneralManager {
         }
     }
 
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 600;
-    }
-
     @Override
     public String getApplicationHeader() {
 
         return "Report Manager";
     }
 
-    public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
-    }
-
     @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
+    public SystemManager getSystemManager() {
+
+        return BeanUtils.findBean("systemManager");
     }
 
     @Override
@@ -241,10 +173,6 @@ public class ReportManager extends GeneralManager {
         return datePeriods;
     }
 
-    /**
-     *
-     * @return
-     */
     public DatePeriod getReportingDatePeriod1() {
         if (selectedReport.getDatePeriods().isEmpty()) {
             selectedReport.getDatePeriods().add(
@@ -263,12 +191,6 @@ public class ReportManager extends GeneralManager {
         return selectedReport.getDatePeriods().get(0);
     }
 
-    /**
-     * Special method to be removed later when the current method of generating
-     * monthly reports is done away with.
-     *
-     * @return
-     */
     public DatePeriod getMonthlyReportDataDatePeriod() {
         if (getReportingDatePeriod1().getEndDate() == null) {
             getReportingDatePeriod1().setEndDate(new Date());
@@ -277,18 +199,10 @@ public class ReportManager extends GeneralManager {
         return getReportingDatePeriod1();
     }
 
-    /**
-     *
-     * @param reportingDatePeriod1
-     */
     public void setReportingDatePeriod1(DatePeriod reportingDatePeriod1) {
         selectedReport.getDatePeriods().set(0, reportingDatePeriod1);
     }
 
-    /**
-     *
-     * @return
-     */
     public DatePeriod getReportingDatePeriod2() {
 
         if (selectedReport.getDatePeriods().isEmpty()) {
@@ -405,20 +319,21 @@ public class ReportManager extends GeneralManager {
     }
 
     public void openReportsTab() {
-        getMainTabView().openTab("Reports");
+        
+        getSystemManager().getMainTabView().openTab("Reports");
     }
 
     public void openReportTemplatesTab() {
 
-        getSystemManager().setDocumentTypeSearchText(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
 
-        getMainTabView().openTab("Report Templates");
+        getSystemManager().getMainTabView().openTab("Report Templates");
     }
 
     public void openReportsTab(String reportCategory) {
         setReportCategory(reportCategory);
 
-        getMainTabView().openTab("Reports");
+        getSystemManager().getMainTabView().openTab("Reports");
     }
 
     public List<Report> completeReport(String query) {
@@ -620,7 +535,7 @@ public class ReportManager extends GeneralManager {
 
         currentReport = new Report();
 
-        getMainTabView().openTab("Report Templates");
+        getSystemManager().getMainTabView().openTab("Report Templates");
 
         editReportTemplate();
     }
@@ -705,7 +620,6 @@ public class ReportManager extends GeneralManager {
 
         setSearchType("Reports");
         setSearchText("");
-        setDefaultCommandTarget("@this");
         setModuleNames(new String[]{
             "systemManager",
             "reportManager"});
@@ -717,45 +631,6 @@ public class ReportManager extends GeneralManager {
         columnsToExclude = "";
         reportCategory = "Job";
 
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        if (getUser().hasModule("reportManager")) {
-            getDashboard().openTab("Report Management");
-        }
-
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
-        }
-
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        if (getUser().hasModule("systemManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "systemManager");
-            if (module != null) {
-                getMainTabView().openTab("System Administration");
-            }
-        }
-
-        if (getUser().hasModule("reportManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "reportManager");
-            if (module != null) {
-                getMainTabView().openTab("Report Templates");
-            }
-        }
     }
 
     public void closeReportDialog() {
@@ -2350,12 +2225,6 @@ public class ReportManager extends GeneralManager {
                 "java.util.Date", datePeriodsCellStyle);
     }
 
-    /**
-     *
-     * @param samples
-     * @param method
-     * @return
-     */
     public Boolean checkForSampleDisposalMethod(List<JobSample> samples, Integer method) {
         for (JobSample jobSample : samples) {
             if (jobSample.getMethodOfDisposal().compareTo(method) == 0) {
@@ -2365,12 +2234,6 @@ public class ReportManager extends GeneralManager {
         return false;
     }
 
-    /**
-     *
-     * @param em
-     * @param department
-     * @param jobSubCategory
-     */
     public void associateDepartmentWithJobSubCategory(
             EntityManager em,
             Department department,
@@ -2383,12 +2246,6 @@ public class ReportManager extends GeneralManager {
 
     }
 
-    /**
-     *
-     * @param em
-     * @param department
-     * @param sector
-     */
     public void associateDepartmentWithSector(
             EntityManager em,
             Department department,
@@ -2400,12 +2257,6 @@ public class ReportManager extends GeneralManager {
         em.getTransaction().commit();
     }
 
-    /**
-     *
-     * @param em
-     * @param department
-     * @param jobReportItem
-     */
     public void associateDepartmentWithJobReportItem(
             EntityManager em,
             Department department,
@@ -2417,10 +2268,6 @@ public class ReportManager extends GeneralManager {
         em.getTransaction().commit();
     }
 
-    /**
-     *
-     * @return
-     */
     public ArrayList getDateSearchFields() {
         return DateUtils.getDateSearchFields(getSelectedReport().getCategory());
     }
@@ -2447,12 +2294,6 @@ public class ReportManager extends GeneralManager {
         }
     }
 
-//    @Override
-//    public void initDashboard() {
-//
-//        initSearchPanel();
-//
-//    }
     @Override
     public SelectItemGroup getSearchTypesGroup() {
         SelectItemGroup group = new SelectItemGroup("Reporting");
@@ -2481,30 +2322,6 @@ public class ReportManager extends GeneralManager {
     @Override
     public EntityManager getEntityManager2() {
         return getSystemManager().getEntityManager2();
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "appShortcutIconURL");
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
@@ -2558,83 +2375,6 @@ public class ReportManager extends GeneralManager {
             default:
                 System.out.println("Unkown type");
         }
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        updateUserActivity("RMv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        updateUserActivity("RMv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "RMv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-//
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            updateUserActivity("RMv"
-//                    + SystemOption.getString(
-//                            getSystemManager().getEntityManager1(), "RMv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        setManagerUser();
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
-
-    @Override
-    public void setManagerUser() {
-
-        getManager("systemManager").setUser(getUser());
-
     }
 
 }
