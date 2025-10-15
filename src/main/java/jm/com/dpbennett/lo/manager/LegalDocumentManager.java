@@ -39,8 +39,6 @@ import jm.com.dpbennett.business.entity.dm.DocumentSequenceNumber;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.lo.LegalDocument;
-import jm.com.dpbennett.business.entity.sm.Module;
-import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -51,7 +49,6 @@ import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -66,7 +63,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
@@ -93,7 +89,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
-        getDashboard().openTab(title);
+        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
@@ -101,116 +97,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
-        getMainTabView().openTab("Legal Documents");
-    }
-
-    @Override
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "JMTSv");
-    }
-
-    @Override
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
-
-    @Override
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
-
-    }
-
-    @Override
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                if (getUser().hasModule(moduleName)) {
-                    Module module = Module.findActiveModuleByName(
-                            getEntityManager1(),
-                            moduleName);
-
-                    if (module != null) {
-
-                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
-
-                    }
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public Dashboard getDashboard() {
-
-        return getSystemManager().getDashboard();
-    }
-
-    @Override
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
+        getSystemManager().getMainTabView().openTab("Legal Documents");
     }
 
     public EntityManagerFactory getLOPU() {
 
         return LOPU;
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
     }
 
     public Employee getEmployee() {
@@ -221,28 +113,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void openClientsTab() {
 
-        getMainTabView().openTab("Clients");
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                if (getUser().hasModule(moduleName)) {
-                    Module module = Module.findActiveModuleByName(
-                            getEntityManager1(),
-                            moduleName);
-
-                    if (module != null) {
-
-                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
-                    }
-                }
-            }
-        }
+        getSystemManager().getMainTabView().openTab("Clients");
     }
 
     public ClientManager getClientManager() {
@@ -251,6 +122,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public HumanResourceManager getHumanResourceManager() {
+
         return BeanUtils.findBean("humanResourceManager");
     }
 
@@ -291,6 +163,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationHeader() {
+
         return "Legal Office";
     }
 
@@ -300,14 +173,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         searchTypes.add(new SelectItem("Legal Documents", "Legal Documents"));
 
         return searchTypes;
-    }
-
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 600;
     }
 
     // tk make system option
@@ -368,7 +233,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void openReportsTab() {
-        getReportManager().openReportsTab("Legal");
+
+        getReportManager().openReportsTab("Legal"); // tk review to make it still works.
     }
 
     @Override
@@ -383,8 +249,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateReceived", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
-
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
     }
 
@@ -675,7 +539,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
-        getMainTabView().openTab("Legal Documents");
+        getSystemManager().getMainTabView().openTab("Legal Documents");
     }
 
     public LegalDocument createNewLegalDocument(EntityManager em,
@@ -763,7 +627,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void doDefaultSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 getSearchType(),
                 getSearchText(),
@@ -920,6 +784,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationSubheader() {
+        
         return "Legal Office Administration";
     }
 
@@ -931,46 +796,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public EntityManager getEntityManager2() {
+        
         return getSystemManager().getEntityManager2();
-    }
-
-    @Override
-    public String getAppShortcutIconURL() {
-
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "appShortcutIconURL");
-
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageWidth");
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getSystemManager().getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
     }
 
     @Override
@@ -997,92 +824,5 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         return getDateSearchFields("Legal Documents");
     }
-
-    @Override
-    public void handleSelectedNotification(Notification notification) {
-        switch (notification.getType()) {
-            case "LegalDocumentSearch":
-
-                break;
-
-            default:
-                System.out.println("Unkown type");
-        }
-    }
-
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        updateUserActivity("LOv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(), "LOv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        updateUserActivity("LOv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "LOv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-//
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            updateUserActivity("LOv"
-//                    + SystemOption.getString(getSystemManager().getEntityManager1(), "LOv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        setManagerUser();
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
 
 }
