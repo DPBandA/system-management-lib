@@ -97,7 +97,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:legalDocumentSearchButton");
 
-        getSystemManager().getMainTabView().openTab("Legal Documents");
+        getSystemManager().getMainTabView().openTab(title);
     }
 
     public EntityManagerFactory getLOPU() {

@@ -36,8 +36,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.mt.EnergyLabel;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.Module;
-import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.QRCodeGenerator;
@@ -45,7 +43,6 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
@@ -57,8 +54,6 @@ import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
@@ -82,81 +77,24 @@ public class EnergyLabelManager extends GeneralManager
     private String energyLabelSearchText;
     private Document svgDocument;
 
-    /**
-     * Creates a new instance of LabelManager
-     */
     public EnergyLabelManager() {
         init();
     }
 
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
+    @Override
+    public void openDashboardTab(String title) {
 
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:energyLabelSearchButton");
 
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
+        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
+    public void openMainViewTab(String title) {
 
-        getSystemManager().onMainViewTabChange(event);
-    }
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:energyLabelSearchButton");
 
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public Dashboard getDashboard() {
-
-        return getSystemManager().getDashboard();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
+        getSystemManager().getMainTabView().openTab(title);
     }
 
     @Override
@@ -173,14 +111,6 @@ public class EnergyLabelManager extends GeneralManager
         }
     }
 
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 600;
-    }
-
     public String getEnergyLabelSearchText() {
         return energyLabelSearchText;
     }
@@ -189,47 +119,9 @@ public class EnergyLabelManager extends GeneralManager
         this.energyLabelSearchText = energyLabelSearchText;
     }
 
-    @Override
-    public void initMainTabView() {
-
-        String firstModule;
-        firstModule = null;
-
-        getMainTabView().reset(getUser());
-
-        // Label
-        if (getUser().hasModule("energyLabelManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "energyLabelManager");
-            if (module != null) {
-                openModuleMainTab("energyLabelManager");
-
-                if (firstModule == null) {
-                    firstModule = "energyLabelManager";
-                }
-            }
-        }
-
-        openModuleMainTab(firstModule);
-    }
-
-    private void openModuleMainTab(String moduleName) {
-
-        if (moduleName != null) {
-            switch (moduleName) {
-                case "energyLabelManager":
-                    openEnergyLabelBrowser();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     public void openEnergyLabelBrowser() {
 
-        getMainTabView().openTab("Label Browser");
+        getSystemManager().getMainTabView().openTab("Label Browser");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
@@ -239,21 +131,21 @@ public class EnergyLabelManager extends GeneralManager
 
         getSystemManager().doSystemOptionSearch("Compliance");
 
-        getMainTabView().openTab("Compliance");
+        getSystemManager().getMainTabView().openTab("Compliance");
     }
 
     public void openEnergyEfficiencySettingsTab() {
 
         getSystemManager().doSystemOptionSearch("Energy Efficiency");
 
-        getMainTabView().openTab("Energy Efficiency");
+        getSystemManager().getMainTabView().openTab("Energy Efficiency");
     }
 
     public void openLabelPrintSettingsTab() {
 
         getSystemManager().doSystemOptionSearch("LabelPrint");
 
-        getMainTabView().openTab("LabelPrint");
+        getSystemManager().getMainTabView().openTab("LabelPrint");
     }
 
     public void energyLabelDialogReturn() {
@@ -267,43 +159,6 @@ public class EnergyLabelManager extends GeneralManager
             doEnergyLabelSearch();
         }
 
-    }
-
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getSystemManager().getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
-    }
-
-    @Override
-    public String getLogoURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "LabelPrintLogoURL");
-    }
-
-    @Override
-    public Integer getLogoURLImageHeight() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageHeight");
-    }
-
-    @Override
-    public Integer getLogoURLImageWidth() {
-        return (Integer) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(), "logoURLImageWidth");
     }
 
     @Override
@@ -439,27 +294,10 @@ public class EnergyLabelManager extends GeneralManager
         return "LabelPrint";
     }
 
-    public String getApplicationFooter() {
-
-        return "LabelPrint, v" + SystemOption.getString(
-                getSystemManager().getEntityManager1(),
-                "LPv");
-    }
-
-    /**
-     * Gets the SystemManager object as a session bean.
-     *
-     * @return
-     */
-    public SystemManager getSystemManager() {
-        return BeanUtils.findBean("systemManager");
-    }
-
     @Override
-    public String getAppShortcutIconURL() {
-        return (String) SystemOption.getOptionValueObject(
-                getSystemManager().getEntityManager1(),
-                "LabelPrintAppShortcutIconURL");
+    public SystemManager getSystemManager() {
+
+        return BeanUtils.findBean("systemManager");
     }
 
     public final void init() {
@@ -472,7 +310,6 @@ public class EnergyLabelManager extends GeneralManager
 
         setSearchType("Energy labels");
         setSearchText("");
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
         setModuleNames(new String[]{
             "energyLabelManager",
             "systemManager"
@@ -639,94 +476,6 @@ public class EnergyLabelManager extends GeneralManager
         }
 
         return dateSearchFields;
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        updateUserActivity("LPv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(), "LPv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        updateUserActivity("LPv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "LPv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            updateUserActivity("LPv"
-//                    + SystemOption.getString(getSystemManager().getEntityManager1(), "LPv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        setManagerUser();
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
-        }
-
-    }
-
-    @Override
-    public void setManagerUser() {
-
-        getManager("systemManager").setUser(getUser());
-
     }
 
     // SVG manipulation
@@ -928,6 +677,7 @@ public class EnergyLabelManager extends GeneralManager
 
     }
 
+    // tk make system option?
     private void eraseAllRatingLetters() {
 
         renderRating("A", false);
