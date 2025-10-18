@@ -20,11 +20,6 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sc.manager;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
@@ -52,11 +47,6 @@ public class FoodSafetyManager extends GeneralManager implements Serializable {
 
         super.reset();
 
-    }
-
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
     }
 
     @Override

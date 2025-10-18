@@ -58,8 +58,6 @@ import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
-import jm.com.dpbennett.business.entity.sm.Module;
-import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -73,7 +71,6 @@ import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -85,7 +82,6 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
@@ -136,7 +132,6 @@ public class ComplianceManager extends GeneralManager
     private Boolean isActiveDocumentStandardsOnly;
     private Boolean isActiveMarketProductsOnly;
     private Boolean edit;
-    private SystemManager systemManager;
     private String surveyEstablishmentsDialogHeader;
     private List<Manufacturer> manufacturers;
     private String manufacturerSearchText;
@@ -145,6 +140,22 @@ public class ComplianceManager extends GeneralManager
 
     public ComplianceManager() {
         init();
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
+
+        getSystemManager().getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
+
+        getSystemManager().getMainTabView().openTab(title);
     }
 
     public Boolean getIsActiveManufacturersOnly() {
@@ -224,13 +235,6 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
     public Employee getUserEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
@@ -248,144 +252,14 @@ public class ComplianceManager extends GeneralManager
 
     public void openClientsTab() {
 
-        getMainTabView().openTab("Clients");
+        getSystemManager().getMainTabView().openTab("Clients");
     }
 
     public void openReportsTab() {
-        getMainTabView().openTab("Reports");
+
+        getSystemManager().getMainTabView().openTab("Reports");
     }
 
-    private void openModuleMainTab(String moduleName) {
-
-        if (moduleName != null) {
-            switch (moduleName) {
-                case "complianceManager":
-                    openSurveysBrowser();
-                    break;
-                case "foodFactoryManager":
-                    getFoodFactoryManager().openFactoryBrowser();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        if (getUser().hasModule("complianceManager")) {
-            getDashboard().openTab("Standards Compliance");
-        }
-
-        if (getUser().hasModule("foodSafetyManager")) {
-            getDashboard().openTab("Food Safety");
-        }
-
-        if (getUser().hasModule("legalMetrologyManager")) {
-            getDashboard().openTab("Legal Metrology");
-        }
-
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
-        }
-
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        getMainTabView().reset(getUser());
-
-        if (getUser().hasModule("complianceManager")) {
-            openSurveysBrowser();
-        }
-
-        if (getUser().hasModule("foodSafetyManager")) {
-            getFoodFactoryManager().openFactoryBrowser();
-        }
-
-        if (getUser().hasModule("legalMetrologyManager")) {
-            getLegalMetrologyManager().openPetrolStationBrowser();
-            getLegalMetrologyManager().openScaleBrowser();
-        }
-
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        updateUserActivity("SCv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(), "SCv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-//
-//    @Override
-//    public void completeLogout() {
-//
-//        updateUserActivity("SCv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(), "SCv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            updateUserActivity("SCv"
-//                    + SystemOption.getString(
-//                            getSystemManager().getEntityManager1(), "SCv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        setManagerUser();
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
-
-//    @Override
-//    public void setManagerUser() {
-//
-//        for (String moduleName : getModuleNames()) {
-//            if (getManager(moduleName) != null) {
-//                getManager(moduleName).setUser(getUser());
-//            }
-//        }
-//
-//    }
     public void okSurveyEstablishmentsDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
@@ -646,19 +520,6 @@ public class ComplianceManager extends GeneralManager
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
     }
 
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 500;
-    }
-
-//    @Override
-//    public String getAppShortcutIconURL() {
-//        return (String) SystemOption.getOptionValueObject(
-//                getSystemManager().getEntityManager1(), "appShortcutIconURL");
-//    }
     public void sendErrorEmail(String subject, String message) {
         try {
             // send error message to developer's email            
@@ -757,6 +618,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void deleteFactoryInspectionComponent() {
+
         deleteFactoryInspectionComponentByName(currentFactoryInspectionComponent.getName());
     }
 
@@ -1218,6 +1080,7 @@ public class ComplianceManager extends GeneralManager
         List<String> names = new ArrayList<>();
 
         List<DocumentStandard> standards = DocumentStandard.findAll(em);
+
         for (DocumentStandard documentStandard : standards) {
             names.add(documentStandard.getName());
         }
@@ -1226,6 +1089,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public String getComplianceSurveyTableToUpdate() {
+
         return complianceSurveyTableToUpdate;
     }
 
@@ -1391,7 +1255,6 @@ public class ComplianceManager extends GeneralManager
         isActiveManufacturersOnly = true;
         surveyEstablishmentsDialogHeader = "Establishment";
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
     }
 
     public List<FactoryInspection> getFactoryInspections() {
@@ -1447,34 +1310,14 @@ public class ComplianceManager extends GeneralManager
     @Override
     public SystemManager getSystemManager() {
 
-        if (systemManager == null) {
-            systemManager = BeanUtils.findBean("systemManager");
-        }
-        return systemManager;
+        return BeanUtils.findBean("systemManager");
+
     }
 
     @Override
     public String getApplicationHeader() {
-        return "Compliance Connect";
-    }
 
-    @Override
-    public void onNotificationSelect(SelectEvent event) {
-        EntityManager em = getSystemManager().getEntityManager1();
-
-        Notification notification = Notification.findNotificationByNameAndOwnerId(
-                em,
-                (String) event.getObject(),
-                getUser().getId(),
-                false);
-
-        if (notification != null) {
-
-            handleSelectedNotification(notification);
-
-            notification.setActive(false);
-            notification.save(em);
-        }
+        return "Standards Compliance";
     }
 
     public void updateConsignee() {
@@ -1603,21 +1446,21 @@ public class ComplianceManager extends GeneralManager
 
     public void openSurveysBrowser() {
 
-        getMainTabView().openTab("Surveys");
+        getSystemManager().getMainTabView().openTab("Surveys");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:surveySearchButton");
     }
 
     public void openStandardsBrowser() {
 
-        getMainTabView().openTab("Standards");
+        getSystemManager().getMainTabView().openTab("Standards");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:standardSearchButton");
     }
 
     public void openComplaintsBrowser() {
 
-        getMainTabView().openTab("Complaints");
+        getSystemManager().getMainTabView().openTab("Complaints");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:complaintSearchButton");
     }
@@ -2567,10 +2410,12 @@ public class ComplianceManager extends GeneralManager
 
     }
 
+    // tk to be system option
     public String getLatestAlert() {
         return "*********** TOYS R US BABY STROLLER MODEL # 3213 **********";
     }
 
+    // tk check if this is still needed
     private void promptToSaveIfRequired() {
 
         System.out.println("promptToSaveIfRequired not implemented.");
@@ -2718,6 +2563,7 @@ public class ComplianceManager extends GeneralManager
                 105); // tk to be made system option.
     }
 
+    // tk to be removed or updated with baseURL as system option
     public void handleProductPhotoFileUpload(FileUploadEvent event) {
         FileOutputStream fout;
         UploadedFile upLoadedFile = event.getFile();
@@ -2777,7 +2623,7 @@ public class ComplianceManager extends GeneralManager
         return false;
     }
 
-    // tk
+    // tk to be removed or updated
     public StreamedContent getCurrentProductInspectionImageDownload() {
         StreamedContent streamedFile = null;
 
@@ -3291,6 +3137,7 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
+    // tk be removed and jasper report created if neededed.
     public StreamedContent getComplianceDailyReportPDFFile() {
 
         HashMap parameters = new HashMap();
@@ -3432,7 +3279,7 @@ public class ComplianceManager extends GeneralManager
 
     public void openFactoryInspectionBrowser() {
 
-        getMainTabView().openTab("Factory Inspections");
+        getSystemManager().getMainTabView().openTab("Factory Inspections");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
     }
@@ -3639,8 +3486,4 @@ public class ComplianceManager extends GeneralManager
                 25); // tk to be made system option
     }
 
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
 }

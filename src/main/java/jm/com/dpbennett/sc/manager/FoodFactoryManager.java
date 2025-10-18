@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
@@ -31,7 +30,6 @@ import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.MainTabView;
 
 /**
  *
@@ -46,6 +44,22 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
 
     public FoodFactoryManager() {
         init();
+    }
+    
+     @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:foodFactorySearchButton");
+
+        getSystemManager().getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
+
+        getSystemManager().getMainTabView().openTab(title);
     }
     
     public final void init() {
@@ -77,15 +91,10 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
         
         return getComplianceManager().getSystemManager();
     }
-    
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
+   
     public void openFactoryBrowser() {
 
-        getMainTabView().openTab("Factories");
+        getSystemManager().getMainTabView().openTab("Factories");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
     }

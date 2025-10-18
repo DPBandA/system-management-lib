@@ -84,7 +84,7 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:energyLabelSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
         getSystemManager().getDashboard().openTab(title);
     }
@@ -92,7 +92,7 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public void openMainViewTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:energyLabelSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
         getSystemManager().getMainTabView().openTab(title);
     }

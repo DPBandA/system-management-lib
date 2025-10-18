@@ -161,11 +161,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-    @Override
     public SystemManager getSystemManager() {
 
         return getComplianceManager().getSystemManager();
@@ -279,6 +274,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         this.currentPetrolStation = currentPetrolStation;
     }
 
+    // tk del if not used
     public String getScaleSearchResultsTableHeader() {
 
         return "App.getSearchResultsTableHeader(currentSearchParameters, getScaleSearchResultsList())";
@@ -311,7 +307,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return BeanUtils.findBean("complianceManager");
     }
 
-    public EntityManager getEntityManager() {
+    @Override
+    public EntityManager getEntityManager1() {
         return getComplianceManager().getEntityManager1();
     }
     
@@ -327,7 +324,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void openPetrolStationBrowser() {
 
-        getMainTabView().openTab("Petrol Stations");
+        getSystemManager().getMainTabView().openTab("Petrol Stations");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
 
@@ -335,7 +332,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void openScaleBrowser() {
 
-        getMainTabView().openTab("Scales");
+        getSystemManager().getMainTabView().openTab("Scales");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:scaleSearchButton");
 
@@ -634,14 +631,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void updatePetrolPumpNozzle() {
         setDirty(true);
-    }
-
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 500;
     }
 
     public void editPetrolStation() {
@@ -1128,13 +1117,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return manufacturer;
     }
 
-    /**
-     * Get the default distributor by name and creates one if it does not exist.
-     *
-     * @param em
-     * @param name
-     * @return
-     */
     public Distributor getDefaultDistributor(EntityManager em,
             String name) {
         Distributor distributor = Distributor.findDistributorByName(em, name);
