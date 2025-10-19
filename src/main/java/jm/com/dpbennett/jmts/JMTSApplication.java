@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2017  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -36,12 +36,9 @@ import jm.com.dpbennett.business.entity.jmts.Job;
 //@Singleton
 public class JMTSApplication implements Serializable {
 
-   private final Map<String, String> themes = new TreeMap<>();
+    private final Map<String, String> themes = new TreeMap<>();
     private final List<Job> openedJobs;
 
-    /**
-     * Creates a new instance of Application
-     */
     public JMTSApplication() {
         openedJobs = new ArrayList<>();
     }
@@ -64,7 +61,7 @@ public class JMTSApplication implements Serializable {
                 return job;
             }
         }
-        
+
         return null;
     }
 

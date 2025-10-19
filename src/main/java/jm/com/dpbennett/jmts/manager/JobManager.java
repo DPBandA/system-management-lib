@@ -70,7 +70,6 @@ import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.Email;
-import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
@@ -93,13 +92,11 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.UnselectEvent;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
@@ -121,7 +118,6 @@ public class JobManager extends GeneralManager
     private Job[] selectedJobs;
     private AccPacCustomer accPacCustomer;
     private StatusNote selectedStatusNote;
-    private SystemManager systemManager;
     private String searchText;
     private String searchType;
 
@@ -129,6 +125,23 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
+
+        getSystemManager().getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
+
+        getSystemManager().getMainTabView().openTab(title);
+    }
+
+    // tk move to HRM?
     public List<Employee> completeActiveEmployee(String query) {
         //EntityManager em = getHumanResourceManager().getEntityManager1();
         List<Employee> employees = new ArrayList<>();
@@ -154,6 +167,7 @@ public class JobManager extends GeneralManager
         return employees;
     }
 
+    // tk move to HRM?
     public List<Business> completeActiveBusiness(String query) {
         EntityManager hrem = getHumanResourceManager().getEntityManager1();
         Boolean userCanEnterJob = getUser().can("EnterJob");
@@ -191,6 +205,7 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk move to HRM?
     public List<Department> completeActiveDepartmentByBusiness(String query) {
 
         List<Department> departments = new ArrayList<>();
@@ -220,55 +235,13 @@ public class JobManager extends GeneralManager
         return JMTSPU;
     }
 
-    public String getLastSystemNotificationContent() {
-
-        return Notification.findLastActiveSystemNotificationMessage(
-                getSystemManager().getEntityManager1());
-
-    }
-
-    @Override
-    public int getSizeOfActiveNotifications() {
-
-        return getSystemManager().getActiveNotifications().size();
-    }
-
-    @Override
-    public boolean getHasActiveNotifications() {
-        return getSystemManager().getHasActiveNotifications();
-    }
-
-    @Override
-    public List<Notification> getNotifications() {
-
-        return getSystemManager().getNotifications();
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
-    }
-
     public Employee getUserEmployee() {
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
 
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
+    // tk remove?
     public void jobGroupingDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -294,6 +267,7 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk remove?
     public void jobStatusAndTrackingDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -320,6 +294,7 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk remove?
     public void jobReportingDialogReturn() {
 
         if (getCurrentJob().getId() != null) {
@@ -346,6 +321,7 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk remove?
     public void editJobGrouping() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -365,6 +341,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    // tk remove?
     public void editJobStatusAndTracking() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -384,6 +361,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    // tk remove?
     public void editJobReporting() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -403,6 +381,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    // tk remove?
     public void openJobGroupingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
 
@@ -425,6 +404,7 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk remove?
     public void openJobStatusAndTrackingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
 
@@ -447,6 +427,7 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk remove?
     public void openJobReportingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
 
@@ -469,21 +450,25 @@ public class JobManager extends GeneralManager
         }
     }
 
+    // tk remove?
     public void okJobGrouping(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    // tk remove?
     public void okJobStatusAndTracking(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    // tk remove?
     public void okJobReporting(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    // tk remove?
     public void cancelJobGroupingEdit(ActionEvent actionEvent) {
 
         getCurrentJob().setIsDirty(false);
@@ -491,6 +476,7 @@ public class JobManager extends GeneralManager
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    // tk remove?
     public void cancelJobStatusAndTrackingEdit(ActionEvent actionEvent) {
 
         getCurrentJob().setIsDirty(false);
@@ -498,6 +484,7 @@ public class JobManager extends GeneralManager
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    // tk remove?
     public void cancelJobReportingEdit(ActionEvent actionEvent) {
 
         getCurrentJob().setIsDirty(false);
@@ -541,21 +528,6 @@ public class JobManager extends GeneralManager
                 getSystemManager().getEntityManager1(), "JMTSLogo");
     }
 
-    public Integer getDialogHeight() {
-        return 400;
-    }
-
-    public Integer getDialogWidth() {
-        return 500;
-    }
-
-    public String getApplicationFooter() {
-
-        return getApplicationHeader() + ", v"
-                + SystemOption.getString(getSystemManager().getEntityManager1(),
-                        "JMTSv");
-    }
-
     public Boolean enableJobDialogTab(String tab) {
 
         if (tab.equals("General")
@@ -592,11 +564,9 @@ public class JobManager extends GeneralManager
     }
 
     public SystemManager getSystemManager() {
-        if (systemManager == null) {
-            systemManager = BeanUtils.findBean("systemManager");
-        }
 
-        return systemManager;
+        return BeanUtils.findBean("systemManager");
+
     }
 
     @Override
@@ -1146,11 +1116,6 @@ public class JobManager extends GeneralManager
         return job.getIsToBeSubcontracted() || job.getIsSubContract();
     }
 
-    /**
-     * Conditionally disable department entry. Currently not used.
-     *
-     * @return
-     */
     public Boolean getDisableDepartmentEntry() {
 
         // allow department entry only if business office is null
@@ -1219,27 +1184,6 @@ public class JobManager extends GeneralManager
                 "JMTSName");
     }
 
-    public String getSupportURL() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "supportURL");
-    }
-
-    public String getCopyrightOrganization() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "copyrightOrganization");
-
-    }
-
-    public String getOrganizationWebsite() {
-        return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "organizationWebsite");
-    }
-
-    /**
-     * Gets the ApplicationScoped object that is associated with this webapp.
-     *
-     * @return
-     */
     public JMTSApplication getApplication() {
         if (application == null) {
             application = BeanUtils.findBean("App");
@@ -1275,11 +1219,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    /**
-     * Gets the Accpac customer field.
-     *
-     * @return
-     */
     public AccPacCustomer getAccPacCustomer() {
         if (accPacCustomer == null) {
             accPacCustomer = new AccPacCustomer();
@@ -1287,11 +1226,6 @@ public class JobManager extends GeneralManager
         return accPacCustomer;
     }
 
-    /**
-     * Sets the Accpac customer field.
-     *
-     * @param accPacCustomer
-     */
     public void setAccPacCustomer(AccPacCustomer accPacCustomer) {
         this.accPacCustomer = accPacCustomer;
     }
@@ -1302,11 +1236,6 @@ public class JobManager extends GeneralManager
     public void onJobCostingUnSelect(UnselectEvent event) {
     }
 
-    /**
-     * Handles the editing of cells in the Job Costing table.
-     *
-     * @param event
-     */
     public void onJobCostingCellEdit(CellEditEvent event) {
 
         // Set edited by
@@ -1472,22 +1401,22 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
-        
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
     }
 
     public void openSystemBrowser() {
-        getMainTabView().openTab("System Administration");
+
+        getSystemManager().getMainTabView().openTab("System Administration");
     }
 
     public void openFinancialAdministration() {
-        getMainTabView().openTab("Financial Administration");
+
+        getSystemManager().getMainTabView().openTab("Financial Administration");
     }
 
     public void openHumanResourceBrowser() {
 
-        getMainTabView().openTab("Human Resource");
+        getSystemManager().getMainTabView().openTab("Human Resource");
     }
 
     public Boolean getCanApplyTax() {
@@ -1523,19 +1452,19 @@ public class JobManager extends GeneralManager
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
-        getMainTabView().openTab("Jobs");
+        getSystemManager().getMainTabView().openTab("Jobs");
 
     }
 
     public void openSystemAdministrationTab() {
 
-        getMainTabView().openTab("System Administration");
+        getSystemManager().getMainTabView().openTab("System Administration");
 
     }
 
     public void openFinancialAdministrationTab() {
 
-        getMainTabView().openTab("Financial Administration");
+        getSystemManager().getMainTabView().openTab("Financial Administration");
 
     }
 
@@ -2599,14 +2528,13 @@ public class JobManager extends GeneralManager
     public void doDefaultSearch() {
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 getSearchType(),
                 getSearchText(),
                 getDateSearchPeriod().getStartDate(),
                 getDateSearchPeriod().getEndDate());
 
-        openModuleMainTab("jobManager");
     }
 
     @Override
@@ -3142,11 +3070,12 @@ public class JobManager extends GeneralManager
 
     public void openClientsTab() {
 
-        getMainTabView().openTab("Clients");
+        getSystemManager().getMainTabView().openTab("Clients");
     }
 
     public void openReportsTab() {
-        getMainTabView().openTab("Reports");
+
+        getSystemManager().getMainTabView().openTab("Reports");
     }
 
     @Override
@@ -3254,239 +3183,4 @@ public class JobManager extends GeneralManager
                 System.out.println("Unkown type");
         }
     }
-
-    @Override
-    public MainTabView getMainTabView() {
-        return getSystemManager().getMainTabView();
-    }
-
-    private void openModuleMainTab(String moduleName) {
-
-        if (moduleName != null) {
-            switch (moduleName) {
-                case "legalDocumentManager":
-                    getLegalDocumentManager().openDocumentBrowser();
-                    break;
-                case "complianceManager":
-                    getComplianceManager().openSurveysBrowser();
-                    break;
-                case "humanResourceManager":
-                    getHumanResourceManager().openHumanResourceBrowser();
-                    break;
-                case "jobManager":
-                    openJobBrowser();
-                    break;
-                case "clientManager":
-                    getClientManager().openClientsTab();
-                    break;
-                case "purchasingManager":
-                    getPurchasingManager().openPurchaseReqsTab();
-                    break;
-                case "inventoryManager":
-                    getInventoryManager().openInventoryProductBrowser();
-                    getInventoryManager().openInventoryTab();
-                    getInventoryManager().openInventoryRequisitionTab();
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    @Override
-    public Dashboard getDashboard() {
-
-        return getSystemManager().getDashboard();
-    }
-
-    @Override
-    public void initDashboard() {
-
-        getDashboard().reset(getUser(), true);
-
-        if (getUser().hasModule("legalDocumentManager")) {
-            getDashboard().openTab("Legal Office");
-        }
-        
-        if (getUser().hasModule("jobManager")) {
-            getDashboard().openTab("Job Management");
-        }
-
-        if (getUser().hasModule("complianceManager")) {
-            getDashboard().openTab("Standards Compliance");
-        }
-
-        if (getUser().hasModule("financeManager")) {
-            getDashboard().openTab("Financial Administration");
-        }
-
-        if (getUser().hasModule("systemManager")) {
-            getDashboard().openTab("System Administration");
-        }
-
-    }
-
-    @Override
-    public void initMainTabView() {
-
-        // tk test if this is still necessary
-        String firstModule = null;
-
-        getMainTabView().reset(getUser());
-
-        if (getUser().hasModule("legalDocumentManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "legalDocumentManager");
-
-            if (module != null) {
-                openModuleMainTab("legalDocumentManager");
-
-                if (firstModule == null) {
-                    firstModule = "legalDocumentManager";
-                }
-
-            }
-        }
-
-        if (getUser().hasModule("complianceManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "complianceManager");
-
-            if (module != null) {
-                openModuleMainTab("complianceManager");
-
-                if (firstModule == null) {
-                    firstModule = "complianceManager";
-                }
-
-            }
-        }
-
-        // Proformas | Jobs
-        if (getUser().hasModule("jobManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "jobManager");
-            if (module != null) {
-                openModuleMainTab("jobManager");
-
-                if (firstModule == null) {
-                    firstModule = "jobManager";
-                }
-            }
-        }
-
-        if (getUser().hasModule("purchasingManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "purchasingManager");
-            if (module != null) {
-                openModuleMainTab("purchasingManager");
-
-                if (firstModule == null) {
-                    firstModule = "purchasingManager";
-                }
-            }
-        }
-
-        if (getUser().hasModule("inventoryManager")) {
-            Module module = Module.findActiveModuleByName(
-                    getSystemManager().getEntityManager1(),
-                    "inventoryManager");
-            if (module != null) {
-                openModuleMainTab("inventoryManager");
-
-                if (firstModule == null) {
-                    firstModule = "inventoryManager";
-                }
-            }
-        }
-        // tk test if this is still necessary
-        openModuleMainTab(firstModule);
-    }
-
-//    @Override
-//    public void handleKeepAlive() {
-//
-//        super.updateUserActivity("JMTSv"
-//                + SystemOption.getString(
-//                        getSystemManager().getEntityManager1(),
-//                        "JMTSv"),
-//                "Logged in");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        if ((Boolean) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "debugMode")) {
-//            System.out.println(getApplicationHeader()
-//                    + " keeping session alive: " + getUser().getPollTime());
-//        }
-//
-//        PrimeFaces.current().ajax().update(":headerForm:notificationBadge");
-//
-//    }
-
-    @Override
-    public void login() {
-        login(getSystemManager().getEntityManager1());
-    }
-
-    @Override
-    public void logout() {
-        completeLogout();
-    }
-
-//    @Override
-//    public void completeLogout() {
-//
-//        super.updateUserActivity("JMTSv"
-//                + SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSv"),
-//                "Logged out");
-//
-//        if (getUser().getId() != null) {
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        getDashboard().removeAllTabs();
-//        getMainTabView().removeAllTabs();
-//
-//        reset();
-//
-//    }
-
-//    @Override
-//    public void completeLogin() {
-//
-//        if (getUser().getId() != null) {
-//            super.updateUserActivity("JMTSv"
-//                    + SystemOption.getString(
-//                            getSystemManager().getEntityManager1(), "JMTSv"),
-//                    "Logged in");
-//            getUser().save(getSystemManager().getEntityManager1());
-//        }
-//
-//        setManagerUser();
-//
-//        PrimeFaces.current().executeScript("PF('loginDialog').hide();");
-//
-//        initMainTabView();
-//
-//        initDashboard();
-//
-//    }
-
-    @Override
-    public void setManagerUser() {
-
-        for (String moduleName : getModuleNames()) {
-            if (getManager(moduleName) != null) {
-                getManager(moduleName).setUser(getUser());
-            }
-        }
-
-    }
-
 }
