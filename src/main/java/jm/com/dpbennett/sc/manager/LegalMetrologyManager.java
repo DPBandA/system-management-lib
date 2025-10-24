@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cert.Certification;
@@ -40,7 +41,9 @@ import jm.com.dpbennett.business.entity.mt.Seal;
 import jm.com.dpbennett.business.entity.mt.Sticker;
 import jm.com.dpbennett.business.entity.mt.TestMeasure;
 import jm.com.dpbennett.business.entity.sc.Distributor;
+import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -82,6 +85,47 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public LegalMetrologyManager() {
         init();
     }
+    
+     public void savePetrolStation() {
+        EntityManager em = getEntityManager1();
+
+        try {
+
+            ReturnMessage message = getCurrentPetrolStation().save(em);
+
+            if (!message.isSuccess()) {
+                PrimeFacesUtils.addMessage("Save Error!",
+                        "An error occured while saving this petrol station",
+                        FacesMessage.SEVERITY_ERROR);
+            } else {
+
+                getCurrentPetrolStation().setIsDirty(false);
+                PrimeFacesUtils.addMessage("Petrol Station Saved!",
+                        "This petrol station was saved",
+                        FacesMessage.SEVERITY_INFO);
+            }
+
+        } catch (Exception e) {
+
+            System.out.println(e);
+        }
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:petrolStationSearchButton");
+
+        getSystemManager().getDashboard().openTab(title);
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
+
+        getSystemManager().getMainTabView().openTab(title);
+    }
 
     public Certification getCurrentCertification() {
         return currentCertification;
@@ -118,7 +162,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
             getCurrentPetrolStation().setClient(getClientManager().getSelectedClient());
         }
     }
-    
+
     public void createNewPetrolCompany() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Consignee Detail");
@@ -217,7 +261,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         dirty = false;
         addPetrolPump = false;
         addPetrolPumpNozzle = false;
-        
+
         certifications = new ArrayList<>();
 
     }
@@ -311,15 +355,56 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public EntityManager getEntityManager1() {
         return getComplianceManager().getEntityManager1();
     }
-    
-     public void doCertificationSearch() {
-         // tk
-         System.out.println("Impl. cert. search");
-     }
+
+    public void doCertificationSearch() {
+        // tk
+        System.out.println("Impl. cert. search");
+    }
 
     public void doPetrolStationSearch() {
-        // tk
-        System.out.println("Petrol station search to be implemented.");
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Petrol Stations",
+                getPetrolStationSearchText(),
+                null,
+                null);
+
+    }
+
+    @Override
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+
+        switch (searchType) {
+            case "Petrol Stations":
+                int maxResult = SystemOption.getInteger(
+                        getSystemManager().getEntityManager1(),
+                        "maxSearchResults");
+
+                if (getIsActivePetrolStationsOnly()) {
+                    petrolStationSearchResultsList
+                            = PetrolStation.findActive(
+                                    getEntityManager1(),
+                                    searchText,
+                                    maxResult);
+                } else {
+                    petrolStationSearchResultsList
+                            = PetrolStation.find(
+                                    getEntityManager1(),
+                                    searchText, maxResult);
+                }
+
+                break;
+            default:
+                break;
+        }
     }
 
     public void openPetrolStationBrowser() {
@@ -709,10 +794,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         System.out.println("tk external dialog to be implemented...");
 
     }
-    
-     public void createNewCertification() {
-         
-     }
+
+    public void createNewCertification() {
+
+    }
 
     public void createNewNozzle() {
 
@@ -780,7 +865,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public Boolean getCanDeletePetrolPumpNozzle() {
-        
+
         return getCurrentPetrolPump().getNozzles().size() != 1;
     }
 

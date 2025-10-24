@@ -1235,12 +1235,12 @@ public class ComplianceManager extends GeneralManager
         setSearchType("Surveys");
         setSearchText("");
         setModuleNames(new String[]{
-            "clientManager",
-            "reportManager",
+            //"clientManager",
+            //"reportManager",
             "systemManager",
-            "humanResourceManager",
-            "jobManager",
-            "financeManager",
+            //"humanResourceManager",
+            //"jobManager",
+            //"financeManager",
             "foodSafetyManager",
             "foodFactoryManager",
             "legalMetrologyManager",
