@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -536,6 +535,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         currentPetrolStation = new PetrolStation();
 
         PetrolPump pump = new PetrolPump();
+        
         pump.setNumber("1");
 
         PetrolPumpNozzle nozzle = new PetrolPumpNozzle();
@@ -549,13 +549,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         pump.getNozzles().add(nozzle);
 
         currentPetrolStation.getPetrolPumps().add(pump);
-
-        //tk 6 shud be in options?
-        Date certDate = new Date();
-        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6);
-
-        currentPetrolStation.getCertification().setDateIssued(certDate);
-        currentPetrolStation.getCertification().setExpiryDate(expDate);
 
         setDirty(false);
 
@@ -634,34 +627,38 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
      * @return
      */
     private Boolean doesNozzleHavePumpCertificate(PetrolPump pump, PetrolPumpNozzle nozzle) {
-        Certification pumpCert = pump.getCertification();
-
-        for (Certification nozzleCert : nozzle.getCertifications()) {
-            if (BusinessEntityUtils.areDatesEqual(pumpCert.getDateIssued(), nozzleCert.getDateIssued())
-                    && BusinessEntityUtils.areDatesEqual(pumpCert.getExpiryDate(), nozzleCert.getExpiryDate())) {
-                return true;
-            }
-        }
+        
+        // tk update with pump certifications
+//        Certification pumpCert = pump.getCertification();
+//
+//        for (Certification nozzleCert : nozzle.getCertifications()) {
+//            if (BusinessEntityUtils.areDatesEqual(pumpCert.getDateIssued(), nozzleCert.getDateIssued())
+//                    && BusinessEntityUtils.areDatesEqual(pumpCert.getExpiryDate(), nozzleCert.getExpiryDate())) {
+//                return true;
+//            }
+//        }
 
         return false;
     }
 
     private void updatePetroPumpNozzleCertificates(PetrolPump pump, PetrolPumpNozzle nozzle) {
-        if (!doesNozzleHavePumpCertificate(pump, nozzle)) {
-            nozzle.getCertifications().add(new Certification(pump.getCertification()));
-        }
+           // tk update i needed when certificates code is updated.
+
+//        if (!doesNozzleHavePumpCertificate(pump, nozzle)) {
+//            nozzle.getCertifications().add(new Certification(pump.getCertification()));
+//        }
     }
 
     public void updatePetrolStationDateCertified() {
         // tk update pump/nozzle certification     
-        Date certDate = getCurrentPetrolStation().getCertification().getDateIssued();
-        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); //tk 6 shud be in options
-
-        getCurrentPetrolStation().getCertification().setExpiryDate(expDate);
+//        Date certDate = getCurrentPetrolStation().getCertification().getDateIssued();
+//        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); //tk 6 shud be in options
+//
+//        getCurrentPetrolStation().getCertification().setExpiryDate(expDate);
 
         for (PetrolPump pump : getCurrentPetrolStation().getPetrolPumps()) {
-            pump.getCertification().setDateIssued(certDate); // tk set in nozzles too
-            pump.getCertification().setExpiryDate(expDate);
+//            pump.getCertification().setDateIssued(certDate); // tk set in nozzles too
+//            pump.getCertification().setExpiryDate(expDate);
 
             // tk update nozzle
             for (PetrolPumpNozzle nozzle : pump.getNozzles()) {
@@ -675,10 +672,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void updatePetrolStationDateCertificationDue() {
         // tk update pump/nozzle certification          
 
-        Date date = getCurrentPetrolStation().getCertification().getExpiryDate();
+//        Date date = getCurrentPetrolStation().getCertification().getExpiryDate();
 
         for (PetrolPump pump : getCurrentPetrolStation().getPetrolPumps()) {
-            pump.getCertification().setExpiryDate(date); // tk set in nozzles too
+//            pump.getCertification().setExpiryDate(date); // tk set in nozzles too
 
             // tk update nozzle
             for (PetrolPumpNozzle nozzle : pump.getNozzles()) {
@@ -691,10 +688,13 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void updatePetrolPumpDateCertified() {
-        Date certDate = getCurrentPetrolPump().getCertification().getDateIssued();
-        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); //tk 6 shud be in options
-
-        getCurrentPetrolPump().getCertification().setExpiryDate(expDate);
+        
+        // tk update when certificates code is updated
+        
+//        Date certDate = getCurrentPetrolPump().getCertification().getDateIssued();
+//        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); //tk 6 shud be in options
+//
+//        getCurrentPetrolPump().getCertification().setExpiryDate(expDate);
 
         // tk update nozzle
         for (PetrolPumpNozzle nozzle : getCurrentPetrolPump().getNozzles()) {
