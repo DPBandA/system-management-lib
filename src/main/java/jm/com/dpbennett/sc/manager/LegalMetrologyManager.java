@@ -72,7 +72,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     private Scale currentScale;
     private Certification currentCertification;
     private Boolean dirty;
-    private Boolean addPetrolPump;
+    //private Boolean addPetrolPump;
     private Boolean addPetrolPumpNozzle;
     private int legalMetTabViewActiveIndex;
     private String petrolStationSearchText;
@@ -84,8 +84,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public LegalMetrologyManager() {
         init();
     }
-    
-     public void savePetrolStation() {
+
+    public void savePetrolStation() {
         EntityManager em = getEntityManager1();
 
         try {
@@ -258,7 +258,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         super.reset();
 
         dirty = false;
-        addPetrolPump = false;
+        //addPetrolPump = false;
         addPetrolPumpNozzle = false;
 
         certifications = new ArrayList<>();
@@ -535,7 +535,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         currentPetrolStation = new PetrolStation();
 
         PetrolPump pump = new PetrolPump();
-        
+
         pump.setNumber("1");
 
         PetrolPumpNozzle nozzle = new PetrolPumpNozzle();
@@ -627,7 +627,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
      * @return
      */
     private Boolean doesNozzleHavePumpCertificate(PetrolPump pump, PetrolPumpNozzle nozzle) {
-        
+
         // tk update with pump certifications
 //        Certification pumpCert = pump.getCertification();
 //
@@ -637,12 +637,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //                return true;
 //            }
 //        }
-
         return false;
     }
 
     private void updatePetroPumpNozzleCertificates(PetrolPump pump, PetrolPumpNozzle nozzle) {
-           // tk update i needed when certificates code is updated.
+        // tk update i needed when certificates code is updated.
 
 //        if (!doesNozzleHavePumpCertificate(pump, nozzle)) {
 //            nozzle.getCertifications().add(new Certification(pump.getCertification()));
@@ -673,7 +672,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         // tk update pump/nozzle certification          
 
 //        Date date = getCurrentPetrolStation().getCertification().getExpiryDate();
-
         for (PetrolPump pump : getCurrentPetrolStation().getPetrolPumps()) {
 //            pump.getCertification().setExpiryDate(date); // tk set in nozzles too
 
@@ -688,14 +686,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void updatePetrolPumpDateCertified() {
-        
+
         // tk update when certificates code is updated
-        
 //        Date certDate = getCurrentPetrolPump().getCertification().getDateIssued();
 //        Date expDate = BusinessEntityUtils.getModifiedDate(certDate, Calendar.MONTH, 6); //tk 6 shud be in options
 //
 //        getCurrentPetrolPump().getCertification().setExpiryDate(expDate);
-
         // tk update nozzle
         for (PetrolPumpNozzle nozzle : getCurrentPetrolPump().getNozzles()) {
             updatePetroPumpNozzleCertificates(getCurrentPetrolPump(), nozzle);
@@ -716,6 +712,26 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void updatePetrolPumpNozzle() {
         setDirty(true);
+    }
+
+    public void editPetrolPump() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpDialog",
+                options, null);
+
     }
 
     public void editPetrolStation() {
@@ -776,22 +792,20 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         // tk this means the pump will added to the station when oked.
         // check if this is still need
-        addPetrolPump = true;
-
+        //addPetrolPump = true;
         currentPetrolPump = new PetrolPump();
+        currentPetrolPump.setOwnerId(getCurrentPetrolStation().getId());
 
-        PetrolPumpNozzle nozzle = new PetrolPumpNozzle();
-        nozzle.setNumber("1");
-        nozzle.setTestMeasures("5,20");
-        currentPetrolPump.getNozzles().add(nozzle);
-
-        nozzle = new PetrolPumpNozzle();
-        nozzle.setNumber("2");
-        nozzle.setTestMeasures("5,20");
-        currentPetrolPump.getNozzles().add(nozzle);
-
+//        PetrolPumpNozzle nozzle = new PetrolPumpNozzle();
+//        nozzle.setNumber("1");
+//        nozzle.setTestMeasures("5,20");
+//        currentPetrolPump.getNozzles().add(nozzle);
+//        nozzle = new PetrolPumpNozzle();
+//        nozzle.setNumber("2");
+//        nozzle.setTestMeasures("5,20");
+//        currentPetrolPump.getNozzles().add(nozzle);
         // tk open external dialog here
-        System.out.println("tk external dialog to be implemented...");
+        editPetrolPump();
 
     }
 
@@ -835,11 +849,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void updatePetrolPumpsList() {
 //        RequestContext context = RequestContext.getCurrentInstance();
 
-        if (addPetrolPump) {
-            currentPetrolStation.getPetrolPumps().add(currentPetrolPump);
-            addPetrolPump = false;
-            setDirty(true);
-        }
+//        if (addPetrolPump) {
+//            currentPetrolStation.getPetrolPumps().add(currentPetrolPump);
+//            addPetrolPump = false;
+//            setDirty(true);
+//        }
     }
 
     public void updatePetrolPumpNozzlesList() {
@@ -855,8 +869,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void cancelPetrolPumpEdit() {
 
-        addPetrolPump = false;
-
+        //addPetrolPump = false;
     }
 
     public void cancelPetrolPumpNozzleEdit() {
