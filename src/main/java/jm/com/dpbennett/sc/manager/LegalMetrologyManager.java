@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
-import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cert.Certification;
 import jm.com.dpbennett.business.entity.hrm.Contact;
@@ -55,7 +54,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.primefaces.PrimeFaces;
-import org.primefaces.event.CloseEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 
 /**
@@ -846,7 +844,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
     }
 
-    public void updatePetrolPumpsList() {
+    public void updatePetrolPumps() {
 //        RequestContext context = RequestContext.getCurrentInstance();
 
 //        if (addPetrolPump) {
@@ -870,6 +868,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void cancelPetrolPumpEdit() {
 
         //addPetrolPump = false;
+        
+        PrimeFacesUtils.closeDialog(null);
     }
 
     public void cancelPetrolPumpNozzleEdit() {
@@ -965,11 +965,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
     }
 
-    public void closeScaleDialog2(CloseEvent closeEvent) {
-        closeScaleDialog1(null);
-    }
+//    public void closeScaleDialog2(CloseEvent closeEvent) {
+//        closeScaleDialog1(null);
+//    }
 
-    public void closeScaleDialog1(ActionEvent actionEvent) {
+//    public void closeScaleDialog1(ActionEvent actionEvent) {
 //        RequestContext context = RequestContext.getCurrentInstance();
 //
 //        // prompt to save modified job before attempting to create new job
@@ -980,12 +980,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //            return;
 //        }
 
-        setDirty(false);
+//        setDirty(false);
         // refresh search if possible
 //        if (currentSearchParameters != null) {
 //            doScaleSearch(currentSearchParameters);
 //        }
-    }
+//    }
 
     public void updateScale() {
         setDirty(true);
