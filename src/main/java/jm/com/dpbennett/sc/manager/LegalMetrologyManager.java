@@ -43,6 +43,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -70,8 +71,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     private Scale currentScale;
     private Certification currentCertification;
     private Boolean dirty;
-    //private Boolean addPetrolPump;
-    private Boolean addPetrolPumpNozzle;
+    private Boolean add;
     private int legalMetTabViewActiveIndex;
     private String petrolStationSearchText;
     private String scaleSearchText;
@@ -81,6 +81,47 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public LegalMetrologyManager() {
         init();
+    }
+
+    public Boolean getAdd() {
+        return add;
+    }
+
+    public void setAdd(Boolean add) {
+        this.add = add;
+    }
+
+    public HumanResourceManager getHumanResourceManager() {
+
+        return BeanUtils.findBean("humanResourceManager");
+    }
+
+    public Boolean getIsPetrolPumpManufacturerNameValid() {
+
+        return BusinessEntityUtils.validateText(getCurrentPetrolPump().getManufacturer().getName());
+    }
+
+    public void editPetrolPumpManufacturer() {
+
+        getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPump().getManufacturer());
+
+        getHumanResourceManager().editSelectedManufacturer();
+
+    }
+
+    public void createNewManufacturer() {
+
+        getHumanResourceManager().createNewManufacturer(true);
+
+        getHumanResourceManager().editSelectedManufacturer();
+    }
+
+    public void petrolPumpManufacturerDialogReturn() {
+
+        if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
+            getCurrentPetrolPump().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
+        }
+
     }
 
     public void savePetrolStation() {
@@ -257,7 +298,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         dirty = false;
         //addPetrolPump = false;
-        addPetrolPumpNozzle = false;
+        add = false;
 
         certifications = new ArrayList<>();
 
@@ -788,21 +829,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void createNewPump() {
 
-        // tk this means the pump will added to the station when oked.
-        // check if this is still need
-        //addPetrolPump = true;
         currentPetrolPump = new PetrolPump();
         currentPetrolPump.setOwnerId(getCurrentPetrolStation().getId());
-
-//        PetrolPumpNozzle nozzle = new PetrolPumpNozzle();
-//        nozzle.setNumber("1");
-//        nozzle.setTestMeasures("5,20");
-//        currentPetrolPump.getNozzles().add(nozzle);
-//        nozzle = new PetrolPumpNozzle();
-//        nozzle.setNumber("2");
-//        nozzle.setTestMeasures("5,20");
-//        currentPetrolPump.getNozzles().add(nozzle);
-        // tk open external dialog here
+        add = true;
         editPetrolPump();
 
     }
@@ -845,21 +874,20 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void updatePetrolPumps() {
-//        RequestContext context = RequestContext.getCurrentInstance();
 
 //        if (addPetrolPump) {
 //            currentPetrolStation.getPetrolPumps().add(currentPetrolPump);
 //            addPetrolPump = false;
 //            setDirty(true);
 //        }
+
     }
 
-    public void updatePetrolPumpNozzlesList() {
-//        RequestContext context = RequestContext.getCurrentInstance();
+    public void updatePetrolPumpNozzles() {
 
-        if (addPetrolPumpNozzle) {
+        if (getAdd()) {
             currentPetrolPump.getNozzles().add(currentPetrolPumpNozzle);
-            addPetrolPumpNozzle = false;
+            setAdd(false);
             setDirty(true);
         }
 
@@ -868,13 +896,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void cancelPetrolPumpEdit() {
 
         //addPetrolPump = false;
-        
         PrimeFacesUtils.closeDialog(null);
     }
 
     public void cancelPetrolPumpNozzleEdit() {
-        addPetrolPumpNozzle = false;
-
+        add = false;
     }
 
     public Boolean getCanDeletePetrolPumpNozzle() {
@@ -968,7 +994,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //    public void closeScaleDialog2(CloseEvent closeEvent) {
 //        closeScaleDialog1(null);
 //    }
-
 //    public void closeScaleDialog1(ActionEvent actionEvent) {
 //        RequestContext context = RequestContext.getCurrentInstance();
 //
@@ -979,14 +1004,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //
 //            return;
 //        }
-
 //        setDirty(false);
-        // refresh search if possible
+    // refresh search if possible
 //        if (currentSearchParameters != null) {
 //            doScaleSearch(currentSearchParameters);
 //        }
 //    }
-
     public void updateScale() {
         setDirty(true);
     }
