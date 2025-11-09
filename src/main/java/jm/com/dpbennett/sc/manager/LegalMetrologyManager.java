@@ -137,6 +137,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
                         FacesMessage.SEVERITY_ERROR);
             } else {
 
+                // tk
+//                setCurrentPetrolStation(PetrolStation.findById(
+//                        em, getCurrentPetrolStation().getId()));
+
                 getCurrentPetrolStation().setIsDirty(false);
                 PrimeFacesUtils.addMessage("Petrol Station Saved!",
                         "This petrol station was saved",
@@ -580,12 +584,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         PetrolPumpNozzle nozzle = new PetrolPumpNozzle();
         nozzle.setNumber("1");
         nozzle.setTestMeasures("5,20");
-        pump.getPetrolPumpNozzles().add(nozzle);
+        pump.getNozzles().add(nozzle);
 
         nozzle = new PetrolPumpNozzle();
         nozzle.setNumber("2");
         nozzle.setTestMeasures("5,20");
-        pump.getPetrolPumpNozzles().add(nozzle);
+        pump.getNozzles().add(nozzle);
 
         currentPetrolStation.getPetrolPumps().add(pump);
 
@@ -699,7 +703,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //            pump.getCertification().setExpiryDate(expDate);
 
             // tk update nozzle
-            for (PetrolPumpNozzle nozzle : pump.getPetrolPumpNozzles()) {
+            for (PetrolPumpNozzle nozzle : pump.getNozzles()) {
                 updatePetroPumpNozzleCertificates(pump, nozzle);
             }
         }
@@ -715,7 +719,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //            pump.getCertification().setExpiryDate(date); // tk set in nozzles too
 
             // tk update nozzle
-            for (PetrolPumpNozzle nozzle : pump.getPetrolPumpNozzles()) {
+            for (PetrolPumpNozzle nozzle : pump.getNozzles()) {
                 updatePetroPumpNozzleCertificates(pump, nozzle);
             }
 
@@ -732,7 +736,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //
 //        getCurrentPetrolPump().getCertification().setExpiryDate(expDate);
         // tk update nozzle
-        for (PetrolPumpNozzle nozzle : getCurrentPetrolPump().getPetrolPumpNozzles()) {
+        for (PetrolPumpNozzle nozzle : getCurrentPetrolPump().getNozzles()) {
             updatePetroPumpNozzleCertificates(getCurrentPetrolPump(), nozzle);
         }
 
@@ -742,7 +746,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void updatePetrolPumpDateCertificationDue() {
         // tk update nozzle
-        for (PetrolPumpNozzle nozzle : getCurrentPetrolPump().getPetrolPumpNozzles()) {
+        for (PetrolPumpNozzle nozzle : getCurrentPetrolPump().getNozzles()) {
             updatePetroPumpNozzleCertificates(getCurrentPetrolPump(), nozzle);
         }
 
@@ -880,7 +884,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
             add = false;
             setDirty(true);
         }
-        
+
         closeDialog();
 
     }
@@ -888,7 +892,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void updatePetrolPumpNozzles() {
 
         if (getAdd()) {
-            currentPetrolPump.getPetrolPumpNozzles().add(currentPetrolPumpNozzle);
+            currentPetrolPump.getNozzles().add(currentPetrolPumpNozzle);
             setAdd(false);
             setDirty(true);
         }
@@ -907,7 +911,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public Boolean getCanDeletePetrolPumpNozzle() {
 
-        return getCurrentPetrolPump().getPetrolPumpNozzles().size() != 1;
+        return getCurrentPetrolPump().getNozzles().size() != 1;
     }
 
     public void updatePetrolPumpNozzleManufacturer() {
