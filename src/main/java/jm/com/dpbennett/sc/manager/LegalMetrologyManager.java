@@ -397,6 +397,19 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         // tk
         System.out.println("Impl. cert. search");
     }
+    
+     public void petrolStationDialogReturn() {
+
+        if (getCurrentPetrolStation().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Petrol Station was NOT saved", 
+                    "The recently edited petrol station was not saved", 
+                    FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("headerForm:growl3");
+        }
+        else {
+            doPetrolStationSearch();
+        }        
+    }
 
     public void doPetrolStationSearch() {
 
@@ -861,6 +874,21 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         if (getCurrentPetrolPump().getIsDirty()) {
             getCurrentPetrolStation().setIsDirty(true);
+        }
+
+        closeDialog();
+
+    }
+    
+    public void okPetrolPumpNozzle() {
+
+        if (add) {
+            getCurrentPetrolPump().getNozzles().add(currentPetrolPumpNozzle);
+            add = false;
+        }
+
+        if (getCurrentPetrolPumpNozzle().getIsDirty()) {
+            getCurrentPetrolPump().setIsDirty(true);
         }
 
         closeDialog();
