@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cert.Certification;
 import jm.com.dpbennett.business.entity.hrm.Contact;
@@ -46,6 +47,7 @@ import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -82,6 +84,22 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         init();
     }
 
+    public List<SelectItem> getPetrolTestMeasures() {
+
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
+                "petrolTestMeasures");
+
+    }
+
+    public List<SelectItem> getEquipmentWorkingStatus() {
+
+        return getStringListAsSelectItems(
+                getSystemManager().getEntityManager1(),
+                "equipmentWorkingStatusList");
+
+    }
+
     public Boolean getAdd() {
         return add;
     }
@@ -113,6 +131,14 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     }
 
+    public void editPetrolPumpNozzleManufacturer() {
+
+        getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPumpNozzle().getManufacturer());
+
+        getHumanResourceManager().editSelectedManufacturer();
+
+    }
+
     public void createNewManufacturer() {
 
         getHumanResourceManager().createNewManufacturer(true);
@@ -128,10 +154,35 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     }
 
+    public void petrolPumpNozzleManufacturerDialogReturn() {
+
+        if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
+            getCurrentPetrolPumpNozzle().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
+        }
+
+    }
+
     public void petrolPumpDialogReturn() {
 
 //        if (getCurrentPetrolPump().getIsDirty()) {
 //            getCurrentPetrolStation().setIsDirty(true);
+//        }
+    }
+
+    public void petrolPumpNozzleDialogReturn() {
+
+//        if (getCurrentPetrolPumpNozzle().getIsDirty()) {
+//            getCurrentPetrolPump().setIsDirty(true);
+//        }
+
+        // tk
+//        if (add) {
+//            getCurrentPetrolPump().getNozzles().add(currentPetrolPumpNozzle);
+//            add = false;
+//        }
+//
+//        if (getCurrentPetrolPumpNozzle().getIsDirty()) {
+//            getCurrentPetrolPump().setIsDirty(true);
 //        }
     }
 
