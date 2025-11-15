@@ -123,6 +123,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return BusinessEntityUtils.validateText(getCurrentPetrolPumpNozzle().getManufacturer().getName());
     }
 
+    public Boolean getIsScaleManufacturerNameValid() {
+
+        return BusinessEntityUtils.validateText(getCurrentPetrolPumpNozzle().getManufacturer().getName());
+    }
+
     public void editPetrolPumpManufacturer() {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPump().getManufacturer());
@@ -134,6 +139,14 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void editPetrolPumpNozzleManufacturer() {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPumpNozzle().getManufacturer());
+
+        getHumanResourceManager().editSelectedManufacturer();
+
+    }
+
+    public void editScaleManufacturer() {
+
+        getHumanResourceManager().setSelectedManufacturer(getCurrentScale().getManufacturer());
 
         getHumanResourceManager().editSelectedManufacturer();
 
@@ -161,12 +174,17 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
 
     }
+    
+    public void scaleManufacturerDialogReturn() {
+
+        if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
+            getCurrentScale().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
+        }
+
+    }
 
     public void petrolPumpDialogReturn() {
 
-//        if (getCurrentPetrolPump().getIsDirty()) {
-//            getCurrentPetrolStation().setIsDirty(true);
-//        }
     }
 
     public void petrolPumpNozzleDialogReturn() {
@@ -174,7 +192,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //        if (getCurrentPetrolPumpNozzle().getIsDirty()) {
 //            getCurrentPetrolPump().setIsDirty(true);
 //        }
-
         // tk
 //        if (add) {
 //            getCurrentPetrolPump().getNozzles().add(currentPetrolPumpNozzle);
@@ -256,7 +273,15 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().setSelectedClient(getCurrentPetrolStation().getClient());
         getClientManager().setClientDialogTitle("Petrol Company Detail");
 
-        editClient();
+        getClientManager().editSelectedClient();
+
+    }
+
+    public void editScaleClient() {
+        getClientManager().setSelectedClient(getCurrentScale().getClient());
+        getClientManager().setClientDialogTitle("Client Detail");
+
+        getClientManager().editSelectedClient();
 
     }
 
@@ -266,22 +291,38 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
     }
 
+    public void scaleDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentScale().setClient(getClientManager().getSelectedClient());
+        }
+    }
+
     public void createNewPetrolCompany() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Consignee Detail");
+        getClientManager().setClientDialogTitle("Client/Company Detail");
 
-        editClient();
+        getClientManager().editSelectedClient();
 
     }
 
-    public void editClient() {
+    public void createNewScaleClient() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Scale Client");
 
         getClientManager().editSelectedClient();
 
     }
 
     public Boolean getIsPetrolStationClientNameValid() {
+
         return BusinessEntityUtils.validateText(currentPetrolStation.getClient().getName());
+
+    }
+
+    public Boolean getIsScaleClientNameValid() {
+
+        return BusinessEntityUtils.validateText(currentScale.getClient().getName());
+
     }
 
     public Boolean getIsActiveScalesOnly() {
@@ -432,9 +473,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public List<Scale> getScaleSearchResultsList() {
+        
         if (scaleSearchResultsList == null) {
             scaleSearchResultsList = new ArrayList<>();
         }
+        
         return scaleSearchResultsList;
     }
 
@@ -446,11 +489,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     @Override
     public EntityManager getEntityManager1() {
         return getComplianceManager().getEntityManager1();
-    }
-
-    public void doCertificationSearch() {
-        // tk
-        System.out.println("Impl. cert. search");
     }
 
     public void petrolStationDialogReturn() {
@@ -662,10 +700,8 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void updatePetrolStationClient() {
 
-//        Client client = Client.findClientByName(getEntityManager(), currentPetrolStation.getClient().getName(), true);
-//        if (client != null) {
-//            currentPetrolStation.setClient(client);
-//        }
+        getCurrentPetrolStation().setIsDirty(true);
+
     }
 
     public void updateCurrentScaleClient() {
@@ -679,22 +715,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void editPetrolStationClient() {
 
         System.out.println("tk See how it's done for surveys");
-    }
-
-    // Edit the client via the ClientManager
-    public void editScaleClient() {
-
-//        ClientManager clientManager = Application.findBean("clientManager");
-        // Try to retrieve the client from the database if it exists
-//        Client client = Client.findClientByName(getEntityManager(), currentScale.getClient().getName(), true);
-//        if (client != null) {
-//            currentScale.setClient(client);
-//            clientManager.setClient(client);
-//        } else {
-//            clientManager.setClient(currentPetrolStation.getClient());
-//        }
-//
-//        clientManager.setComponentsToUpdate(":unitDialogForms:scaleClient");
     }
 
     public void updatePetrolStationLastAssignee() {
@@ -846,6 +866,26 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     }
 
+    public void editCertification() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpNozzleDialog",
+                options, null);
+
+    }
+
     public void editPetrolStation() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -867,6 +907,23 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public void editScale() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/legalmet/scaleDialog",
+                options, null);
+
     }
 
     public Boolean getCanDeletePetrolPump() {
@@ -886,14 +943,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void deletePetrolPumpNozzle() {
 
-//        RequestContext context = RequestContext.getCurrentInstance();
-//
-//        getCurrentPetrolPump().getNozzles().remove(currentPetrolPumpNozzle);
-//
-//        currentPetrolPumpNozzle = new PetrolPumpNozzle();
-//        currentPetrolPumpNozzle.setNumber("?");
-//
-//        context.update("unitDialogForms:petrolPumpNozzleTable");
+        getCurrentPetrolPump().getNozzles().remove(currentPetrolPumpNozzle);
+
+        getCurrentPetrolPump().setIsDirty(true);
+
+        currentPetrolPumpNozzle = new PetrolPumpNozzle();
+
     }
 
     public void createNewPump() {
@@ -910,25 +965,19 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         currentPetrolPumpNozzle = new PetrolPumpNozzle();
         currentPetrolPumpNozzle.setOwnerId(getCurrentPetrolPump().getId());
         add = true;
+
         editPetrolPumpNozzle();
 
     }
 
     public void createNewCertification() {
+        currentCertification = new Certification();
+        currentCertification.setOwnerId(getCurrentPetrolStation().getId());
+        add = true;
 
+        editCertification();
     }
 
-    //public void createNewNozzle() {
-//        RequestContext context = RequestContext.getCurrentInstance();
-//
-//        // this means the nozzle will added to the station when oked.
-//        addPetrolPumpNozzle = true;
-//
-//        currentPetrolPumpNozzle = new PetrolPumpNozzle();
-//        currentPetrolPumpNozzle.setTestMeasures("5,20");
-//
-//        context.update("unitDialogForms:petrolPumpNozzleDetailDialog");
-    // }
     public void okPetrolPump() {
 
         if (add) {
@@ -959,6 +1008,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     }
 
+    public void okScale() {
+
+        getCurrentScale().setIsDirty(true);
+
+    }
+
     public void updatePetrolPumpNozzles() {
 
         if (getAdd()) {
@@ -979,6 +1034,13 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         setAdd(false);
         getCurrentPetrolPump().setIsDirty(false);
+        PrimeFacesUtils.closeDialog(null);
+    }
+
+    public void cancelScaleEdit() {
+
+        getCurrentScale().setIsDirty(false);
+
         PrimeFacesUtils.closeDialog(null);
     }
 
@@ -1053,31 +1115,16 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
     }
 
-//    public void closeScaleDialog2(CloseEvent closeEvent) {
-//        closeScaleDialog1(null);
-//    }
-//    public void closeScaleDialog1(ActionEvent actionEvent) {
-//        RequestContext context = RequestContext.getCurrentInstance();
-//
-//        // prompt to save modified job before attempting to create new job
-//        if (getDirty()) {
-//            context.update("unitDialogForms:scaleSaveConfirm");
-//            context.execute("scaleSaveConfirmDialog.show();");
-//
-//            return;
-//        }
-//        setDirty(false);
-    // refresh search if possible
-//        if (currentSearchParameters != null) {
-//            doScaleSearch(currentSearchParameters);
-//        }
-//    }
     public void updateScale() {
+
+        getCurrentScale().setIsDirty(true);
 
     }
 
     public void deleteScale() {
+
         System.out.println("Not yet impl.");
+
     }
 
     public Date getCurrentDate() {
