@@ -1238,7 +1238,7 @@ public class ComplianceManager extends GeneralManager
             //"clientManager",
             //"reportManager",
             "systemManager",
-            //"humanResourceManager",
+            "humanResourceManager",
             //"jobManager",
             //"financeManager",
             "foodSafetyManager",

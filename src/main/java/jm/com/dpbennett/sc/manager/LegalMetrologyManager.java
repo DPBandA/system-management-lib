@@ -174,7 +174,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
 
     }
-    
+
     public void scaleManufacturerDialogReturn() {
 
         if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
@@ -291,7 +291,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         }
     }
 
-    public void scaleDialogReturn() {
+    public void scaleClientDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentScale().setClient(getClientManager().getSelectedClient());
         }
@@ -473,11 +473,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     }
 
     public List<Scale> getScaleSearchResultsList() {
-        
+
         if (scaleSearchResultsList == null) {
             scaleSearchResultsList = new ArrayList<>();
         }
-        
+
         return scaleSearchResultsList;
     }
 
@@ -524,9 +524,31 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
             Date startDate,
             Date endDate) {
 
+        int maxResult = 0;
+
         switch (searchType) {
+            case "Scales":
+                maxResult = SystemOption.getInteger(
+                        getSystemManager().getEntityManager1(),
+                        "maxSearchResults");
+
+                if (getIsActiveScalesOnly()) {
+                    scaleSearchResultsList
+                            = Scale.findActive(
+                                    getEntityManager1(),
+                                    searchText,
+                                    maxResult);
+                } else {
+                    scaleSearchResultsList
+                            = Scale.find(
+                                    getEntityManager1(),
+                                    searchText,
+                                    maxResult);
+                }
+
+                break;
             case "Petrol Stations":
-                int maxResult = SystemOption.getInteger(
+                maxResult = SystemOption.getInteger(
                         getSystemManager().getEntityManager1(),
                         "maxSearchResults");
 
@@ -567,108 +589,26 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void doScaleSearch() {
 
-        //this.currentSearchParameters = currentSearchParameters;
-//        scaleSearchResultsList = Scale.findScalesByDateSearchField(getEntityManager(),
-//                null,
-//                currentSearchParameters.getDateField(),
-//                currentSearchParameters.getSearchType(),
-//                currentSearchParameters.getSearchText(),
-//                currentSearchParameters.getDatePeriod().getStartDate(),
-//                currentSearchParameters.getDatePeriod().getEndDate(), false);
-//
-//        if (scaleSearchResultsList == null) {
-//            scaleSearchResultsList = new ArrayList<>();
-//        }
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                "Scales",
+                getScaleSearchText(),
+                null,
+                null);
     }
 
     public void closeDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
 
-    public void saveCurrentPetrolStation() {
-//        EntityManager em = getEntityManager();
-//        RequestContext context = RequestContext.getCurrentInstance();
-
-//        try {
-        // Validate client
-//            if (!BusinessEntityUtils.validateName(currentPetrolStation.getClient().getName())) {
-//                main.setInvalidFormFieldMessage("Please enter a valid client name. If the client does not exist in the list, press the 'add/edit' button to enter a new client.");
-//                context.update("invalidFieldDialogForm");
-//                context.execute("invalidFieldDialog.show();");
-//                return;
-//            } else {
-//                Client currentClient = Client.findClientByName(em, currentPetrolStation.getClient().getName(), true);
-//                if (currentClient == null) { // new client?
-//                    main.setInvalidFormFieldMessage("Please enter a valid client name. If the client does not exist in the list, press the 'add/edit' button to enter a new client.");
-//                    context.update("invalidFieldDialogForm");
-//                    context.execute("invalidFieldDialog.show();");
-//                    return;
-//                } else {
-//                    currentPetrolStation.setClient(currentClient);
-//                    currentClient.setDateLastAccessed(new Date());
-//                }
-//            }
-//
-//            // validate name
-//            if ((currentPetrolStation.getName() == null) || (currentPetrolStation.getName().trim().isEmpty())) {
-//                main.setInvalidFormFieldMessage("Please enter a valid petrol station name");
-//                context.update("invalidFieldDialogForm");
-//                context.execute("invalidFieldDialog.show();");
-//                return;
-//            }
-//
-//            // validate assignee
-//            Employee assignee = getEmployeeByName(em, currentPetrolStation.getLastAssignee().getName());
-//            if (assignee != null) {
-//                currentPetrolStation.setLastAssignee(assignee);
-//            } else {
-//                main.setInvalidFormFieldMessage("Please select an inspector.");
-//                context.update("invalidFieldDialogForm");
-//                context.execute("invalidFieldDialog.show();");
-//                return;
-//            }
-//
-//            // save 
-//            em.getTransaction().begin();
-//            // save new objects in list first 
-//            for (PetrolPump pump : currentPetrolStation.getPetrolPumps()) {
-//                for (PetrolPumpNozzle nozzle : pump.getNozzles()) {
-//                    for (Certification certification : nozzle.getCertifications()) {
-//                        if (certification.getId() == null) {
-//                            BusinessEntityUtils.saveBusinessEntity(em, certification);
-//                        }
-//                    }
-//
-//                    if (nozzle.getId() == null) {
-//                        BusinessEntityUtils.saveBusinessEntity(em, nozzle);
-//                    }
-//                }
-//                if (pump.getId() == null) {
-//                    BusinessEntityUtils.saveBusinessEntity(em, pump);
-//                }
-//            }
-//
-//            Long id = BusinessEntityUtils.saveBusinessEntity(em, currentPetrolStation);
-//            em.getTransaction().commit();
-//            if (id == null) {
-//                context.execute("undefinedErrorDialog.show();");
-//                sendErrorEmail("An error occured while saving petrol station (ID): " + currentPetrolStation.getId(),
-//                        "Petrol station save error occured");
-//            }
-//
-//            em.close();
-//            setDirty(false);
-//        } catch (Exception e) {
-//            System.out.println(e);
-//            context.execute("undefinedErrorDialog.show();");
-//            sendErrorEmail("An error occured while saving petrol station (ID): " + currentPetrolStation.getId(),
-//                    "Petrol station save error occured");
-//        }
-    }
-
     public void createNewScale() {
 
         currentScale = new Scale();
+        
+        openScaleBrowser();
+        
+        editScale();
 
     }
 
@@ -1011,6 +951,10 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void okScale() {
 
         getCurrentScale().setIsDirty(true);
+        
+        getCurrentScale().save(getEntityManager1());
+        
+        closeDialog();
 
     }
 
@@ -1131,6 +1075,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return new Date();
     }
 
+    /*
+    This populates the databaase with data from an Excel workbook.
+     */
     public void buildGasStationDatabase(
             EntityManager em,
             int sheetNumber,
