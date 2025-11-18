@@ -968,7 +968,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width((getDialogWidth() - 300) + "px")
+                .width(getDialogWidth() + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
