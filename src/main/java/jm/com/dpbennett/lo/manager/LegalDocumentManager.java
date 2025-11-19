@@ -356,7 +356,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         em.flush();
         em.getTransaction().commit();
 
-        doDefaultSearch();
+        //doDefaultSearch();
 
         closeDialog(null);
     }
