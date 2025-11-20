@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -58,6 +59,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
@@ -65,6 +67,7 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.DatePeriodJobReport;
 import jm.com.dpbennett.sm.util.DateUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
+import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -427,7 +430,7 @@ public class ReportManager extends GeneralManager {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width((getDialogWidth() + 50) + "px")
+                .width((getDialogWidth() + 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -505,10 +508,30 @@ public class ReportManager extends GeneralManager {
     }
 
     public void saveCurrentReport() {
+        
+        EntityManager em = getEntityManager1();
+        
+        try {
 
-        currentReport.save(getEntityManager1());
+            ReturnMessage message = getCurrentReport().save(em);
 
-        PrimeFaces.current().dialog().closeDynamic(null);
+            if (!message.isSuccess()) {
+                PrimeFacesUtils.addMessage("Save Error!",
+                        "An error occured while saving this report template",
+                        FacesMessage.SEVERITY_ERROR);
+            } else {
+
+                getCurrentReport().setIsDirty(false);
+                PrimeFacesUtils.addMessage("Report Template Saved!",
+                        "This report template was saved",
+                        FacesMessage.SEVERITY_INFO);
+            }
+
+        } catch (Exception e) {
+
+            System.out.println(e);
+        }
+
     }
 
     public void okSelectedDatePeriod(ActionEvent actionEvent) {
