@@ -143,11 +143,11 @@ public class JobManager extends GeneralManager
 
     // tk move to HRM?
     public List<Employee> completeActiveEmployee(String query) {
-        //EntityManager em = getHumanResourceManager().getEntityManager1();
+        
         List<Employee> employees = new ArrayList<>();
 
         try {
-            if (getCurrentJob().getIsSubContract()) {
+            if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeSubcontracted()) {
 
                 employees.addAll(
                         getCurrentJob().getSubContractedDepartment().getStaff());
@@ -167,45 +167,7 @@ public class JobManager extends GeneralManager
         return employees;
     }
 
-    // tk move to HRM?
-    public List<Business> completeActiveBusiness(String query) {
-        EntityManager hrem = getHumanResourceManager().getEntityManager1();
-        Boolean userCanEnterJob = getUser().can("EnterJob");
-        List<Business> businesses = new ArrayList<>();
-
-        try {
-
-            if ((userCanEnterJob || getCurrentJob().getIsToBeSubcontracted())
-                    && getCurrentJob().getIsNew()) {
-
-                businesses = Business.findAllActiveByName(hrem, query);
-
-            } else if (getCurrentJob().getIsNew()) {
-
-                Business userOrg = User.getUserOrganizationByDepartment(
-                        hrem, getUser());
-                businesses.add(Business.findByName(hrem, userOrg.getName()));
-
-            } else if (!getCurrentJob().getIsNew() && !getCurrentJob().getIsSubContract()) {
-
-                Business userOrg = User.getUserOrganizationByDepartment(
-                        hrem, getUser());
-                businesses.add(Business.findByName(hrem, userOrg.getName()));
-
-            } else {
-
-                businesses = Business.findAllActiveByName(hrem, query);
-
-            }
-
-            return businesses;
-
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
-    // tk move to HRM?
+    
     public List<Department> completeActiveDepartmentByBusiness(String query) {
 
         List<Department> departments = new ArrayList<>();
@@ -1547,8 +1509,10 @@ public class JobManager extends GeneralManager
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
-        editJob();
         openJobBrowser();
+
+        editJob();
+
     }
 
     public void createNewSubcontract() {
@@ -1560,6 +1524,7 @@ public class JobManager extends GeneralManager
         getCurrentJob().setIsToBeSubcontracted(true);
 
         editJob();
+
         openJobBrowser();
     }
 
@@ -1978,6 +1943,10 @@ public class JobManager extends GeneralManager
             Boolean copyCosting) {
 
         try {
+
+            EntityManager hrem = getHumanResourceManager().getEntityManager1();
+            EntityManager fmem = getFinanceManager().getEntityManager1();
+
             if (isSubcontract) {
 
                 // Save current job as parent job for use in the subcontract
@@ -1987,6 +1956,9 @@ public class JobManager extends GeneralManager
                 Integer yearReceived = parent.getYearReceived();
                 currentJob = Job.copy(em, parent, getUser(), true, false);
                 currentJob.setParent(parent);
+                Business userOrg = User.getUserOrganizationByDepartment(
+                        getHumanResourceManager().getEntityManager1(), getUser());
+                currentJob.setBusiness(userOrg);
                 currentJob.setClassification(new Classification());
                 currentJob.setClient(new Client());
                 currentJob.setBillingAddress(new Address());
@@ -1996,9 +1968,9 @@ public class JobManager extends GeneralManager
                 currentJob.setEstimatedTurnAroundTimeInDays(0);
                 currentJob.setEstimatedTurnAroundTimeRequired(true);
                 currentJob.setInstructions("");
-                currentJob.setSector(Sector.findSectorByName(em, "--"));
-                currentJob.setJobCategory(JobCategory.findJobCategoryByName(em, "--"));
-                currentJob.setJobSubCategory(JobSubCategory.findJobSubCategoryByName(em, "--"));
+                currentJob.setSector(Sector.findSectorByName(fmem, "--"));
+                currentJob.setJobCategory(JobCategory.findJobCategoryByName(fmem, "--"));
+                currentJob.setJobSubCategory(JobSubCategory.findJobSubCategoryByName(fmem, "--"));
                 currentJob.setSubContractedDepartment(new Department());
                 currentJob.setIsToBeSubcontracted(isSubcontract);
                 currentJob.getJobStatusAndTracking().setDateAndTimeEntered(null);
@@ -2016,7 +1988,7 @@ public class JobManager extends GeneralManager
                 }
 
             } else {
-                currentJob = Job.create(em, getUser(), true);
+                currentJob = Job.create(em, hrem, fmem, getUser(), true);
             }
             if (currentJob == null) {
                 PrimeFacesUtils.addMessage("Job NOT Created",
@@ -2571,6 +2543,9 @@ public class JobManager extends GeneralManager
 
         doJobSearch();
 
+        // tk needed?
+        openJobBrowser();
+
     }
 
     public void doJobSearch() {
@@ -2588,23 +2563,21 @@ public class JobManager extends GeneralManager
     }
 
     // tk del?
-    public void doJobSearch(Integer maxResults) {
-
-        if (getUser().getId() != null) {
-            jobSearchResultList = findJobs(maxResults);
-
-        } else {
-            jobSearchResultList = new ArrayList<>();
-        }
-
-    }
-
+//    public void doJobSearch(Integer maxResults) {
+//
+//        if (getUser().getId() != null) {
+//            jobSearchResultList = findJobs(maxResults);
+//
+//        } else {
+//            jobSearchResultList = new ArrayList<>();
+//        }
+//
+//    }
     // tk del?
-    public void doJobSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
-
-        doJobSearch();
-    }
-
+//    public void doJobSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
+//
+//        doJobSearch();
+//    }
     /**
      *
      * @return

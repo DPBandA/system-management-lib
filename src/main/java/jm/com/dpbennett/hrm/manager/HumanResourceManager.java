@@ -455,6 +455,44 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             return new ArrayList<>();
         }
     }
+    
+    // tk decide if this will be used in the future
+//    public List<Business> completeActiveBusiness(String query) {
+//        EntityManager hrem = getHumanResourceManager().getEntityManager1();
+//        Boolean userCanEnterJob = getUser().can("EnterJob");
+//        List<Business> businesses = new ArrayList<>();
+//
+//        try {
+//
+//            if ((userCanEnterJob || getCurrentJob().getIsToBeSubcontracted())
+//                    && getCurrentJob().getIsNew()) {
+//
+//                businesses = Business.findAllActiveByName(hrem, query);
+//
+//            } else if (getCurrentJob().getIsNew()) {
+//
+//                Business userOrg = User.getUserOrganizationByDepartment(
+//                        hrem, getUser());
+//                businesses.add(Business.findByName(hrem, userOrg.getName()));
+//
+//            } else if (!getCurrentJob().getIsNew() && !getCurrentJob().getIsSubContract()) {
+//
+//                Business userOrg = User.getUserOrganizationByDepartment(
+//                        hrem, getUser());
+//                businesses.add(Business.findByName(hrem, userOrg.getName()));
+//
+//            } else {
+//
+//                businesses = Business.findAllActiveByName(hrem, query);
+//
+//            }
+//
+//            return businesses;
+//
+//        } catch (Exception e) {
+//            return new ArrayList<>();
+//        }
+//    }
 
     public Boolean getIsActiveEmployeePositionsOnly() {
         return isActiveEmployeePositionsOnly;
