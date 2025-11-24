@@ -143,7 +143,7 @@ public class JobManager extends GeneralManager
 
     // tk move to HRM?
     public List<Employee> completeActiveEmployee(String query) {
-        
+
         List<Employee> employees = new ArrayList<>();
 
         try {
@@ -167,7 +167,6 @@ public class JobManager extends GeneralManager
         return employees;
     }
 
-    
     public List<Department> completeActiveDepartmentByBusiness(String query) {
 
         List<Department> departments = new ArrayList<>();
@@ -1351,6 +1350,8 @@ public class JobManager extends GeneralManager
             "inventoryManager",
             "humanResourceManager",
             "purchasingManager",
+            "foodFactoryManager",
+            "legalMetrologyManager",
             "complianceManager",
             "legalDocumentManager",
             "energyLabelManager"

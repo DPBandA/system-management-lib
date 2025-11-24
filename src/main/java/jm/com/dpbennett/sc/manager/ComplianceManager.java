@@ -382,7 +382,7 @@ public class ComplianceManager extends GeneralManager
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:marketProductSearchButton");
 
                 return true;
-            case "Manufacturers":
+            case "Manufacturers/Factories":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
 
                 return true;
@@ -515,14 +515,15 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void openManufacturerBrowser() {
-        getHumanResourceManager().openManufacturerBrowser();
+        
+        getSystemManager().getMainTabView().openTab("Manufacturers/Factories");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
     }
 
     public void sendErrorEmail(String subject, String message) {
         try {
-            // send error message to developer's email            
+                      
             MailUtils.postMail(
                     null, null,
                     SystemOption.getString(
@@ -1235,13 +1236,9 @@ public class ComplianceManager extends GeneralManager
         setSearchType("Surveys");
         setSearchText("");
         setModuleNames(new String[]{
-            //"clientManager",
-            //"reportManager",
             "systemManager",
             "humanResourceManager",
-            //"jobManager",
-            //"financeManager",
-            "foodSafetyManager",
+            "financeManager",
             "foodFactoryManager",
             "legalMetrologyManager",
             "complianceManager"});
