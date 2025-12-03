@@ -1060,7 +1060,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void openSuppliersTab() {
-        getMainTabView().openTab("Suppliers");
+        getSystemManager().getMainTabView().openTab("Suppliers");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:supplierSearchButton");
     }
@@ -1741,7 +1741,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     public void openPurchaseReqsTab() {
-        getMainTabView().openTab("Purchase Requisitions");
+        getSystemManager().getMainTabView().openTab("Purchase Requisitions");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
     }
@@ -1839,7 +1839,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 //        }
 //
 //    }
-
     public List getCostTypeList() {
         return FinancialUtils.getCostTypeList(getSystemManager().getEntityManager1());
     }
@@ -2737,14 +2736,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
-    }
-
-    @Override
-    public MainTabView getMainTabView() {
-
-        return getFinanceManager().getMainTabView();
     }
 
     public Boolean getEdit() {

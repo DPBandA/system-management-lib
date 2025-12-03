@@ -831,7 +831,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Inventory Products",
                 getInventoryProductSearchText(),
@@ -860,7 +860,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void openInventoryProductBrowser() {
 
-        getFinanceManager().getMainTabView().openTab("Inventory Products");
+        getSystemManager().getMainTabView().openTab("Inventory Products");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryProductSearchButton");
     }
@@ -1072,13 +1072,13 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     public void openInventoryTab() {
-        getMainTabView().openTab("Inventory");
+        getSystemManager().getMainTabView().openTab("Inventory");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventorySearchButton");
     }
 
     public void openInventoryRequisitionTab() {
-        getMainTabView().openTab("Inventory Requisitions");
+        getSystemManager().getMainTabView().openTab("Inventory Requisitions");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryRequisitionSearchButton");
     }
@@ -1562,7 +1562,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Inventory",
                 getInventorySearchText(),
@@ -1575,7 +1575,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         setDefaultCommandTarget("@this");
 
         doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 "Inventory Requisitions",
                 getInventoryRequisitionSearchText(),
@@ -1635,12 +1635,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void cancelDialogEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    @Override
-    public MainTabView getMainTabView() {
-
-        return getFinanceManager().getMainTabView();
     }
 
     public Boolean getEdit() {
