@@ -141,7 +141,6 @@ public class JobManager extends GeneralManager
         getSystemManager().getMainTabView().openTab(title);
     }
 
-    // tk move to HRM?
     public List<Employee> completeActiveEmployee(String query) {
 
         List<Employee> employees = new ArrayList<>();
