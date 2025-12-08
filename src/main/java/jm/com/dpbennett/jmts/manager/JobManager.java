@@ -140,6 +140,22 @@ public class JobManager extends GeneralManager
 
         getSystemManager().getMainTabView().openTab(title);
     }
+    
+    public List<Business> completeActiveBusiness(String query) {
+        
+        if (getUser().can("EnterJob") || getUser().can("EditJob")) {
+            return getHumanResourceManager().completeActiveBusiness(query);
+        }
+        
+        List<Business> businesses = new ArrayList<>();
+        
+        Business userBusiness = User.getUserOrganizationByDepartment(
+                        getHumanResourceManager().getEntityManager1(), getUser());
+        
+        businesses.add(userBusiness);
+        
+        return businesses;
+    }
 
     public List<Employee> completeActiveEmployee(String query) {
 
@@ -1698,12 +1714,14 @@ public class JobManager extends GeneralManager
 
     public void updateOrganization(AjaxBehaviorEvent event) {
 
+        EntityManager hrem = getHumanResourceManager().getEntityManager1();        
+
         if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeSubcontracted()) {
-            getCurrentJob().setSubContractedDepartment(null);
+            getCurrentJob().setSubContractedDepartment(Department.findDefault(hrem, "--"));
             getCurrentJob().setAssignedTo(null);
         } else {
             getCurrentJob().setDepartment(null);
-            getCurrentJob().setSubContractedDepartment(null);
+            getCurrentJob().setSubContractedDepartment(Department.findDefault(hrem, "--"));
             getCurrentJob().setAssignedTo(null);
         }
 
@@ -2764,6 +2782,8 @@ public class JobManager extends GeneralManager
 
         try {
 
+            //EntityManager hrem = getHumanResourceManager().getEntityManager1();
+
             if (currentJob.getAutoGenerateJobNumber()) {
                 currentJob.setJobNumber(getCurrentJobNumber());
             }
@@ -2775,6 +2795,11 @@ public class JobManager extends GeneralManager
             if (currentJob.getIsToBeSubcontracted()) {
                 currentJob.setAssignedTo(currentJob.getSubContractedDepartment().getHead());
             }
+
+            // tk
+//            if (getCurrentJob().getSubContractedDepartment().getId() == null) {
+//                getCurrentJob().setSubContractedDepartment(Department.findDefault(hrem, "--"));
+//            }
 
             setIsDirty(true);
 
