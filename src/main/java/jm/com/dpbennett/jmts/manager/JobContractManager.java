@@ -820,7 +820,6 @@ public class JobContractManager extends GeneralManager
      */
     public void updateServices(AjaxBehaviorEvent event) {
 
-        // tk
         // Set primary service if it is null and 
         // remove selected service from the services list
         if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
@@ -1402,40 +1401,21 @@ public class JobContractManager extends GeneralManager
             // TYPE OF SERVICE(S) NEEDED
             // Gather services. 
             getCurrentJob().getServiceContract().setJob(getCurrentJob());
-            String services = getCurrentJob().getServiceContract().getSelectedServiceForContract().getName() + " ";
+            String services = getCurrentJob().getServiceContract().getSelectedServiceForContract().getName();
             dataCellStyle = getDefaultCellStyle(wb);
             dataCellStyle.setBorderLeft(BorderStyle.THIN);
             dataCellStyle.setFont(defaultFont);
             dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
             dataCellStyle.setVerticalAlignment(VerticalAlignment.TOP);
             dataCellStyle.setWrapText(true);
-            // NB: Gathering services like this will no longer be necessary
-            /*
-            if (job.getServiceContract().getServiceRequestedTesting()) {
-                services = services + "Testing ";
+            
+            getCurrentJob().getServices().
+                    remove(getCurrentJob().getServiceContract().getSelectedService());
+            // Gather additional services for service contract
+            for (Service service : getCurrentJob().getServices()) {
+                services = services + ", " + service.getName();
             }
-            if (job.getServiceContract().getServiceRequestedCalibration()) {
-                services = services + "Calibration ";
-            }
-            if (job.getServiceContract().getServiceRequestedLabelEvaluation()) {
-                services = services + "Label Evaluation ";
-            }
-            if (job.getServiceContract().getServiceRequestedInspection()) {
-                services = services + "Inspection ";
-            }
-            if (job.getServiceContract().getServiceRequestedConsultancy()) {
-                services = services + "Consultancy ";
-            }
-            if (job.getServiceContract().getServiceRequestedTraining()) {
-                services = services + "Training ";
-            }
-            if (job.getServiceContract().getServiceRequestedOther()) {
-                if ((job.getServiceContract().getServiceRequestedOtherText() != null)
-                        && (!job.getServiceContract().getServiceRequestedOtherText().isEmpty())) {
-                    services = services + " " + job.getServiceContract().getServiceRequestedOtherText();
-                }
-            }
-             */
+                        
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AD21",
                     services,
