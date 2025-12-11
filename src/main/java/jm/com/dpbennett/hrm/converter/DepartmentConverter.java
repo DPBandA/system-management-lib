@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -19,31 +19,23 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Department;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
-@FacesConverter("departmentConverter")
-public class DepartmentConverter extends ConverterAdapter {
+@FacesConverter(value = "departmentConverter", managed = true)
+public class DepartmentConverter extends EntityConverter<Department> {
 
-    @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Department department = Department.findByName(em, value);
-
-        if (department == null) {
-            department = new Department(value);
-        }
-
-        return department;
+    public DepartmentConverter() {
+        super(Department.class);
     }
 
+    @Override
+    protected Long getId(Department department) {
+        return department.getId();
+    }
 }
