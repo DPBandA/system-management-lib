@@ -390,6 +390,10 @@ public class ComplianceManager extends GeneralManager
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
 
                 return true;
+            case "Petrol Stations":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
+
+                return true;    
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
 
