@@ -20,7 +20,7 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.sm.optimization.ejb;
 
 import javax.inject.Inject;
-import jm.com.dpbennett.sm.optimization.assignment.JobAssignmentOptimizer;
+import jm.com.dpbennett.sm.optimization.assignment.ExampleOptimizer;
 
 /**
  *
@@ -29,6 +29,6 @@ import jm.com.dpbennett.sm.optimization.assignment.JobAssignmentOptimizer;
 public class OptimizationService {
     
     @Inject
-    private JobAssignmentOptimizer jobAssignmentOptimizer;
+    private ExampleOptimizer exampleOptimizer;
     
 }
