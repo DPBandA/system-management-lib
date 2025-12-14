@@ -362,12 +362,12 @@ public class JobFinanceManager extends GeneralManager
 
     public void openProformaInvoicesTab() {
 
-        getMainTabView().openTab("Proforma Invoices");
+        getSystemManager().getMainTabView().openTab("Proforma Invoices");
     }
 
     public void openPriceListTab() {
 
-        getMainTabView().openTab("Price List");
+        getSystemManager().getMainTabView().openTab("Price List");
     }
 
     public void openProformaInvoiceDialog() {
@@ -423,12 +423,13 @@ public class JobFinanceManager extends GeneralManager
         return BeanUtils.findBean("financeManager");
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
     }
 
-    public void openNewProformaInvoiceDialog() {
+    public void createNewProformaInvoice() {
 
         createNewJob();
 
@@ -874,23 +875,6 @@ public class JobFinanceManager extends GeneralManager
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    /**
-     * Gets the main view of tabs associated with the web application.
-     *
-     * @return
-     */
-    @Override
-    public MainTabView getMainTabView() {
-
-        return getJobManager().getMainTabView();
-    }
-
-    /**
-     * Get all cost components without heading.
-     *
-     * @param jobCostingAndPayment
-     * @return
-     */
     public List<CostComponent> getCostComponentsWithoutHeadings(JobCostingAndPayment jobCostingAndPayment) {
         List<CostComponent> costComponents = new ArrayList<>();
 
@@ -4218,7 +4202,7 @@ public class JobFinanceManager extends GeneralManager
     public void doProformaSearch() {
 
         getJobManager().doDefaultSearch(
-                getMainTabView(),
+                getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
                 getSearchType(),
                 getSearchText(),
