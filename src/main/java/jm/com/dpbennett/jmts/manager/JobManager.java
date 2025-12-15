@@ -98,6 +98,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
+import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  *
@@ -474,10 +475,6 @@ public class JobManager extends GeneralManager
         switch (tabTitle) {
             case "Job Management":
             case "Jobs":
-                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
-
-                return true;
-
             case "Proforma Invoices":
                 getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
@@ -1427,7 +1424,12 @@ public class JobManager extends GeneralManager
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
-        getSystemManager().getMainTabView().openTab("Jobs");
+        Module module = Module.findActiveModuleByName(
+                getSystemManager().getEntityManager1(), "jobManager");
+        if (module != null) {
+            getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
+            getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+        }
 
     }
 
@@ -2503,13 +2505,15 @@ public class JobManager extends GeneralManager
         }
     }
 
-    public List<Job> findJobs(Integer maxResults) {
-        return Job.findJobsByDateSearchField(getEntityManager1(),
+    public List<Job> findJobs(Integer maxResults, Boolean estimate) {
+        return Job.findJobsByDateSearchField(
+                getEntityManager1(),
                 getUser(),
                 getDateSearchPeriod(),
                 getSearchType(),
                 getSearchText(),
-                maxResults, false);
+                maxResults, 
+                estimate);
     }
 
     public void doDefaultSearch() {
@@ -2542,11 +2546,12 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-                search();
+                doJobSearch(getJobSearchResultList(), false);
+                openJobBrowser();
                 break;
             case "My dept's proforma invoices":
-                getJobFinanceManager().openProformaInvoicesTab();
-                getJobFinanceManager().doJobSearch();
+                doJobSearch(getJobFinanceManager().getJobSearchResultList(), true);
+                getJobFinanceManager().openProformaInvoicesTab();  
                 break;
             default:
                 break;
@@ -2554,26 +2559,19 @@ public class JobManager extends GeneralManager
 
     }
 
-    public void search() {
-
-        doJobSearch();
-
-        // tk needed?
-        openJobBrowser();
-
-    }
-
-    public void doJobSearch() {
+    public void doJobSearch(List<Job> resultList, Boolean estimate) {
 
         if (getUser().getId() != null) {
             int maxResult = SystemOption.getInteger(
                     getSystemManager().getEntityManager1(),
                     "maxSearchResults");
+            
+            resultList.clear();
 
-            jobSearchResultList = findJobs(maxResult);
-        } else {
-            jobSearchResultList = new ArrayList<>();
-        }
+            resultList.addAll(findJobs(maxResult, estimate));
+            
+        } 
+      
 
     }
 
@@ -2635,6 +2633,11 @@ public class JobManager extends GeneralManager
 //        return subCategories;
 //    }
     public List<Job> getJobSearchResultList() {
+
+        if (jobSearchResultList == null) {
+            jobSearchResultList = new ArrayList<>();
+        }
+
         return jobSearchResultList;
     }
 
@@ -3085,6 +3088,7 @@ public class JobManager extends GeneralManager
         ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
 
         groupedSearchTypes.add(getSearchTypesGroup());
+        groupedSearchTypes.add(getJobFinanceManager().getSearchTypesGroup());
 
         return groupedSearchTypes;
     }
@@ -3147,11 +3151,9 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
+            case "My dept's proforma invoices":    
                 dateSearchFields = DateUtils.getJobDateSearchFields();
-                break;
-            case "My dept's proforma invoices":
-                dateSearchFields = DateUtils.getProformaDateSearchFields();
-                break;
+                break;          
             default:
                 break;
         }

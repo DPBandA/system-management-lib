@@ -92,7 +92,6 @@ import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.JobDataModel;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
-import jm.com.dpbennett.sm.util.MainTabView;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -105,6 +104,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DialogFrameworkOptions;
+import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  * This class handles financial matters pertaining to a job.
@@ -277,10 +277,12 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
         return 500;
     }
@@ -363,6 +365,12 @@ public class JobFinanceManager extends GeneralManager
     public void openProformaInvoicesTab() {
 
         getSystemManager().getMainTabView().openTab("Proforma Invoices");
+
+        Module module = Module.findActiveModuleByName(
+                getSystemManager().getEntityManager1(), "jobManager");
+        if (module != null) {
+            getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+        }
     }
 
     public void openPriceListTab() {
@@ -410,12 +418,10 @@ public class JobFinanceManager extends GeneralManager
 
     public void proformaDialogReturn() {
 
-        doJobSearch();
     }
 
     public void costEstimateDialogReturn() {
 
-        doJobSearch();
     }
 
     public FinanceManager getFinanceManager() {
@@ -544,13 +550,7 @@ public class JobFinanceManager extends GeneralManager
         this.foundJobCostingAndPayments = foundJobCostingAndPayments;
     }
 
-    /**
-     * Attempts to approve the selected job costing(s).
-     *
-     * @see
-     * JobFinanceManager#canChangeJobCostingApprovalStatus(jm.com.dpbennett.business.entity.Job)
-     */
-    public void approveSelectedJobCostings() {
+      public void approveSelectedJobCostings() {
         int numCostingsCApproved = 0;
 
         if (getJobManager().getSelectedJobs().length > 0) {
@@ -592,16 +592,7 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Attempts to create an invoice for the job costing of the specified job.
-     *
-     * @see
-     * JobFinanceManager#canChangeJobCostingApprovalStatus(jm.com.dpbennett.business.entity.Job)
-     * @param job
-     * @param invoice
-     * @return
-     */
-    public Boolean invoiceJobCosting(Job job, Boolean invoice) {
+     public Boolean invoiceJobCosting(Job job, Boolean invoice) {
 
         prepareToInvoiceJobCosting(job);
 
@@ -626,9 +617,6 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
-    /**
-     * Attempts to create invoices for job costings of the selected jobs.
-     */
     public void invoiceSelectedJobCostings() {
         int numInvoicesCreated = 0;
 
@@ -673,36 +661,14 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Gets the total tax in the default currency associated with the specified
-     * job.
-     *
-     * @param job
-     * @return
-     */
     public Double getTotalTax(Job job) {
         return job.getJobCostingAndPayment().getTotalTax();
     }
 
-    /**
-     * Gets the total discount in the default currency associated with the
-     * specified job.
-     *
-     * @param job
-     * @return
-     */
     public Double getTotalDiscount(Job job) {
         return job.getJobCostingAndPayment().getTotalDiscount();
     }
 
-    /**
-     * Gets the tax object associated with the specified job. A default tax
-     * object with a value of 0.0 is set and returned if the tax object is not
-     * set.
-     *
-     * @param job
-     * @return
-     */
     public Tax getTax(Job job) {
         Tax tax = job.getJobCostingAndPayment().getTax();
 
@@ -728,43 +694,21 @@ public class JobFinanceManager extends GeneralManager
         return tax;
     }
 
-    /**
-     * Gets the tax associated with the current job.
-     *
-     * @return
-     */
     public Tax getTax() {
         return getTax(getCurrentJob());
     }
 
-    /**
-     * Sets the tax associated with the current job.
-     *
-     * @param tax
-     */
     public void setTax(Tax tax) {
 
         getCurrentJob().getJobCostingAndPayment().setTax(tax);
     }
 
-    /**
-     * Gets the discount associated with the current job.
-     *
-     * @return
-     */
     public Discount getDiscount() {
 
         return getDiscount(getCurrentJob());
     }
 
-    /**
-     * Gets the discount associated with the specified job. The default discount
-     * object is set and returned if the discount object is not set.
-     *
-     * @param job
-     * @return
-     */
-    public Discount getDiscount(Job job) {
+      public Discount getDiscount(Job job) {
 
         Discount discount = job.getJobCostingAndPayment().getDiscount();
 
@@ -794,83 +738,40 @@ public class JobFinanceManager extends GeneralManager
         return discount;
     }
 
-    /**
-     * Sets the discount associated with the current job.
-     *
-     * @param discount
-     */
     public void setDiscount(Discount discount) {
 
         getCurrentJob().getJobCostingAndPayment().setDiscount(discount);
     }
 
-    /**
-     * Returns a list of discount types.
-     *
-     * @return
-     */
     public List getDiscountTypes() {
 
         return FinancialUtils.getDiscountTypes(getFinanceManager().getEntityManager1());
     }
 
-    /**
-     * Returns a list of CostComponent cost types.
-     *
-     * @return
-     */
     public List getCostTypeList() {
         return FinancialUtils.getCostTypeList(getFinanceManager().getEntityManager1());
     }
 
-    /**
-     * Returns a list of cash payment types.
-     *
-     * @return
-     */
     public List getPaymentTypes() {
         return FinancialUtils.getPaymentTypes(getFinanceManager().getEntityManager1());
     }
 
-    /**
-     * Returns a list of cash payment purposes.
-     *
-     * @return
-     */
     public List getPaymentPurposes() {
         return FinancialUtils.getPaymentPurposes(getFinanceManager().getEntityManager1());
     }
 
-    /**
-     * Closes a PrimeFaces dialog.
-     */
     public void closeDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
 
-    /**
-     * Gets the selected JobCostingAndPayment object.
-     *
-     * @return
-     */
     public JobCostingAndPayment getSelectedJobCostingAndPayment() {
         return selectedJobCostingAndPayment;
     }
 
-    /**
-     * Sets the selected JobCostingAndPayment object.
-     *
-     * @param selectedJobCostingAndPayment
-     */
     public void setSelectedJobCostingAndPayment(JobCostingAndPayment selectedJobCostingAndPayment) {
         this.selectedJobCostingAndPayment = selectedJobCostingAndPayment;
     }
 
-    /**
-     * Cancels/closes a PrimeFaces dialog.
-     *
-     * @param actionEvent
-     */
     public void cancelDialogEdit(ActionEvent actionEvent) {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -1220,12 +1121,6 @@ public class JobFinanceManager extends GeneralManager
         return null;
     }
 
-    /**
-     * Gets an MS Excel file containing the details of invoices generated from
-     * the selected job costings that have been invoiced.
-     *
-     * @return
-     */
     public StreamedContent getInvoicesFile() {
 
         try {
@@ -1251,13 +1146,6 @@ public class JobFinanceManager extends GeneralManager
         return null;
     }
 
-    /**
-     * Gets a byte array stream containing the details of invoices generated
-     * from the selected job costings that have been invoiced.
-     *
-     * @param file
-     * @return
-     */
     public ByteArrayInputStream getInvoicesFileInputStream(
             File file) {
 
@@ -2005,12 +1893,6 @@ public class JobFinanceManager extends GeneralManager
         return null;
     }
 
-    /**
-     * Get the accounting codes associated with a job.
-     *
-     * @param job
-     * @return
-     */
     public List<String> getAccountingCodes(Job job) {
         List<String> codes = new ArrayList<>();
 
@@ -2028,13 +1910,6 @@ public class JobFinanceManager extends GeneralManager
         return codes;
     }
 
-    /**
-     * Gets the abbreviated discount code associated with the discount for a
-     * job.
-     *
-     * @param job
-     * @return
-     */
     private String getDiscountCodeAbbreviation(Job job) {
         String currentDiscountCode
                 = getDiscount(job).getAccountingCode().getCode();
@@ -2053,12 +1928,6 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Gets the abbreviated tax code associated with the tax for a job.
-     *
-     * @param job
-     * @return
-     */
     private String getTaxCodeAbbreviation(Job job) {
         String currentTaxCode
                 = getTax(job).getAccountingCode().getCode();
@@ -2078,12 +1947,6 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Gets the abbreviated revenue code associated with the service for a job.
-     *
-     * @param job
-     * @return
-     */
     private String getRevenueCodeAbbreviation(Job job) {
         String revenueCode;
         String revenueCodeAbbr;
@@ -2127,29 +1990,14 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Gets the flag that determines if an object is being edited.
-     *
-     * @return
-     */
     public Boolean getEdit() {
         return edit;
     }
 
-    /**
-     * Sets the flag that determines if an object is being edited.
-     *
-     * @param edit
-     */
     public void setEdit(Boolean edit) {
         this.edit = edit;
     }
 
-    /**
-     * Finds and gets the JobManager JSF bean.
-     *
-     * @return
-     */
     public JobManager getJobManager() {
         if (jobManager == null) {
             jobManager = BeanUtils.findBean("jobManager");
@@ -2157,11 +2005,6 @@ public class JobFinanceManager extends GeneralManager
         return jobManager;
     }
 
-    /**
-     * Finds/gets the JobContracManager session bean.
-     *
-     * @return
-     */
     public JobContractManager getJobContractManager() {
         if (jobContractManager == null) {
             jobContractManager = BeanUtils.findBean("jobContractManager");
@@ -2210,11 +2053,6 @@ public class JobFinanceManager extends GeneralManager
                 getSystemManager().getEntityManager1(), "useMulticurrency");
     }
 
-    /**
-     * Gets the enableOnlyPaymentEditing field. Sets it to false if it is null.
-     *
-     * @return
-     */
     public Boolean getEnableOnlyPaymentEditing() {
         if (enableOnlyPaymentEditing == null) {
             enableOnlyPaymentEditing = false;
@@ -2222,11 +2060,6 @@ public class JobFinanceManager extends GeneralManager
         return enableOnlyPaymentEditing;
     }
 
-    /**
-     * Sets the enableOnlyPaymentEditing field.
-     *
-     * @param enableOnlyPaymentEditing
-     */
     public void setEnableOnlyPaymentEditing(Boolean enableOnlyPaymentEditing) {
         this.enableOnlyPaymentEditing = enableOnlyPaymentEditing;
     }
@@ -2236,39 +2069,19 @@ public class JobFinanceManager extends GeneralManager
         return getJobManager().getEntityManager1();
     }
 
-    /**
-     * Gets the logged on user field.
-     *
-     * @return
-     */
     @Override
     public User getUser() {
         return getJobManager().getUser();
     }
 
-    /**
-     * Gets the filteredAccPacCustomerDocuments field.
-     *
-     * @return
-     */
     public List<AccPacDocument> getFilteredAccPacCustomerDocuments() {
         return filteredAccPacCustomerDocuments;
     }
 
-    /**
-     * Sets the filteredAccPacCustomerDocuments field.
-     *
-     * @param filteredAccPacCustomerDocuments
-     */
     public void setFilteredAccPacCustomerDocuments(List<AccPacDocument> filteredAccPacCustomerDocuments) {
         this.filteredAccPacCustomerDocuments = filteredAccPacCustomerDocuments;
     }
 
-    /**
-     * Gets the showPrepayments field. Sets the field to false if it is null.
-     *
-     * @return
-     */
     public Boolean getShowPrepayments() {
         if (showPrepayments == null) {
             showPrepayments = false;
@@ -2276,21 +2089,10 @@ public class JobFinanceManager extends GeneralManager
         return showPrepayments;
     }
 
-    /**
-     * Sets the showPrepayments field.
-     *
-     * @param showPrepayments
-     */
     public void setShowPrepayments(Boolean showPrepayments) {
         this.showPrepayments = showPrepayments;
     }
 
-    /**
-     * Gets the jobCostDepartment field. Sets the field to a "no-name"
-     * department if it is null.
-     *
-     * @return
-     */
     public Department getJobCostDepartment() {
         if (jobCostDepartment == null) {
             jobCostDepartment = new Department("");
@@ -2298,21 +2100,10 @@ public class JobFinanceManager extends GeneralManager
         return jobCostDepartment;
     }
 
-    /**
-     * Sets the jobCostDepartment field.
-     *
-     * @param jobCostDepartment
-     */
     public void setJobCostDepartment(Department jobCostDepartment) {
         this.jobCostDepartment = jobCostDepartment;
     }
 
-    /**
-     * Gets the currentJobWithCosting field. Sets it to a new Job object if it
-     * is null.
-     *
-     * @return
-     */
     public Job getCurrentJobWithCosting() {
         if (currentJobWithCosting == null) {
             currentJobWithCosting = new Job();
@@ -2320,20 +2111,10 @@ public class JobFinanceManager extends GeneralManager
         return currentJobWithCosting;
     }
 
-    /**
-     * Sets the currentJobWithCosting field.
-     *
-     * @param currentJobWithCosting
-     */
     public void setCurrentJobWithCosting(Job currentJobWithCosting) {
         this.currentJobWithCosting = currentJobWithCosting;
     }
 
-    /**
-     * Gets the jobsWithCostings field. Sets it to an empty list if it is null.
-     *
-     * @return
-     */
     public List<Job> getJobsWithCostings() {
         if (jobsWithCostings == null) {
             jobsWithCostings = new ArrayList<>();
@@ -2341,11 +2122,6 @@ public class JobFinanceManager extends GeneralManager
         return jobsWithCostings;
     }
 
-    /**
-     * Gets the unitCosts field. Sets it to an empty list if it is null.
-     *
-     * @return
-     */
     public List<UnitCost> getUnitCosts() {
         if (unitCosts == null) {
             unitCosts = new ArrayList<>();
@@ -2354,12 +2130,6 @@ public class JobFinanceManager extends GeneralManager
         return unitCosts;
     }
 
-    /**
-     * Gets the currentUnitCost field. Sets it to a new UnitCost object if it is
-     * null.
-     *
-     * @return
-     */
     public UnitCost getCurrentUnitCost() {
         if (currentUnitCost == null) {
             currentUnitCost = new UnitCost();
@@ -2367,21 +2137,10 @@ public class JobFinanceManager extends GeneralManager
         return currentUnitCost;
     }
 
-    /**
-     * Sets the currentUnitCost field.
-     *
-     * @param currentUnitCost
-     */
     public void setCurrentUnitCost(UnitCost currentUnitCost) {
         this.currentUnitCost = currentUnitCost;
     }
 
-    /**
-     * Gets the unitCostDepartment field. Sets it to a "no-name" Department
-     * object if it is null.
-     *
-     * @return
-     */
     public Department getUnitCostDepartment() {
         if (unitCostDepartment == null) {
             unitCostDepartment = new Department("");
@@ -2389,20 +2148,10 @@ public class JobFinanceManager extends GeneralManager
         return unitCostDepartment;
     }
 
-    /**
-     * Sets the unitCostDepartment field.
-     *
-     * @param unitCostDepartment
-     */
     public void setUnitCostDepartment(Department unitCostDepartment) {
         this.unitCostDepartment = unitCostDepartment;
     }
 
-    /**
-     * Determines if the user has the privilege to edit a job costing.
-     *
-     * @return
-     */
     public Boolean getCanEditJobCosting() {
 
         return getCanEditJobCosting(getCurrentJob());
@@ -2414,30 +2163,14 @@ public class JobFinanceManager extends GeneralManager
                 || job.getJobCostingAndPayment().getCashPayments().isEmpty();
     }
 
-    /**
-     * Gets the selectedJobCostingTemplate field.
-     *
-     * @return
-     */
     public String getSelectedJobCostingTemplate() {
         return selectedJobCostingTemplate;
     }
 
-    /**
-     * Sets the selectedJobCostingTemplate field.
-     *
-     * @param selectedJobCostingTemplate
-     */
     public void setSelectedJobCostingTemplate(String selectedJobCostingTemplate) {
         this.selectedJobCostingTemplate = selectedJobCostingTemplate;
     }
 
-    /**
-     * Determines if a job is assigned to the department of the user.
-     *
-     * @param job
-     * @return
-     */
     private Boolean isJobAssignedToUserDepartment(Job job) {
 
         if (getUser() != null) {
@@ -2451,58 +2184,26 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
-    /**
-     * Sets the selectedCostComponent field to the PrimeFaces selected object.
-     *
-     * @param event
-     */
     public void onCostComponentSelect(SelectEvent event) {
         selectedCostComponent = (CostComponent) event.getObject();
     }
 
-    /**
-     * Gets the selectedCostComponent field.
-     *
-     * @return
-     */
     public CostComponent getSelectedCostComponent() {
         return selectedCostComponent;
     }
 
-    /**
-     * Sets the selectedCostComponent field.
-     *
-     * @param selectedCostComponent
-     */
     public void setSelectedCostComponent(CostComponent selectedCostComponent) {
         this.selectedCostComponent = selectedCostComponent;
     }
 
-    /**
-     * Gets the useAccPacCustomerList field.
-     *
-     * @return
-     */
     public Boolean getUseAccPacCustomerList() {
         return useAccPacCustomerList;
     }
 
-    /**
-     * Sets the useAccPacCustomerList field.
-     *
-     * @param useAccPacCustomerList
-     */
     public void setUseAccPacCustomerList(Boolean useAccPacCustomerList) {
         this.useAccPacCustomerList = useAccPacCustomerList;
     }
 
-    /**
-     * Gets the number of documents that are due/overdue by the given number of
-     * days.
-     *
-     * @param days
-     * @return
-     */
     public Integer getNumberOfDocumentsPassDocDate(Integer days) {
         Integer count = 0;
 
@@ -2515,13 +2216,6 @@ public class JobFinanceManager extends GeneralManager
         return count;
     }
 
-    /**
-     * Gets the status of a financial account as "hold" or "active" based on the
-     * the total cost of outstanding invoices that are overdue by the maximum
-     * allowed number of days.
-     *
-     * @return
-     */
     public String getAccountStatus() {
         if (getTotalInvoicesAmountOverMaxInvDays().doubleValue() > 0.0
                 && getTotalInvoicesAmount().doubleValue() > 0.0) {
@@ -2531,12 +2225,6 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
-    /**
-     * Gets the total cost of invoices that are pass the maximum allowed overdue
-     * days.
-     *
-     * @return
-     */
     public BigDecimal getTotalInvoicesAmountOverMaxInvDays() {
         BigDecimal total = new BigDecimal(0.0);
 
@@ -2549,12 +2237,6 @@ public class JobFinanceManager extends GeneralManager
         return total;
     }
 
-    /**
-     * Gets the total cost of invoices in the filteredAccPacCustomerDocuments
-     * field.
-     *
-     * @return
-     */
     public BigDecimal getTotalInvoicesAmount() {
         BigDecimal total = new BigDecimal(0.0);
 
@@ -2565,11 +2247,6 @@ public class JobFinanceManager extends GeneralManager
         return total;
     }
 
-    /**
-     * Gets the maximum allowed overdue days for invoices.
-     *
-     * @return
-     */
     public Integer getMaxDaysPassInvoiceDate() {
 
         EntityManager em = getSystemManager().getEntityManager1();
@@ -2580,12 +2257,6 @@ public class JobFinanceManager extends GeneralManager
         return days;
     }
 
-    /**
-     * Get status based on the total amount on documents/invoices pass the max
-     * allowed days pass the invoice date.
-     *
-     * @return
-     */
     public String getAccPacCustomerAccountStatus() {
 
         if (getAccountStatus().equals("hold")) {
@@ -2595,22 +2266,10 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
-    /**
-     * Gets the number of documents/invoices that are pass the maximum allowed
-     * overdue days.
-     *
-     * @return
-     */
     public Integer getNumDocumentsPassMaxInvDate() {
         return getNumberOfDocumentsPassDocDate(getMaxDaysPassInvoiceDate());
     }
 
-    /**
-     * Updates and gets the longProcessProgress field that stores the progress
-     * of a server activity.
-     *
-     * @return
-     */
     public Integer getLongProcessProgress() {
         if (longProcessProgress == null) {
             longProcessProgress = 0;
@@ -2625,10 +2284,6 @@ public class JobFinanceManager extends GeneralManager
         return longProcessProgress;
     }
 
-    /**
-     * A callback method that is called when an activity is complete. The
-     * longProcessProgress field is set to 0.
-     */
     public void onLongProcessComplete() {
         longProcessProgress = 0;
     }
@@ -2849,11 +2504,6 @@ public class JobFinanceManager extends GeneralManager
         return jobCostingFile;
     }
 
-    /**
-     * Determines if the user can export a job costing.
-     *
-     * @return
-     */
     public Boolean getCanExportJobCosting() {
 
         return !(getCurrentJob().getJobCostingAndPayment().getCostingApproved()
@@ -2886,11 +2536,6 @@ public class JobFinanceManager extends GeneralManager
         return jobCostingFile;
     }
 
-    /**
-     * Prepares to invoice a job costing.
-     *
-     * @param job
-     */
     private void prepareToInvoiceJobCosting(Job job) {
 
         // Ensure that services are added based on the service contract
@@ -2911,19 +2556,10 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Invoices the job costing for the current job.
-     */
     public void invoiceJobCosting() {
         invoiceJobCosting(getCurrentJob(), getCurrentJob().getJobCostingAndPayment().getInvoiced());
     }
 
-    /**
-     * Determines if a job costing can be exported.
-     *
-     * @param job
-     * @return
-     */
     public Boolean canExportInvoice(Job job) {
 
         // Ensure the invoice date is set if the job costing was invoiced.
@@ -2966,13 +2602,6 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Determines if a job costing can be invoiced. A PrimeFaces message is
-     * displayed if the job costing cannot be invoiced.
-     *
-     * @param job
-     * @return
-     */
     public Boolean canInvoiceJobCosting(Job job) {
 
         // Check for permission to invoice by department that can do invoices
@@ -3013,11 +2642,6 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /**
-     * Gets all Job TableView preferences.
-     *
-     * @return
-     */
     public List<Preference> getJobTableViewPreferences() {
         EntityManager em = getEntityManager1();
 
@@ -3026,33 +2650,14 @@ public class JobFinanceManager extends GeneralManager
         return prefs;
     }
 
-    /**
-     * Determine if the current user can mark the current job costing as being
-     * completed. This is done by determining if the job was assigned to the
-     * user.
-     *
-     * @param job
-     * @return
-     */
     public Boolean canUserCompleteJobCosting(Job job) {
         return isJobAssignedToUserDepartment(job);
     }
 
-    /**
-     * Gets the selected Cash Payment object.
-     *
-     * @return
-     */
     public CashPayment getSelectedCashPayment() {
         return selectedCashPayment;
     }
 
-    /**
-     * Sets the selected Cash Payment object. The related costs are updated and
-     * the is corresponding job is saved.
-     *
-     * @param selectedCashPayment
-     */
     public void setSelectedCashPayment(CashPayment selectedCashPayment) {
 
         this.selectedCashPayment = selectedCashPayment;
@@ -3071,20 +2676,11 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
-    /**
-     * Creates and gets Entity Manager 2.
-     *
-     * @return
-     */
     @Override
     public EntityManager getEntityManager2() {
         return getJobManager().getEntityManager2();
     }
 
-    /**
-     * Updates the status of the current job costing and payment as being
-     * edited.
-     */
     public void updateJobCostingAndPayment() {
         setJobCostingAndPaymentDirty(true);
     }
@@ -3353,14 +2949,6 @@ public class JobFinanceManager extends GeneralManager
         setJobCostingAndPaymentDirty(true);
     }
 
-    /**
-     * Determine if the current user is the department's supervisor. This is
-     * done by determining if the user is the head/active acting head of the
-     * department to which the job was assigned.
-     *
-     * @param job
-     * @return
-     */
     public Boolean isUserDepartmentSupervisor(Job job) {
         EntityManager em = getEntityManager1();
 
@@ -3854,12 +3442,6 @@ public class JobFinanceManager extends GeneralManager
         return message;
     }
 
-    /**
-     * Update/create alert for the current job if the job is not completed.
-     *
-     * @param em
-     * @throws java.lang.Exception
-     */
     public void updateAlert(EntityManager em) throws Exception {
         if (getCurrentJob().getJobStatusAndTracking().getCompleted() == null) {
             em.getTransaction().begin();
@@ -4066,11 +3648,6 @@ public class JobFinanceManager extends GeneralManager
         setJobCostingAndPaymentDirty(true);
     }
 
-    /**
-     * This determine if taxes can be applied to the current job.
-     *
-     * @return
-     */
     public Boolean getCanApplyTax() {
 
         return getCanApplyTax(getCurrentJob());
@@ -4086,7 +3663,6 @@ public class JobFinanceManager extends GeneralManager
 
         // tk Not used for now
         // return getUser().can("ApplyDiscountsToJobCosting");
-        
         return true;
 
     }
@@ -4179,36 +3755,7 @@ public class JobFinanceManager extends GeneralManager
     }
 
     @Override
-    public void doSearch() {
-
-        doJobSearch();
-
-    }
-
-    @Override
     public void updateDateSearchField() {
-    }
-
-    public void doJobSearch() {
-
-        int maxResult = SystemOption.getInteger(
-                getSystemManager().getEntityManager1(),
-                "maxSearchResults");
-
-        jobSearchResultList = findJobs(maxResult);
-
-    }
-
-    public void doProformaSearch() {
-
-        getJobManager().doDefaultSearch(
-                getSystemManager().getMainTabView(),
-                getDateSearchPeriod().getDateField(),
-                getSearchType(),
-                getSearchText(),
-                getDateSearchPeriod().getStartDate(),
-                getDateSearchPeriod().getEndDate());
-
     }
 
     @Override
@@ -4244,30 +3791,6 @@ public class JobFinanceManager extends GeneralManager
 
         return searchTypes;
 
-    }
-
-    public List<Job> findJobs(Integer maxResults) {
-        return Job.findJobsByDateSearchField(
-                getEntityManager1(),
-                getUser(),
-                getDateSearchPeriod(),
-                getSearchType(),
-                getSearchText(),
-                maxResults, true);
-    }
-
-    public List<Job> findJobs() {
-        int maxResult = SystemOption.getInteger(
-                getSystemManager().getEntityManager1(),
-                "maxSearchResults");
-
-        return Job.findJobsByDateSearchField(getEntityManager1(),
-                getUser(),
-                getDateSearchPeriod(),
-                getSearchType(),
-                getProformaInvoiceSearchText(),
-                maxResult,
-                true);
     }
 
     public ArrayList<SelectItem> getDateSearchFields() {
@@ -4357,12 +3880,6 @@ public class JobFinanceManager extends GeneralManager
         return codes;
     }
 
-    /**
-     * Gets subcontracts for which cost components exists.
-     *
-     * @param job
-     * @return
-     */
     private List<Job> getSubcontractsForCostComponents(Job job) {
         List<Job> subcontracts = new ArrayList<>();
 
@@ -4705,11 +4222,6 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    /*
-     * Takes a list of job costings enties an set their ids and component ids
-     * to null which will result in new job costings being created when
-     * the job costins are commited to the database
-     */
     public List<JobCosting> copyJobCostings(List<JobCosting> srcCostings) {
         ArrayList<JobCosting> newJobCostings = new ArrayList<>();
 
@@ -4843,11 +4355,6 @@ public class JobFinanceManager extends GeneralManager
         System.out.println("Job number of costing: " + getJobsWithCostings().get(event.getRowIndex()).getJobNumber());
     }
 
-    /**
-     * This is to be implemented further
-     *
-     * @return
-     */
     public Boolean getDisableSubContracting() {
         try {
             if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeCopied()) {
@@ -4937,13 +4444,6 @@ public class JobFinanceManager extends GeneralManager
                 getSystemManager().getEntityManager1(), getDepartmentBySystemOptionDeptId("customerServiceDeptId"));
     }
 
-    /**
-     * Return discount types. NB: Discount types to be obtained from System
-     * Options in the future
-     *
-     * @param query
-     * @return
-     */
     public List<String> completeDiscountType(String query) {
         String discountTypes[] = {"Currency", "Percentage"};
         List<String> matchedDiscountTypes = new ArrayList<>();
