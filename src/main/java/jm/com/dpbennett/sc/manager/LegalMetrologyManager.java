@@ -84,6 +84,21 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         init();
     }
 
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Petrol Stations":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
+
+                return true;
+            default:
+                return false;
+
+        }
+
+    }
+
     public List<SelectItem> getPetrolTestMeasures() {
 
         return getStringListAsSelectItems(
@@ -234,7 +249,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:petrolStationSearchButton");
+        //getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:petrolStationSearchButton");
 
         getSystemManager().getDashboard().openTab(title);
     }
@@ -402,6 +417,7 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
         super.reset();
 
+        setName("legalMetrologyManager");
         add = false;
         certifications = new ArrayList<>();
 
@@ -605,9 +621,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void createNewScale() {
 
         currentScale = new Scale();
-        
+
         openScaleBrowser();
-        
+
         editScale();
 
     }
@@ -951,9 +967,9 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     public void okScale() {
 
         getCurrentScale().setIsDirty(true);
-        
+
         getCurrentScale().save(getEntityManager1());
-        
+
         closeDialog();
 
     }

@@ -366,9 +366,9 @@ public class JobFinanceManager extends GeneralManager
 
         getSystemManager().getMainTabView().openTab("Proforma Invoices");
 
-        Module module = Module.findActiveModuleByName(
-                getSystemManager().getEntityManager1(), "jobManager");
+        Module module = getJobManager().getModule();
         if (module != null) {
+            getJobManager().setSearchType("My dept's proforma invoices");
             getSystemManager().getDashboard().openTab(module.getDashboardTitle());
         }
     }
@@ -2022,6 +2022,7 @@ public class JobFinanceManager extends GeneralManager
     public void reset() {
         super.reset();
 
+        setName("jobFinanceManager");
         longProcessProgress = 0;
         accPacCustomer = new AccPacCustomer(null);
         useAccPacCustomerList = false;

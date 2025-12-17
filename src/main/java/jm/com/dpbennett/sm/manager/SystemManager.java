@@ -1915,6 +1915,7 @@ public final class SystemManager extends GeneralManager {
     public void reset() {
         super.reset();
 
+        setName("systemManager");
         activeNavigationTabIndex = 0;
         foundLdapContexts = null;
         foundSystemOptions = null;

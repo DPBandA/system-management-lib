@@ -33,6 +33,7 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.event.TabCloseEvent;
+import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  *
@@ -230,5 +231,11 @@ public interface Manager {
     public Integer getPollInterval ();
     
     public SystemManager getSystemManager();
+    
+    public String getName();
+    
+    public void setName(String name);
+    
+    public Module getModule();
 
 }

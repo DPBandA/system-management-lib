@@ -273,6 +273,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
     public void reset() {
         super.reset();
 
+        setName("documentManager");
         isActivePostsOnly = true;
         postSearchText = "";
         setSearchType("Posts");

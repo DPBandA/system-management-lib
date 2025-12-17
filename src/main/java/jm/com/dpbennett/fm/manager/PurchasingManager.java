@@ -2757,6 +2757,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void reset() {
         super.reset();
 
+        setName("purchasingManager");
         setSearchType("Purchase requisitions");
         setSearchText("");
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");

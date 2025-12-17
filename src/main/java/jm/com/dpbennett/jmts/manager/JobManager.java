@@ -99,6 +99,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
 import jm.com.dpbennett.business.entity.sm.Module;
+import org.primefaces.event.TabChangeEvent;
 
 /**
  *
@@ -124,6 +125,28 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+       
+        for (Module mod : getUser().getActiveModules()) {
+            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+            }
+        }
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+       
+        for (Module mod : getUser().getActiveModules()) {
+            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+            }
+        }
+
     }
 
     @Override
@@ -1345,27 +1368,9 @@ public class JobManager extends GeneralManager
     public void reset() {
         super.reset();
 
+        setName("jobManager");
         setSearchType("My department's jobs");
         setSearchText("");
-        setModuleNames(new String[]{
-            "jobManager",
-            "jobFinanceManager",
-            "jobContractManager",
-            "clientManager",
-            "reportManager",
-            "systemManager",
-            "financeManager",
-            "purchasingManager",
-            "inventoryManager",
-            "humanResourceManager",
-            "purchasingManager",
-            "foodFactoryManager",
-            "legalMetrologyManager",
-            "complianceManager",
-            "legalDocumentManager",
-            "energyLabelManager"
-        });
-
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1424,8 +1429,7 @@ public class JobManager extends GeneralManager
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
-        Module module = Module.findActiveModuleByName(
-                getSystemManager().getEntityManager1(), "jobManager");
+        Module module = getModule();
         if (module != null) {
             getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
             getSystemManager().getDashboard().openTab(module.getDashboardTitle());
@@ -1973,9 +1977,9 @@ public class JobManager extends GeneralManager
                 Integer yearReceived = parent.getYearReceived();
                 currentJob = Job.copy(em, parent, getUser(), true, false);
                 currentJob.setParent(parent);
-                Business userOrg = User.getUserOrganizationByDepartment(
-                        getHumanResourceManager().getEntityManager1(), getUser());
-                currentJob.setBusiness(userOrg);
+                //Business userOrg = User.getUserOrganizationByDepartment(
+                //        getHumanResourceManager().getEntityManager1(), getUser());
+                currentJob.setBusiness(null);
                 currentJob.setClassification(new Classification());
                 currentJob.setClient(new Client());
                 currentJob.setBillingAddress(new Address());
@@ -2512,7 +2516,7 @@ public class JobManager extends GeneralManager
                 getDateSearchPeriod(),
                 getSearchType(),
                 getSearchText(),
-                maxResults, 
+                maxResults,
                 estimate);
     }
 
@@ -2551,7 +2555,7 @@ public class JobManager extends GeneralManager
                 break;
             case "My dept's proforma invoices":
                 doJobSearch(getJobFinanceManager().getJobSearchResultList(), true);
-                getJobFinanceManager().openProformaInvoicesTab();  
+                getJobFinanceManager().openProformaInvoicesTab();
                 break;
             default:
                 break;
@@ -2565,13 +2569,12 @@ public class JobManager extends GeneralManager
             int maxResult = SystemOption.getInteger(
                     getSystemManager().getEntityManager1(),
                     "maxSearchResults");
-            
+
             resultList.clear();
 
             resultList.addAll(findJobs(maxResult, estimate));
-            
-        } 
-      
+
+        }
 
     }
 
@@ -3151,9 +3154,9 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-            case "My dept's proforma invoices":    
+            case "My dept's proforma invoices":
                 dateSearchFields = DateUtils.getJobDateSearchFields();
-                break;          
+                break;
             default:
                 break;
         }

@@ -34,7 +34,6 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;
-import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
 
 /**
@@ -44,7 +43,7 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 public class FileUploadManager {
 
     private UploadedFile uploadedFile;
-    private List<Attachment> attachments;
+    private List<Attachment> attachments;   
     
     public SystemManager getSystemManager() {
 

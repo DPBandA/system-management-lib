@@ -53,6 +53,8 @@ import org.primefaces.event.TabCloseEvent;
  */
 public class GeneralManager implements Manager, Serializable {
 
+    private String name;
+    private Module module;
     private String searchText;
     private String searchType;
     private Dashboard dashboard;
@@ -84,7 +86,6 @@ public class GeneralManager implements Manager, Serializable {
                 getManager(moduleName).setUser(getUser());
             }
         }
-
     }
 
     @Override
@@ -258,8 +259,8 @@ public class GeneralManager implements Manager, Serializable {
 
         setTabTitle(event.getTab().getTitle());
 
-        for (Module module : getUser().getActiveModules()) {
-            Manager manager = getManager(module.getName());
+        for (Module mod : getUser().getActiveModules()) {
+            Manager manager = getManager(mod.getName());
             if (manager != null) {
                 if (manager.handleTabChange(getTabTitle())) {
 
@@ -415,7 +416,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public Dashboard getDashboard() {
-        
+
         return dashboard;
     }
 
@@ -539,8 +540,25 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void reset() {
+        setName("generalManager");
         moduleNames = new String[]{
-            "systemManager"};
+            "jobManager",
+            "jobFinanceManager",
+            "jobContractManager",
+            "clientManager",
+            "reportManager",
+            "systemManager",
+            "financeManager",
+            "purchasingManager",
+            "inventoryManager",
+            "humanResourceManager",
+            "purchasingManager",
+            "foodFactoryManager",
+            "legalMetrologyManager",
+            "complianceManager",
+            "legalDocumentManager",
+            "energyLabelManager"
+        };
         searchText = "";
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -586,7 +604,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public MainTabView getMainTabView() {
-                
+
         return mainTabView;
     }
 
@@ -882,13 +900,13 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getDefaultCommandTarget() {
-     
+
         return defaultCommandTarget;
     }
 
     @Override
     public void setDefaultCommandTarget(String defaultCommandTarget) {
-      
+
         this.defaultCommandTarget = defaultCommandTarget;
     }
 
@@ -939,8 +957,8 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
+        
+       onMainViewTabChange(event);
 
     }
 
@@ -1062,6 +1080,28 @@ public class GeneralManager implements Manager, Serializable {
     public Integer getPollInterval() {
 
         return SystemOption.getInteger(getSystemManager().getEntityManager1(), "pollInterval");
+
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public Module getModule() {
+
+        if (module == null) {
+            module = Module.findActiveModuleByName(
+                    getSystemManager().getEntityManager1(), getName());
+        }
+
+        return module;
 
     }
 

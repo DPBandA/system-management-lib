@@ -1776,6 +1776,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public void reset() {
         super.reset();
 
+        setName("financeManager");
         setSearchType("Accounting Codes");
         setSearchText("");
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");

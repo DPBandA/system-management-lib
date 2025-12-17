@@ -641,6 +641,7 @@ public class ReportManager extends GeneralManager {
     public void reset() {
         super.reset();
 
+        setName("reportManager");
         setSearchType("Reports");
         setSearchText("");
         setModuleNames(new String[]{
