@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <ui:insert name="head">
+            <!-- default head -->
+        </ui:insert>
+
+        <h:outputStylesheet library="ui" name="css/sm.css"/>
+        <h:outputStylesheet library="ui" name="css/main.css"/>
+    </h:head>
+
+    <h:body id="appBody" class="flex flex-column min-h-screen">
+
+        <!-- Global dialogs -->
+        <ui:insert name="dialogs"/>
+
+        <p:panel rendered="#{systemManager.userLoggedIn}">
+
+            <!-- Header -->
+            <ui:include src="/jmts-ui/fragments/header.xhtml"/>
+
+            <!-- Main layout -->
+            <main class="flex flex-column md:flex-row flex-auto">
+
+                <aside class="w-full md:w-4 flex-shrink-0">
+                    <ui:insert name="left"/>
+                </aside>
+
+                <section class="w-full md:w-8">
+                    <ui:insert name="right"/>
+                </section>
+
+            </main>
+
+            <!-- Footer -->
+            <ui:include src="/jmts-ui/fragments/footer.xhtml"/>
+
+        </p:panel>
+
+    </h:body>
+</html>

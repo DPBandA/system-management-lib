@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:head>
+
+        <!-- Per-page head -->
+        <ui:insert name="head"/>
+
+        <!-- Global JMTS styles -->
+        <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css"/>
+        <h:outputStylesheet library="jmts-ui" name="css/main.css"/>
+        <h:outputStylesheet library="jmts-ui" name="css/jmts.css"/>
+
+    </h:head>
+
+    <h:body id="appBody" class="flex flex-column min-h-screen">
+
+        <!-- Global dialogs -->
+        <ui:insert name="dialogs"/>
+
+        <p:panel rendered="#{jobManager.userLoggedIn}">
+
+            <p:scrollTop/>
+
+            <!-- HEADER -->
+            <ui:include src="/jmts-ui/fragments/jmts-header.xhtml"/>
+
+            <p:divider/>
+
+            <!-- MAIN CONTENT -->
+            <ui:insert name="content"/>
+
+            <p:divider/>
+
+            <!-- FOOTER -->
+            <ui:include src="/jmts-ui/fragments/jmts-footer.xhtml"/>
+
+        </p:panel>
+
+    </h:body>
+</html>
