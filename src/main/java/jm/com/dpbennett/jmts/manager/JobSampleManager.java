@@ -103,10 +103,12 @@ public class JobSampleManager extends GeneralManager
     }
 
     public final void init() {
-        selectedJobSample = new JobSample();
-        jobSampleDialogTabViewActiveIndex = 0;
+        
+        reset();
+       
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -246,8 +248,13 @@ public class JobSampleManager extends GeneralManager
         return jobManager;
     }
 
+    @Override
     public void reset() {
-        init();
+        super.reset();
+        
+        setName("jobSampleManager");
+        selectedJobSample = new JobSample();
+        jobSampleDialogTabViewActiveIndex = 0; 
     }
 
     public Boolean isSamplesDirty() {

@@ -98,6 +98,8 @@ import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
+import jm.com.dpbennett.business.entity.sm.Module;
+import org.primefaces.event.TabChangeEvent;
 
 /**
  *
@@ -126,6 +128,28 @@ public class JobManager extends GeneralManager
     }
 
     @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+       
+        for (Module mod : getUser().getActiveModules()) {
+            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+            }
+        }
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+       
+        for (Module mod : getUser().getActiveModules()) {
+            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+            }
+        }
+
+    }
+
+    @Override
     public void openDashboardTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
@@ -140,20 +164,20 @@ public class JobManager extends GeneralManager
 
         getSystemManager().getMainTabView().openTab(title);
     }
-    
+
     public List<Business> completeActiveBusiness(String query) {
-        
+
         if (getUser().can("EnterJob") || getUser().can("EditJob")) {
             return getHumanResourceManager().completeActiveBusiness(query);
         }
-        
+
         List<Business> businesses = new ArrayList<>();
-        
+
         Business userBusiness = User.getUserOrganizationByDepartment(
-                        getHumanResourceManager().getEntityManager1(), getUser());
-        
+                getHumanResourceManager().getEntityManager1(), getUser());
+
         businesses.add(userBusiness);
-        
+
         return businesses;
     }
 
@@ -474,10 +498,6 @@ public class JobManager extends GeneralManager
         switch (tabTitle) {
             case "Job Management":
             case "Jobs":
-                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
-
-                return true;
-
             case "Proforma Invoices":
                 getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
@@ -1016,7 +1036,8 @@ public class JobManager extends GeneralManager
                         getSystemManager().getEntityManager1(),
                         "activateJobDialogFieldDisabling");
 
-        Boolean userHasPrivilege = getUser().can("EditDisabledJobField");
+        Boolean userHasPrivilege = getUser().can("EditDisabledJobField")
+                || getUser().can("CreateDirectSubcontract"); // tk
 
         Boolean jobIsNotNew = job.getId() != null;
 
@@ -1049,10 +1070,6 @@ public class JobManager extends GeneralManager
 
                 return false;
             case "department":
-                if (getUser().can("CreateDirectSubcontract")) {
-                    return false;
-                }
-
                 return (fieldDisablingActive
                         && !userHasPrivilege
                         && (jobIsNotNew)) || getDisableDepartment(job);
@@ -1351,27 +1368,9 @@ public class JobManager extends GeneralManager
     public void reset() {
         super.reset();
 
+        setName("jobManager");
         setSearchType("My department's jobs");
         setSearchText("");
-        setModuleNames(new String[]{
-            "jobManager",
-            "jobFinanceManager",
-            "jobContractManager",
-            "clientManager",
-            "reportManager",
-            "systemManager",
-            "financeManager",
-            "purchasingManager",
-            "inventoryManager",
-            "humanResourceManager",
-            "purchasingManager",
-            "foodFactoryManager",
-            "legalMetrologyManager",
-            "complianceManager",
-            "legalDocumentManager",
-            "energyLabelManager"
-        });
-
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1430,7 +1429,11 @@ public class JobManager extends GeneralManager
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
 
-        getSystemManager().getMainTabView().openTab("Jobs");
+        Module module = getModule();
+        if (module != null) {
+            getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
+            getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+        }
 
     }
 
@@ -1714,7 +1717,7 @@ public class JobManager extends GeneralManager
 
     public void updateOrganization(AjaxBehaviorEvent event) {
 
-        EntityManager hrem = getHumanResourceManager().getEntityManager1();        
+        EntityManager hrem = getHumanResourceManager().getEntityManager1();
 
         if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeSubcontracted()) {
             getCurrentJob().setSubContractedDepartment(Department.findDefault(hrem, "--"));
@@ -1974,9 +1977,9 @@ public class JobManager extends GeneralManager
                 Integer yearReceived = parent.getYearReceived();
                 currentJob = Job.copy(em, parent, getUser(), true, false);
                 currentJob.setParent(parent);
-                Business userOrg = User.getUserOrganizationByDepartment(
-                        getHumanResourceManager().getEntityManager1(), getUser());
-                currentJob.setBusiness(userOrg);
+                //Business userOrg = User.getUserOrganizationByDepartment(
+                //        getHumanResourceManager().getEntityManager1(), getUser());
+                currentJob.setBusiness(null);
                 currentJob.setClassification(new Classification());
                 currentJob.setClient(new Client());
                 currentJob.setBillingAddress(new Address());
@@ -2506,13 +2509,15 @@ public class JobManager extends GeneralManager
         }
     }
 
-    public List<Job> findJobs(Integer maxResults) {
-        return Job.findJobsByDateSearchField(getEntityManager1(),
+    public List<Job> findJobs(Integer maxResults, Boolean estimate) {
+        return Job.findJobsByDateSearchField(
+                getEntityManager1(),
                 getUser(),
                 getDateSearchPeriod(),
                 getSearchType(),
                 getSearchText(),
-                maxResults, false);
+                maxResults,
+                estimate);
     }
 
     public void doDefaultSearch() {
@@ -2545,11 +2550,12 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-                search();
+                doJobSearch(getJobSearchResultList(), false);
+                openJobBrowser();
                 break;
             case "My dept's proforma invoices":
+                doJobSearch(getJobFinanceManager().getJobSearchResultList(), true);
                 getJobFinanceManager().openProformaInvoicesTab();
-                getJobFinanceManager().doJobSearch();
                 break;
             default:
                 break;
@@ -2557,25 +2563,17 @@ public class JobManager extends GeneralManager
 
     }
 
-    public void search() {
-
-        doJobSearch();
-
-        // tk needed?
-        openJobBrowser();
-
-    }
-
-    public void doJobSearch() {
+    public void doJobSearch(List<Job> resultList, Boolean estimate) {
 
         if (getUser().getId() != null) {
             int maxResult = SystemOption.getInteger(
                     getSystemManager().getEntityManager1(),
                     "maxSearchResults");
 
-            jobSearchResultList = findJobs(maxResult);
-        } else {
-            jobSearchResultList = new ArrayList<>();
+            resultList.clear();
+
+            resultList.addAll(findJobs(maxResult, estimate));
+
         }
 
     }
@@ -2638,6 +2636,11 @@ public class JobManager extends GeneralManager
 //        return subCategories;
 //    }
     public List<Job> getJobSearchResultList() {
+
+        if (jobSearchResultList == null) {
+            jobSearchResultList = new ArrayList<>();
+        }
+
         return jobSearchResultList;
     }
 
@@ -2783,7 +2786,6 @@ public class JobManager extends GeneralManager
         try {
 
             //EntityManager hrem = getHumanResourceManager().getEntityManager1();
-
             if (currentJob.getAutoGenerateJobNumber()) {
                 currentJob.setJobNumber(getCurrentJobNumber());
             }
@@ -2800,7 +2802,6 @@ public class JobManager extends GeneralManager
 //            if (getCurrentJob().getSubContractedDepartment().getId() == null) {
 //                getCurrentJob().setSubContractedDepartment(Department.findDefault(hrem, "--"));
 //            }
-
             setIsDirty(true);
 
         } catch (Exception e) {
@@ -3090,6 +3091,7 @@ public class JobManager extends GeneralManager
         ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
 
         groupedSearchTypes.add(getSearchTypesGroup());
+        groupedSearchTypes.add(getJobFinanceManager().getSearchTypesGroup());
 
         return groupedSearchTypes;
     }
@@ -3152,10 +3154,8 @@ public class JobManager extends GeneralManager
             case "Appr'd & uninv'd jobs":
             case "Incomplete jobs":
             case "Invoiced jobs":
-                dateSearchFields = DateUtils.getJobDateSearchFields();
-                break;
             case "My dept's proforma invoices":
-                dateSearchFields = DateUtils.getProformaDateSearchFields();
+                dateSearchFields = DateUtils.getJobDateSearchFields();
                 break;
             default:
                 break;

@@ -308,6 +308,7 @@ public class EnergyLabelManager extends GeneralManager
     public void reset() {
         super.reset();
 
+        setName("energyLabelManager");
         setSearchType("Energy labels");
         setSearchText("");
         setModuleNames(new String[]{

@@ -1,0 +1,67 @@
+html {
+    font-size: 14px;
+}
+
+.ui-widget,
+.ui-selectonemenu-items
+{
+    font-size: 0.850em !important;
+}
+
+.ui-button
+{
+    font-size: 1.200em !important;
+}
+
+.ui-selectonemenu-label,
+.ui-inputtext,
+.ui-inputtextarea,
+.ui-selectoneradio,
+.ui-selectoneradio
+{
+    font-size: 1.100em !important;
+}
+
+.ui-outputlabel
+{
+    font-size: 1.000em !important;
+}
+
+.ui-outputlabel.header-text
+{
+    font-size: 0.700em !important;
+}
+
+.ui-outputlabel.subheader-text
+{
+    font-size: 0.650em !important;
+}
+
+.ui-button.search-button
+{
+
+}
+
+.ui-button-text {
+
+}
+
+.logo
+{
+    width: 3em !important;
+    height: 3em !important;
+}
+
+.ui-sticky {
+    top: 0px !important;
+}
+
+.ui-tabs
+{
+
+}
+
+.ui-datatable
+{
+    font-size: 1.00em !important;
+}

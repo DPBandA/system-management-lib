@@ -620,6 +620,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void reset() {
         super.reset();
 
+        setName("humanResourceManager");
         setSearchType("Employees");
         setSearchText("");
         setModuleNames(new String[]{

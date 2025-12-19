@@ -224,6 +224,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void reset() {
         super.reset();
 
+        setName("clientManager");
         setSearchType("Clients");
         setSearchText("");
         setModuleNames(new String[]{

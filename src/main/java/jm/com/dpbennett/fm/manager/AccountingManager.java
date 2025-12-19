@@ -103,9 +103,11 @@ public class AccountingManager extends GeneralManager implements Serializable {
     }
 
     public final void init() {
+        setName("accountingManager");
         chartOfAccounts = createAccounts();
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }

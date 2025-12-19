@@ -46,6 +46,8 @@ public class FoodSafetyManager extends GeneralManager implements Serializable {
     public void reset() {
 
         super.reset();
+        
+        setName("foodSafetyManager");
 
     }
 

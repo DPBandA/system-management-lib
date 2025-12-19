@@ -47,9 +47,24 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
     }
 
     @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Factories":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
+
+                return true;
+            default:
+                return false;
+
+        }
+
+    }
+
+    @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:foodFactorySearchButton");
+        //getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:foodFactorySearchButton");
 
         getSystemManager().getDashboard().openTab(title);
     }
@@ -71,6 +86,7 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
 
         super.reset();
 
+        setName("foodFactoryManager");
         factories = new ArrayList<>();
         isActiveFactoriesOnly = true;
 

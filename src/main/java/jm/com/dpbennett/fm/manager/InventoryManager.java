@@ -1653,6 +1653,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void reset() {
         super.reset();
 
+        setName("inventoryManager");
         setSearchType("Inventory");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEdited", null, null, null, false, false, false));

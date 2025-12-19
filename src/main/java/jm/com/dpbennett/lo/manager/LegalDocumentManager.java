@@ -241,6 +241,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void reset() {
         super.reset();
 
+        setName("legalDocumentManager");
         setSearchType("Legal Documents");
         setSearchText("");
         setModuleNames(new String[]{

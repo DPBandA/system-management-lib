@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head>
+        <!-- <script type="text/javascript" src="js/javascripts.js" /> -->
+        <h:outputScript library="jmts-ui" name="js/javascripts.js" target="head"/>
+        <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css" />   
+        <h:outputStylesheet library="jmts-ui" name="css/main.css"/>
+        <h:outputStylesheet library="jmts-ui" name="css/jmts.css"/>
+    </h:head>
+
+    <h:body styleClass="jmts-dialog-body">
+        <ui:insert name="content"/>
+    </h:body>
+</html>

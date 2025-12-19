@@ -82,6 +82,7 @@ import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.StreamedContent;
@@ -140,6 +141,28 @@ public class ComplianceManager extends GeneralManager
 
     public ComplianceManager() {
         init();
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+       
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+            }
+        }
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+            }
+        }
+
     }
 
     @Override
@@ -386,10 +409,6 @@ public class ComplianceManager extends GeneralManager
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
 
                 return true;
-            case "Factories":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
-
-                return true;
             case "Factory Inspections":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:factoryInspectionSearchButton");
 
@@ -515,7 +534,7 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void openManufacturerBrowser() {
-        
+
         getSystemManager().getMainTabView().openTab("Manufacturers/Factories");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:manufacturerSearchButton");
@@ -523,7 +542,7 @@ public class ComplianceManager extends GeneralManager
 
     public void sendErrorEmail(String subject, String message) {
         try {
-                      
+
             MailUtils.postMail(
                     null, null,
                     SystemOption.getString(
@@ -1225,6 +1244,7 @@ public class ComplianceManager extends GeneralManager
     public void reset() {
         super.reset();
 
+        setName("complianceManager");
         documentInspections = new ArrayList<>();
         manufacturers = new ArrayList<>();
         surveySearchText = "";
@@ -1235,13 +1255,13 @@ public class ComplianceManager extends GeneralManager
 
         setSearchType("Surveys");
         setSearchText("");
-        setModuleNames(new String[]{
-            "systemManager",
-            "humanResourceManager",
-            "financeManager",
-            "foodFactoryManager",
-            "legalMetrologyManager",
-            "complianceManager"});
+//        setModuleNames(new String[]{
+//            "systemManager",
+//            "humanResourceManager",
+//            "financeManager",
+//            "foodFactoryManager",
+//            "legalMetrologyManager",
+//            "complianceManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

@@ -240,6 +240,7 @@ public class BasicManager extends GeneralManager implements Serializable {
     public void reset() {
         super.reset();
 
+        setName("basicManager");
         setSearchType("Basics");
         setSearchText("");
         setModuleNames(new String[]{

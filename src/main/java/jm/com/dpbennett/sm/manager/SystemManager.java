@@ -1380,6 +1380,12 @@ public final class SystemManager extends GeneralManager {
 
         List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
 
+        
+        // tk from ChatGPT
+        if (stringList == null || stringList.isEmpty()) {
+            return list; // EMPTY list, never null
+        }
+        
         for (String name : stringList) {
             String items[] = name.split(",");
 
@@ -1388,7 +1394,7 @@ public final class SystemManager extends GeneralManager {
 
         return list;
     }
-
+    
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
 
@@ -1915,6 +1921,7 @@ public final class SystemManager extends GeneralManager {
     public void reset() {
         super.reset();
 
+        setName("systemManager");
         activeNavigationTabIndex = 0;
         foundLdapContexts = null;
         foundSystemOptions = null;

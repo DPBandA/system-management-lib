@@ -39,6 +39,11 @@ public final class OperationsManager extends GeneralManager {
     public void init() {
         reset();
     }
+    
+    @Override
+    public void reset() {
+        setName("operationsManager");
+    }
 
     @Override
     public SystemManager getSystemManager() {

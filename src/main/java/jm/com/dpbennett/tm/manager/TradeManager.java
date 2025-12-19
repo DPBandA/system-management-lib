@@ -102,6 +102,8 @@ public class TradeManager extends GeneralManager implements Serializable {
     @Override
     public void reset() {
         super.reset();
+        
+        setName("tradeManager");
 
         createOhlcChart();
 

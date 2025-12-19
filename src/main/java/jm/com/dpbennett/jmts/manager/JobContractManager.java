@@ -470,6 +470,8 @@ public class JobContractManager extends GeneralManager
     @Override
     public void reset() {
         super.reset();
+        
+        setName("jobContractManager");
     }
 
     @Override

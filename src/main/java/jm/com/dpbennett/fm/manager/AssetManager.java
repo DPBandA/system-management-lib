@@ -35,6 +35,7 @@ import org.primefaces.event.TabChangeEvent;
 public class AssetManager extends GeneralManager implements Serializable {
 
     public AssetManager() {
+        setName("jobManager");
     }
 
     @Override
@@ -77,6 +78,7 @@ public class AssetManager extends GeneralManager implements Serializable {
         getSystemManager().onMainViewTabChange(event);
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
