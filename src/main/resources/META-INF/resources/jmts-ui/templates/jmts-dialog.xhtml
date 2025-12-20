@@ -5,7 +5,10 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
     <h:head>
-        <!-- <script type="text/javascript" src="js/javascripts.js" /> -->
+        
+        <!-- Per-page head -->
+        <ui:insert name="head"/>
+      
         <h:outputScript library="jmts-ui" name="js/javascripts.js" target="head"/>
         <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css" />   
         <h:outputStylesheet library="jmts-ui" name="css/main.css"/>

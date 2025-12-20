@@ -18,25 +18,29 @@
 
     <h:body id="appBody" class="flex flex-column min-h-screen">
 
-        <!-- Global dialogs -->
         <ui:insert name="dialogs"/>
 
-        <p:panel rendered="#{jobManager.userLoggedIn}">
+        <p:panel>
 
             <p:scrollTop/>
 
-            <!-- HEADER -->
-            <ui:include src="/jmts-ui/fragments/jmts-header.xhtml"/>
+            <ui:insert name="header">
+                <ui:include src="/jmts-ui/fragments/jmts-header.xhtml"/>
+            </ui:insert>
 
-            <p:divider/>
+            <ui:insert name="upper-divider">
+                <p:divider rendered="true" />
+            </ui:insert>
 
-            <!-- MAIN CONTENT -->
-            <ui:insert name="content"/>
+            <ui:insert name="main-content"/>
 
-            <p:divider/>
+            <ui:insert name="lower-divider">
+                <p:divider rendered="true" />
+            </ui:insert>
 
-            <!-- FOOTER -->
-            <ui:include src="/jmts-ui/fragments/jmts-footer.xhtml"/>
+            <ui:insert name="footer">
+                <ui:include src="/jmts-ui/fragments/jmts-footer.xhtml"/>
+            </ui:insert>
 
         </p:panel>
 
