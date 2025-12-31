@@ -311,10 +311,10 @@ public class EnergyLabelManager extends GeneralManager
         setName("energyLabelManager");
         setSearchType("Energy labels");
         setSearchText("");
-        setModuleNames(new String[]{
-            "energyLabelManager",
-            "systemManager"
-        });
+//        setModuleNames(new String[]{
+//            "energyLabelManager",
+//            "systemManager"
+//        });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

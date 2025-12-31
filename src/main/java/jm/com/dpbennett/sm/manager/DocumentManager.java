@@ -207,10 +207,12 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         this.selectedPost = selectedPost;
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
         return 500;
     }

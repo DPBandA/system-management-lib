@@ -1,5 +1,5 @@
 /*
-General Management (GM)
+System Management (GM)
 Copyright (C) 2025  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -62,7 +62,7 @@ public class GeneralManager implements Manager, Serializable {
     private ArrayList<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
     private ArrayList<SelectItem> allDateSearchFields;
-    private String[] moduleNames;
+    private List<String> moduleNames;
     private User user;
     private String username;
     private String logonMessage;
@@ -106,12 +106,21 @@ public class GeneralManager implements Manager, Serializable {
         this.tabTitle = tabTitle;
     }
 
-    public String[] getModuleNames() {
-        return moduleNames;
-    }
+    @Override
+    public List<String> getModuleNames() {
+        if (moduleNames == null) {
+            moduleNames = new ArrayList<>();
+            
+            List<Module> modules = Module.findAllActive(
+                    getSystemManager().getEntityManager1(),
+                    0);
 
-    public void setModuleNames(String[] moduleNames) {
-        this.moduleNames = moduleNames;
+            for (Module mod : modules) {
+                moduleNames.add(mod.getName());
+            }
+        }
+
+        return moduleNames;
     }
 
     @Override
@@ -180,15 +189,15 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void doSearch() {
 
-        for (String moduleName : moduleNames) {
+        for (String moduleName : getModuleNames()) {
 
-            Module module = Module.findActiveModuleByName(
+            Module mod = Module.findActiveByName(
                     getSystemManager().getEntityManager1(),
                     moduleName);
 
             if (getUser().hasModule(moduleName)) {
-                if (module != null) {
-                    Manager manager = getManager(module.getName());
+                if (mod != null) {
+                    Manager manager = getManager(mod.getName());
                     if (manager != null) {
                         if (hasSearchType(manager, getSearchType())) {
                             manager.doDefaultSearch(
@@ -279,13 +288,13 @@ public class GeneralManager implements Manager, Serializable {
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
                 if (getUser().hasModule(moduleName)) {
-                    Module module = Module.findActiveModuleByName(
+                    Module mod = Module.findActiveByName(
                             getSystemManager().getEntityManager1(),
                             moduleName);
 
-                    if (module != null) {
+                    if (mod != null) {
 
-                        getManager(moduleName).openMainViewTab(module.getMainViewTitle());
+                        getManager(moduleName).openMainViewTab(mod.getMainViewTitle());
 
                     }
                 }
@@ -302,13 +311,13 @@ public class GeneralManager implements Manager, Serializable {
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
                 if (getUser().hasModule(moduleName)) {
-                    Module module = Module.findActiveModuleByName(
+                    Module mod = Module.findActiveByName(
                             getSystemManager().getEntityManager1(),
                             moduleName);
 
-                    if (module != null) {
+                    if (mod != null) {
 
-                        getManager(moduleName).openDashboardTab(module.getDashboardTitle());
+                        getManager(moduleName).openDashboardTab(mod.getDashboardTitle());
 
                     }
                 }
@@ -340,15 +349,15 @@ public class GeneralManager implements Manager, Serializable {
 
         groupedSearchTypes.clear();
 
-        for (String moduleName : moduleNames) {
+        for (String moduleName : getModuleNames()) {
 
-            Module module = Module.findActiveModuleByName(
+            Module mod = Module.findActiveByName(
                     getSystemManager().getEntityManager1(),
                     moduleName);
 
             if (getUser().hasModule(moduleName)) {
-                if (module != null) {
-                    Manager manager = getManager(module.getName());
+                if (mod != null) {
+                    Manager manager = getManager(mod.getName());
                     if (manager != null) {
                         groupedSearchTypes.add(manager.getSearchTypesGroup());
                         searchType = manager.getSearchType();
@@ -430,8 +439,8 @@ public class GeneralManager implements Manager, Serializable {
     public ArrayList<SelectItem> getDatePeriods() {
         ArrayList<SelectItem> datePeriods = new ArrayList<>();
 
-        for (String name : DatePeriod.getDatePeriodNames()) {
-            datePeriods.add(new SelectItem(name, name));
+        for (String n : DatePeriod.getDatePeriodNames()) {
+            datePeriods.add(new SelectItem(n, n));
         }
 
         return datePeriods;
@@ -469,15 +478,15 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void updateSearchType() {
 
-        for (String moduleName : moduleNames) {
+        for (String moduleName : getModuleNames()) {
 
-            Module module = Module.findActiveModuleByName(
+            Module mod = Module.findActiveByName(
                     getSystemManager().getEntityManager1(),
                     moduleName);
 
             if (getUser().hasModule(moduleName)) {
-                if (module != null) {
-                    Manager manager = getManager(module.getName());
+                if (mod != null) {
+                    Manager manager = getManager(mod.getName());
                     if (manager != null) {
                         if (hasSearchType(manager, searchType)) {
                             ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
@@ -541,24 +550,6 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void reset() {
         setName("generalManager");
-        moduleNames = new String[]{
-            "jobManager",
-            "jobFinanceManager",
-            "jobContractManager",
-            "clientManager",
-            "reportManager",
-            "systemManager",
-            "financeManager",
-            "purchasingManager",
-            "inventoryManager",
-            "humanResourceManager",
-            "purchasingManager",
-            "foodFactoryManager",
-            "legalMetrologyManager",
-            "complianceManager",
-            "legalDocumentManager",
-            "energyLabelManager"
-        };
         searchText = "";
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -739,8 +730,8 @@ public class GeneralManager implements Manager, Serializable {
 
             constraints.setReturningAttributes(attrIDs);
 
-            String name = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
-            NamingEnumeration answer = ctx.search(name, "SAMAccountName=" + username, constraints);
+            String n = (String) SystemOption.getOptionValueObject(em, "ldapContextName");
+            NamingEnumeration answer = ctx.search(n, "SAMAccountName=" + username, constraints);
 
             if (!answer.hasMore()) { // Assuming only one match
                 // LDAP user not found!
@@ -957,8 +948,8 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-        
-       onMainViewTabChange(event);
+
+        onMainViewTabChange(event);
 
     }
 
@@ -991,7 +982,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public SystemManager getSystemManager() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -1097,7 +1088,7 @@ public class GeneralManager implements Manager, Serializable {
     public Module getModule() {
 
         if (module == null) {
-            module = Module.findActiveModuleByName(
+            module = Module.findActiveByName(
                     getSystemManager().getEntityManager1(), getName());
         }
 

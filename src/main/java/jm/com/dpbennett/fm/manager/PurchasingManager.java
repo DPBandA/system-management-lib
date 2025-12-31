@@ -2761,10 +2761,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         setSearchType("Purchase requisitions");
         setSearchText("");
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
-        setModuleNames(new String[]{
-            "systemManager",
-            "financeManager",
-            "purchasingManager"});
+//        setModuleNames(new String[]{
+//            "systemManager",
+//            "financeManager",
+//            "purchasingManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

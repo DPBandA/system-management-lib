@@ -53,7 +53,6 @@ import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -1780,11 +1779,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setSearchType("Accounting Codes");
         setSearchText("");
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
-        setModuleNames(new String[]{
-            "systemManager",
-            "financeManager",
-            "purchasingManager",
-            "inventoryManager"});
+//        setModuleNames(new String[]{
+//            "systemManager",
+//            "financeManager",
+//            "purchasingManager",
+//            "inventoryManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

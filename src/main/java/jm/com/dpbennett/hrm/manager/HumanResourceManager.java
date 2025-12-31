@@ -623,9 +623,9 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         setName("humanResourceManager");
         setSearchType("Employees");
         setSearchText("");
-        setModuleNames(new String[]{
-            "systemManager",
-            "humanResourceManager"});
+//        setModuleNames(new String[]{
+//            "systemManager",
+//            "humanResourceManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

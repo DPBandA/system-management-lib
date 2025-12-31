@@ -237,5 +237,7 @@ public interface Manager {
     public void setName(String name);
     
     public Module getModule();
+    
+    public List<String> getModuleNames();
 
 }

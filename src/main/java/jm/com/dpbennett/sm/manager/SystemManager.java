@@ -42,7 +42,6 @@ import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sm.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
-import jm.com.dpbennett.business.entity.dm.Issue;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
@@ -129,8 +128,7 @@ public final class SystemManager extends GeneralManager {
     private String emailSearchText;
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
-    private Issue issue;
-
+    
     public SystemManager() {
         init();
     }
@@ -161,14 +159,6 @@ public final class SystemManager extends GeneralManager {
     public EntityManagerFactory getSMPU() {
 
         return SMPU;
-    }
-
-    public Issue getIssue() {
-        return issue;
-    }
-
-    public void setIssue(Issue issue) {
-        this.issue = issue;
     }
 
     public Employee getEmployee() {
@@ -561,7 +551,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void addUserModules() {
-        List<Module> source = Module.findAllActiveModules(getEntityManager1(), 0);
+        List<Module> source = Module.findAllActive(getEntityManager1(), 0);
         List<Module> target = selectedUser.getActiveModules();
 
         source.removeAll(target);
@@ -1179,11 +1169,11 @@ public final class SystemManager extends GeneralManager {
             case "Modules":
 
                 if (getIsActiveModulesOnly()) {
-                    foundModules = Module.findActiveModules(
+                    foundModules = Module.findActive(
                             getEntityManager1(),
                             searchText, maxSearchResults);
                 } else {
-                    foundModules = Module.findModules(
+                    foundModules = Module.findAll(
                             getEntityManager1(),
                             searchText, maxSearchResults);
                 }
@@ -1943,8 +1933,8 @@ public final class SystemManager extends GeneralManager {
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
         setSearchType("Users");
-        setModuleNames(new String[]{
-            "systemManager"});
+//        setModuleNames(new String[]{
+//            "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2429,5 +2419,6 @@ public final class SystemManager extends GeneralManager {
                 && !selectedSystemOption.getOptionValueType().equals("List<String>");
 
     }
+    
 
 }

@@ -632,9 +632,7 @@ public class ReportManager extends GeneralManager {
     }
 
     public final void init() {
-
         reset();
-
     }
 
     @Override
@@ -644,9 +642,9 @@ public class ReportManager extends GeneralManager {
         setName("reportManager");
         setSearchType("Reports");
         setSearchText("");
-        setModuleNames(new String[]{
-            "systemManager",
-            "reportManager"});
+//        setModuleNames(new String[]{
+//            "systemManager",
+//            "reportManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

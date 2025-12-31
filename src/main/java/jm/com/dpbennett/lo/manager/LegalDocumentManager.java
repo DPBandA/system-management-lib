@@ -244,9 +244,9 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         setName("legalDocumentManager");
         setSearchType("Legal Documents");
         setSearchText("");
-        setModuleNames(new String[]{
-            "systemManager",
-            "legalDocumentManager"});
+//        setModuleNames(new String[]{
+//            "systemManager",
+//            "legalDocumentManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateReceived", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

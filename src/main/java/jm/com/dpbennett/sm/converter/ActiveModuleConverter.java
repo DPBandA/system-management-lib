@@ -36,7 +36,7 @@ public class ActiveModuleConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Module module = Module.findActiveModuleByName(em, value);
+        Module module = Module.findActiveByName(em, value);
 
         if (module == null) {
             module = new Module(value);
