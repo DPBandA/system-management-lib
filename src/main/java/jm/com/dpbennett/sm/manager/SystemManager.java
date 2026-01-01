@@ -402,6 +402,10 @@ public final class SystemManager extends GeneralManager {
     public boolean getEnableUpdateLDAPUser() {
         return SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser");
     }
+    
+    public boolean booleanOption(String optionName) {
+        return SystemOption.getBoolean(getEntityManager1(), optionName);
+    }
 
     public boolean getShowUserProfileSecurityTab() {
         return SystemOption.getBoolean(getEntityManager1(), "showUserProfileSecurityTab");

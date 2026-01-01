@@ -129,7 +129,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-       
+
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
@@ -140,7 +140,9 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-       
+
+        super.onMainViewTabChange(event);
+
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
@@ -1427,12 +1429,17 @@ public class JobManager extends GeneralManager
             getUser().setJobTableViewPreference("Job Costings");
         }
 
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
+        if (!getSystemManager().booleanOption("RenderMobileUI")) {
+            getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
+        }
 
         Module module = getModule();
         if (module != null) {
             getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
-            getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+            
+            if (!getSystemManager().booleanOption("RenderMobileUI")) {
+                getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+            }
         }
 
     }
