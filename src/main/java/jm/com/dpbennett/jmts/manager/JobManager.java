@@ -793,7 +793,6 @@ public class JobManager extends GeneralManager
 
                         if (employeeUser != null) {
                             if (User.isNotificationActive(employeeUser,
-                                    getSystemManager().getEntityManager1(),
                                     "jobAssigned")) {
 
                                 sendJobEntryEmail(getSystemManager().getEntityManager1(),
@@ -814,7 +813,6 @@ public class JobManager extends GeneralManager
 
                         if (employeeUser != null) {
                             if (User.isNotificationActive(employeeUser,
-                                    getSystemManager().getEntityManager1(),
                                     "jobCostingPrepared")) {
 
                                 sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -833,7 +831,6 @@ public class JobManager extends GeneralManager
 
                             if (employeeUser != null) {
                                 if (User.isNotificationActive(employeeUser,
-                                        getSystemManager().getEntityManager1(),
                                         "jobCostingPrepared")) {
 
                                     sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -854,7 +851,6 @@ public class JobManager extends GeneralManager
                         if (employeeUser != null) {
 
                             if (User.isNotificationActive(employeeUser,
-                                    getSystemManager().getEntityManager1(),
                                     "jobCostingPrepared")) {
 
                                 sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -873,7 +869,6 @@ public class JobManager extends GeneralManager
                             if (employeeUser != null) {
 
                                 if (User.isNotificationActive(employeeUser,
-                                        getSystemManager().getEntityManager1(),
                                         "jobCostingPrepared")) {
 
                                     sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -903,7 +898,6 @@ public class JobManager extends GeneralManager
                             if (employeeUser != null) {
 
                                 if (User.isNotificationActive(employeeUser,
-                                        getSystemManager().getEntityManager1(),
                                         "jobCostingApproved")) {
 
                                     sendChildJobCostingApprovalEmail(getSystemManager().getEntityManager1(),
@@ -925,7 +919,6 @@ public class JobManager extends GeneralManager
                     if (employeeUser != null) {
 
                         if (User.isNotificationActive(employeeUser,
-                                getSystemManager().getEntityManager1(),
                                 "cashPaymentMade")) {
 
                             sendJobPaymentEmail(getSystemManager().getEntityManager1(),
@@ -1429,7 +1422,7 @@ public class JobManager extends GeneralManager
             getUser().setJobTableViewPreference("Job Costings");
         }
 
-        if (!getSystemManager().booleanOption("RenderMobileUI")) {
+        if (!getUser().isRenderMobileUI()) {
             getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
         }
 
@@ -1437,7 +1430,7 @@ public class JobManager extends GeneralManager
         if (module != null) {
             getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
             
-            if (!getSystemManager().booleanOption("RenderMobileUI")) {
+            if (!getUser().isRenderMobileUI()) {
                 getSystemManager().getDashboard().openTab(module.getDashboardTitle());
             }
         }

@@ -128,7 +128,7 @@ public final class SystemManager extends GeneralManager {
     private String emailSearchText;
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
-    
+
     public SystemManager() {
         init();
     }
@@ -402,7 +402,7 @@ public final class SystemManager extends GeneralManager {
     public boolean getEnableUpdateLDAPUser() {
         return SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser");
     }
-    
+
     public boolean booleanOption(String optionName) {
         return SystemOption.getBoolean(getEntityManager1(), optionName);
     }
@@ -798,8 +798,6 @@ public final class SystemManager extends GeneralManager {
 
     public void setEditSelectedUser(User selectedUser) {
 
-        selectedUser.loadSettings(getEntityManager1());
-
         this.selectedUser = selectedUser;
     }
 
@@ -912,16 +910,6 @@ public final class SystemManager extends GeneralManager {
             return;
         }
 
-        rm = getSelectedUser().saveNotificationSettings(getEntityManager1());
-        if (!rm.isSuccess()) {
-            PrimeFacesUtils.addMessage(
-                    rm.getHeader(),
-                    rm.getMessage(),
-                    FacesMessage.SEVERITY_ERROR);
-
-            return;
-        }
-
         if (getSelectedUser().getUpdateLDAPUser()) {
             if (updateLDAPUser()) {
 
@@ -986,7 +974,8 @@ public final class SystemManager extends GeneralManager {
 
         PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
 
-        getUser().saveNotificationSettings(getEntityManager1());
+        getUser().save(getEntityManager1());
+
     }
 
     public void saveUserSecurityProfile() {
@@ -1200,7 +1189,6 @@ public final class SystemManager extends GeneralManager {
     @Override
     public void viewUserProfile() {
 
-        getUser().loadSettings(getEntityManager1());
     }
 
     @Override
@@ -1374,12 +1362,10 @@ public final class SystemManager extends GeneralManager {
 
         List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
 
-        
-        // tk from ChatGPT
         if (stringList == null || stringList.isEmpty()) {
-            return list; // EMPTY list, never null
+            return list;
         }
-        
+
         for (String name : stringList) {
             String items[] = name.split(",");
 
@@ -1388,7 +1374,7 @@ public final class SystemManager extends GeneralManager {
 
         return list;
     }
-    
+
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
 
@@ -2400,7 +2386,7 @@ public final class SystemManager extends GeneralManager {
         this.notificationSearchText = notificationSearchText;
     }
 
-    // tk move to JobManager
+    // tk create <List> system option
     public List<SelectItem> getJobTableViews() {
         ArrayList views = new ArrayList();
 
@@ -2423,6 +2409,5 @@ public final class SystemManager extends GeneralManager {
                 && !selectedSystemOption.getOptionValueType().equals("List<String>");
 
     }
-    
 
 }
