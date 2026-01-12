@@ -186,6 +186,7 @@ public class JobManager extends GeneralManager
     public List<Employee> completeActiveEmployee(String query) {
 
         List<Employee> employees = new ArrayList<>();
+        List<Employee> departmentEmployees = new ArrayList<>();
 
         try {
             if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeSubcontracted()) {
@@ -198,6 +199,12 @@ public class JobManager extends GeneralManager
                 employees.addAll(getCurrentJob().getDepartment().getStaff());
             }
 
+            for (Employee employee : employees) {
+                if (employee.getName().toUpperCase().contains(query.toUpperCase())) {
+                    departmentEmployees.add(employee);
+                }
+            }
+
             Collections.sort(employees);
 
         } catch (Exception e) {
@@ -205,7 +212,7 @@ public class JobManager extends GeneralManager
             return new ArrayList<>();
         }
 
-        return employees;
+        return departmentEmployees;
     }
 
     public List<Department> completeActiveDepartmentByBusiness(String query) {
@@ -1429,7 +1436,7 @@ public class JobManager extends GeneralManager
         Module module = getModule();
         if (module != null) {
             getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
-            
+
             if (!getUser().isRenderMobileUI()) {
                 getSystemManager().getDashboard().openTab(module.getDashboardTitle());
             }
