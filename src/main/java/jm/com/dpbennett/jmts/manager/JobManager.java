@@ -2539,6 +2539,19 @@ public class JobManager extends GeneralManager
 
     }
 
+    public void doJobSearchDialogSearch() {
+        
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());      
+    }
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -2678,6 +2691,25 @@ public class JobManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
+
+    }
+
+    public void viewJobSearchDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width("300px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/jobSearchDialog", options, null);
 
     }
 
