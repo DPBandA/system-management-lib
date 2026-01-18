@@ -1,6 +1,6 @@
 /*
-Report Manager (RM) - Reporting module. 
-Copyright (C) 2024  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
