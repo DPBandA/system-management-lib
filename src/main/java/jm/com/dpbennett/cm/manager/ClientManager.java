@@ -227,9 +227,6 @@ public class ClientManager extends GeneralManager implements Serializable {
         setName("clientManager");
         setSearchType("Clients");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "clientManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
