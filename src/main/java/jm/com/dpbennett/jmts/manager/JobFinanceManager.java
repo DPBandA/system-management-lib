@@ -550,7 +550,7 @@ public class JobFinanceManager extends GeneralManager
         this.foundJobCostingAndPayments = foundJobCostingAndPayments;
     }
 
-      public void approveSelectedJobCostings() {
+    public void approveSelectedJobCostings() {
         int numCostingsCApproved = 0;
 
         if (getJobManager().getSelectedJobs().length > 0) {
@@ -592,7 +592,7 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-     public Boolean invoiceJobCosting(Job job, Boolean invoice) {
+    public Boolean invoiceJobCosting(Job job, Boolean invoice) {
 
         prepareToInvoiceJobCosting(job);
 
@@ -610,7 +610,6 @@ public class JobFinanceManager extends GeneralManager
 
             return true;
         } else {
-            // Reset invoiced status
             job.getJobCostingAndPayment().setInvoiced(!invoice);
 
             return false;
@@ -672,10 +671,8 @@ public class JobFinanceManager extends GeneralManager
     public Tax getTax(Job job) {
         Tax tax = job.getJobCostingAndPayment().getTax();
 
-        // Handle the case where the tax is not set
         if (tax.getId() == null) {
             if (job.getJobCostingAndPayment().getPercentageGCT() != null) {
-                // Find and use tax object 
                 Tax tax2 = Tax.findByValue(getFinanceManager().getEntityManager1(),
                         Double.valueOf(job.getJobCostingAndPayment().getPercentageGCT()));
                 if (tax2 != null) {
@@ -708,11 +705,10 @@ public class JobFinanceManager extends GeneralManager
         return getDiscount(getCurrentJob());
     }
 
-      public Discount getDiscount(Job job) {
+    public Discount getDiscount(Job job) {
 
         Discount discount = job.getJobCostingAndPayment().getDiscount();
 
-        // Handle the case where the discount object is not set.
         if (discount.getId() == null) {
             discount = Discount.findByValueAndType(
                     getFinanceManager().getEntityManager1(),
@@ -839,12 +835,10 @@ public class JobFinanceManager extends GeneralManager
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         EntityManager em = getEntityManager1();
 
-        // Get costing data
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
 
             em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);
-            // Get costing data
             Job reportData[] = getJobManager().getSelectedJobs();
             for (Job selectedJob : reportData) {
                 HashMap parameters = new HashMap();
@@ -884,12 +878,10 @@ public class JobFinanceManager extends GeneralManager
                             + selectedJob.getJobNumber().replace("/", "_")
                             + ".pdf";
 
-                    // Compile job costing
                     JasperReport jasperReport
                             = JasperCompileManager.
                                     compileReport((String) SystemOption.getOptionValueObject(getSystemManager().getEntityManager1(), "jobCosting"));
 
-                    // Generate job costing
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
                     byte[] costingFileBytes = JasperExportManager.exportReportToPdf(print);
 
@@ -936,13 +928,10 @@ public class JobFinanceManager extends GeneralManager
             dateCellStyle.setDataFormat(
                     createHelper.createDataFormat().getFormat("M/D/YYYY"));
 
-            // Output stream for modified Excel file
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            // Get sheet          
             XSSFSheet costings = wb.getSheet("Job Costings");
 
-            // Get costing data
             Job reportData[] = getJobManager().getSelectedJobs();
             for (Job job : reportData) {
                 costingCol = 0;
@@ -1007,7 +996,7 @@ public class JobFinanceManager extends GeneralManager
                 // Cost components
                 int index = 0;
                 for (CostComponent costComponent : getCostComponentsWithoutHeadings(job.getJobCostingAndPayment())) {
-                    costComponent.getCost(); // NB: Not used
+                    costComponent.getCost();
                     ReportUtils.setExcelCellValue(wb, costings,
                             costingRow + index++,
                             costingCol,
@@ -1109,7 +1098,6 @@ public class JobFinanceManager extends GeneralManager
                 costingRow = costingRow + index;
             }
 
-            // Write modified Excel file and return it
             wb.write(out);
 
             return new ByteArrayInputStream(out.toByteArray());
@@ -1171,24 +1159,19 @@ public class JobFinanceManager extends GeneralManager
             dateCellStyle.setDataFormat(
                     createHelper.createDataFormat().getFormat("M/D/YYYY"));
 
-            // Output stream for modified Excel file
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            // Get sheets          
             XSSFSheet invoices = wb.getSheet("Invoices");
             XSSFSheet invoiceDetails = wb.getSheet("Invoice_Details");
             XSSFSheet invoiceOptionalFields = wb.getSheet("Invoice_Optional_Fields");
 
-            // Get report data
             EntityManager em = getEntityManager1();
             Job reportData[] = getJobManager().getSelectedJobs();
             for (Job job : reportData) {
-                // Reload from database
                 if (job.getId() != null) {
                     job = Job.findJobById(em, job.getId());
                     em.refresh(job);
                 }
-                // Export only if costing was invoiced
                 if (canExportInvoice(job)) {
                     invoiceCol = 0;
                     invoiceDetailsCol = 0;
@@ -1197,7 +1180,6 @@ public class JobFinanceManager extends GeneralManager
 
                     prepareToInvoiceJobCosting(job);
 
-                    // Insert fake cost component with job description
                     if ((Boolean) SystemOption.getOptionValueObject(
                             getSystemManager().getEntityManager1(),
                             "addJobDescriptionToInvoiceDetail")) {
@@ -1213,14 +1195,13 @@ public class JobFinanceManager extends GeneralManager
                         job.getJobCostingAndPayment().setCostComponents(currentComponents);
                     }
 
-                    // Insert tax as cost component
                     if (getTax(job).getTaxValue() > 0.0) {
                         if ((Boolean) SystemOption.getOptionValueObject(
                                 getSystemManager().getEntityManager1(),
                                 "addTaxAsCostComponent")) {
                             ArrayList<CostComponent> currentComponents
                                     = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
-                            if (!currentComponents.isEmpty() /*&& !job.getJobCostingAndPayment().getCashPayments().isEmpty()*/) {
+                            if (!currentComponents.isEmpty()) {
                                 CostComponent currentLast
                                         = currentComponents.get(currentComponents.size() - 1);
 
@@ -1237,14 +1218,13 @@ public class JobFinanceManager extends GeneralManager
                         }
                     }
 
-                    // Insert discount as cost component
                     if (getDiscount(job).getDiscountValue() > 0.0) {
                         if ((Boolean) SystemOption.getOptionValueObject(
                                 getSystemManager().getEntityManager1(),
                                 "addDiscountAsCostComponent")) {
                             ArrayList<CostComponent> currentComponents
                                     = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
-                            if (!currentComponents.isEmpty() /*&& !job.getJobCostingAndPayment().getCashPayments().isEmpty()*/) {
+                            if (!currentComponents.isEmpty()) {
                                 CostComponent currentLast
                                         = currentComponents.get(currentComponents.size() - 1);
 
@@ -1268,13 +1248,12 @@ public class JobFinanceManager extends GeneralManager
                             "addPaymentDetailCostComponentToInvoice")) {
                         ArrayList<CostComponent> currentComponents
                                 = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
-                        if (!currentComponents.isEmpty() /*&& !job.getJobCostingAndPayment().getCashPayments().isEmpty()*/) {
+                        if (!currentComponents.isEmpty()) {
                             CostComponent currentLast
                                     = currentComponents.get(currentComponents.size() - 1);
 
                             CostComponent newLast = new CostComponent();
                             newLast.setId(currentLast.getId() + 1L);
-                            // Gather payment details
                             int paymentIndex = 0;
                             String paymentDetails = "Payment(s): ";
                             if (!job.getJobCostingAndPayment().getCashPayments().isEmpty()) {
@@ -1310,7 +1289,7 @@ public class JobFinanceManager extends GeneralManager
                             "addBalanceCostComponentToInvoice")) {
                         ArrayList<CostComponent> currentComponents
                                 = (ArrayList<CostComponent>) getCostComponentsWithoutHeadings(job.getJobCostingAndPayment());
-                        if (!currentComponents.isEmpty() /*&& !job.getJobCostingAndPayment().getCashPayments().isEmpty()*/) {
+                        if (!currentComponents.isEmpty()) {
                             CostComponent currentLast
                                     = currentComponents.get(currentComponents.size() - 1);
 
@@ -1881,7 +1860,6 @@ public class JobFinanceManager extends GeneralManager
                 }
             }
 
-            // Write modified Excel file and return it
             wb.write(out);
 
             return new ByteArrayInputStream(out.toByteArray());
@@ -2332,13 +2310,11 @@ public class JobFinanceManager extends GeneralManager
             if (con != null) {
                 try {
                     StreamedContent streamContent;
-                    // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
                                     compileReport((String) SystemOption.getOptionValueObject(
                                             getSystemManager().getEntityManager1(), "jobCosting"));
 
-                    // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
                     byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
@@ -2369,7 +2345,6 @@ public class JobFinanceManager extends GeneralManager
     public StreamedContent getProformaInvoice(EntityManager em) {
 
         HashMap parameters = new HashMap();
-        // tk the currency symbol is to be obtained from default currency
         DecimalFormat currencyFormatter = new DecimalFormat("#,##0.00");
         DecimalFormat hourFormatter = new DecimalFormat("#,##0.0");
 
@@ -2449,7 +2424,6 @@ public class JobFinanceManager extends GeneralManager
             if (con != null) {
                 try {
                     StreamedContent streamContent;
-                    // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
                                     compileReport((String) SystemOption.
@@ -2457,7 +2431,6 @@ public class JobFinanceManager extends GeneralManager
                                                     getSystemManager().getEntityManager1(),
                                                     "proformaInvoiceFormTemplate"));
 
-                    // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
                     byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
@@ -2540,16 +2513,12 @@ public class JobFinanceManager extends GeneralManager
     private void prepareToInvoiceJobCosting(Job job) {
 
         // Ensure that services are added based on the service contract
-//        getJobContractManager().addServices(job);
         // Ensure that an accounting Id is added for the client  
         AccPacCustomer financialAccount = AccPacCustomer.findByName(
                 getEntityManager2(), job.getClient().getName());
         if (financialAccount != null) {
-            // Set accounting Id
             job.getClient().setAccountingId(financialAccount.getIdCust());
-            // Set credit limit 
             job.getClient().setCreditLimit((financialAccount.getCreditLimit().doubleValue()));
-            // Update and save
             job.getClient().setEditedBy(getUserEmployee());
             job.getClient().setDateEdited(new Date());
             job.getClient().save(getEntityManager1());
@@ -2616,7 +2585,6 @@ public class JobFinanceManager extends GeneralManager
             return false;
 
         }
-        // Check if approved
         if (!job.getJobCostingAndPayment().getCostingApproved()) {
 
             PrimeFacesUtils.addMessage("Job Costing NOT Approved",
@@ -2912,7 +2880,6 @@ public class JobFinanceManager extends GeneralManager
         if (!validateCurrentJobCosting() && getCurrentJob().getJobCostingAndPayment().getCostingCompleted()) {
             getCurrentJob().getJobCostingAndPayment().setCostingCompleted(false);
             getCurrentJob().getJobCostingAndPayment().setCostingApproved(false);
-            //displayCommonMessageDialog(null, "Removing the content of a required field has invalidated this job costing", "Invalid Job Costing", "info");
         } else {
             setJobCostingAndPaymentDirty(true);
         }
@@ -3136,10 +3103,8 @@ public class JobFinanceManager extends GeneralManager
 
     public void closeUnitCostDialog() {
 
-        // prompt to save modified job before attempting to create new job
         if (getIsDirty()) {
-            // ask to save         
-            //displayCommonConfirmationDialog(initDialogActionHandlerId("unitCostDirty"), "This unit cost was modified. Do you wish to save it?", "Unit Cost Not Saved", "info");
+            // Ask to save?        
         } else {
             PrimeFaces.current().executeScript("PF('unitCostDialog').hide();");
         }
@@ -3241,11 +3206,9 @@ public class JobFinanceManager extends GeneralManager
     public Boolean validateCurrentJobCosting() {
 
         try {
-            // check for valid job
             if (getCurrentJob().getId() == null) {
                 return false;
             }
-            // check for job report # and description
             if ((getCurrentJob().getReportNumber() == null) || (getCurrentJob().getReportNumber().trim().equals(""))) {
                 return false;
             }
@@ -3266,18 +3229,14 @@ public class JobFinanceManager extends GeneralManager
 
         try {
 
-            // Validate and save objects
-            // Department
             Department department = Department.findByName(em, getCurrentUnitCost().getDepartment().getName());
             if (department == null) {
-                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid department was not entered.");
 
                 return;
             } else {
                 getCurrentUnitCost().setDepartment(department);
             }
 
-            // Department unit
             DepartmentUnit departmentUnit = DepartmentUnit.findDepartmentUnitByName(em, getCurrentUnitCost().getDepartmentUnit().getName());
             if (departmentUnit == null) {
                 getCurrentUnitCost().setDepartmentUnit(DepartmentUnit.getDefaultDepartmentUnit(em, "--"));
@@ -3285,7 +3244,6 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentUnitCost().setDepartmentUnit(departmentUnit);
             }
 
-            // Laboratory unit
             Laboratory laboratory = Laboratory.findLaboratoryByName(em, getCurrentUnitCost().getLaboratory().getName());
             if (laboratory == null) {
                 getCurrentUnitCost().setLaboratory(Laboratory.getDefaultLaboratory(em, "--"));
@@ -3293,28 +3251,21 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentUnitCost().setLaboratory(laboratory);
             }
 
-            // Service
             if (getCurrentUnitCost().getService().trim().equals("")) {
-                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid service was not entered.");
 
                 return;
             }
 
-            // Cost
             if (getCurrentUnitCost().getCost() <= 0.0) {
-                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid cost was not entered.");
 
                 return;
             }
 
-            // Effective date
             if (getCurrentUnitCost().getEffectiveDate() == null) {
-                //setInvalidFormFieldMessage("This unit cost cannot be saved because a valid effective date was not entered.");
 
                 return;
             }
 
-            // save job to database and check for errors
             em.getTransaction().begin();
 
             Long id = BusinessEntityUtils.saveBusinessEntity(em, currentUnitCost);
@@ -3331,7 +3282,6 @@ public class JobFinanceManager extends GeneralManager
         } catch (Exception e) {
 
             System.out.println(e);
-            // send error message to developer's email
             sendErrorEmail("An exception occurred while saving a unit cost!",
                     "\nJMTS User: " + getUser().getUsername()
                     + "\nDate/time: " + new Date()
@@ -3448,7 +3398,7 @@ public class JobFinanceManager extends GeneralManager
             em.getTransaction().begin();
 
             Notification notification = Notification.findFirstNotificationByOwnerId(em, getCurrentJob().getId());
-            if (notification == null) { // This seems to be a new job
+            if (notification == null) {
                 notification = new Notification(getCurrentJob().getId(), new Date(), "Job entered");
                 em.persist(notification);
             } else {
@@ -3463,7 +3413,7 @@ public class JobFinanceManager extends GeneralManager
             em.getTransaction().begin();
 
             Notification notification = Notification.findFirstNotificationByOwnerId(em, getCurrentJob().getId());
-            if (notification == null) { // This seems to be a new job
+            if (notification == null) {
                 notification = new Notification(getCurrentJob().getId(), new Date(), "Job saved");
                 em.persist(notification);
             } else {
@@ -3480,7 +3430,6 @@ public class JobFinanceManager extends GeneralManager
 
     public void sendErrorEmail(String subject, String message) {
         try {
-            // Send error message to developer's email            
             MailUtils.postMail(null, null,
                     SystemOption.getString(getSystemManager().getEntityManager1(),
                             "jobManagerEmailName"), null, subject, message,
@@ -3494,7 +3443,6 @@ public class JobFinanceManager extends GeneralManager
         deleteCostComponentByName(selectedCostComponent.getName());
     }
 
-    // Remove this and other code out of JobManager? Put in JobCostingAndPayment or Job?
     public void deleteCostComponentByName(String componentName) {
 
         List<CostComponent> components = getCurrentJob().getJobCostingAndPayment().getAllSortedCostComponents();
@@ -3522,8 +3470,6 @@ public class JobFinanceManager extends GeneralManager
         if (getCurrentJob().getId() != null) {
             selectedCashPayment = new CashPayment();
 
-            // If there were other payments it is assumed that this is a final payment.
-            // Otherwsie, it is assumed to be a deposit.
             if (!getCurrentJob().getJobCostingAndPayment().getCashPayments().isEmpty()) {
                 selectedCashPayment.setPaymentPurpose("Final");
             } else {
@@ -3662,8 +3608,6 @@ public class JobFinanceManager extends GeneralManager
 
     public Boolean getCanApplyDiscount() {
 
-        // tk Not used for now
-        // return getUser().can("ApplyDiscountsToJobCosting");
         return true;
 
     }
@@ -3687,8 +3631,6 @@ public class JobFinanceManager extends GeneralManager
 
     public void openJobCostingDialog() {
         if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
-            // Reload cash payments if possible to avoid overwriting them 
-            // when saving
             EntityManager em = getEntityManager1();
             JobCostingAndPayment jcp
                     = JobCostingAndPayment.findJobCostingAndPaymentById(em,
@@ -4081,7 +4023,6 @@ public class JobFinanceManager extends GeneralManager
                     accPacCustomer.setCustomerName("");
                 }
 
-                // set the found client name to the present job client
                 if (accPacCustomer.getCustomerName() != null) {
                     updateCreditStatus(null);
                 }
@@ -4191,7 +4132,6 @@ public class JobFinanceManager extends GeneralManager
 
                 setJobCostingAndPaymentDirty(true);
             } else {
-                // Nothing yet
             }
 
             selectedJobCostingTemplate = null;
@@ -4283,7 +4223,6 @@ public class JobFinanceManager extends GeneralManager
         updateFinalCost();
         updateAmountDue();
 
-        // Do job save if possible...
         if (getCurrentJob().getId() != null
                 && getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
             PrimeFacesUtils.addMessage(getCurrentJob().getType() + " Saved",
@@ -4374,7 +4313,6 @@ public class JobFinanceManager extends GeneralManager
         List<String> emails = new ArrayList<>();
 
         emails.add(getEmployeeDefaultEmailAdress(department.getHead()));
-        // Get the email of the acting head of he/she is currently acting
         if (department.getActingHeadActive()) {
             emails.add(getEmployeeDefaultEmailAdress(department.getActingHead()));
         }
@@ -4385,11 +4323,9 @@ public class JobFinanceManager extends GeneralManager
     public String getEmployeeDefaultEmailAdress(Employee employee) {
         String address = "";
 
-        // Get email1 which is treated as the employee's company email address
         if (!employee.getInternet().getEmail1().trim().equals("")) {
             address = employee.getInternet().getEmail1();
         } else {
-            // Get and set default email using company domain
 
             String listAsString = SystemOption.getString(
                     getSystemManager().getEntityManager1(), "domainNames");
@@ -4399,7 +4335,6 @@ public class JobFinanceManager extends GeneralManager
                     getSystemManager().getEntityManager1(),
                     employee.getId());
 
-            // Build email address
             if (user1 != null) {
                 address = user1.getUsername();
                 if (domainNames.length > 0) {

@@ -33,14 +33,6 @@ public class CustomHighLowItemLabelGenerator extends HighLowItemLabelGenerator {
     private DateFormat dateFormatter;
     private NumberFormat numberFormatter;
 
-    /**
-     * Creates a tool tip generator using the supplied date formatter.
-     *
-     * @param dateFormatter the date formatter (<code>null</code> not
-     * permitted).
-     * @param numberFormatter the number formatter (<code>null</code> not
-     * permitted).
-     */
     public CustomHighLowItemLabelGenerator(DateFormat dateFormatter, NumberFormat numberFormatter) {
         if (dateFormatter == null) {
             throw new IllegalArgumentException("Null 'dateFormatter' argument.");
@@ -52,15 +44,6 @@ public class CustomHighLowItemLabelGenerator extends HighLowItemLabelGenerator {
         this.numberFormatter = numberFormatter;
     }
 
-    /**
-     * Generates a tooltip text item for a particular item within a series.
-     *
-     * @param dataset the dataset.
-     * @param series the series (zero-based index).
-     * @param item the item (zero-based index).
-     *
-     * @return The tooltip text.
-     */
     @Override
     public String generateToolTip(XYDataset dataset, int series, int item) {
 

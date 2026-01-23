@@ -36,7 +36,7 @@ import jm.com.dpbennett.business.entity.util.DatePeriodJobReportColumnData;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class DatePeriodJobReport {
 
@@ -47,7 +47,6 @@ public class DatePeriodJobReport {
     private HashMap<Object, List> reportColumnData;
     private Double earningJobsCompletedOnTime = 0.0;
     private Double earningJobsScheduledForCompletionInPeriod = 0.0;
-    //private Double earningsFromNewClients = 0.0;
 
     public DatePeriodJobReport(
             Department reportingDepartment,
@@ -206,7 +205,6 @@ public class DatePeriodJobReport {
                 }
             }
 
-            // saved for use in calculating cotif
             earningJobsCompletedOnTime = value;
             return value;
         }
@@ -225,7 +223,6 @@ public class DatePeriodJobReport {
                 }
             }
 
-            // saved for use in calculating cotif
             earningJobsScheduledForCompletionInPeriod = value;
             return value;
         }
@@ -294,9 +291,7 @@ public class DatePeriodJobReport {
             HashSet<String> clients = new HashSet<>();
 
             for (DatePeriodJobReportColumnData datePeriodJobReportColumnData : reportColumnData) {
-                // collect clients
                 if (datePeriodJobReportColumnData.getClient() != null) {
-                    // filter based on date eg. date submitted/job completed
                     if (BusinessEntityUtils.isDateWithinPeriod(
                             datePeriodJobReportColumnData.getJobStatusAndTracking().getDateSubmitted(),
                             datePeriod.getStartDate(),
@@ -316,25 +311,23 @@ public class DatePeriodJobReport {
 
     private void initSubCategoriesReport(List<JobSubCategory> jobSubCategories) {
 
-        for (int i = 0; i < datePeriods.length; i++) {
-            // add report data for each date period
+        for (DatePeriod datePeriod : datePeriods) {
             List<DatePeriodJobReportColumnData> data = new ArrayList<>();
             for (JobSubCategory subCategory : jobSubCategories) {
                 data.add(new DatePeriodJobReportColumnData(subCategory, 0.0, 0L));
             }
-            setReportColumnData(datePeriods[i].getName(), data);
+            setReportColumnData(datePeriod.getName(), data);
         }
     }
 
     private void initSectorsReport(List<Sector> sectors) {
 
-        for (int i = 0; i < datePeriods.length; i++) {
-            // add report data for each date period
+        for (DatePeriod datePeriod : datePeriods) {
             List<DatePeriodJobReportColumnData> data = new ArrayList<>();
             for (Sector sector : sectors) {
                 data.add(new DatePeriodJobReportColumnData(sector, 0L));
             }
-            setReportColumnData(datePeriods[i].getName(), data);
+            setReportColumnData(datePeriod.getName(), data);
         }
     }
 

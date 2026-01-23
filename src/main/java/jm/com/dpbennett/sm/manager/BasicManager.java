@@ -244,9 +244,6 @@ public class BasicManager extends GeneralManager implements Serializable {
         setName("basicManager");
         setSearchType("Basics");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "basicManager",
-//            "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

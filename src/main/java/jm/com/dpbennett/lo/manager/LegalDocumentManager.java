@@ -175,7 +175,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         return searchTypes;
     }
 
-    // tk make system option
     public List getDocumentForms() {
         ArrayList forms = new ArrayList();
 
@@ -186,7 +185,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         return forms;
     }
 
-    // tk make system option
     public List getPriorityLevels() {
         ArrayList levels = new ArrayList();
 
@@ -199,7 +197,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         return levels;
     }
 
-    // tk make system option
     public List getDocumentStatuses() {
         ArrayList statuses = new ArrayList();
 
@@ -234,7 +231,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void openReportsTab() {
 
-        getReportManager().openReportsTab("Legal"); // tk review to make it still works.
+        getReportManager().openReportsTab("Legal");
     }
 
     @Override
@@ -244,9 +241,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         setName("legalDocumentManager");
         setSearchType("Legal Documents");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "legalDocumentManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateReceived", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -356,8 +350,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         em.remove(document);
         em.flush();
         em.getTransaction().commit();
-
-        //doDefaultSearch();
 
         closeDialog(null);
     }
@@ -681,9 +673,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void formatDocumentTableXLS(Object document, String headerTitle) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);
-        // get columns row
         int numCols = sheet.getRow(0).getPhysicalNumberOfCells();
-        // create heading row
         sheet.shiftRows(0, sheet.getLastRowNum(), 1);
 
         HSSFRow header = sheet.getRow(0);
@@ -701,22 +691,18 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             cell.setCellStyle(headerCellStyle);
         }
         header.getCell(0).setCellValue(headerTitle);
-        // merge header cells
         sheet.addMergedRegion(new CellRangeAddress(
-                0, //first row
-                (short) 0, //last row
-                0, //first column
-                (short) (numCols - 1) //last column
+                0,
+                (short) 0,
+                0,
+                (short) (numCols - 1)
         ));
 
-        // Column setup
-        // get columns row
         HSSFRow cols = sheet.getRow(1);
         HSSFCellStyle cellStyle = wb.createCellStyle();
         cellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-        // set columns widths
         for (int i = 0; i < cols.getPhysicalNumberOfCells(); i++) {
 
             sheet.autoSizeColumn(i);
@@ -726,7 +712,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             }
 
         }
-        // set columns cell style
         for (int i = 0; i < cols.getPhysicalNumberOfCells(); i++) {
             HSSFCell cell = cols.getCell(i);
             cell.setCellStyle(cellStyle);
@@ -742,7 +727,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public List<String> completeGoal(String query) {
-        // tk put in sys options
         String goals[] = {"# 1", "# 2", "# 3", "# 4", "# 5"};
         List<String> matchedGoals = new ArrayList<>();
 

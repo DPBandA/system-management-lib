@@ -959,8 +959,6 @@ public final class SystemManager extends GeneralManager {
 
         if (!LdapContext.updateUser(context, selectedUser)) {
 
-            // Try to add a new LDAP user if it can't be updated
-            // NB: LdapContext.addUser() needs a password to add the user
             if (checkMatchingUserPasswords(selectedUser)) {
                 selectedUser.setPassword(selectedUser.getNewPassword());
 
@@ -986,12 +984,6 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void closeUserProfileDialog(ActionEvent actionEvent) {
-
-//        PrimeFaces.current().ajax().update(":headerForm");
-//        PrimeFaces.current().ajax().update(":dashboardForm");
-//        PrimeFaces.current().ajax().update(":mainTabViewForm");
-//
-//        PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
 
         getUser().save(getEntityManager1());
         
@@ -1944,8 +1936,6 @@ public final class SystemManager extends GeneralManager {
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
         setSearchType("Users");
-//        setModuleNames(new String[]{
-//            "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2029,15 +2019,6 @@ public final class SystemManager extends GeneralManager {
         this.systemOptionSearchText = systemOptionSearchText;
     }
 
-    /**
-     * Select an system administration tab based on whether or not the tab is
-     * already opened.
-     *
-     * @param mainTabView
-     * @param openTab
-     * @param innerTabViewVar
-     * @param innerTabIndex
-     */
     public void selectSystemAdminTab(
             MainTabView mainTabView,
             Boolean openTab,
@@ -2407,7 +2388,6 @@ public final class SystemManager extends GeneralManager {
         this.notificationSearchText = notificationSearchText;
     }
 
-    // tk create <List> system option
     public List<SelectItem> getJobTableViews() {
         ArrayList views = new ArrayList();
 

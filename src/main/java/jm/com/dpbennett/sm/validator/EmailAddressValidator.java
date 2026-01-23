@@ -28,7 +28,7 @@ import javax.faces.validator.ValidatorException;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("emailAddressValidator")
 public class EmailAddressValidator implements Validator {

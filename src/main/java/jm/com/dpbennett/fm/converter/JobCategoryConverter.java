@@ -28,7 +28,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("jobCategoryConverter")
 public class JobCategoryConverter extends ConverterAdapter {

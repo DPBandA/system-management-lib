@@ -27,7 +27,7 @@ import org.primefaces.PrimeFaces;
 
 /**
  *
- * @author D P Bennett
+ * @author Desmond Bennett
  */
 public class PrimeFacesUtils {
 

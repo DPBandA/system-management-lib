@@ -30,7 +30,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("addressValidator")
 public class AddressValidator implements Validator {
@@ -44,8 +44,8 @@ public class AddressValidator implements Validator {
 
     public void validate(FacesContext context, String componentId, Address address) throws ValidatorException {
 
-        if (address != null) {            
-            if (!BusinessEntityUtils.validateAddressLine(address.getAddressLine1().trim())) { // tk !BusinessEntityUtils.validateAddressLine(address.getAddressLine1().trim()
+        if (address != null) {
+            if (!BusinessEntityUtils.validateAddressLine(address.getAddressLine1().trim())) {
                 throw new ValidatorException(getMessage(componentId));
             }
         } else {

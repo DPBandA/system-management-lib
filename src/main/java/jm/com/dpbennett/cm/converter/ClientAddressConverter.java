@@ -28,7 +28,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("clientAddressConverter")
 public class ClientAddressConverter extends ConverterAdapter {
@@ -41,17 +41,12 @@ public class ClientAddressConverter extends ConverterAdapter {
 
             Client client = (Client) component.getAttributes().get("currentClient");
             if (client != null) {
-                // Find an address that may not be stored.
                 address = Address.findClientAddress(value, client);
-                if (address == null) {
-                    // NB: The addres created here will be invalid because it may
-                    // have ; and other invalid characters.                    
+                if (address == null) {                                    
                     address = new Address(value);
                 }
             } else {
-                // This means the client attribute was not set.
-                // NB: The addres created here will be invalid because it may
-                // have ; and other invalid characters.
+           
                 address = new Address(value);
             }
 

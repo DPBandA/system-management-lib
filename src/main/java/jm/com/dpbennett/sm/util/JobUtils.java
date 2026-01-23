@@ -25,7 +25,7 @@ import javax.faces.model.SelectItem;
 
 /**
  *
- * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
+ * @author Desmond Bennett
  */
 public class JobUtils {
     

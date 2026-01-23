@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.dm.DocumentType;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("documentTypeConverter")
 public class DocumentTypeConverter extends ConverterAdapter {

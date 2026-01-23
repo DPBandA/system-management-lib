@@ -27,9 +27,7 @@ public class StripeEvent {
 
     private String id;
     private PaymentIntent data;
-    // Other properties
 
-    // Getters and setters
     public String getId() {
         return id;
     }

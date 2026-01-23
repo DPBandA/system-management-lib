@@ -28,7 +28,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activeDocumentStandardConverter")
 public class ActiveDocumentStandardConverter extends ConverterAdapter {

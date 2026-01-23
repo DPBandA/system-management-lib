@@ -29,7 +29,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("clientValidator")
 public class ClientValidator implements Validator {
@@ -37,10 +37,8 @@ public class ClientValidator implements Validator {
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
-        // Check that name does not already exist if this is a new client
         Boolean isNewClient = (Boolean) component.getAttributes().get("isNewClient");
 
-        // Check for valid name
         if (!BusinessEntityUtils.validateText(value.toString().trim())) {
             throw new ValidatorException(getMessage(component.getId()));
         }

@@ -27,9 +27,6 @@ public class PaymentIntent {
 
     private String id;
     private Long amount;
-    // Other properties
-
-    // Getters and setters
 
     public String getId() {
         return id;

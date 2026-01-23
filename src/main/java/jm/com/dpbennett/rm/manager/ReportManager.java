@@ -182,8 +182,6 @@ public class ReportManager extends GeneralManager {
                     new DatePeriod("This month", "month", null, null, null,
                             null, false, false, true));
         }
-
-        // Ensure that no date period is null
         if (selectedReport.getDatePeriods().get(0).getStartDate() == null) {
             selectedReport.getDatePeriods().get(0).setStartDate(new Date());
         }
@@ -227,8 +225,6 @@ public class ReportManager extends GeneralManager {
             selectedReport.getDatePeriods().get(1).setShow(false);
 
         }
-
-        // Ensure that no date period is null
         if (selectedReport.getDatePeriods().get(1).getStartDate() == null) {
             selectedReport.getDatePeriods().get(1).setStartDate(new Date());
         }
@@ -279,8 +275,6 @@ public class ReportManager extends GeneralManager {
             selectedReport.getDatePeriods().get(2).setShow(false);
 
         }
-
-        // Ensure that no date period is null
         if (selectedReport.getDatePeriods().get(2).getStartDate() == null) {
             selectedReport.getDatePeriods().get(2).setStartDate(new Date());
         }
@@ -322,7 +316,7 @@ public class ReportManager extends GeneralManager {
     }
 
     public void openReportsTab() {
-        
+
         getSystemManager().getMainTabView().openTab("Reports");
     }
 
@@ -508,9 +502,9 @@ public class ReportManager extends GeneralManager {
     }
 
     public void saveCurrentReport() {
-        
+
         EntityManager em = getEntityManager1();
-        
+
         try {
 
             ReturnMessage message = getCurrentReport().save(em);
@@ -642,17 +636,12 @@ public class ReportManager extends GeneralManager {
         setName("reportManager");
         setSearchType("Reports");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "reportManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
-
         reportSearchText = "";
         columnsToExclude = "";
         reportCategory = "Job";
-
     }
 
     public void closeReportDialog() {
@@ -794,11 +783,9 @@ public class ReportManager extends GeneralManager {
                                 getSystemManager().getEntityManager1(),
                                 "logoURL");
 
-                // Provide report parameters
                 parameters.put("reportTitle", selectedReport.getName());
                 parameters.put("logoURL", logoURL);
 
-                // Provide date parameters if required
                 if (selectedReport.getDatePeriodRequired()) {
                     for (int i = 0; i < selectedReport.getDatePeriods().size(); i++) {
 
@@ -810,14 +797,12 @@ public class ReportManager extends GeneralManager {
                                 selectedReport.getDatePeriods().get(i).initDatePeriod().getEndDate());
                     }
                 }
-                // Provide employee parameters if required
                 if (selectedReport.getEmployeeRequired()) {
                     for (int i = 0; i < selectedReport.getEmployees().size(); i++) {
                         parameters.put("employeeId" + (i + 1),
                                 selectedReport.getEmployees().get(i).getId());
                     }
                 }
-                // Provide department parameters if required
                 if (selectedReport.getDepartmentRequired()) {
                     for (int i = 0; i < selectedReport.getDepartments().size(); i++) {
                         parameters.put("departmentId" + (i + 1),
@@ -826,7 +811,6 @@ public class ReportManager extends GeneralManager {
                                 selectedReport.getDepartments().get(i).getName());
                     }
                 }
-                // Provide client parameters if required
                 if (selectedReport.getClientRequired()) {
                     for (int i = 0; i < selectedReport.getClients().size(); i++) {
                         parameters.put("clientId" + (i + 1),
@@ -943,7 +927,6 @@ public class ReportManager extends GeneralManager {
 
         try {
 
-            // Get byte stream for report file
             if (getSelectedReport().getUsePackagedReportFileTemplate()) {
                 stream = createExcelMonthlyReportFileInputStream(
                         em, new File(getClass().getClassLoader().
@@ -974,7 +957,6 @@ public class ReportManager extends GeneralManager {
 
         try {
 
-            // Get byte stream for report file
             if (getSelectedReport().getUsePackagedReportFileTemplate()) {
                 stream = createExcelComplianceMonthlyReportFileInputStream(
                         em, new File(getClass().getClassLoader().
@@ -1201,7 +1183,6 @@ public class ReportManager extends GeneralManager {
             FileInputStream inp = new FileInputStream(file);
             int row = 0;
 
-            // Create workbook from input file
             POIFSFileSystem fileSystem = new POIFSFileSystem((FileInputStream) inp);
             HSSFWorkbook wb = new HSSFWorkbook(fileSystem);
             HSSFCellStyle dataCellStyle = wb.createCellStyle();
@@ -1210,7 +1191,7 @@ public class ReportManager extends GeneralManager {
             HSSFCellStyle columnHeaderCellStyle = wb.createCellStyle();
             columnHeaderCellStyle.setFont(ReportUtils.createBoldFont(wb, (short) 12, IndexedColors.BLUE.getIndex()));
 
-            try ( // Create temp file for output
+            try (
                     FileOutputStream out = new FileOutputStream("MonthlyReport" + user.getId() + ".xls")) {
                 HSSFSheet jobSheet = wb.getSheet("Statistics");
                 if (jobSheet == null) {
@@ -1243,7 +1224,6 @@ public class ReportManager extends GeneralManager {
                     row++;
                     for (int i = 0; i < jobSubCategoryReport.getDatePeriods().length; i++) {
                         List<DatePeriodJobReportColumnData> reportColumnData = jobSubCategoryReport.getReportColumnData(jobSubCategoryReport.getDatePeriod(i).getName());
-                        // insert table headings
                         ReportUtils.setExcelCellValue(wb, jobSheet, row++, 0,
                                 jobSubCategoryReport.getDatePeriod(i).toString(), "java.lang.String", columnHeaderCellStyle);
                         ReportUtils.setExcelCellValue(wb, jobSheet, row, 0,
@@ -1325,7 +1305,6 @@ public class ReportManager extends GeneralManager {
                     }
                 }
 
-                // write and save file for later use
                 wb.write(out);
             }
 
@@ -1358,16 +1337,13 @@ public class ReportManager extends GeneralManager {
             dateCellStyle.setDataFormat(
                     createHelper.createDataFormat().getFormat("m/d/yyyy"));
 
-            // Output stream for modified Excel file
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            // Get sheets          
             XSSFSheet rawData = wb.getSheet("Raw Data");
             XSSFSheet jobReportSheet = wb.getSheet("Jobs Report");
             XSSFSheet employeeReportSheet = wb.getSheet("Employee Report");
             XSSFSheet sectorReportSheet = wb.getSheet("Sector Report");
 
-            // Get report data
             List<Object[]> reportData = Job.getJobRecordsByTrackingDate(
                     em,
                     getReportingDatePeriod1().getDateField(),
@@ -1375,7 +1351,6 @@ public class ReportManager extends GeneralManager {
                     BusinessEntityUtils.getDateString(getReportingDatePeriod1().getEndDate(), "'", "YMD", "-"),
                     departmentId);
 
-            // Fill in report data            
             for (Object[] rowData : reportData) {
                 col = 0;
                 //  Employee/Assignee
@@ -1486,7 +1461,6 @@ public class ReportManager extends GeneralManager {
                     + BusinessEntityUtils.getDateInMediumDateFormat(getReportingDatePeriod1().getEndDate()),
                     "java.lang.String", null);
 
-            // Write modified Excel file and return it
             wb.write(out);
 
             return new ByteArrayInputStream(out.toByteArray());
@@ -1521,9 +1495,7 @@ public class ReportManager extends GeneralManager {
             datePeriodsCellStyle.setDataFormat(
                     createHelper.createDataFormat().getFormat("yyyy-mm-dd"));
 
-            // Output stream for modified Excel file
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            // Get sheets ensure that crucial sheets are updated automatically
             XSSFSheet executiveSummary = wb.getSheet("Executive Summary");
             executiveSummary.setForceFormulaRecalculation(true);
 
@@ -1824,9 +1796,7 @@ public class ReportManager extends GeneralManager {
             FileInputStream inp = new FileInputStream(reportFile);
             XSSFWorkbook wb = new XSSFWorkbook(inp);
 
-            // Output stream for modified Excel file
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            // Get sheets ensure that crucial sheets are updated automatically
             XSSFSheet combined = wb.getSheet("Combined");
             combined.setForceFormulaRecalculation(true);
 
@@ -2055,7 +2025,6 @@ public class ReportManager extends GeneralManager {
         CreationHelper createHelper = wb.getCreationHelper();
         XSSFCellStyle stringCellStyle = wb.createCellStyle();
         stringCellStyle.setWrapText(true);
-        //XSSFCellStyle doubleCellStyle = wb.createCellStyle();
         XSSFCellStyle dateCellStyle = wb.createCellStyle();
         XSSFCellStyle datePeriodsCellStyle = wb.createCellStyle();
         dateCellStyle.setDataFormat(

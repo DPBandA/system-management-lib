@@ -28,7 +28,7 @@ import org.primefaces.model.SelectableDataModel;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class ContactDataModel extends ListDataModel<Contact> implements SelectableDataModel<Contact> {
     
@@ -41,11 +41,6 @@ public class ContactDataModel extends ListDataModel<Contact> implements Selectab
         super(list);
         this. list = list;
     }
-
-//    @Override
-//    public Object getRowKey(Contact contact) {
-//        return contact.getId();
-//    }
 
     @Override
     public Contact getRowData(String rowKey) {

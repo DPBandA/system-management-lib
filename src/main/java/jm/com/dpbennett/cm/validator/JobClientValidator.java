@@ -30,7 +30,7 @@ import jm.com.dpbennett.sm.validator.ValidatorAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("jobClientValidator")
 public class JobClientValidator extends ValidatorAdapter {

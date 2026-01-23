@@ -31,7 +31,7 @@ import jm.com.dpbennett.sm.validator.ValidatorAdapter;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennet
  */
 @FacesValidator("subcontractedDepartmentValidator")
 public class SubcontractedDepartmentValidator extends ValidatorAdapter {
@@ -66,7 +66,6 @@ public class SubcontractedDepartmentValidator extends ValidatorAdapter {
             }
         }
 
-        // Check for self contracts    
         if (subContractedDepartment != null) {
             if (subContractedDepartment.getName().equals(departmentName)) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Same Departments", "The main and subcontracted departments cannot be the same."));

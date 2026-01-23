@@ -29,7 +29,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennet
  */
 @FacesValidator("manufacturerValidator")
 public class ManufacturerValidator implements Validator {

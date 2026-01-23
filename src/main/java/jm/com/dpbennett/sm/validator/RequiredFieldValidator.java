@@ -29,7 +29,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("requiredFieldValidator")
 public class RequiredFieldValidator implements Validator {
@@ -37,10 +37,8 @@ public class RequiredFieldValidator implements Validator {
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
-        // If the custom attribute fieldRequired is set then use it.
         Boolean fieldRequired = (Boolean) component.getAttributes().get("fieldRequired");
 
-        // Check for valid names
         if (fieldRequired == null || fieldRequired == true) {
             if (value != null) {
                 if (!BusinessEntityUtils.validateText(value.toString().trim())) {

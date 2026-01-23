@@ -26,7 +26,7 @@ import org.primefaces.model.SelectableDataModel;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class JobSeachDataModel extends ListDataModel<Object[]> implements SelectableDataModel<Job> {
 
@@ -39,11 +39,6 @@ public class JobSeachDataModel extends ListDataModel<Object[]> implements Select
         super(list);
         this.list = list;
     }
-
-//    @Override
-//    public Object getRowKey(Job job) {
-//        return job.getId();
-//    }
 
     @Override
     public Job getRowData(String rowKey) {

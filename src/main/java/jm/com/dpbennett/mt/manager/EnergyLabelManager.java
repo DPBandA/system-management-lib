@@ -311,10 +311,6 @@ public class EnergyLabelManager extends GeneralManager
         setName("energyLabelManager");
         setSearchType("Energy labels");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "energyLabelManager",
-//            "systemManager"
-//        });
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -467,8 +463,6 @@ public class EnergyLabelManager extends GeneralManager
 
         switch (searchType) {
             case "Energy labels":
-//                dateSearchFields.add(new SelectItem("dateEntered", "Date entered"));
-//                dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
                 dateSearchFields.add(new SelectItem("-- Not applicable --",
                         "-- Not applicable --"));
                 break;
@@ -479,7 +473,6 @@ public class EnergyLabelManager extends GeneralManager
         return dateSearchFields;
     }
 
-    // SVG manipulation
     public void updateLabel() {
 
         EntityManager em = getEntityManager1();
@@ -488,14 +481,10 @@ public class EnergyLabelManager extends GeneralManager
             try {
 
                 if (getSelectedEnergyLabel().getType().trim().equals("Room Air-conditioner")) {
-                    // Year of evaluation
                     setElementText("yearOfEvaluation", getSelectedEnergyLabel().getYearOfEvaluation(), "start");
-                    // Letter rating                
                     eraseAllRatingLetters();
                     renderRating(getSelectedEnergyLabel().getLetterRating(), true);
-                    // Annual consumption
                     setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "middle");
-                    // Batch code/serial number
                     if (SystemOption.getBoolean(
                             getSystemManager().getEntityManager1(),
                             "useSerialNumber")) {
@@ -510,11 +499,8 @@ public class EnergyLabelManager extends GeneralManager
                         setElementText("batchCodeLabel", "Batch Code", "");
                         setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "");
                     }
-                    // Efficiency ratio
                     setElementText("efficiencyRatio", getSelectedEnergyLabel().getEfficiencyRatio(), "middle");
-                    // Carrier
                     setElementText("carrier", getSelectedEnergyLabel().getManufacturer(), "end");
-                    // Code
                     setElementText("code", getSelectedEnergyLabel().getModel(), "end");
                     Element qrcode = svgDocument.getElementById("qrcode");
                     try {
@@ -528,18 +514,13 @@ public class EnergyLabelManager extends GeneralManager
                     }
 
                 } else {
-                    // Year of evaluation
                     setElementText("yearOfEvaluation", getSelectedEnergyLabel().getYearOfEvaluation(), "start");
-                    // Manufacturer
                     setElementText("manufacturer", getSelectedEnergyLabel().getManufacturer(), "end");
-                    // Model(s)
                     setElementText("models", "Model(s) " + getSelectedEnergyLabel().getModel(), "end");
-                    // Capacity
                     setElementText("capacity",
                             "Capacity "
                             + getSelectedEnergyLabel().getCapacity()
                             + " Litres", "end");
-                    // Electrical ratings
                     String electricalRatings
                             = getSelectedEnergyLabel().getRatedVoltage() + "V, "
                             + getSelectedEnergyLabel().getRatedFrequency() + "Hz";
@@ -549,30 +530,22 @@ public class EnergyLabelManager extends GeneralManager
                                 + getSelectedEnergyLabel().getRatedCurrent() + "A";
                     }
                     setElementText("electricalRatings", electricalRatings, "end");
-                    // Type
                     setElementText("type", getSelectedEnergyLabel().getType(), "start");
-                    // Defrost
                     setElementText("defrost", "- " + getSelectedEnergyLabel().getDefrost(), "start");
-                    // Feature 1
                     if (!getSelectedEnergyLabel().getFeature1().trim().isEmpty()) {
                         setElementText("feature1", "- " + getSelectedEnergyLabel().getFeature1(), "start");
                     } else {
                         setElementText("feature1", "", "start");
                     }
-                    // Feature 2
                     if (!getSelectedEnergyLabel().getFeature2().trim().isEmpty()) {
                         setElementText("feature2", "- " + getSelectedEnergyLabel().getFeature2(), "start");
                     } else {
                         setElementText("feature2", "", "start");
                     }
-                    // Letter rating                
                     eraseAllRatingLetters();
                     renderRating(getSelectedEnergyLabel().getLetterRating(), true);
-                    // Operating cost
                     setElementText("operatingCost", getSelectedEnergyLabel().getOperatingCost(), "start");
-                    // Annual consumption
                     setElementText("annualConsumption", getSelectedEnergyLabel().getAnnualConsumption(), "start");
-                    // Annual consumption unit placement
                     Element annualConsumption = svgDocument.getElementById("annualConsumption");
                     SVGLocatable locatable = (SVGLocatable) annualConsumption;
                     SVGRect rect = locatable.getBBox();
@@ -602,7 +575,6 @@ public class EnergyLabelManager extends GeneralManager
                                         + annualConsumptionUnitXMulConst
                                         * annualConsumptionUnitXMul));
                     }
-                    // Batch code/serial number
                     if (SystemOption.getBoolean(
                             getSystemManager().getEntityManager1(),
                             "useSerialNumber")) {
@@ -617,7 +589,6 @@ public class EnergyLabelManager extends GeneralManager
                         setElementText("batchCodeLabel", "Batch Code", "");
                         setElementText("batchCode", getSelectedEnergyLabel().getBatchCode(), "");
                     }
-                    // QR Code
                     Element qrcode = svgDocument.getElementById("qrcode");
                     try {
                         qrcode.setAttributeNS(SVGConstants.XLINK_NAMESPACE_URI,
@@ -678,7 +649,6 @@ public class EnergyLabelManager extends GeneralManager
 
     }
 
-    // tk make system option?
     private void eraseAllRatingLetters() {
 
         renderRating("A", false);
@@ -687,7 +657,6 @@ public class EnergyLabelManager extends GeneralManager
         renderRating("D", false);
         renderRating("E", false);
         renderRating("F", false);
-
     }
 
     private void setElementText(String elementId, String content, String anchor) {

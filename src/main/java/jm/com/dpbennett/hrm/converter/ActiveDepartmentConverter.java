@@ -40,17 +40,14 @@ public class ActiveDepartmentConverter implements Converter<Department> {
             return null;
         }
 
-        // The picklist stores objects in the dual list.
         DualListModel<Department> dualList = (DualListModel<Department>) ((PickList) component).getValue();
 
-        // Search in source
         for (Department d : dualList.getSource()) {
             if (String.valueOf(d.getId()).equals(value)) {
                 return d;
             }
         }
 
-        // Search in target
         for (Department d : dualList.getTarget()) {
             if (String.valueOf(d.getId()).equals(value)) {
                 return d;

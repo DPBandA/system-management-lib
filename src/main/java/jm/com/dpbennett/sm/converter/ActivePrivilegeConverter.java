@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.auth.Privilege;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activePrivilegeConverter")
 public class ActivePrivilegeConverter extends ConverterAdapter {

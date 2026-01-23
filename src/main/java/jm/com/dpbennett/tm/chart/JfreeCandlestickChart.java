@@ -78,7 +78,6 @@ public class JfreeCandlestickChart extends JPanel {
         this.candlestickChart = candlestickChart;
     }
     
-    // tk for moving average
     private static double[][] calculateMovingAverage(OHLCSeriesCollection dataset, int period) {
         OHLCSeries series = dataset.getSeries(0);
         //int itemCount = series.getItemCount();

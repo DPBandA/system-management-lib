@@ -48,7 +48,7 @@ public abstract class EntityConverter<T extends Serializable> implements Convert
             return null;
         }
 
-        // FIX: Decode HTML entities from PrimeFaces (&#x2F;, &amp;, &#39;)
+        // Decode HTML entities from PrimeFaces (&#x2F;, &amp;, &#39;)
         String decodedValue = StringEscapeUtils.unescapeHtml4(value);
 
         // If value is numeric → treat as ID

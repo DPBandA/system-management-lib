@@ -28,7 +28,7 @@ import javax.faces.validator.ValidatorException;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("passwordValidator")
 public class PasswordValidator implements Validator {

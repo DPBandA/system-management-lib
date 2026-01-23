@@ -26,7 +26,7 @@ import org.primefaces.model.SelectableDataModel;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class JobDataModel extends ListDataModel<Job> implements SelectableDataModel<Job> {
 

@@ -26,7 +26,7 @@ import org.primefaces.model.SelectableDataModel;
 
 /**
  *
- * @author D P Bennett &amp; Associates
+ * @author Desmond Bennett
  */
 public class AddressDataModel extends ListDataModel<Address> implements SelectableDataModel<Address> {
     
@@ -39,11 +39,6 @@ public class AddressDataModel extends ListDataModel<Address> implements Selectab
         super(list);
         this. list = list;
     }
-
-//    @Override
-//    public Object getRowKey(Address address) {
-//        return address.getId();
-//    }
 
     @Override
     public Address getRowData(String rowKey) {

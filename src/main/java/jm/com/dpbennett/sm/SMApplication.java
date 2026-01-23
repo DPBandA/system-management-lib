@@ -59,8 +59,4 @@ public class SMApplication implements Serializable {
         return  EMF1.createEntityManager();
     }
 
-//    public EntityManager getEntityManager2() {
-//        return em2; //EMF2.createEntityManager();
-//    }
-
 }

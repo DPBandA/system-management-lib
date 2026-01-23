@@ -29,7 +29,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennet
  */
 @FacesConverter("manufacturerContactConverter")
 public class ManufacturerContactConverter extends ConverterAdapter {

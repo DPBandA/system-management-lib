@@ -29,7 +29,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("supplierValidator")
 public class SupplierValidator implements Validator {
@@ -37,7 +37,6 @@ public class SupplierValidator implements Validator {
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
-        // Check for valid names
         if (value != null) {
             if (!BusinessEntityUtils.validateText(value.toString().trim())) {
                 throw new ValidatorException(getMessage(component.getId()));

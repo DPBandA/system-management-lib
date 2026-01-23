@@ -33,7 +33,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("newUsernameValidator")
 public class NewUsernameValidator implements Validator {
@@ -51,7 +51,6 @@ public class NewUsernameValidator implements Validator {
                 emf = Persistence.createEntityManagerFactory("JMTSPU");
                 em = emf.createEntityManager();
 
-                // Find active user by username
                 User foundUser = User.findActiveByUsername(em, value.toString().trim());
                 if (foundUser != null) {
                     throw new ValidatorException(getMessage("Username Exists"));

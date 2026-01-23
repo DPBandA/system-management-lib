@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.sm.Notification;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("notificationConverter")
 public class notificationConverter extends ConverterAdapter {

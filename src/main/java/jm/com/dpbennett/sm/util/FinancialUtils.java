@@ -26,27 +26,15 @@ import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectIte
 
 /**
  *
- * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
+ * @author Desmond Bennett
  */
 public class FinancialUtils {
 
-    /**
-     * NB: Payment types to be put in database...
-     *
-     * @param em
-     * @return
-     */
     public static List<SelectItem> getPaymentTypes(EntityManager em) {
 
         return getStringListAsSelectItems(em, "cashPaymentTypes");
     }
 
-    /**
-     * NB: Payment purposes to be put in database...
-     *
-     * @return
-     * @param em
-     */
     public static List getPaymentPurposes(EntityManager em) {
 
         return getStringListAsSelectItems(em, "cashPaymentPurposes");
@@ -57,13 +45,6 @@ public class FinancialUtils {
         return getStringListAsSelectItems(em, "costTypes");
     }
 
-    /**
-     * Returns the discount type that can be applied to a payment/amount NB: To
-     * be deprecated
-     *
-     * @param em
-     * @return
-     */
     public static List getDiscountTypes(EntityManager em) {
 
         return getStringListAsSelectItems(em, "discountTypes");

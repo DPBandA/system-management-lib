@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activeModuleConverter")
 public class ActiveModuleConverter extends ConverterAdapter {

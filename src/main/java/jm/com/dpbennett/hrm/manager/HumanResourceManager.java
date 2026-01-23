@@ -456,44 +456,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         }
     }
     
-    // tk decide if this will be used in the future
-//    public List<Business> completeActiveBusiness(String query) {
-//        EntityManager hrem = getHumanResourceManager().getEntityManager1();
-//        Boolean userCanEnterJob = getUser().can("EnterJob");
-//        List<Business> businesses = new ArrayList<>();
-//
-//        try {
-//
-//            if ((userCanEnterJob || getCurrentJob().getIsToBeSubcontracted())
-//                    && getCurrentJob().getIsNew()) {
-//
-//                businesses = Business.findAllActiveByName(hrem, query);
-//
-//            } else if (getCurrentJob().getIsNew()) {
-//
-//                Business userOrg = User.getUserOrganizationByDepartment(
-//                        hrem, getUser());
-//                businesses.add(Business.findByName(hrem, userOrg.getName()));
-//
-//            } else if (!getCurrentJob().getIsNew() && !getCurrentJob().getIsSubContract()) {
-//
-//                Business userOrg = User.getUserOrganizationByDepartment(
-//                        hrem, getUser());
-//                businesses.add(Business.findByName(hrem, userOrg.getName()));
-//
-//            } else {
-//
-//                businesses = Business.findAllActiveByName(hrem, query);
-//
-//            }
-//
-//            return businesses;
-//
-//        } catch (Exception e) {
-//            return new ArrayList<>();
-//        }
-//    }
-
     public Boolean getIsActiveEmployeePositionsOnly() {
         return isActiveEmployeePositionsOnly;
     }
@@ -623,9 +585,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         setName("humanResourceManager");
         setSearchType("Employees");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "humanResourceManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1328,7 +1287,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
-    // Manufacturer Management
     public Manufacturer getSelectedManufacturer() {
         if (selectedManufacturer == null) {
             return new Manufacturer();

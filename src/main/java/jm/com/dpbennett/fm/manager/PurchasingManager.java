@@ -361,12 +361,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         if (activePRs != null) {
             for (PurchaseRequisition activePR : activePRs) {
 
-                // Check that the PR is not already in the list before adding it.
-                // Add the orginator's PRs
                 if (activePR.getOriginator().equals(getEmployee())) {
                     procurementTasks.add(activePR);
                 } else {
-                    // Add PRs for persons with various positions
                     List<String> PRApproverPositions
                             = (List<String>) SystemOption.
                                     getOptionValueObject(
@@ -594,7 +591,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             outputStream.write(event.getFile().getContent());
             outputStream.close();
 
-            // Create attachment and save PR.            
             getSelectedPurchaseRequisition().getAttachments().
                     add(new Attachment(event.getFile().getFileName(),
                             event.getFile().getFileName(),
@@ -616,38 +612,18 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         }
     }
 
-    /**
-     * Gets the title of the application which may be saved in a database.
-     *
-     * @return
-     */
     public String getTitle() {
         return "Procurement";
     }
 
-    /**
-     * Gets the supplier's search text.
-     *
-     * @return
-     */
     public String getSupplierSearchText() {
         return supplierSearchText;
     }
 
-    /**
-     * Sets the supplier's search text.
-     *
-     * @param supplierSearchText
-     */
     public void setSupplierSearchText(String supplierSearchText) {
         this.supplierSearchText = supplierSearchText;
     }
 
-    /**
-     * Gets the selected supplier.
-     *
-     * @return
-     */
     public Supplier getSelectedSupplier() {
         if (selectedSupplier == null) {
             return new Supplier("");
@@ -655,11 +631,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return selectedSupplier;
     }
 
-    /**
-     * Sets the selected supplier.
-     *
-     * @param selectedSupplier
-     */
     public void setSelectedSupplier(Supplier selectedSupplier) {
         this.selectedSupplier = selectedSupplier;
     }
@@ -712,8 +683,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         try {
 
-            // Validate 
-            // Check for a valid address
             for (Address address : selectedSupplier.getAddresses()) {
                 hasValidAddress = hasValidAddress || Address.validate(address);
             }
@@ -725,7 +694,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 return;
             }
 
-            // Check for a valid contact
             for (Contact contact : selectedSupplier.getContacts()) {
                 hasValidContact = hasValidContact || Contact.validate(contact);
             }
@@ -737,7 +705,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 return;
             }
 
-            // Update tracking
             if (getIsNewSupplier()) {
                 getSelectedSupplier().setDateEntered(new Date());
                 getSelectedSupplier().setDateEdited(new Date());
@@ -747,7 +714,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 }
             }
 
-            // Do save
             if (getSelectedSupplier().getIsDirty()) {
                 getSelectedSupplier().setDateEdited(new Date());
                 if (getUser() != null) {
@@ -816,7 +782,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void createNewSupplierAddress() {
         selectedSupplierAddress = null;
 
-        // Find an existing invalid or blank address and use it as the neww address
         for (Address address : getSelectedSupplier().getAddresses()) {
             if (address.getAddressLine1().trim().isEmpty()) {
                 selectedSupplierAddress = address;
@@ -824,7 +789,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             }
         }
 
-        // No existing blank or invalid address found so creating new one.
         if (selectedSupplierAddress == null) {
             selectedSupplierAddress = new Address("", "Billing");
         }
@@ -1110,11 +1074,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     @Override
     public void updateDateSearchField() {
-        //doSearch();
     }
 
     public String getPRApprovalOrRecommendationDate(Employee approverOrRecommender) {
-        // Get approval date
         if (approverOrRecommender != null
                 && getSelectedPurchaseRequisition().getApprover1() != null) {
             if (Objects.equals(approverOrRecommender.getId(),
@@ -1160,7 +1122,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         getApprovalOrRecommendationDate5());
             }
         }
-        // Get recommendation date
         if (approverOrRecommender != null
                 && getSelectedPurchaseRequisition().getRecommender1() != null) {
             if (Objects.equals(approverOrRecommender.getId(),
@@ -1329,11 +1290,9 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         if (getSelectedPurchaseRequisition().getId() != null) {
 
-            // Find the currently stored PR and check its work status
             PurchaseRequisition savedPurchaseRequisition
                     = PurchaseRequisition.findById(em, getSelectedPurchaseRequisition().getId());
 
-            // Procurement officer required to cancel PR.
             if (savedPurchaseRequisition != null) {
                 if (!getEmployee().isProcurementOfficer()
                         && getSelectedPurchaseRequisition().getWorkProgress().equals("Cancelled")) {
@@ -1345,7 +1304,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 }
             }
 
-            // Procurement officer required to mark job completed.
             if (savedPurchaseRequisition != null) {
                 if (!getEmployee().isProcurementOfficer()
                         && !getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")
@@ -1358,7 +1316,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 }
             }
 
-            // Procurement officer is required to approve PRs.
             if (!getEmployee().isProcurementOfficer()
                     && getSelectedPurchaseRequisition().getWorkProgress().equals("Completed")) {
 
@@ -1369,7 +1326,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 return false;
             }
 
-            // Do not allow flagging PR as completed unless it is approved.    
             int requiredApprovals
                     = SystemOption.getInteger(
                             getSystemManager().getEntityManager1(),
@@ -1421,7 +1377,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
                 getSelectedPurchaseRequisition().setPurchaseOrderDate(new Date());
 
-                // Set the procurement officer and their department
                 getSelectedPurchaseRequisition().
                         setProcurementOfficer(getEmployee());
 
@@ -1437,7 +1392,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         } else {
             if (getSelectedPurchaseRequisition().getId() != null) {
-                // Reset work progress to the currently saved state
                 PurchaseRequisition foundPR = PurchaseRequisition.findById(em,
                         getSelectedPurchaseRequisition().getId());
                 if (foundPR != null) {
@@ -1477,7 +1431,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void deleteApproverOrRecommender(String approverOrRecommenderName) {
 
-        // Nullify approvers 1 - 5 if possible
         if (getSelectedPurchaseRequisition().getApprover1() != null) {
             if (getSelectedPurchaseRequisition().getApprover1().
                     getName().equals(approverOrRecommenderName)) {
@@ -1528,7 +1481,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         getSelectedPurchaseRequisition().getApprovals() - 1);
             }
         }
-        // Nullify recommender 1 - 5 if possible
         if (getSelectedPurchaseRequisition().getRecommender1() != null) {
             if (getSelectedPurchaseRequisition().getRecommender1().
                     getName().equals(approverOrRecommenderName)) {
@@ -1585,8 +1537,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public Boolean addApprover(PurchaseRequisition purchaseRequisition,
             Employee approver) {
 
-        // Check if the PR was recommended      
-        // Add approver if user has TEAM LEADER position
         if ((purchaseRequisition.getApprover1() == null)
                 && (purchaseRequisition.getRecommender1() == null)
                 && (approver.hasEmploymentPosition("Team Leader"))) {
@@ -1599,7 +1549,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add approver if user has DIVISIONAL MANAGER position
         if ((purchaseRequisition.getApprover2() == null)
                 && (purchaseRequisition.getRecommender2() == null)
                 && (approver.hasEmploymentPosition("Divisional Manager"))) {
@@ -1612,7 +1561,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add approver if user has DIVISIONAL DIRECTOR position
         if ((purchaseRequisition.getApprover3() == null)
                 && (purchaseRequisition.getRecommender3() == null)
                 && (approver.hasEmploymentPosition("Divisional Director"))) {
@@ -1625,7 +1573,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add approver if user has FINANCE DIRECTOR position
         if ((purchaseRequisition.getApprover4() == null)
                 && (purchaseRequisition.getRecommender4() == null)
                 && (approver.hasEmploymentPosition("Finance Director"))) {
@@ -1638,7 +1585,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add approver if user has EXECUTIVE DIRECTOR position
         if ((purchaseRequisition.getApprover5() == null)
                 && (purchaseRequisition.getRecommender5() == null)
                 && (approver.hasEmploymentPosition("Executive Director"))) {
@@ -1658,7 +1604,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public Boolean addRecommender(PurchaseRequisition purchaseRequisition,
             Employee recommender) {
 
-        // Add recommender if user has TEAM LEADER position
         if ((purchaseRequisition.getRecommender1() == null)
                 && (purchaseRequisition.getApprover1() == null)
                 && (recommender.hasEmploymentPosition("Team Leader"))) {
@@ -1671,7 +1616,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add recommender if user has DIVISIONAL MANAGER position
         if ((purchaseRequisition.getRecommender2() == null)
                 && (purchaseRequisition.getApprover2() == null)
                 && (recommender.hasEmploymentPosition("Divisional Manager"))) {
@@ -1684,7 +1628,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add recommender if user has DIVISIONAL DIRECTOR position
         if ((purchaseRequisition.getRecommender3() == null)
                 && (purchaseRequisition.getApprover3() == null)
                 && (recommender.hasEmploymentPosition("Divisional Director"))) {
@@ -1697,7 +1640,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add recommender if user has FINANCE DIRECTOR position
         if ((purchaseRequisition.getRecommender4() == null)
                 && (purchaseRequisition.getApprover4() == null)
                 && (recommender.hasEmploymentPosition("Finance Director"))) {
@@ -1710,7 +1652,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return true;
         }
 
-        // Add recommender if user has EXECUTIVE DIRECTOR position
         if ((purchaseRequisition.getRecommender5() == null)
                 && (purchaseRequisition.getApprover5() == null)
                 && (recommender.hasEmploymentPosition("Executive Director"))) {
@@ -1801,44 +1742,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         editPurchReqGeneralEmail();
     }
 
-//    public void openSendEmailDialog() {
-//        getToEmployees().clear();
-//        setPurchaseReqEmailSubject("");
-//        setPurchaseReqEmailContent("");
-//
-//        editPurchReqGeneralEmail();
-//    }
-//
-//    public void sendGeneralPurchaseReqEmail() {
-//
-//        try {
-//            EntityManager em = getSystemManager().getEntityManager1();
-//
-//            for (Employee toEmployee : getToEmployees()) {
-//
-//                if (MailUtils.postMail(null,
-//                        getFinanceManager().getJobManagerEmailAddress(),
-//                        getFinanceManager().getJobManagerEmailName(),
-//                        toEmployee.getInternet().getEmail1(),
-//                        getPurchaseReqEmailSubject(),
-//                        getPurchaseReqEmailContent(),
-//                        "text/html",
-//                        em).isSuccess()) {
-//
-//                    closeDialog();
-//
-//                } else {
-//                    PrimeFacesUtils.addMessage("Error Sending Email",
-//                            "An error occurred while sending email.",
-//                            FacesMessage.SEVERITY_ERROR);
-//                }
-//            }
-//        } catch (Exception e) {
-//
-//            System.out.println("Error sending PR email(s): " + e);
-//        }
-//
-//    }
     public List getCostTypeList() {
         return FinancialUtils.getCostTypeList(getSystemManager().getEntityManager1());
     }
@@ -2430,13 +2333,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         }
     }
 
-    /**
-     * Email heads of divisions.
-     *
-     * @param em
-     * @param purchaseRequisition
-     * @param action
-     */
     private void emailDivisionalHead(EntityManager em, PurchaseRequisition purchaseRequisition, String action) {
 
         Employee head = Division.findHeadOfActiveDivistionByDepartment(em,
@@ -2620,13 +2516,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             PrimeFaces.current().ajax().update("headerForm:growl3");
 
         }
-        /*
-        else {
-            if (!getPurchaseReqSearchText().isEmpty()) {
-                doPurchaseReqSearch();
-            }
-        }
-         */
+   
     }
 
     public void createNewPurhaseReqSupplier() {
@@ -2761,10 +2651,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         setSearchType("Purchase requisitions");
         setSearchText("");
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "financeManager",
-//            "purchasingManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2958,7 +2844,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void approvePurchaseRequisition(PurchaseRequisition purchaseRequisition) {
 
-        // Check if the approver is already in the list of approvers
         if (BusinessEntityUtils.isBusinessEntityInList(
                 purchaseRequisition.getApproversAndRecommenders(),
                 getEmployee().getId())) {
@@ -2971,7 +2856,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
 
-        // Do not allow originator to approve
         if (purchaseRequisition.getOriginator().
                 equals(getEmployee())) {
 
@@ -2983,7 +2867,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
 
-        // Check if total cost is within the approver's limit
         if (isPRCostWithinApprovalLimit(
                 purchaseRequisition,
                 getEmployee().getPositions())) {
@@ -2997,8 +2880,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 return;
             }
 
-            // Set expected date of completion if it is not already set and the 
-            // required number of approvals received.            
             if (purchaseRequisition.getExpectedDateOfCompletion() == null) {
                 int requiredApprovals
                         = (Integer) SystemOption.getOptionValueObject(
@@ -3052,7 +2933,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         EntityManager em = getEntityManager1();
 
-        // Check if the recommender is already in the list of approvers/recommenders
         if (BusinessEntityUtils.isBusinessEntityInList(
                 purchaseRequisition.getApproversAndRecommenders(),
                 getEmployee().getId())) {
@@ -3065,7 +2945,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         }
 
-        // Check if originator can recommend
         if (purchaseRequisition.getOriginator().
                 equals(getEmployee()) && !getUser().can("RecommendPurchaseRequisition")) {
 
@@ -3086,8 +2965,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             return;
         }
 
-        // Set expected date of completion if it is not already set and the 
-        // required number of approvals received.            
         if (purchaseRequisition.getExpectedDateOfCompletion() == null) {
             int requiredApprovals
                     = (Integer) SystemOption.getOptionValueObject(
@@ -3136,13 +3013,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return false;
     }
 
-    /**
-     * Get the position that can approve or recommend a PR.
-     *
-     * @param purchaseRequisition
-     * @param positions
-     * @return
-     */
     private EmployeePosition getApprovalOrRecommendationPosition(
             PurchaseRequisition purchaseRequisition,
             List<EmployeePosition> positions) {

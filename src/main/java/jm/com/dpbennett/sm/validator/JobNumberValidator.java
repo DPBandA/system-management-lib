@@ -26,11 +26,10 @@ import javax.faces.validator.FacesValidator;
 import javax.faces.validator.ValidatorException;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
-import jm.com.dpbennett.sm.validator.ValidatorAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("jobNumberValidator")
 public class JobNumberValidator extends ValidatorAdapter {
@@ -42,12 +41,10 @@ public class JobNumberValidator extends ValidatorAdapter {
         Long currentJobId = (Long) component.getAttributes().get("currentJobId");
         Boolean autoGenerateJobNumber = (Boolean) component.getAttributes().get("autoGenerateJobNumber");
 
-        // Check for valid job number
         if (!BusinessEntityUtils.validateText(currentJobNumber.trim())) {
             throw new ValidatorException(getMessage(component.getId()));
         }
 
-        // Check if job number is unique
         Job existingJob = Job.findJobByJobNumber(getEntityManager(), currentJobNumber);
         if (existingJob != null) {
             long current_jobid = currentJobId != null ? currentJobId : -1L;
@@ -56,7 +53,6 @@ public class JobNumberValidator extends ValidatorAdapter {
             }
         }
 
-        // Validate job number text 
         if (autoGenerateJobNumber) {
             if (!validateJobNumber(currentJobNumber, autoGenerateJobNumber)) {
                 throw new ValidatorException(getMessage("invalid"));
@@ -80,7 +76,7 @@ public class JobNumberValidator extends ValidatorAdapter {
 
     public Boolean validateJobNumber(String jobNumber, Boolean auto) {
         Integer departmentCode = 0;
-        Integer year = 0;
+        Integer year;
         Long sequenceNumber = 0L;
 
         String parts[] = jobNumber.split("/");
@@ -94,14 +90,14 @@ public class JobNumberValidator extends ValidatorAdapter {
                         // This means the complete job number has not yet
                         // been generate. Ignore for now.
                     } else {
-                        departmentCode = Integer.parseInt(parts[0]);
+                        departmentCode = Integer.valueOf(parts[0]);
                     }
-                    year = Integer.parseInt(parts[1]);
+                    year = Integer.valueOf(parts[1]);
                     if (auto && parts[2].equals("?")) {
                         // This means the complete job number has not yet
                         // been generate. Ignore for now.
                     } else {
-                        sequenceNumber = Long.parseLong(parts[2]);
+                        sequenceNumber = Long.valueOf(parts[2]);
                     }
                 } catch (NumberFormatException e) {
                     System.out.println(e);
@@ -127,7 +123,7 @@ public class JobNumberValidator extends ValidatorAdapter {
                 // code or a sample reference(s)
                 if (parts.length > 3) {
                     try {
-                        departmentCode = Integer.parseInt(parts[3]);
+                        departmentCode = Integer.valueOf(parts[3]);
                         if (departmentCode < 0) {
                             return false;
                         }

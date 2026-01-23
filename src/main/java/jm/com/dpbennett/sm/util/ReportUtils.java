@@ -55,7 +55,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class ReportUtils {
     
@@ -552,17 +552,6 @@ public class ReportUtils {
         return value;
     }
 
-    /**
-     * Determines the corresponding index for a maximum sequence of characters.
-     * The sequence of characters are those that are obtained from a spreadsheet
-     * column heading (eg AR).Currently it works for alphabets up to "ZZ" but
-     * falls apart beyond that. Need to fix this!
-     *
-     * @param alphabet
-     * @param len
-     * @param num
-     * @return
-     */
     public static int convertAlphabetToNumber(String alphabet, int len, int num) {
         int letterIndex, previousLetterIndex;
 

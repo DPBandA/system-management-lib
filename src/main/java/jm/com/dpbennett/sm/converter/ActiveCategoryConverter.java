@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.sm.Category;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activeCategoryConverter")
 public class ActiveCategoryConverter extends ConverterAdapter {

@@ -42,12 +42,10 @@ public class PurchaseReqNumberValidator extends ValidatorAdapter {
         Long selectedPurchaseReqId = (Long) component.getAttributes().get("selectedPurchaseReqId");
         Boolean autoGeneratePRNumber = (Boolean) component.getAttributes().get("autoGeneratePRNumber");
 
-        // Check for valid PR number
         if (!BusinessEntityUtils.validateText(prNumber.trim())) {
             throw new ValidatorException(getMessage(component.getId()));
         }
 
-        // Check if PR number is unique
         PurchaseRequisition existingPR = PurchaseRequisition.findByPRNumber(getEntityManager(), prNumber);
         if (existingPR != null) {
             long current_prId = selectedPurchaseReqId != null ? selectedPurchaseReqId : -1L;
@@ -56,7 +54,6 @@ public class PurchaseReqNumberValidator extends ValidatorAdapter {
             }
         }
 
-        // Validate PR number text 
         if (autoGeneratePRNumber) {
             if (!validatePRNumber(prNumber, autoGeneratePRNumber)) {
                 throw new ValidatorException(getMessage("invalid"));
@@ -78,48 +75,33 @@ public class PurchaseReqNumberValidator extends ValidatorAdapter {
         }
     }
 
-    /**
-     * Validates a purchase requisition number. Expected form is PR/year/####.
-     * 
-     * @param prNumber
-     * @param auto
-     * @return 
-     */
     public Boolean validatePRNumber(String prNumber, Boolean auto) {       
-        Integer year = 0;
+        Integer year;
         Long sequenceNumber = 0L;
 
         String parts[] = prNumber.split("/");
         if (parts != null) {
-            // Check for correct number of parts
             if (parts.length == 3) {
-                // Year and sequence number valid integers/long?
                 try {
                    
-                    year = Integer.parseInt(parts[1]);
+                    year = Integer.valueOf(parts[1]);
                     if (auto && parts[2].equals("?")) {
-                        // This means the complete PR number has not yet
-                        // been generate. Ignore for now.
                     } else {
-                        sequenceNumber = Long.parseLong(parts[2]);
+                        sequenceNumber = Long.valueOf(parts[2]);
                     }
                 } catch (NumberFormatException e) {
                     System.out.println(e);
                     return false;
                 }
                 
-                // Year has valid ranges?               
                 if (year < 1970) {
                     return false;
                 }
                 if (auto && parts[2].equals("?")) {
-                    // This means the complete PR number has not yet
-                    // been generate. Ignore for now.
                 } else if (sequenceNumber < 1L) {
                     return false;
                 }
                                
-                // All is well here
                 return true;
             } else {
                 return false;

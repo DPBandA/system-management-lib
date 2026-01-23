@@ -128,7 +128,6 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
         try {
 
-            // Update tracking
             if (getIsNewPost()) {
                 getSelectedPost().setDateEntered(new Date());
                 getSelectedPost().setDateEdited(new Date());
@@ -138,7 +137,6 @@ public final class DocumentManager extends GeneralManager implements Serializabl
                 }
             }
 
-            // Do save
             if (getSelectedPost().getIsDirty()) {
                 getSelectedPost().setDateEdited(new Date());
                 if (getUser() != null) {
@@ -188,7 +186,6 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
     public List<Post> getFoundPosts() {
         if (foundPosts == null) {
-            //foundPosts = Post.findActive(getEntityManager1(), "", 25);
             foundPosts = new ArrayList<>();
         }
 

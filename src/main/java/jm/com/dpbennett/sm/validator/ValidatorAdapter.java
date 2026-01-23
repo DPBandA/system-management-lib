@@ -29,7 +29,7 @@ import javax.persistence.Persistence;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 public class ValidatorAdapter implements Validator {
 

@@ -58,10 +58,8 @@ public class Dashboard implements Serializable {
 
     public void openTab(String tabId) {
         addTab(tabId, true);
-        //select(tabId);
     }
 
-    // tk change to addTab since rendering is not actually being done here
     public void addTab(
             String tabId,
             Boolean render) {
@@ -71,7 +69,6 @@ public class Dashboard implements Serializable {
         if (tab != null && !render) {
             // TabPanel is being removed and update the dashboard          
             tabs.remove(tab);
-            // Update dashboard and select the appropriate tab
             update("dashboardForm:dashboardAccordion");
             select(render);
         } else if (tab != null && render) {

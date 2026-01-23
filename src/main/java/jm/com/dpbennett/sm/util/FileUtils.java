@@ -25,16 +25,10 @@ import java.util.zip.ZipOutputStream;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class FileUtils {
 
-    /**
-     * Adds an entry to a Zip file.
-     * @param filename
-     * @param fileBytes
-     * @param zos
-     */
     public static void zipFile(String filename,
             byte[] fileBytes,
             ZipOutputStream zos) {

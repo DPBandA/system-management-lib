@@ -30,7 +30,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("sectorConverter")
 public class SectorConverter extends ConverterAdapter {

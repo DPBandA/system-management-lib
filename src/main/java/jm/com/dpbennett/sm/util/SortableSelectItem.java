@@ -24,7 +24,7 @@ import javax.faces.model.SelectItem;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class SortableSelectItem extends SelectItem implements Comparable {
 

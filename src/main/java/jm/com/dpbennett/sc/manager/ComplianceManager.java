@@ -292,7 +292,6 @@ public class ComplianceManager extends GeneralManager
     }
 
     public void surveyEstablishmentsDialogReturn() {
-        // Nothing to do yet.
     }
 
     public String getSurveyEstablishmentsDialogHeader() {
@@ -470,8 +469,6 @@ public class ComplianceManager extends GeneralManager
         } else {
             PrimeFacesUtils.addMessage("Job NOT found!",
                     "The job was not found", FacesMessage.SEVERITY_ERROR);
-            //PrimeFaces.current().ajax().update("headerForm:growl3");
-            //getJobManager().getCurrentJob().setIsDirty(false);
         }
     }
 
@@ -479,54 +476,11 @@ public class ComplianceManager extends GeneralManager
         if (getJobManager().getCurrentJob().getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved",
                     "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-            //PrimeFaces.current().ajax().update("headerForm:growl3");
-            //getJobManager().getCurrentJob().setIsDirty(false);
         } else {
             updateDialogJobNumber(dialog);
         }
     }
 
-//    public void editFactoryInspectionJob() {
-//        Job job = Job.findJobByJobNumber(getJobManager().getEntityManager1(),
-//                getCurrentFactoryInspection().getJobNumber());
-//
-//        if (job != null) {
-//            getJobManager().setEditCurrentJob(job);
-//            getJobManager().editJob();
-//        } else {
-//            PrimeFacesUtils.addMessage("Job NOT found!",
-//                    "The job was not found", FacesMessage.SEVERITY_ERROR);
-//            PrimeFaces.current().ajax().update("headerForm:growl3");
-//            getJobManager().getCurrentJob().setIsDirty(false);
-//        }
-//    }
-//    public void complaintJobDialogReturn() {
-//        if (getJobManager().getCurrentJob().getIsDirty()) {
-//            PrimeFacesUtils.addMessage("Job was NOT saved",
-//                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("headerForm:growl3");
-//            getJobManager().getCurrentJob().setIsDirty(false);
-//        } else {
-//            getCurrentComplaint().
-//                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-//            updateComplaint();
-//            PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
-//        }
-//    }
-//
-//    public void factoryInspectionJobDialogReturn() {
-//        if (getJobManager().getCurrentJob().getIsDirty()) {
-//            PrimeFacesUtils.addMessage("Job was NOT saved",
-//                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("headerForm:growl3");
-//            getJobManager().getCurrentJob().setIsDirty(false);
-//        } else {
-//            getCurrentFactoryInspection().
-//                    setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-//            updateFactoryInspection();
-//            PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
-//        }
-//    }
     public void openMarketProductBrowser() {
         getFinanceManager().openMarketProductBrowser();
 
@@ -1255,13 +1209,6 @@ public class ComplianceManager extends GeneralManager
 
         setSearchType("Surveys");
         setSearchText("");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "humanResourceManager",
-//            "financeManager",
-//            "foodFactoryManager",
-//            "legalMetrologyManager",
-//            "complianceManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1276,7 +1223,6 @@ public class ComplianceManager extends GeneralManager
 
     public List<FactoryInspection> getFactoryInspections() {
         if (factoryInspections == null) {
-            //doFactoryInspectionSearch();
             factoryInspections = new ArrayList<>();
         }
 
@@ -1741,7 +1687,6 @@ public class ComplianceManager extends GeneralManager
 
     public List<ComplianceSurvey> getComplianceSurveys() {
         if (complianceSurveys == null) {
-            //doSurveySearch();
             complianceSurveys = new ArrayList<>();
         }
 
@@ -1751,7 +1696,6 @@ public class ComplianceManager extends GeneralManager
     public List<Complaint> getComplaints() {
 
         if (complaints == null) {
-            //doComplaintSearch();
             complaints = new ArrayList<>();
         }
 
@@ -2091,24 +2035,6 @@ public class ComplianceManager extends GeneralManager
         this.currentComplianceSurvey = currentComplianceSurvey;
     }
 
-//    public List<Address> completeManufacturerAddress(String query) {
-//        List<Address> addresses = new ArrayList<>();
-//
-//        try {
-//
-//            for (Address address : getCurrentFactoryInspection().getManufacturer().getAddresses()) {
-//                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
-//                    addresses.add(address);
-//                }
-//            }
-//
-//            return addresses;
-//        } catch (Exception e) {
-//
-//            System.out.println(e);
-//            return new ArrayList<>();
-//        }
-//    }
     public void updateManufacturer() {
 
         currentFactoryInspection.setAddress(new Address());
@@ -2427,12 +2353,10 @@ public class ComplianceManager extends GeneralManager
 
     }
 
-    // tk to be system option
     public String getLatestAlert() {
         return "*********** TOYS R US BABY STROLLER MODEL # 3213 **********";
     }
 
-    // tk check if this is still needed
     private void promptToSaveIfRequired() {
 
         System.out.println("promptToSaveIfRequired not implemented.");
@@ -2561,10 +2485,10 @@ public class ComplianceManager extends GeneralManager
                 "dateAndTimeEntered",
                 "General",
                 surveySearchText,
-                null, // getDatePeriod().getStartDate()
-                null, // getDatePeriod().getEndDate()
+                null,
+                null,
                 false,
-                25); // tk to be made system option.
+                25); // tk get from system option.
 
     }
 
@@ -2574,10 +2498,10 @@ public class ComplianceManager extends GeneralManager
                 "dateAndTimeEntered",
                 "General",
                 surveySearchText,
-                null, //getDatePeriod().getStartDate()
-                null, // getDatePeriod().getEndDate()
+                null,
+                null,
                 false,
-                105); // tk to be made system option.
+                105); // tk get from system option.
     }
 
     // tk to be removed or updated with baseURL as system option
@@ -2597,7 +2521,6 @@ public class ComplianceManager extends GeneralManager
             fout.close();
 
             getCurrentProductInspection().setImageURL(upLoadedFileName);
-            //setDirty(true);
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -2676,8 +2599,6 @@ public class ComplianceManager extends GeneralManager
                     .contentType("image/png")
                     .name("downloaded.png")
                     .build();
-
-            //streamedFile = new DefaultStreamedContent(stream, "image/png", "downloaded.png");
         } catch (FileNotFoundException ex) {
             System.out.println(ex);
         }

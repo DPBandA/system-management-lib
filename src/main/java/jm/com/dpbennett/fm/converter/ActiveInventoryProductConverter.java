@@ -28,7 +28,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activeInventoryProductConverter")
 public class ActiveInventoryProductConverter extends ConverterAdapter {
@@ -52,7 +52,5 @@ public class ActiveInventoryProductConverter extends ConverterAdapter {
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         return ((MarketProduct) value).getName();
     }
-    
-    
 
 }

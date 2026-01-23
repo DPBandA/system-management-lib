@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.sm.Country;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("countryConverter")
 public class CountryConverter extends ConverterAdapter {

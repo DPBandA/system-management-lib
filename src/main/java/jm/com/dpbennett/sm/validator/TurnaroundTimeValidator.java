@@ -27,7 +27,7 @@ import javax.faces.validator.ValidatorException;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("turnaroundTimeValidator")
 public class TurnaroundTimeValidator extends ValidatorAdapter {

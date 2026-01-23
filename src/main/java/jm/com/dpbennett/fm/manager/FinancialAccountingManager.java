@@ -39,14 +39,14 @@ import org.primefaces.model.TreeNode;
  *
  * @author Desmond Bennett
  */
-public class AccountingManager extends GeneralManager implements Serializable {
+public class FinancialAccountingManager extends GeneralManager implements Serializable {
 
     private EntityManagerFactory AMPU;
     private TreeNode<FinancialAccount> chartOfAccounts;
     private List<SortMeta> sortBy;
     private FinancialAccount selectedFinancialAccount;
 
-    public AccountingManager() {
+    public FinancialAccountingManager() {
         init();
     }
 
@@ -119,7 +119,6 @@ public class AccountingManager extends GeneralManager implements Serializable {
 
     }
 
-    // tk sample accounts
     private TreeNode createAccounts() {
         TreeNode<FinancialAccount> chart = new DefaultTreeNode(new FinancialAccount("Bank", "Bank account", 230.0), null);
 

@@ -21,7 +21,7 @@ package jm.com.dpbennett.sm.util;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public interface DialogActionHandler {
 
