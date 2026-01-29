@@ -2661,11 +2661,6 @@ public class JobManager extends GeneralManager
         return (getCurrentJob().getId() == null);
     }
 
-    public void openClientsTab() {
-
-        getSystemManager().getMainTabView().openTab("Clients");
-    }
-
     public void openReportsTab() {
 
         getSystemManager().getMainTabView().openTab("Reports");

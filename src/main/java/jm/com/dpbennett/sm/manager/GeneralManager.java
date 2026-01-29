@@ -110,7 +110,7 @@ public class GeneralManager implements Manager, Serializable {
     public List<String> getModuleNames() {
         if (moduleNames == null) {
             moduleNames = new ArrayList<>();
-            
+
             List<Module> modules = Module.findAllActive(
                     getSystemManager().getEntityManager1(),
                     0);
@@ -1023,13 +1023,15 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void openDashboardTab(String title) {
-        System.out.println("openDashboardTab(String title) not yet implemented!");
+        System.out.println("openDashboardTab(String title) not yet implemented for "
+                + getName());
     }
 
     @Override
     public void openMainViewTab(String title) {
 
-        System.out.println("openMainViewTab(String title) not yet implemented!");
+        System.out.println("openMainViewTab(String title) not yet implemented for "
+                + getName());
     }
 
     @Override
@@ -1076,6 +1078,11 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public String getName() {
+
+        if (name == null) {
+            name = "Manager name not set";
+        }
+
         return name;
     }
 

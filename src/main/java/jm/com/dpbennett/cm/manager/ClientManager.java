@@ -186,17 +186,13 @@ public class ClientManager extends GeneralManager implements Serializable {
     @Override
     public void openMainViewTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
-
-        getSystemManager().getMainTabView().openTab(title);
+        super.openMainViewTab(title);
     }
 
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
-
-        getSystemManager().getDashboard().openTab(title);
+        super.openDashboardTab(title);
     }
 
     @Override
