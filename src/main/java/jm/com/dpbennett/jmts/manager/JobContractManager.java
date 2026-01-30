@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -85,7 +86,6 @@ import org.primefaces.model.DialogFrameworkOptions;
 public class JobContractManager extends GeneralManager
         implements Serializable, BusinessEntityManagement {
 
-    private Integer longProcessProgress;
     private JobManager jobManager;
     private SystemManager systemManager;
 
@@ -175,10 +175,12 @@ public class JobContractManager extends GeneralManager
         }
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
         return 500;
     }
@@ -355,6 +357,7 @@ public class JobContractManager extends GeneralManager
 
     }
 
+    @Override
     public SystemManager getSystemManager() {
         if (systemManager == null) {
             systemManager = BeanUtils.findBean("systemManager");
@@ -573,9 +576,35 @@ public class JobContractManager extends GeneralManager
 
     }
 
+    public boolean isServiceRequestedOther() {
+
+        for (Service service : getCurrentJob().getServices()) {
+            if (service.getName().equals("Other")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public List<Service> getServices() {
 
-        return getFinanceManager().getServices();
+        List<Service> services = new ArrayList<>();
+        Service otherService = null;
+
+        for (Service service : getFinanceManager().getServices()) {
+            if (!service.getName().equals("Other")) {
+                services.add(service);
+            } else {
+                otherService = service;
+            }
+        }
+
+        if (otherService != null) {
+            services.add(otherService);
+        }
+
+        return services;
 
     }
 
@@ -601,7 +630,6 @@ public class JobContractManager extends GeneralManager
         }
     }
 
-   
     public void updateService(AjaxBehaviorEvent event) {
         setIsDirty(true);
 
@@ -1056,6 +1084,7 @@ public class JobContractManager extends GeneralManager
 
             // TYPE OF SERVICE(S) NEEDED
             // Gather services. 
+            // Primary service requested
             getCurrentJob().getServiceContract().setJob(getCurrentJob());
             String services = getCurrentJob().getServiceContract().getSelectedServiceForContract().getName();
             dataCellStyle = getDefaultCellStyle(wb);
@@ -1064,14 +1093,18 @@ public class JobContractManager extends GeneralManager
             dataCellStyle.setAlignment(HorizontalAlignment.LEFT);
             dataCellStyle.setVerticalAlignment(VerticalAlignment.TOP);
             dataCellStyle.setWrapText(true);
-
+            // Gather additional services for service contract
             getCurrentJob().getServices().
                     remove(getCurrentJob().getServiceContract().getSelectedService());
-            // Gather additional services for service contract
             for (Service service : getCurrentJob().getServices()) {
-                services = services + ", " + service.getName();
+                if (service.getName().equals("Other")) {
+                    services = services + ", "
+                            + getCurrentJob().getServiceContract().
+                                    getServiceRequestedOtherText();
+                } else {
+                    services = services + ", " + service.getName();
+                }
             }
-
             ReportUtils.setExcelCellValue(
                     wb, serviceContractSheet, "AD21",
                     services,
