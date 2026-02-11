@@ -379,7 +379,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() + 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
