@@ -2388,14 +2388,14 @@ public final class SystemManager extends GeneralManager {
         this.notificationSearchText = notificationSearchText;
     }
 
+    public List<SelectItem> getJobTableViews(EntityManager em) {
+
+          return getStringListAsSelectItems(em, "jobTableViewsList");
+    }
+    
     public List<SelectItem> getJobTableViews() {
-        ArrayList views = new ArrayList();
 
-        views.add(new SelectItem("Jobs", "Jobs"));
-        views.add(new SelectItem("Job Costings", "Job Costings"));
-        views.add(new SelectItem("Cashier View", "Cashier View"));
-
-        return views;
+          return getJobTableViews(getEntityManager1());
     }
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {

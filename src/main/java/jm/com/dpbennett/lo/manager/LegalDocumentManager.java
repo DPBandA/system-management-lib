@@ -727,7 +727,10 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public List<String> completeGoal(String query) {
-        String goals[] = {"# 1", "# 2", "# 3", "# 4", "# 5"};
+        //String goals[] = {"# 1", "# 2", "# 3", "# 4", "# 5"}; // tk del
+        List<String> goals = SystemOption.getStringList(
+                getSystemManager().getEntityManager1(), 
+                "goalList");
         List<String> matchedGoals = new ArrayList<>();
 
         for (String goal : goals) {

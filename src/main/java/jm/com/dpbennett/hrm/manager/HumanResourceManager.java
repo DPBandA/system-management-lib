@@ -1090,7 +1090,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public List getSexes() {
-        return Utils.getSexes();
+        return Utils.getSexes(getSystemManager().getEntityManager1());
     }
 
     public void createNewDepartment() {
@@ -1774,7 +1774,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public List getPersonalTitles() {
-        return Utils.getPersonalTitles();
+        return Utils.getPersonalTitles(getSystemManager().getEntityManager1());
     }
 
     public List<SelectItem> getTypesOfBusinessList() {

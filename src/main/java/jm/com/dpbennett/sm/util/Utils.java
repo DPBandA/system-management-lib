@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import javax.faces.model.SelectItem;
+import javax.persistence.EntityManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 
 /**
  *
@@ -41,28 +43,13 @@ public class Utils {
         return years;
     }
 
-    public static List getPersonalTitles() {
-        ArrayList titles = new ArrayList();
+    public static List getPersonalTitles(EntityManager em) {
 
-        // tk make system options
-        titles.add(new SelectItem("--", "--"));
-        titles.add(new SelectItem("Mr.", "Mr."));
-        titles.add(new SelectItem("Ms.", "Ms."));
-        titles.add(new SelectItem("Mrs.", "Mrs."));
-        titles.add(new SelectItem("Miss", "Miss"));
-        titles.add(new SelectItem("Dr.", "Dr."));
-
-        return titles;
+        return getStringListAsSelectItems(em, "listOfPersonalTitles");  
     }
 
-    public static List getSexes() {
-        ArrayList titles = new ArrayList();
-
-        // tk make system options
-        titles.add(new SelectItem("--", "--"));
-        titles.add(new SelectItem("Male", "Male"));
-        titles.add(new SelectItem("Female", "Female"));
-
-        return titles;
+    public static List getSexes(EntityManager em) {
+            
+        return getStringListAsSelectItems(em, "listOfSexes");
     }
 }

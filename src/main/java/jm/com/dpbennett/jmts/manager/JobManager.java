@@ -930,20 +930,23 @@ public class JobManager extends GeneralManager
     }
 
     public List<String> getJobTableViews() {
-        EntityManager em;
+//        EntityManager em;
+//
+//        try {
+//            em = getSystemManager().getEntityManager1();
+//
+//            List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
+//
+//            return preferenceValues;
+//
+//        } catch (Exception e) {
+//            System.out.println(e);
+//
+//            return new ArrayList<>();
+//        }
 
-        try {
-            em = getSystemManager().getEntityManager1();
-
-            List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
-
-            return preferenceValues;
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
+        return SystemOption.getStringList(getSystemManager().getEntityManager1(),
+                "jobTableViewsList");
     }
 
     public void updateAccPacCustomer(SelectEvent event) {
@@ -2551,7 +2554,7 @@ public class JobManager extends GeneralManager
         EntityManager em = getSystemManager().getEntityManager1();
 
         if (mailSession == null) {
-            
+
             Properties props = new Properties();
             String mailServer = (String) SystemOption.getOptionValueObject(em, "mail.smtp.host");
             props.put("mail.smtp.host", mailServer);
@@ -2597,7 +2600,7 @@ public class JobManager extends GeneralManager
 
         try {
             if (mailSession == null) {
-                
+
                 Properties props = new Properties();
                 String mailServer = (String) SystemOption.getOptionValueObject(
                         em, "mail.smtp.host");
