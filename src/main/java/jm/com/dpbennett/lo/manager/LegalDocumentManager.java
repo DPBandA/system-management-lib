@@ -48,6 +48,7 @@ import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -176,37 +177,32 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public List getDocumentForms() {
-        ArrayList forms = new ArrayList();
 
-        forms.add(new SelectItem("E", "Electronic"));
-        forms.add(new SelectItem("H", "Hard copy"));
-        forms.add(new SelectItem("V", "Verbal"));
+        List<String> forms = (List<String>) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(),
+                "documentFormsList");
+        ArrayList selectItems = new ArrayList<>();
 
-        return forms;
+        for (String form : forms) {
+            String item[] = form.split(",");
+            selectItems.add(new SelectItem(item[0], item[1]));
+        }
+
+        return selectItems;
     }
 
     public List getPriorityLevels() {
-        ArrayList levels = new ArrayList();
 
-        levels.add(new SelectItem("--", "--"));
-        levels.add(new SelectItem("High", "High"));
-        levels.add(new SelectItem("Medium", "Medium"));
-        levels.add(new SelectItem("Low", "Low"));
-        levels.add(new SelectItem("Emergency", "Emergency"));
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+                "priorityLevelsList");
 
-        return levels;
     }
 
     public List getDocumentStatuses() {
-        ArrayList statuses = new ArrayList();
 
-        statuses.add(new SelectItem("--", "--"));
-        statuses.add(new SelectItem("Clarification required", "Clarification required"));
-        statuses.add(new SelectItem("Completed", "Completed"));
-        statuses.add(new SelectItem("On target", "On target"));
-        statuses.add(new SelectItem("Transferred to Ministry", "Transferred to Ministry"));
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+                "documentStatusList");
 
-        return statuses;
     }
 
     public List<String> completeStrategicPriority(String query) {
@@ -727,9 +723,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public List<String> completeGoal(String query) {
-        //String goals[] = {"# 1", "# 2", "# 3", "# 4", "# 5"}; // tk del
         List<String> goals = SystemOption.getStringList(
-                getSystemManager().getEntityManager1(), 
+                getSystemManager().getEntityManager1(),
                 "goalList");
         List<String> matchedGoals = new ArrayList<>();
 
@@ -772,7 +767,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationSubheader() {
-        
+
         return "Legal Office Administration";
     }
 
@@ -784,7 +779,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public EntityManager getEntityManager2() {
-        
+
         return getSystemManager().getEntityManager2();
     }
 
