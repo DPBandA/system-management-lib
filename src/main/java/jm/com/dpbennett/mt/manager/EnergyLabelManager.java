@@ -84,9 +84,7 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
-
-        getSystemManager().getDashboard().openTab(title);
+        super.openDashboardTab(title);
     }
 
     @Override
@@ -251,7 +249,7 @@ public class EnergyLabelManager extends GeneralManager
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() + 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
