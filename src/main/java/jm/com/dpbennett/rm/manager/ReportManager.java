@@ -125,9 +125,7 @@ public class ReportManager extends GeneralManager {
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
-
-        getSystemManager().getDashboard().openTab(title);
+        super.openDashboardTab(title);
     }
 
     public Employee getUserEmployee() {

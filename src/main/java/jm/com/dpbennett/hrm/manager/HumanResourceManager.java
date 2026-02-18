@@ -838,9 +838,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
-
-        getSystemManager().getDashboard().openTab(title);
+        super.openDashboardTab(title);
     }
 
     @Override

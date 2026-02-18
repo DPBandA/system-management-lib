@@ -126,7 +126,7 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-
+  
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
@@ -140,8 +140,6 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-
-        super.onMainViewTabChange(event);
 
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
@@ -321,6 +319,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
@@ -1078,7 +1077,9 @@ public class JobManager extends GeneralManager
             searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
             searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
 
-            setSearchType("General");
+            if (getSearchType() == null) {
+                setSearchType("General");
+            }
 
         } else {
 
@@ -1087,8 +1088,10 @@ public class JobManager extends GeneralManager
             searchTypes.add(new SelectItem("My dept's proforma invoices",
                     "My dept's proforma invoices"));
 
-            setSearchType("My department's jobs");
-
+            if (getSearchType() == null) {
+                setSearchType("My jobs");
+            }
+            
         }
 
         return searchTypes;
@@ -2724,6 +2727,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getSearchType() {
+
         return searchType;
     }
 
@@ -2738,7 +2742,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
-        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+        ArrayList<SelectItem> dateSearchFields;
 
         switch (searchType) {
             case "General":
@@ -2753,6 +2757,7 @@ public class JobManager extends GeneralManager
                 dateSearchFields = DateUtils.getJobDateSearchFields();
                 break;
             default:
+                dateSearchFields = DateUtils.getJobDateSearchFields();
                 break;
         }
 

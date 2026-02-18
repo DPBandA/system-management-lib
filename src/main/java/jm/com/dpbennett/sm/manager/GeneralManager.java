@@ -442,7 +442,7 @@ public class GeneralManager implements Manager, Serializable {
         for (String n : DatePeriod.getDatePeriodNames()) {
             datePeriods.add(new SelectItem(n, n));
         }
-
+       
         return datePeriods;
     }
 

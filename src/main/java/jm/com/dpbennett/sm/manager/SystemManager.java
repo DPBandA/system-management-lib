@@ -140,12 +140,14 @@ public final class SystemManager extends GeneralManager {
 
     }
 
+    public Date getTime() {
+        return new Date();
+    }
+
     @Override
     public void openDashboardTab(String title) {
 
-        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
-
-        getDashboard().openTab(title);
+        super.openDashboardTab(title);
     }
 
     @Override
@@ -787,7 +789,7 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
 
     }
-    
+
     public void editUserProfile() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -986,7 +988,7 @@ public final class SystemManager extends GeneralManager {
     public void closeUserProfileDialog(ActionEvent actionEvent) {
 
         getUser().save(getEntityManager1());
-        
+
         closeDialog(actionEvent);
 
     }
@@ -2390,12 +2392,12 @@ public final class SystemManager extends GeneralManager {
 
     public List<SelectItem> getJobTableViews(EntityManager em) {
 
-          return getStringListAsSelectItems(em, "jobTableViewsList");
+        return getStringListAsSelectItems(em, "jobTableViewsList");
     }
-    
+
     public List<SelectItem> getJobTableViews() {
 
-          return getJobTableViews(getEntityManager1());
+        return getJobTableViews(getEntityManager1());
     }
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {

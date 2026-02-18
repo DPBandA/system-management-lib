@@ -27,15 +27,16 @@ Email: info@dpbennett.com.jm
     xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <h:head>
-
         <!-- Per-page head -->
         <ui:insert name="head"/>
+        
+        <script type="text/javascript" src="js/app.js"/>
+        <script type="text/javascript" src="js/javascript.js"/>
 
         <!-- Global JMTS styles -->
         <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css"/>
-        <h:outputStylesheet library="jmts-ui" name="css/main.css"/>
-        <h:outputStylesheet library="jmts-ui" name="css/jmts.css"/>
-
+        <h:outputStylesheet library="jmts-ui" name="css/main.css?v=#{systemManager.time}"/>
+        <h:outputStylesheet library="jmts-ui" name="css/jmts.css?v=#{systemManager.time}"/>        
     </h:head>
 
     <h:body id="appBody" class="flex flex-column min-h-screen">
