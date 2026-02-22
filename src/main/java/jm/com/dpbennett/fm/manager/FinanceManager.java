@@ -1066,7 +1066,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void openDashboardTab(String title) {
 
-        super.openDashboardTab(title);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override

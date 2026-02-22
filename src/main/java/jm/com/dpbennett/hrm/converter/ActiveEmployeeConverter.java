@@ -40,7 +40,7 @@ public class ActiveEmployeeConverter extends ConverterAdapter {
         Employee employee = Employee.findActiveByName(em, value);
 
         if (value == null) {
-            employee = new Employee("--", "--");
+            employee = new Employee();
         }
 
         return employee;

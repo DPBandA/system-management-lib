@@ -147,7 +147,7 @@ public final class SystemManager extends GeneralManager {
     @Override
     public void openDashboardTab(String title) {
 
-        super.openDashboardTab(title);
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
     }
 
     @Override

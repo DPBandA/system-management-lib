@@ -249,9 +249,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     @Override
     public void openDashboardTab(String title) {
 
+        // tk
         //getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:petrolStationSearchButton");
+        //getSystemManager().getDashboard().openTab(title);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
 
-        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override

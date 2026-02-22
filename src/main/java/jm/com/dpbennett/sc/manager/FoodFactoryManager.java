@@ -64,9 +64,11 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
     @Override
     public void openDashboardTab(String title) {
 
+        // tk check why this was commented. Does this module handle its own tab change?
         //getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:foodFactorySearchButton");
+        //getSystemManager().getDashboard().openTab(title);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:foodFactorySearchButton");
 
-        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
