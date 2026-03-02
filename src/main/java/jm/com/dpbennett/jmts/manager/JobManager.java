@@ -203,7 +203,7 @@ public class JobManager extends GeneralManager
                 }
             }
 
-            Collections.sort(employees);
+            Collections.sort(departmentEmployees);
 
         } catch (Exception e) {
             System.out.println(e);
