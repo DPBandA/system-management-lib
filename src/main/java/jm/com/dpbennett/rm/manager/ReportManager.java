@@ -98,7 +98,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class ReportManager extends GeneralManager {
 
-    @PersistenceUnit(unitName = "JMTS5PU")
+    @PersistenceUnit(unitName = "RMPU")
     private EntityManagerFactory RMPU;
     private String columnsToExclude;
     private String reportSearchText;

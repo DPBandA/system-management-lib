@@ -70,7 +70,7 @@ import org.w3c.dom.svg.SVGRect;
 public class EnergyLabelManager extends GeneralManager
         implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTSPU")
+    @PersistenceUnit(unitName = "LPPU")
     private EntityManagerFactory LPPU;
     private List<EnergyLabel> foundEnergyLabels;
     private EnergyLabel selectedEnergyLabel;

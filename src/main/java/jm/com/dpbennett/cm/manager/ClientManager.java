@@ -64,7 +64,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class ClientManager extends GeneralManager implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "CMPU")
     private EntityManagerFactory CMPU;
     private Boolean isActiveClientsOnly;
     private Client selectedClient;

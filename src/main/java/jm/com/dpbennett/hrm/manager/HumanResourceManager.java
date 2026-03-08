@@ -73,7 +73,7 @@ import org.primefaces.model.DualListModel;
  */
 public class HumanResourceManager extends GeneralManager implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "HRMPU")
     private EntityManagerFactory HRMPU;
     private Boolean isActiveEmployeesOnly;
     private Boolean isActiveEmployeePositionsOnly;

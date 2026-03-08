@@ -108,7 +108,7 @@ import org.primefaces.event.TabChangeEvent;
 public class JobManager extends GeneralManager
         implements Serializable, BusinessEntityManagement {
 
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory JMTSPU;
     private JMTSApplication application;
     private Job currentJob;

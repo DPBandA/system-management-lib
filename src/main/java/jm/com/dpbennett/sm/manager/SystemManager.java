@@ -78,7 +78,7 @@ import jm.com.dpbennett.sc.manager.ComplianceManager;
  */
 public final class SystemManager extends GeneralManager {
 
-    @PersistenceUnit(unitName = "JMTSPU")
+    @PersistenceUnit(unitName = "SMPU")
     private EntityManagerFactory SMPU;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;

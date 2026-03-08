@@ -38,8 +38,6 @@ import org.json.JSONObject;
  */
 public final class OperationsManager extends GeneralManager {
 
-    @PersistenceUnit(unitName = "JMTSPU")
-    private EntityManagerFactory SMPU;
     private Issue issue;
     
     public OperationsManager() {
@@ -58,11 +56,6 @@ public final class OperationsManager extends GeneralManager {
     @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
-    }
-
-    public EntityManagerFactory getSMPU() {
-
-        return SMPU;
     }
 
     public Issue getIssue() {

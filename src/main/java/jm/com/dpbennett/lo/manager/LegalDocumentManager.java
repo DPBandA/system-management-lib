@@ -72,7 +72,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class LegalDocumentManager extends GeneralManager implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTS5PU")
+    @PersistenceUnit(unitName = "LOPU")
     private EntityManagerFactory LOPU;
     private List<LegalDocument> documentSearchResultList;
     private LegalDocument selectedDocument;

@@ -72,7 +72,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory FINPU;
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "FMPU")
     private EntityManagerFactory FMPU;
     private AccountingCode selectedAccountingCode;
     private Tax selectedTax;

@@ -95,7 +95,7 @@ import org.primefaces.model.file.UploadedFile;
 public class ComplianceManager extends GeneralManager
         implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTS5PU")
+    @PersistenceUnit(unitName = "SCPU")
     private EntityManagerFactory SCPU;
     private ComplianceSurvey currentComplianceSurvey;
     private ProductInspection currentProductInspection;
