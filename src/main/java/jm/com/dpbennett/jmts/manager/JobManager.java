@@ -141,6 +141,8 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
+        
+        //super.onMainViewTabChange(event); // tk
 
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
@@ -2789,7 +2791,7 @@ public class JobManager extends GeneralManager
                 break;
 
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
     }
 }

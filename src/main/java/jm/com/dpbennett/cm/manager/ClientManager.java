@@ -777,7 +777,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 break;
 
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
     }
 

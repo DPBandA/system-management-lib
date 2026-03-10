@@ -521,7 +521,7 @@ public class GeneralManager implements Manager, Serializable {
 
                 break;
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
 
     }

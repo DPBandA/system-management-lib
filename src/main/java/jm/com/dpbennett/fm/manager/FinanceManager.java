@@ -50,6 +50,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -59,6 +60,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.dashboard.DashboardModel;
 import org.primefaces.model.dashboard.DefaultDashboardModel;
@@ -686,7 +688,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 break;
 
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
 
     }
@@ -1079,9 +1081,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void openFinancialAdministration() {
 
-        getSystemManager().getMainTabView().openTab("Financial Administration");
+        openMainViewTab("Financial Administration");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+//        getSystemManager().getMainTabView().openTab("Financial Administration");
+//
+//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1777,11 +1781,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setSearchType("Accounting Codes");
         setSearchText("");
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
-//        setModuleNames(new String[]{
-//            "systemManager",
-//            "financeManager",
-//            "purchasingManager",
-//            "inventoryManager"});
+
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
