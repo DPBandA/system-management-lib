@@ -61,6 +61,7 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
+import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -126,7 +127,7 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-  
+
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
@@ -1091,7 +1092,7 @@ public class JobManager extends GeneralManager
             if (getSearchType() == null) {
                 setSearchType("My jobs");
             }
-            
+
         }
 
         return searchTypes;
@@ -2352,6 +2353,16 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
+            if (!getCurrentJob().getServices().isEmpty()) {
+                getCurrentJob().getServiceContract().setSelectedService(
+                        getCurrentJob().getServices().get(0));
+                getCurrentJob().setIsDirty(true);
+                getCurrentJob().getJobStatusAndTracking().setEditStatus("(edited)");
+            }
+        }
+
     }
 
     public void copyCurrentJob() {
