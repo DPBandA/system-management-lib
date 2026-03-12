@@ -141,9 +141,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-        
-        //super.onMainViewTabChange(event); // tk
-
+       
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
@@ -169,12 +167,12 @@ public class JobManager extends GeneralManager
     }
 
     public List<Business> completeActiveBusiness(String query) {
+        
+        List<Business> businesses = new ArrayList<>();
 
         if (getUser().can("EnterJob") || getUser().can("EditJob")) {
             return getHumanResourceManager().completeActiveBusiness(query);
         }
-
-        List<Business> businesses = new ArrayList<>();
 
         Business userBusiness = User.getUserOrganizationByDepartment(
                 getHumanResourceManager().getEntityManager1(), getUser());
