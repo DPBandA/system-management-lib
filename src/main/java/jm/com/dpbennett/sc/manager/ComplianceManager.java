@@ -2055,7 +2055,7 @@ public class ComplianceManager extends GeneralManager
 
         currentComplianceSurvey = new ComplianceSurvey();
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
-        currentComplianceSurvey.setSurveyType("Commercial Marketplace");
+        currentComplianceSurvey.setSurveyType("Market Survey"); 
         currentComplianceSurvey.setDateOfSurvey(new Date());
         currentComplianceSurvey.setInspector(getUserEmployee());
 

@@ -32,7 +32,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.LdapContext;
+import jm.com.dpbennett.business.entity.auth.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.Module;
 import jm.com.dpbennett.business.entity.sm.Notification;
@@ -751,9 +751,9 @@ public class GeneralManager implements Manager, Serializable {
         InitialLdapContext ctx;
 
         try {
-            List<jm.com.dpbennett.business.entity.sm.LdapContext> ctxs = jm.com.dpbennett.business.entity.sm.LdapContext.findAllActiveLdapContexts(em);
+            List<jm.com.dpbennett.business.entity.auth.LdapContext> ctxs = jm.com.dpbennett.business.entity.auth.LdapContext.findAllActiveLdapContexts(em);
 
-            for (jm.com.dpbennett.business.entity.sm.LdapContext ldapContext : ctxs) {
+            for (jm.com.dpbennett.business.entity.auth.LdapContext ldapContext : ctxs) {
                 if (ldapContext.getName().equals("LDAP")) {
                     userValidated = LdapContext.authenticateUser(
                             em,

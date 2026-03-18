@@ -39,7 +39,7 @@ import jm.com.dpbennett.business.entity.auth.Privilege;
 import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.LdapContext;
+import jm.com.dpbennett.business.entity.auth.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.hrm.Email;
