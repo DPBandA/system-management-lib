@@ -94,7 +94,7 @@
         <class>jm.com.dpbennett.business.entity.sm.SequenceNumber</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
         <class>jm.com.dpbennett.business.entity.sm.StrategicPriority</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.pm.Supplier</class>
         <class>jm.com.dpbennett.business.entity.rm.FieldUpdate</class>
         <class>jm.com.dpbennett.business.entity.rm.GeneratedForm</class>
@@ -252,7 +252,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -381,7 +381,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -510,7 +510,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -639,7 +639,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -768,7 +768,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -897,7 +897,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -1026,7 +1026,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -1155,7 +1155,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -1284,7 +1284,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
@@ -1413,7 +1413,7 @@
         <class>jm.com.dpbennett.business.entity.sc.ShippingContainer</class>
         <class>jm.com.dpbennett.business.entity.sm.Category</class>
         <class>jm.com.dpbennett.business.entity.sm.Country</class>
-        <class>jm.com.dpbennett.business.entity.sm.LdapContext</class>
+        <class>jm.com.dpbennett.business.entity.auth.LdapContext</class>
         <class>jm.com.dpbennett.business.entity.sm.Modules</class>
         <class>jm.com.dpbennett.business.entity.sm.Notification</class>
         <class>jm.com.dpbennett.business.entity.sm.Preference</class>
