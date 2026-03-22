@@ -19,35 +19,31 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm;
 
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import jm.com.dpbennett.business.entity.cm.Client;
+import jm.com.dpbennett.business.entity.sm.User;
+import org.junit.Test;
+
 /**
  *
  * @author Desmond Bennett
  */
 public class EntityTest {
 
-//    @Test
-//    public void testFindActiveMarketProductByName() {
-//        HashMap prop = new HashMap();
-//
-//        prop.put("javax.persistence.jdbc.user",
-//                "root");
-//        prop.put("javax.persistence.jdbc.password",
-//                ""); // NB: REMOVE PWD WHEN DONE AND DISABLE TESTING.
-//        prop.put("javax.persistence.jdbc.url",
-//                "jdbc:mysql://localhost:3306/jmts");
-//        prop.put("javax.persistence.jdbc.driver",
-//                "com.mysql.cj.jdbc.Driver");
-//
-//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
-//        EntityManager em = emf.createEntityManager();
-//
-//        List<Privilege> privs = Privilege.findActivePrivileges(em, "");
-//        
-//        for (Privilege priv : privs) {
-//            System.out.println("Privilege: " + priv.getDescription());
-//        }
-//        
-//
-//    }
+ @Test
+    public void testEntity() {
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
+        EntityManager em = emf.createEntityManager();
+        
+        List<User> users = User.findAllByName(em, "dbennett", 5);
+        
+        System.out.println("User(s): " + users.size());
+       
+
+    }
 
 }

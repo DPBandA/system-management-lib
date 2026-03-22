@@ -662,7 +662,9 @@ public class EnergyLabelManager extends GeneralManager
         if (svgDocument != null) {
             Element element = svgDocument.getElementById(elementId);
             if (element != null) {
-                element.setAttribute("text-anchor", anchor);
+                if (!anchor.isEmpty()) {
+                    element.setAttribute("text-anchor", anchor);
+                }
                 element.setTextContent(content);
             }
         }
