@@ -1047,7 +1047,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public Integer getDialogWidth() {
-        return 500;
+        return 700;
     }
 
     @Override
