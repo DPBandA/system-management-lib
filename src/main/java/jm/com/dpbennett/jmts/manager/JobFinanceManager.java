@@ -284,7 +284,7 @@ public class JobFinanceManager extends GeneralManager
 
     @Override
     public Integer getDialogWidth() {
-        return 500;
+        return 700;
     }
 
     public String getProformaInvoiceSearchText() {
