@@ -203,7 +203,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width((getDialogWidth() - 350) + "px")
+                .width((getDialogWidth() - 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -385,10 +385,12 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return procurementTasks;
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
         return 700;
     }
