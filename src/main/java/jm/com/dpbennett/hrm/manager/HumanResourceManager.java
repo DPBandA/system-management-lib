@@ -113,9 +113,24 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     private Address selectedAddress;
     private Manufacturer selectedManufacturer;
     private Boolean edit;
+    private Integer innerTabIndex;
 
     public HumanResourceManager() {
         init();
+    }
+
+    @Override
+    public void reInitUI() {
+        setInnerTabIndex(0);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
+    }
+
+    public Integer getInnerTabIndex() {
+        return innerTabIndex;
+    }
+
+    public void setInnerTabIndex(Integer innerTabIndex) {
+        this.innerTabIndex = innerTabIndex;
     }
 
     public List<SelectItem> getIdentificationTypeList() {
@@ -129,7 +144,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         return HRMPU;
     }
 
-   
     public final void init() {
         reset();
     }
@@ -238,7 +252,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 "payCycles");
     }
 
-     public List<SelectItem> getManufacturerStatuses() {
+    public List<SelectItem> getManufacturerStatuses() {
         ArrayList statuses = new ArrayList();
 
         statuses.addAll(getStringListAsSelectItems(
@@ -314,7 +328,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     @Override
     public SystemManager getSystemManager() {
-        
+
         return BeanUtils.findBean("systemManager");
     }
 
@@ -455,7 +469,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             return new ArrayList<>();
         }
     }
-    
+
     public Boolean getIsActiveEmployeePositionsOnly() {
         return isActiveEmployeePositionsOnly;
     }
@@ -1730,36 +1744,50 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         return getSystemManager().getEntityManager2();
     }
 
+    public void selectTab(int innerTabIndex) {
+
+        PrimeFaces.current().executeScript("PF('" + "humanResourceTabVar" + "').select(" + innerTabIndex + ");");
+
+    }
+
     @Override
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
             case "Human Resource":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
+                selectTab(getInnerTabIndex());
                 return true;
             case "Employees":
+                setInnerTabIndex(0);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeeSearchButton");
                 return true;
             case "Positions":
+                setInnerTabIndex(1);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:employeePositionSearchButton");
                 return true;
             case "Departments":
+                setInnerTabIndex(2);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:departmentSearchButton");
                 return true;
-            case "Divisions":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:divisionSearchButton");
-                return true;
             case "Subgroups":
+                setInnerTabIndex(3);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:subgroupSearchButton");
                 return true;
-            case "Organizations":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:businessSearchButton");
+            case "Divisions":
+                setInnerTabIndex(4);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:divisionSearchButton");
                 return true;
             case "Business Offices":
+                setInnerTabIndex(5);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:businessOfficeSearchButton");
                 return true;
             case "Manufacturers":
+                setInnerTabIndex(6);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:manufacturerSearchButton");
+                return true;
+            case "Organizations":
+                setInnerTabIndex(7);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:humanResourceTabView:businessSearchButton");
                 return true;
             default:
                 return false;

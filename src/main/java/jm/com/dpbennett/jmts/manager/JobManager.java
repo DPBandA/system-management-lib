@@ -61,7 +61,6 @@ import jm.com.dpbennett.business.entity.jmts.ServiceContract;
 import jm.com.dpbennett.business.entity.jmts.ServiceRequest;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.fm.AccPacCustomer;
-import jm.com.dpbennett.business.entity.fm.Service;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -129,6 +128,13 @@ public class JobManager extends GeneralManager
     }
 
     @Override
+    public void reInitUI() {
+        getSystemManager().reInitUI();
+        getFinanceManager().reInitUI();
+        getHumanResourceManager().reInitUI();
+    }
+
+    @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
         for (Module mod : getUser().getActiveModules()) {
@@ -141,7 +147,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-       
+
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
@@ -167,7 +173,7 @@ public class JobManager extends GeneralManager
     }
 
     public List<Business> completeActiveBusiness(String query) {
-        
+
         List<Business> businesses = new ArrayList<>();
 
         if (getUser().can("EnterJob") || getUser().can("EditJob")) {

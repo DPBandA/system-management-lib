@@ -128,6 +128,7 @@ public final class SystemManager extends GeneralManager {
     private String emailSearchText;
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
+    private Integer innerTabIndex;
 
     public SystemManager() {
         init();
@@ -138,6 +139,20 @@ public final class SystemManager extends GeneralManager {
 
         return BeanUtils.findBean("systemManager");
 
+    }
+
+    @Override
+    public void reInitUI() {
+        setInnerTabIndex(0);
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
+    }
+
+    public Integer getInnerTabIndex() {
+        return innerTabIndex;
+    }
+
+    public void setInnerTabIndex(Integer innerTabIndex) {
+        this.innerTabIndex = innerTabIndex;
     }
 
     public Date getTime() {
@@ -308,46 +323,55 @@ public final class SystemManager extends GeneralManager {
 
         switch (tabTitle) {
             case "System Administration":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
+                selectTab(getInnerTabIndex());
                 return true;
             case "Users":
+                setInnerTabIndex(0);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
                 return true;
             case "Modules":
+                setInnerTabIndex(1);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:moduleSearchButton");
                 return true;
             case "Privileges":
+                setInnerTabIndex(2);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:privilegeSearchButton");
                 return true;
             case "Categories":
+                setInnerTabIndex(3);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:categorySearchButton");
                 return true;
-            case "Countries":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:countrySearchButton");
-                return true;
             case "Document Types":
+                setInnerTabIndex(4);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:documentTypeSearchButton");
                 return true;
             case "Authentication":
+                setInnerTabIndex(5);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:ldapSearchButton");
                 return true;
             case "Attachments":
+                setInnerTabIndex(6);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:attachmentSearchButton");
                 return true;
             case "Email Templates":
+                setInnerTabIndex(7);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:emailTemplateSearchButton");
                 return true;
             case "Notifications":
+                setInnerTabIndex(8);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:notificationSearchButton");
                 return true;
             case "Posts":
+                setInnerTabIndex(9);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:postSearchButton");
                 return true;
-            case "System Settings":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:systemOptionSearchButton");
+            case "Countries":
+                setInnerTabIndex(10);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:countrySearchButton");
                 return true;
-            case "Report Templates":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
+            case "System Settings":
+                setInnerTabIndex(11);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:systemOptionSearchButton");
                 return true;
             default:
                 return false;
@@ -2035,10 +2059,7 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void selectTab(
-            int innerTabIndex) {
-
-        getMainTabView().openTab("System Administration");
+    public void selectTab(int innerTabIndex) {
 
         PrimeFaces.current().executeScript("PF('" + "centerTabVar" + "').select(" + innerTabIndex + ");");
 

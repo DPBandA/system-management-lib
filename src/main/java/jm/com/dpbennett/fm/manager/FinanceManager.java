@@ -50,7 +50,6 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
-import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -60,7 +59,6 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.dashboard.DashboardModel;
 import org.primefaces.model.dashboard.DefaultDashboardModel;
@@ -124,9 +122,25 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private ProcurementMethod selectedProcurementMethod;
     private static final String RESPONSIVE_CLASS = "col-12 lg:col-6 xl:col-6";
     private DashboardModel dashboardModel;
+    private Integer innerTabIndex;
 
     public FinanceManager() {
         init();
+    }
+
+    @Override
+    public void reInitUI() {
+        setInnerTabIndex(0);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
+    }
+
+    public Integer getInnerTabIndex() {
+        return innerTabIndex;
+    }
+
+    public void setInnerTabIndex(Integer innerTabIndex) {
+        this.innerTabIndex = innerTabIndex;
     }
 
     public List<SelectItem> getServiceLocationList() {
@@ -308,39 +322,50 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Financial Administration":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                selectTab(getInnerTabIndex());
                 return true;
             case "Accounting Codes":
+                setInnerTabIndex(0);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
                 return true;
-            case "Currencies":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:currencySearchButton");
-                return true;
-            case "Discounts":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:discountSearchButton");
-                return true;
-            case "Taxes":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:taxSearchButton");
-                return true;
             case "Classifications":
+                setInnerTabIndex(1);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:classificationSearchButton");
                 return true;
             case "Sectors":
+                setInnerTabIndex(2);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:sectorSearchButton");
                 return true;
             case "Job Categories":
+                setInnerTabIndex(3);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:jobCategorySearchButton");
                 return true;
             case "Job Subcategories":
+                setInnerTabIndex(4);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:jobSubCategorySearchButton");
                 return true;
             case "Services":
+                setInnerTabIndex(5);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:serviceSearchButton");
                 return true;
             case "Procurement":
+                setInnerTabIndex(6);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:procurementMethodSearchButton");
                 return true;
+            case "Currencies":
+                setInnerTabIndex(7);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:currencySearchButton");
+                return true;
+            case "Discounts":
+                setInnerTabIndex(8);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:discountSearchButton");
+                return true;
+            case "Taxes":
+                setInnerTabIndex(9);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:taxSearchButton");
+                return true;
             case "Settings":
+                setInnerTabIndex(10);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:settingSearchButton");
                 return true;
             default:
@@ -494,8 +519,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void selectTab(int innerTabIndex) {
-
-        getSystemManager().getMainTabView().openTab("Financial Administration");
 
         PrimeFaces.current().executeScript("PF('" + "financialAdminTabVar" + "').select(" + innerTabIndex + ");");
 
@@ -1809,6 +1832,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
         isActiveProcurementMethodsOnly = true;
+        innerTabIndex = 0;
 
         dashboardModel = new DefaultDashboardModel();
         dashboardModel.addWidget(new DefaultDashboardWidget("procurementTasks", RESPONSIVE_CLASS));

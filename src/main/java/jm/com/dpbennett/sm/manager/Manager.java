@@ -239,5 +239,7 @@ public interface Manager {
     public Module getModule();
     
     public List<String> getModuleNames();
+    
+    public void reInitUI();
 
 }
