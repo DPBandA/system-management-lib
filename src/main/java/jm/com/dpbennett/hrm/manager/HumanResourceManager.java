@@ -617,6 +617,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         isActiveSubgroupsOnly = true;
         isActiveDivisionsOnly = true;
         isActiveManufacturersOnly = true;
+        innerTabIndex = 0;
 
     }
 

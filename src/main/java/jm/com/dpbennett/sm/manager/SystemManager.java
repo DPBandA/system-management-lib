@@ -1961,6 +1961,7 @@ public final class SystemManager extends GeneralManager {
         isActiveDocumentTypesOnly = true;
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
+        innerTabIndex = 0;
         setSearchType("Users");
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
