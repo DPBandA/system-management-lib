@@ -5,10 +5,6 @@
     box-shadow: none !important;
 }
 
-html {
-    font-size: 1rem; /* org 0.80 */
-}
-
 .jobNumberClass {
     width: 100% !important;
     color: orange !important;
@@ -20,14 +16,12 @@ html {
 
 .hold {
     color: red !important;
-    font-size: 1.2em !important;
     background-image: none !important;
     font-weight: bolder !important;
 }
 
 .active {
     color: green !important;
-    font-size: 1.2em !important;
     background-image: none !important;
     font-weight: bolder !important;
 }
@@ -70,7 +64,6 @@ html {
 
 .job-number {
     font-weight: bold !important;
-    font-size: 14px !important;
     padding: 3px !important;
     width: 100% !important;
     box-shadow: 5px !important;
@@ -78,7 +71,6 @@ html {
 
 .pr-number {
     font-weight: bold !important;
-    font-size: 14px !important;
     padding: 3px !important;
     width: 100% !important;
     box-shadow: 5px !important;
@@ -102,7 +94,6 @@ html {
 .output-text-header {
     display: block !important;
     margin-top: 10px !important;
-    font-size: 14px !important;
     font-weight: bold !important;
     color: gray !important;
     width: 100% !important;
@@ -147,13 +138,11 @@ html {
 
 .debug-mode {
     color: lightblue !important;
-    font-size: 10pt !important;
     font-weight: bold !important;
 }
 
 .non-debug-mode {
     color: darkgrey !important;
-    font-size: 10pt !important;
     font-weight: bold !important;
 }
 
@@ -183,7 +172,6 @@ html {
 
 .ui-outputlabel.subheader-text
 {
-    font-size: 0.900em !important;
 }
 
 .logo
@@ -200,14 +188,4 @@ html {
     .ui-sticky {
         top: 0px !important;
     }
-}
-
-.ui-outputlabel
-{
-    font-size: 1.000em !important;
-}
-
-.ui-outputlabel.header-text
-{
-    font-size: 1.000em !important;
 }
