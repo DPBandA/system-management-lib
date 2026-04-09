@@ -51,7 +51,7 @@ import org.primefaces.event.TabCloseEvent;
  *
  * @author Desmond Bennett
  */
-public class GeneralManager implements Manager, Serializable {
+public class GeneralManager1 implements Manager, Serializable {
 
     private String name;
     private Module module;
@@ -62,7 +62,7 @@ public class GeneralManager implements Manager, Serializable {
     private ArrayList<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
     private ArrayList<SelectItem> allDateSearchFields;
-    private List<String> moduleNames;
+//    private List<String> moduleNames;
     private User user;
     private String username;
     private String logonMessage;
@@ -74,17 +74,17 @@ public class GeneralManager implements Manager, Serializable {
     private String registrationMessage;
     private String confirmedPassword;
 
-    public GeneralManager() {
+    public GeneralManager1() {
         init();
     }
 
     @Override
     public void setManagerUser() {
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                manager.setUser(getUser());
+        // tk set for the user's active modules instead.
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
             }
         }
     }
@@ -109,17 +109,21 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public List<String> getModuleNames() {
+//        if (moduleNames == null) {
+//            moduleNames = new ArrayList<>();
+//
+//            List<Module> modules = Module.findAllActive(
+//                    getSystemManager().getEntityManager1(),
+//                    0);
+//
+//            for (Module mod : modules) {
+//                moduleNames.add(mod.getName());
+//            }
+//        }
+//
+//        return moduleNames;
 
-        if (moduleNames == null) {
-            moduleNames = new ArrayList<>();
-
-            for (Module mod : getUser().getActiveModules()) {
-                moduleNames.add(mod.getName());
-            }
-
-        }
-
-        return moduleNames;
+           return null; //tk 
     }
 
     @Override
@@ -188,17 +192,26 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void doSearch() {
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                if (hasSearchType(manager, getSearchType())) {
-                    manager.doDefaultSearch(
-                            getMainTabView(),
-                            getDateSearchPeriod().getDateField(),
-                            getSearchType(),
-                            getSearchText(),
-                            getDateSearchPeriod().getStartDate(),
-                            getDateSearchPeriod().getEndDate());
+        for (String moduleName : getModuleNames()) { // tke use active modules instead.
+
+            Module mod = Module.findActiveByName(
+                    getSystemManager().getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (mod != null) {
+                    Manager manager = getManager(mod.getName());
+                    if (manager != null) {
+                        if (hasSearchType(manager, getSearchType())) {
+                            manager.doDefaultSearch(
+                                    getMainTabView(),
+                                    getDateSearchPeriod().getDateField(),
+                                    getSearchType(),
+                                    getSearchText(),
+                                    getDateSearchPeriod().getStartDate(),
+                                    getDateSearchPeriod().getEndDate());
+                        }
+                    }
                 }
             }
         }
@@ -275,12 +288,20 @@ public class GeneralManager implements Manager, Serializable {
 
         getSystemManager().getMainTabView().reset(getUser());
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                manager.openMainViewTab(mod.getMainViewTitle());
+        for (String moduleName : getModuleNames()) { // tk use active modules
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    Module mod = Module.findActiveByName(
+                            getSystemManager().getEntityManager1(),
+                            moduleName);
+
+                    if (mod != null) {
+
+                        getManager(moduleName).openMainViewTab(mod.getMainViewTitle());
+
+                    }
+                }
             }
-            
         }
 
     }
@@ -290,10 +311,19 @@ public class GeneralManager implements Manager, Serializable {
 
         getSystemManager().getDashboard().reset(getUser(), true);
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                manager.openDashboardTab(mod.getDashboardTitle());
+        for (String moduleName : getModuleNames()) { // tk use active modules
+            if (getManager(moduleName) != null) {
+                if (getUser().hasModule(moduleName)) {
+                    Module mod = Module.findActiveByName(
+                            getSystemManager().getEntityManager1(),
+                            moduleName);
+
+                    if (mod != null) {
+
+                        getManager(moduleName).openDashboardTab(mod.getDashboardTitle());
+
+                    }
+                }
             }
         }
 
@@ -322,11 +352,20 @@ public class GeneralManager implements Manager, Serializable {
 
         groupedSearchTypes.clear();
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                groupedSearchTypes.add(manager.getSearchTypesGroup());
-                searchType = manager.getSearchType();
+        for (String moduleName : getModuleNames()) { // tk use active modules
+
+            Module mod = Module.findActiveByName(
+                    getSystemManager().getEntityManager1(),
+                    moduleName);
+
+            if (getUser().hasModule(moduleName)) {
+                if (mod != null) {
+                    Manager manager = getManager(mod.getName());
+                    if (manager != null) {
+                        groupedSearchTypes.add(manager.getSearchTypesGroup());
+                        searchType = manager.getSearchType();
+                    }
+                }
             }
         }
 
@@ -442,16 +481,25 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void updateSearchType() {
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                if (hasSearchType(manager, searchType)) {
-                    ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
-                    if (!dateFields.isEmpty()) {
+        for (String moduleName : getModuleNames()) {
 
-                        allDateSearchFields = dateFields;
+            Module mod = Module.findActiveByName(
+                    getSystemManager().getEntityManager1(),
+                    moduleName);
 
-                        return;
+            if (getUser().hasModule(moduleName)) {
+                if (mod != null) {
+                    Manager manager = getManager(mod.getName());
+                    if (manager != null) {
+                        if (hasSearchType(manager, searchType)) {
+                            ArrayList<SelectItem> dateFields = manager.getDateSearchFields(searchType);
+                            if (!dateFields.isEmpty()) {
+
+                                allDateSearchFields = dateFields;
+
+                                return;
+                            }
+                        }
                     }
                 }
             }
@@ -1060,7 +1108,7 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void reInitUI() {
-
+       
     }
 
 }

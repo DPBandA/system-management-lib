@@ -417,6 +417,13 @@ public class JobFinanceManager extends GeneralManager
     }
 
     public void proformaDialogReturn() {
+        if (getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Proforma Invoice was NOT saved", "The recently edited Proforma Invoice was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("headerForm:growl3");
+            getCurrentJob().setIsDirty(false);
+        } else {
+            getJobManager().doDefaultSearch();
+        }
 
     }
 
@@ -2940,11 +2947,10 @@ public class JobFinanceManager extends GeneralManager
                 getCurrentJob().getJobCostingAndPayment().setCostingApprovedBy(
                         getUserEmployee());
 
-                if (getCurrentJob().getType().equals("Proforma Invoice")) {
-
-                    getCurrentJob().getJobStatusAndTracking().setWorkProgress("Completed");
-                }
-
+//                if (getCurrentJob().getType().equals("Proforma Invoice")) {
+//
+//                    getCurrentJob().getJobStatusAndTracking().setWorkProgress("Completed");
+//                }
                 BusinessEntityActionUtils.addAction(BusinessEntity.Action.APPROVE,
                         getCurrentJob().getActions());
 
@@ -2954,10 +2960,10 @@ public class JobFinanceManager extends GeneralManager
                 BusinessEntityActionUtils.removeAction(BusinessEntity.Action.APPROVE,
                         getCurrentJob().getActions());
 
-                if (getCurrentJob().getType().equals("Proforma Invoice")) {
-
-                    getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
-                }
+//                if (getCurrentJob().getType().equals("Proforma Invoice")) {
+//
+//                    getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
+//                }
             }
 
             setJobCostingAndPaymentDirty(true);
@@ -2967,10 +2973,10 @@ public class JobFinanceManager extends GeneralManager
             getCurrentJob().getJobCostingAndPayment().
                     setCostingApproved(!getCurrentJob().getJobCostingAndPayment().getCostingApproved());
         }
-
-        if (getCurrentJob().getType().equals("Proforma Invoice")) {
-            getJobManager().updateWorkProgress();
-        }
+//
+//        if (getCurrentJob().getType().equals("Proforma Invoice")) {
+//            getJobManager().updateWorkProgress();
+//        }
 
     }
 
