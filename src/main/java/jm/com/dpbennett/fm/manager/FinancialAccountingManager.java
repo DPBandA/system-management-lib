@@ -1,5 +1,5 @@
 /*
-Accounting Management (AM) 
+Financial Accounting (FA) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -22,11 +22,8 @@ package jm.com.dpbennett.fm.manager;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.fm.FinancialAccount;
 import jm.com.dpbennett.business.entity.sm.Notification;
-import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -41,25 +38,22 @@ import org.primefaces.model.TreeNode;
  */
 public class FinancialAccountingManager extends GeneralManager implements Serializable {
 
-    private EntityManagerFactory AMPU;
     private TreeNode<FinancialAccount> chartOfAccounts;
     private List<SortMeta> sortBy;
     private FinancialAccount selectedFinancialAccount;
+    private FinanceManager financeManager;
+    private EntityManager entityManager;
 
     public FinancialAccountingManager() {
         init();
     }
 
-    public EntityManagerFactory getAMPU() {
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 
-        if (AMPU == null) {
-            String pu = SystemOption.getString(
-                    getSystemManager().getDefaultEntityManager(), "AMPU");
-            
-            Persistence.createEntityManagerFactory(pu);
-        }
-
-        return AMPU;
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -103,8 +97,7 @@ public class FinancialAccountingManager extends GeneralManager implements Serial
     }
 
     public final void init() {
-        setName("accountingManager");
-        chartOfAccounts = createAccounts();
+        setName("financialAccountingManager");
     }
 
     @Override
@@ -112,23 +105,52 @@ public class FinancialAccountingManager extends GeneralManager implements Serial
         return BeanUtils.findBean("systemManager");
     }
 
-    @Override
-    public EntityManager getEntityManager1() {
+    public FinanceManager getFinanceManager() {
+        if (financeManager == null) {
+            financeManager = BeanUtils.findBean("financeManager");
+        }
 
-        return getAMPU().createEntityManager();
-
+        return financeManager;
     }
 
-    private TreeNode createAccounts() {
-        TreeNode<FinancialAccount> chart = new DefaultTreeNode(new FinancialAccount("Bank", "Bank account", 230.0), null);
+    @Override
+    public EntityManager getEntityManager1() {
+        return getFinanceManager().getEntityManager1();
+    }
 
-        TreeNode backup1 = new DefaultTreeNode("document", new FinancialAccount("backup-1.zip", "10kb", 300.0), chart);
-        TreeNode applications = new DefaultTreeNode("document", new FinancialAccount("Applications", "100kb", 100.0), backup1);
+    public TreeNode<FinancialAccount> loadAccounts() {
+        return loadAccounts(getEntityManager1());
+    }
 
-        return chart;
+    public TreeNode<FinancialAccount> loadAccounts(EntityManager em) {
+        chartOfAccounts = new DefaultTreeNode("Accounts", null);
+
+        List<FinancialAccount> rootAccounts
+                = em.createQuery("SELECT a FROM FinancialAccount a WHERE a.parent IS NULL ORDER BY a.name", FinancialAccount.class)
+                        .getResultList();
+
+        for (FinancialAccount account : rootAccounts) {
+            TreeNode accountNode = new DefaultTreeNode(account, chartOfAccounts);
+            buildTree(accountNode, account);
+        }
+
+        return chartOfAccounts;
+    }
+
+    private void buildTree(TreeNode parentNode, FinancialAccount parentAcc) {
+        for (FinancialAccount child : parentAcc.getChildren()) {
+            TreeNode childNode = new DefaultTreeNode(child, parentNode);
+            buildTree(childNode, child);
+        }
     }
 
     public TreeNode<FinancialAccount> getChartOfAccounts() {
+
+        if (chartOfAccounts == null) {
+            loadAccounts();
+
+        }
+
         return chartOfAccounts;
     }
 
