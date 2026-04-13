@@ -20,15 +20,21 @@ Email: info@dpbennett.com.jm
 package jm.com.dpbennett.fm.manager;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
+import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.FinancialAccount;
 import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.TreeNode;
 
@@ -42,18 +48,151 @@ public class FinancialAccountingManager extends GeneralManager implements Serial
     private List<SortMeta> sortBy;
     private FinancialAccount selectedFinancialAccount;
     private FinanceManager financeManager;
-    private EntityManager entityManager;
+    private Boolean isActiveFinancialAccountsOnly;
+    private String financialAccountSearchText;
 
     public FinancialAccountingManager() {
         init();
     }
 
-    public EntityManager getEntityManager() {
-        return entityManager;
+    public Boolean getIsActiveFinancialAccountsOnly() {
+        return isActiveFinancialAccountsOnly;
     }
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public void setIsActiveFinancialAccountsOnly(Boolean isActiveFinancialAccountsOnly) {
+        this.isActiveFinancialAccountsOnly = isActiveFinancialAccountsOnly;
+    }
+
+    @Override
+    public void doDefaultSearch(
+            MainTabView mainTabView,
+            String dateSearchField,
+            String searchType,
+            String searchText,
+            Date startDate,
+            Date endDate) {
+
+        switch (searchType) {
+            case "Accounts":
+
+                List<FinancialAccount> financialAccounts;
+                chartOfAccounts = new DefaultTreeNode("Accounts", null);
+
+                if (getIsActiveFinancialAccountsOnly()) {
+                    financialAccounts = FinancialAccount.findActive(
+                            getEntityManager1());
+                } else {
+                    financialAccounts = FinancialAccount.find(
+                            getEntityManager1());
+                }
+
+                for (FinancialAccount account : financialAccounts) {
+                    TreeNode accountNode = new DefaultTreeNode(account, chartOfAccounts);
+                    buildTree(accountNode, account, searchText);
+                }
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void doFinancialAccountSearch() {
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                null,
+                "Accounts",
+                getFinancialAccountSearchText(),
+                null,
+                null);
+
+    }
+
+    public void createNewFinancialAccount() {
+        selectedFinancialAccount = new FinancialAccount();
+
+        openFinancialAccountDialog();
+    }
+
+    public void cancelDialogEdit(ActionEvent actionEvent) {
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void saveSelectedFinancialAccount() {
+
+        selectedFinancialAccount.save(getEntityManager1());
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+    }
+
+    public void openFinancialAccountDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth()) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/finance/financialAccountDialog", options, null);
+
+    }
+
+    @Override
+    public User getUser() {
+
+        return getFinanceManager().getUser();
+
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        onMainViewTabChange(event);
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        getSystemManager().onMainViewTabChange(event);
+    }
+
+    @Override
+    public boolean handleTabChange(String tabTitle) {
+
+        switch (tabTitle) {
+            case "Accounts":
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAccountSearchButton");
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void openAccountsTab() {
+
+        getSystemManager().getMainTabView().openTab("Accounts");
+
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAccountSearchButton");
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAccountSearchButton");
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        openAccountsTab();
     }
 
     @Override
@@ -73,31 +212,24 @@ public class FinancialAccountingManager extends GeneralManager implements Serial
         return getSystemManager().getNotifications();
     }
 
-    @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        onMainViewTabChange(event);
-    }
-
-    @Override
-    public String getDefaultCommandTarget() {
-
-        return getSystemManager().getDefaultCommandTarget();
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        getSystemManager().onMainViewTabChange(event);
-    }
-
     public final void init() {
+        reset();
+    }
+
+    @Override
+    public void reset() {
         setName("financialAccountingManager");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAccountSearchButton");
+        financialAccountSearchText = "";
+        isActiveFinancialAccountsOnly = true;
+    }
+
+    public String getFinancialAccountSearchText() {
+        return financialAccountSearchText;
+    }
+
+    public void setFinancialAccountSearchText(String financialAccountSearchText) {
+        this.financialAccountSearchText = financialAccountSearchText;
     }
 
     @Override
@@ -118,44 +250,22 @@ public class FinancialAccountingManager extends GeneralManager implements Serial
         return getFinanceManager().getEntityManager1();
     }
 
-    public TreeNode<FinancialAccount> loadAccounts() {
-        return loadAccounts(getEntityManager1());
-    }
-
-    public TreeNode<FinancialAccount> loadAccounts(EntityManager em) {
-        chartOfAccounts = new DefaultTreeNode("Accounts", null);
-
-        List<FinancialAccount> rootAccounts
-                = em.createQuery("SELECT a FROM FinancialAccount a WHERE a.parent IS NULL ORDER BY a.name", FinancialAccount.class)
-                        .getResultList();
-
-        for (FinancialAccount account : rootAccounts) {
-            TreeNode accountNode = new DefaultTreeNode(account, chartOfAccounts);
-            buildTree(accountNode, account);
-        }
-
-        return chartOfAccounts;
-    }
-
-    private void buildTree(TreeNode parentNode, FinancialAccount parentAcc) {
+    public static void buildTree(TreeNode parentNode, FinancialAccount parentAcc, String searchText) {
         for (FinancialAccount child : parentAcc.getChildren()) {
-            TreeNode childNode = new DefaultTreeNode(child, parentNode);
-            buildTree(childNode, child);
+            if (child.getName().toUpperCase().contains(searchText.toUpperCase())) {
+                TreeNode childNode = new DefaultTreeNode(child, parentNode);
+                buildTree(childNode, child, searchText);
+            }
         }
     }
 
     public TreeNode<FinancialAccount> getChartOfAccounts() {
 
         if (chartOfAccounts == null) {
-            loadAccounts();
-
+            chartOfAccounts = new DefaultTreeNode("Accounts", null);
         }
 
         return chartOfAccounts;
-    }
-
-    public void setChartOfAccounts(TreeNode<FinancialAccount> chartOfAccounts) {
-        this.chartOfAccounts = chartOfAccounts;
     }
 
     public List<SortMeta> getSortBy() {

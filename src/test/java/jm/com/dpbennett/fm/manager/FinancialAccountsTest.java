@@ -39,20 +39,7 @@ public class FinancialAccountsTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
         EntityManager em = emf.createEntityManager();
 
-        FinancialAccountingManager fam = new FinancialAccountingManager();
-        System.out.println("Welcome to " + fam.getName() + "!\n\n");
-
-        System.out.println("Create test accounts:");
-        em.getTransaction().begin();
-        FinancialAccount assets = new FinancialAccount("Assets");
-        FinancialAccount cash = new FinancialAccount("Cash");
-        FinancialAccount bank = new FinancialAccount("Bank");
-        assets.addChild(cash);
-        assets.addChild(bank);
-        em.persist(assets);
-        em.getTransaction().commit();
-
-        fam.loadAccounts(em);
+        System.out.println("Account found: " + FinancialAccount.findActive(em));           
 
     }
 

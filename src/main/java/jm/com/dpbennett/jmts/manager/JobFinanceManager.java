@@ -4133,6 +4133,7 @@ public class JobFinanceManager extends GeneralManager
                             Department.findAssignedToJob(getCurrentJob(), em).getName(),
                             selectedJobCostingTemplate);
             if (jcp != null) {
+                getCurrentJob().getJobCostingAndPayment().setCurrency(jcp.getCurrency());
                 getCurrentJob().getJobCostingAndPayment().getCostComponents().clear();
                 getCurrentJob().getJobCostingAndPayment().setCostComponents(copyCostComponents(jcp.getCostComponents()));
 

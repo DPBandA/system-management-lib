@@ -144,10 +144,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public void viewUserProfile() {
-    }
-
-    @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
         onMainViewTabChange(event);
