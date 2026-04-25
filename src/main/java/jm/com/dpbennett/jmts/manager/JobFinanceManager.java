@@ -3490,6 +3490,18 @@ public class JobFinanceManager extends GeneralManager
         }
 
     }
+    
+    public void createNewInvoice(ActionEvent event) {
+
+        if (getCurrentJob().getId() != null) {
+           // tk create invoice using the "create proforma code
+        } else {
+            PrimeFacesUtils.addMessage("Job NOT Saved",
+                    "Job must be saved before a new invoice can be created",
+                    FacesMessage.SEVERITY_WARN);
+        }
+
+    }
 
     public void editCashPayment(ActionEvent event) {
 
@@ -3562,6 +3574,11 @@ public class JobFinanceManager extends GeneralManager
                 }
             }
         }
+    }
+    
+    public void invoiceDialogReturn() {
+
+        // tk decide what to do here if anything
     }
 
     public Boolean getIsJobCompleted() {

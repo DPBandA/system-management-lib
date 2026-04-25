@@ -491,7 +491,7 @@ public class JobSampleManager extends GeneralManager
 
     public void doCopyJobSample() {
 
-        selectedJobSample = new JobSample(selectedJobSample);
+        selectedJobSample = JobSample.copy(selectedJobSample);
         selectedJobSample.setReferenceIndex(getCurrentNumberOfJobSamples());
         if (selectedJobSample.getSampleQuantity() == 1L) {
             selectedJobSample.setReference(BusinessEntityUtils.getAlphaCode(getCurrentNumberOfJobSamples()));

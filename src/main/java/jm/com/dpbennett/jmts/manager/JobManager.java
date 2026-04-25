@@ -296,6 +296,7 @@ public class JobManager extends GeneralManager
 
         if (tab.equals("General")
                 && (getCurrentJob().getType().equals("Proforma Invoice")
+                || getCurrentJob().getType().equals("Invoice")
                 || getCurrentJob().getType().equals("Job"))) {
             return true;
         } else if (tab.equals("Services")) {
@@ -308,6 +309,7 @@ public class JobManager extends GeneralManager
             return true;
         } else if (tab.equals("StatusAndTracking")
                 && (getCurrentJob().getType().equals("Job")
+                || getCurrentJob().getType().equals("Invoice")
                 || getCurrentJob().getType().equals("Proforma Invoice"))) {
             return true;
         } else if (tab.equals("Reporting")
@@ -773,6 +775,13 @@ public class JobManager extends GeneralManager
     public Boolean enableMultipleStatusNotes() {
         return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
                 "enableMultipleStatusNotes");
+    }
+
+    public Boolean booleanSetting(String setting) {
+
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
+                setting);
+
     }
 
     public Boolean disableJobDialogField(String field) {
@@ -1702,7 +1711,7 @@ public class JobManager extends GeneralManager
                 Job parent = currentJob;
                 Long currentJobSequenceNumber = parent.getJobSequenceNumber();
                 Integer yearReceived = parent.getYearReceived();
-                currentJob = Job.copy(em, parent, getUser(), true, false);
+                currentJob = Job.copy(parent);
                 currentJob.setParent(parent);
                 currentJob.setBusiness(null);
                 currentJob.setClassification(new Classification());
@@ -1723,7 +1732,6 @@ public class JobManager extends GeneralManager
                 currentJob.setYearReceived(yearReceived);
                 currentJob.setJobSequenceNumber(currentJobSequenceNumber);
                 currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
-
                 currentJob.setServiceContract(new ServiceContract());
                 currentJob.setServices(null);
 
@@ -1751,6 +1759,74 @@ public class JobManager extends GeneralManager
                         currentJob.getActions());
             }
 
+            getJobFinanceManager().setAccPacCustomer(new AccPacCustomer(""));
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return true;
+    }
+
+    public Boolean createInvoice(
+            EntityManager em) {
+
+        try {
+
+          //  EntityManager hrem = getHumanResourceManager().getEntityManager1();
+          //  EntityManager fmem = getFinanceManager().getEntityManager1();
+
+//            if (isSubcontract) {
+            Job parent = currentJob;
+            Long currentJobSequenceNumber = parent.getJobSequenceNumber();
+            Integer yearReceived = parent.getYearReceived();
+            currentJob = Job.copy(parent);
+            currentJob.setParent(parent);
+            //currentJob.setBusiness(null);
+            //currentJob.setClassification(new Classification());
+            //currentJob.setClient(new Client());
+            //currentJob.setBillingAddress(new Address());
+            //currentJob.setContact(new Contact());
+            //currentJob.setAssignedTo(new Employee());
+            //currentJob.setRepresentatives(null);
+            currentJob.setEstimatedTurnAroundTimeInDays(1);
+            currentJob.setEstimatedTurnAroundTimeRequired(true);
+            //currentJob.setInstructions("");
+            //currentJob.setSector(Sector.findSectorByName(fmem, "--"));
+            //currentJob.setJobCategory(JobCategory.findJobCategoryByName(fmem, "--"));
+            //currentJob.setJobSubCategory(JobSubCategory.findJobSubCategoryByName(fmem, "--"));
+            //currentJob.setSubContractedDepartment(new Department());
+//                currentJob.setIsToBeSubcontracted(isSubcontract);
+            currentJob.getJobStatusAndTracking().setDateAndTimeEntered(null);
+            currentJob.setYearReceived(yearReceived);
+            currentJob.setJobSequenceNumber(currentJobSequenceNumber);
+            currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
+            //currentJob.setServiceContract(new ServiceContract());
+            //currentJob.setServices(null);
+
+//                if (copyCosting) {
+            currentJob.getJobCostingAndPayment().setCostComponents(
+                    getJobFinanceManager().copyCostComponents(parent.getJobCostingAndPayment().getCostComponents()));
+            currentJob.getJobCostingAndPayment().setIsDirty(true);
+//                }
+
+//            } else {
+//                currentJob = Job.create(em, hrem, fmem, getUser(), true);
+//            }
+//            if (currentJob == null) {
+//                PrimeFacesUtils.addMessage("Job NOT Created",
+//                        "An error occurred while creating a job. Try again or contact the System Administrator",
+//                        FacesMessage.SEVERITY_ERROR);
+//            } else {
+//                if (isSubcontract) {
+//                    setIsDirty(true);
+//                } else {
+//                    setIsDirty(false);
+//                }
+//
+//                BusinessEntityActionUtils.addAction(BusinessEntity.Action.CREATE,
+//                        currentJob.getActions());
+//            }
             getJobFinanceManager().setAccPacCustomer(new AccPacCustomer(""));
 
         } catch (Exception e) {
@@ -2373,8 +2449,6 @@ public class JobManager extends GeneralManager
 
     public void copyCurrentJob() {
 
-        EntityManager em = getEntityManager1();
-
         if (currentJob.getIsSubContract()) {
 
             PrimeFacesUtils.addMessage("Job Copy NOT Created",
@@ -2386,7 +2460,7 @@ public class JobManager extends GeneralManager
                     FacesMessage.SEVERITY_ERROR);
         } else {
 
-            currentJob = Job.copy(em, currentJob, getUser(), true, false);
+            currentJob = Job.copy(currentJob);
             BusinessEntityActionUtils.addAction(BusinessEntity.Action.CREATE,
                     currentJob.getActions());
             getJobFinanceManager().setEnableOnlyPaymentEditing(false);
