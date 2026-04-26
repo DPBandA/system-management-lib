@@ -70,6 +70,7 @@ import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.Email;
+import jm.com.dpbennett.business.entity.jmts.JobStatusAndTracking;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
@@ -1728,7 +1729,6 @@ public class JobManager extends GeneralManager
                 currentJob.setJobSubCategory(JobSubCategory.findJobSubCategoryByName(fmem, "--"));
                 currentJob.setSubContractedDepartment(new Department());
                 currentJob.setIsToBeSubcontracted(isSubcontract);
-                currentJob.getJobStatusAndTracking().setDateAndTimeEntered(null);
                 currentJob.setYearReceived(yearReceived);
                 currentJob.setJobSequenceNumber(currentJobSequenceNumber);
                 currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
@@ -1739,7 +1739,24 @@ public class JobManager extends GeneralManager
                     currentJob.getJobCostingAndPayment().setCostComponents(
                             getJobFinanceManager().copyCostComponents(parent.getJobCostingAndPayment().getCostComponents()));
                     currentJob.getJobCostingAndPayment().setIsDirty(true);
+                } else {
+                    currentJob.setJobCostingAndPayment(new JobCostingAndPayment());
                 }
+
+                currentJob.setJobStatusAndTracking(new JobStatusAndTracking());
+
+                currentJob.setNewClient(false);
+                currentJob.setReportNumber("");
+                currentJob.setNoOfTests(0);
+                currentJob.setNoOfCalibrations(0);
+                currentJob.setNoOfTestsOrCalibrations(0);
+                currentJob.setNoOfInspections(0);
+                currentJob.setNoOfTrainings(0);
+                currentJob.setNoOfLabelAssessments(0);
+                currentJob.setNoOfCertifications(0);
+                currentJob.setNoOfConsultations(0);
+                currentJob.setNoOfTests(0);
+                currentJob.setComment("");
 
             } else {
                 currentJob = Job.create(em, hrem, fmem, getUser(), true);
@@ -1773,9 +1790,8 @@ public class JobManager extends GeneralManager
 
         try {
 
-          //  EntityManager hrem = getHumanResourceManager().getEntityManager1();
-          //  EntityManager fmem = getFinanceManager().getEntityManager1();
-
+            //  EntityManager hrem = getHumanResourceManager().getEntityManager1();
+            //  EntityManager fmem = getFinanceManager().getEntityManager1();
 //            if (isSubcontract) {
             Job parent = currentJob;
             Long currentJobSequenceNumber = parent.getJobSequenceNumber();
