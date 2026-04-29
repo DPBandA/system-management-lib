@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -114,6 +115,7 @@ public class JobManager extends GeneralManager
     private JMTSApplication application;
     private Job currentJob;
     private Job selectedJob;
+    private Job parentJob;
     @ManagedProperty(value = "Jobs")
     private Boolean useAccPacCustomerList;
     private Boolean showJobEntry;
@@ -126,6 +128,14 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+
+    public Job getParentJob() {
+        return parentJob;
+    }
+
+    public void setParentJob(Job parentJob) {
+        this.parentJob = parentJob;
     }
 
     @Override
@@ -1785,73 +1795,6 @@ public class JobManager extends GeneralManager
         return true;
     }
 
-    public Boolean createInvoice(
-            EntityManager em) {
-
-        try {
-
-            //  EntityManager hrem = getHumanResourceManager().getEntityManager1();
-            //  EntityManager fmem = getFinanceManager().getEntityManager1();
-//            if (isSubcontract) {
-            Job parent = currentJob;
-            Long currentJobSequenceNumber = parent.getJobSequenceNumber();
-            Integer yearReceived = parent.getYearReceived();
-            currentJob = Job.copy(parent);
-            currentJob.setParent(parent);
-            //currentJob.setBusiness(null);
-            //currentJob.setClassification(new Classification());
-            //currentJob.setClient(new Client());
-            //currentJob.setBillingAddress(new Address());
-            //currentJob.setContact(new Contact());
-            //currentJob.setAssignedTo(new Employee());
-            //currentJob.setRepresentatives(null);
-            currentJob.setEstimatedTurnAroundTimeInDays(1);
-            currentJob.setEstimatedTurnAroundTimeRequired(true);
-            //currentJob.setInstructions("");
-            //currentJob.setSector(Sector.findSectorByName(fmem, "--"));
-            //currentJob.setJobCategory(JobCategory.findJobCategoryByName(fmem, "--"));
-            //currentJob.setJobSubCategory(JobSubCategory.findJobSubCategoryByName(fmem, "--"));
-            //currentJob.setSubContractedDepartment(new Department());
-//                currentJob.setIsToBeSubcontracted(isSubcontract);
-            currentJob.getJobStatusAndTracking().setDateAndTimeEntered(null);
-            currentJob.setYearReceived(yearReceived);
-            currentJob.setJobSequenceNumber(currentJobSequenceNumber);
-            currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
-            //currentJob.setServiceContract(new ServiceContract());
-            //currentJob.setServices(null);
-
-//                if (copyCosting) {
-            currentJob.getJobCostingAndPayment().setCostComponents(
-                    getJobFinanceManager().copyCostComponents(parent.getJobCostingAndPayment().getCostComponents()));
-            currentJob.getJobCostingAndPayment().setIsDirty(true);
-//                }
-
-//            } else {
-//                currentJob = Job.create(em, hrem, fmem, getUser(), true);
-//            }
-//            if (currentJob == null) {
-//                PrimeFacesUtils.addMessage("Job NOT Created",
-//                        "An error occurred while creating a job. Try again or contact the System Administrator",
-//                        FacesMessage.SEVERITY_ERROR);
-//            } else {
-//                if (isSubcontract) {
-//                    setIsDirty(true);
-//                } else {
-//                    setIsDirty(false);
-//                }
-//
-//                BusinessEntityActionUtils.addAction(BusinessEntity.Action.CREATE,
-//                        currentJob.getActions());
-//            }
-            getJobFinanceManager().setAccPacCustomer(new AccPacCustomer(""));
-
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        return true;
-    }
-
     public void createNewJob(ServiceRequest serviceRequest) {
 
         EntityManager em = getEntityManager1();
@@ -2403,12 +2346,21 @@ public class JobManager extends GeneralManager
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
                 .resizable(false)
+                .closable(false)
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
 
+    }
+
+    public void closeDialog() {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void editInvoice() {
     }
 
     public void viewJobSearchDialog() {
@@ -2477,9 +2429,14 @@ public class JobManager extends GeneralManager
         } else {
 
             currentJob = Job.copy(currentJob);
+            currentJob.setJobSequenceNumber(null);
+            currentJob.setYearReceived(Calendar.getInstance().get(Calendar.YEAR));
+            currentJob.setJobNumber(Job.generateJobNumber(currentJob,
+                    getEntityManager1()));
+
+            getJobFinanceManager().setEnableOnlyPaymentEditing(false);
             BusinessEntityActionUtils.addAction(BusinessEntity.Action.CREATE,
                     currentJob.getActions());
-            getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
             PrimeFacesUtils.addMessage("Job Copied",
                     "The current job was copied but the copy was not saved. "

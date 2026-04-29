@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -148,6 +149,12 @@ public class JobFinanceManager extends GeneralManager
 
     public JobFinanceManager() {
         init();
+    }
+
+    public List<Job> getCurrentJobInvoices() {
+
+        return Job.findInvoices(getEntityManager1(), getCurrentJob());
+
     }
 
     @Override
@@ -458,7 +465,7 @@ public class JobFinanceManager extends GeneralManager
         getCurrentJob().getJobCostingAndPayment().setEstimate(true);
         getCurrentJob().getJobCostingAndPayment().
                 setTax(Tax.findByName(
-                        getFinanceManager().getEntityManager1(),
+                        getSystemManager().getEntityManager1(),
                         SystemOption.getString(getSystemManager().getEntityManager1(),
                                 "defaultTax")));
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
@@ -748,19 +755,19 @@ public class JobFinanceManager extends GeneralManager
 
     public List getDiscountTypes() {
 
-        return FinancialUtils.getDiscountTypes(getFinanceManager().getEntityManager1());
+        return FinancialUtils.getDiscountTypes(getSystemManager().getEntityManager1());
     }
 
     public List getCostTypeList() {
-        return FinancialUtils.getCostTypeList(getFinanceManager().getEntityManager1());
+        return FinancialUtils.getCostTypeList(getSystemManager().getEntityManager1());
     }
 
     public List getPaymentTypes() {
-        return FinancialUtils.getPaymentTypes(getFinanceManager().getEntityManager1());
+        return FinancialUtils.getPaymentTypes(getSystemManager().getEntityManager1());
     }
 
     public List getPaymentPurposes() {
-        return FinancialUtils.getPaymentPurposes(getFinanceManager().getEntityManager1());
+        return FinancialUtils.getPaymentPurposes(getSystemManager().getEntityManager1());
     }
 
     public void closeDialog() {
@@ -3157,9 +3164,42 @@ public class JobFinanceManager extends GeneralManager
         }
     }
 
+    public void invoiceCostingDialogReturn() {
+
+        if (getCurrentJob().getId() != null) {
+            if (isJobCostingAndPaymentDirty()) {
+                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
+                    getJobManager().processJobActions();
+                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Costing and " + getCurrentJob().getType()
+                            + " Saved", "This " + getCurrentJob().getType()
+                            + " and the costing were saved", FacesMessage.SEVERITY_INFO);
+                } else {
+                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
+                            + " Costing and " + getCurrentJob().getType()
+                            + " NOT Saved", "This "
+                            + getCurrentJob().getType()
+                            + " and the costing were NOT saved",
+                            FacesMessage.SEVERITY_ERROR);
+                }
+            }
+
+        }
+    }
+
     public void okJobCostingAndPayment(ActionEvent actionEvent) {
 
         PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void okInvoiceCostingAndPayment(ActionEvent actionEvent) {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void prepareToCloseInvoiceDetail() {
+        PrimeFacesUtils.closeDialog(null);
     }
 
     public void okJobCosting(ActionEvent actionEvent) {
@@ -3490,15 +3530,41 @@ public class JobFinanceManager extends GeneralManager
         }
 
     }
-    
+
     public void createNewInvoice(ActionEvent event) {
 
-        if (getCurrentJob().getId() != null) {
-           // tk create invoice using the "create proforma code
+        if (getCurrentJob().getId() == null || getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Invoice NOT Created",
+                    "The current job must be saved before an invoice can be created",
+                    FacesMessage.SEVERITY_ERROR);
         } else {
-            PrimeFacesUtils.addMessage("Job NOT Saved",
-                    "Job must be saved before a new invoice can be created",
-                    FacesMessage.SEVERITY_WARN);
+
+            Job parent = getCurrentJob();
+            Long parentJobSequenceNumber = getCurrentJob().getJobSequenceNumber();
+
+            setCurrentJob(Job.copy(getCurrentJob()));
+
+            getCurrentJob().setParent(parent);
+            getCurrentJob().setType("Invoice");
+            getCurrentJob().setAssignedTo(getUserEmployee());
+            getCurrentJob().setJobSequenceNumber(parentJobSequenceNumber);
+            getCurrentJob().setYearReceived(Calendar.getInstance().get(Calendar.YEAR));
+            getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
+                    getEntityManager1()));
+
+            getCurrentJob().getJobStatusAndTracking().setDateAndTimeEntered(new Date());
+            getCurrentJob().getJobStatusAndTracking().setExpectedStartDate(new Date());
+            getCurrentJob().getJobStatusAndTracking().setExpectedDateOfCompletion(new Date());
+            getCurrentJob().getJobStatusAndTracking().setStartDate(new Date());
+            getCurrentJob().getJobStatusAndTracking().setWorkProgress("Ongoing");
+
+            BusinessEntityActionUtils.addAction(BusinessEntity.Action.CREATE,
+                    getCurrentJob().getActions());
+
+            PrimeFacesUtils.addMessage("Invoice Created",
+                    "An invoice was created but not saved. "
+                    + "Please enter or change the details for the invoice as required",
+                    FacesMessage.SEVERITY_INFO);
         }
 
     }
@@ -3575,10 +3641,9 @@ public class JobFinanceManager extends GeneralManager
             }
         }
     }
-    
+
     public void invoiceDialogReturn() {
 
-        // tk decide what to do here if anything
     }
 
     public Boolean getIsJobCompleted() {
