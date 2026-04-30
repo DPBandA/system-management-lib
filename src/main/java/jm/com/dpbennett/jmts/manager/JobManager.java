@@ -2346,7 +2346,7 @@ public class JobManager extends GeneralManager
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
                 .resizable(false)
-                .closable(false)
+                .closable(true)
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
