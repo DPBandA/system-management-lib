@@ -2472,72 +2472,44 @@ public class JobFinanceManager extends GeneralManager
 
     }
 
-    public StreamedContent getInvoice(EntityManager em) {
-
-        HashMap parameters = new HashMap();
-        DecimalFormat currencyFormatter = new DecimalFormat("#,##0.00");
-        DecimalFormat hourFormatter = new DecimalFormat("#,##0.0");
+    public Job getCurrentJobLastInvoice() {
+        List<Job> invoices = getCurrentJobInvoices();
         Job lastInvoice;
 
+        if (!invoices.isEmpty()) {
+            lastInvoice = invoices.get(0);
+        } else {
+            return null;
+        }
+
+        return lastInvoice;
+
+    }
+
+    public StreamedContent getInvoice(EntityManager em) {
+
+        Job lastInvoice = getCurrentJobLastInvoice();
+        HashMap parameters = new HashMap();
+
         try {
-
-            List<Job> invoices = getCurrentJobInvoices();
-            if (!invoices.isEmpty()) {
-                lastInvoice = invoices.get(0);
-            } else {
-                return null;
-            }
-
+            String logoURL = (String) SystemOption.getOptionValueObject(
+                    getSystemManager().getEntityManager1(), "logoURL");
+            parameters.put("logoURL", logoURL);
             parameters.put("jobId", lastInvoice.getId());
-            parameters.put("proformaNumber", lastInvoice.getJobNumber()); // tk invoiceNumber
-            if (lastInvoice.getClient().getTaxRegistrationNumber().isEmpty()) {
-                parameters.put("TRNorID", lastInvoice.getClient().getIdentification());
-            } else {
-                parameters.put("TRNorID", lastInvoice.getClient().getTaxRegistrationNumber());
-            }
-            if (lastInvoice.getClient().getCreditLimit() > 0) {
-                parameters.put("creditClient", "Yes");
-            } else {
-                parameters.put("creditClient", "No");
-            }
-            parameters.put("contactEmail", lastInvoice.getContact().getInternet().getEmail1());
-            parameters.put("responsibleDepartment", Department.findAssignedToJob(lastInvoice, em).getName());
-            parameters.put("departmentCode", Department.findAssignedToJob(lastInvoice, em).getCode());
-            parameters.put("dateAndTimePrepared",
-                    DateUtils.formatDateAndTime(lastInvoice.getJobStatusAndTracking().getDateCostingCompleted()));
-            parameters.put("issueDate",
-                    DateUtils.formatDate(lastInvoice.getJobStatusAndTracking().getDateCostingApproved()));
-            if (lastInvoice.getClient().getCreditLimit() > 0) {
-                parameters.put("standardNote",
-                        (String) SystemOption.getOptionValueObject(
-                                getSystemManager().getEntityManager1(),
-                                "creditClientProformaStandardNote"));
-            } else {
-                parameters.put("standardNote",
-                        (String) SystemOption.getOptionValueObject(
-                                getSystemManager().getEntityManager1(),
-                                "nonCreditClientProformaStandardNote"));
-            }
-            parameters.put("additionalNote", lastInvoice.getJobCostingAndPayment().getDescription());
-            parameters.put("reimbursable",
-                    currencyFormatter.format(lastInvoice.getJobCostingAndPayment().getReimbursable()));
-            parameters.put("reasonForReimbursable", lastInvoice.getComment());
             parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(lastInvoice.getContact()));
             parameters.put("customerAddress", lastInvoice.getBillingAddress().toString());
             parameters.put("contactNumbers", lastInvoice.getContact().getMainPhoneNumber().getLocalNumber());
             parameters.put("jobDescription", lastInvoice.getJobDescription());
-            parameters.put("totalCost", currencyFormatter.format(lastInvoice.getJobCostingAndPayment().getTotalJobCostingsAmount()));
-            parameters.put("totalHours", hourFormatter.format(lastInvoice.getJobCostingAndPayment().getTotalJobCostingsHoursOrQuantity()));
+            parameters.put("totalCost", lastInvoice.getJobCostingAndPayment().getTotalJobCostingsAmount());
+            parameters.put("depositReceiptNumbers", lastInvoice.getJobCostingAndPayment().getReceiptNumbers());
             parameters.put("discount", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValue());
             parameters.put("discountType", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValueType());
-            parameters.put("totalTax", currencyFormatter.format(getTotalTax(lastInvoice)));
-            parameters.put("totalTaxLabel",
-                    Tax.findByName(getEntityManager1(),
-                            (String) SystemOption.getOptionValueObject(
-                                    getSystemManager().getEntityManager1(), "defaultTax")).getName());
+            parameters.put("deposit", lastInvoice.getJobCostingAndPayment().getTotalPayment());
+            parameters.put("amountDue", lastInvoice.getJobCostingAndPayment().getAmountDue());
+            parameters.put("totalTax", getTotalTax(lastInvoice));
+            parameters.put("totalTaxLabel", lastInvoice.getJobCostingAndPayment().getTotalTaxLabel());
             parameters.put("grandTotalCostLabel", lastInvoice.getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
-            parameters.put("grandTotalCost", currencyFormatter.format(
-                    lastInvoice.getJobCostingAndPayment().getProformaTotalCost()));
+            parameters.put("grandTotalCost", lastInvoice.getJobCostingAndPayment().getTotalCost());
             if (lastInvoice.getJobCostingAndPayment().getCostingPreparedBy() != null) {
                 parameters.put("preparedBy",
                         lastInvoice.getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
@@ -2550,12 +2522,7 @@ public class JobFinanceManager extends GeneralManager
             }
             parameters.put("approvalDate",
                     BusinessEntityUtils.getDateInMediumDateFormat(
-                            lastInvoice.getJobStatusAndTracking().
-                                    getDateCostingApproved()));
-            parameters.put("signatureURL",
-                    SystemOption.getString(
-                            getSystemManager().getEntityManager1(),
-                            "signatureURL"));
+                            lastInvoice.getJobStatusAndTracking().getDateCostingApproved()));
 
             em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);
@@ -2565,10 +2532,8 @@ public class JobFinanceManager extends GeneralManager
                     StreamedContent streamContent;
                     JasperReport jasperReport
                             = JasperCompileManager.
-                                    compileReport((String) SystemOption.
-                                            getOptionValueObject(
-                                                    getSystemManager().getEntityManager1(),
-                                                    "proformaInvoiceFormTemplate"));
+                                    compileReport((String) SystemOption.getOptionValueObject(
+                                            getSystemManager().getEntityManager1(), "invoice"));
 
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
@@ -2577,7 +2542,7 @@ public class JobFinanceManager extends GeneralManager
                     streamContent = DefaultStreamedContent.builder()
                             .stream(() -> new ByteArrayInputStream(fileBytes))
                             .contentType("application/pdf")
-                            .name("Proforma Invoice - " + getCurrentJob().getJobNumber() + ".pdf")
+                            .name("Invoice - " + lastInvoice.getJobNumber() + ".pdf")
                             .build();
 
                     em.getTransaction().commit();
