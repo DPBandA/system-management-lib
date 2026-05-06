@@ -119,6 +119,99 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         init();
     }
 
+    public void removeBusinessContact() {
+        getSelectedBusiness().getContacts().remove(selectedContact);
+        setBusinessIsDirty(true);
+        selectedContact = null;
+    }
+    
+    public void removeBusinessAddress() {
+        getSelectedBusiness().getAddresses().remove(selectedAddress);
+        setBusinessIsDirty(true);
+        selectedAddress = null;
+    }
+
+    public void updateBusinessContact() {
+
+        getSelectedContact().setIsDirty(true);
+
+        setBusinessIsDirty(true);
+    }
+
+    public void okBusinessContact() {
+
+        selectedContact = selectedContact.prepare();
+
+        if (getIsNewContact()) {
+            getSelectedBusiness().getContacts().add(selectedContact);
+        }
+
+        PrimeFaces.current().executeScript("PF('contactFormDialog').hide();");
+
+    }
+
+    public void okBusinessAddress() {
+
+        selectedAddress = selectedAddress.prepare();
+
+        if (getIsNewAddress()) {
+            getSelectedBusiness().getAddresses().add(selectedAddress);
+        }
+
+        PrimeFaces.current().executeScript("PF('addressFormDialog').hide();");
+
+    }
+
+    public List<Address> getBusinessAddressesModel() {
+        return getSelectedBusiness().getAddresses();
+    }
+
+    public Boolean getBusinessIsDirty() {
+        return getSelectedBusiness().getIsDirty();
+    }
+
+    public void setBusinessIsDirty(Boolean isDirty) {
+        getSelectedBusiness().setIsDirty(isDirty);
+    }
+
+    public void createNewAddress() {
+        selectedAddress = null;
+
+        for (Address address : getSelectedManufacturer().getAddresses()) {
+            if (address.getAddressLine1().trim().isEmpty()) {
+                selectedAddress = address;
+                break;
+            }
+        }
+
+        if (selectedAddress == null) {
+            selectedAddress = new Address("", "Billing");
+        }
+
+        setEdit(false);
+
+        getSelectedManufacturer().setIsDirty(false);
+    }
+
+    public void createNewBusinessAddress() {
+        selectedAddress = null;
+
+        for (Address address : getSelectedBusiness().getAddresses()) {
+            if (address.getAddressLine1().trim().isEmpty()) {
+                selectedAddress = address;
+                break;
+            }
+        }
+
+        if (selectedAddress == null) {
+            selectedAddress = new Address("", "Billing");
+        }
+
+        setEdit(false);
+
+        setBusinessIsDirty(false);
+    }
+
     @Override
     public void reInitUI() {
         setInnerTabIndex(0);
@@ -1038,11 +1131,85 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    public Boolean getIsNewOrganization() {
+        return getSelectedBusiness().getId() == null;
+    }
+
+    private Employee getUserEmployee() {
+        EntityManager hrmem = getEntityManager1();
+
+        return Employee.findById(hrmem, getUser().getEmployee().getId());
+    }
+
     public void saveSelectedBusiness() {
 
-        selectedBusiness.save(getEntityManager1());
+        Boolean hasValidAddress = false;
+        Boolean hasValidContact = false;
 
-        PrimeFaces.current().dialog().closeDynamic(null);
+        try {
+
+            for (Address address : selectedBusiness.getAddresses()) {
+                hasValidAddress = hasValidAddress || Address.validate(address);
+            }
+            if (!hasValidAddress) {
+                PrimeFacesUtils.addMessage("Address Required",
+                        "A valid address was not entered for this organization",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            for (Contact contact : selectedBusiness.getContacts()) {
+                hasValidContact = hasValidContact || Contact.validate(contact);
+            }
+            if (!hasValidContact) {
+                PrimeFacesUtils.addMessage("Contact Required",
+                        "A valid contact was not entered for this organization",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            if (getIsNewOrganization()) {
+                getSelectedBusiness().setDateFirstReceived(new Date());
+                getSelectedBusiness().setDateEntered(new Date());
+                getSelectedBusiness().setDateEdited(new Date());
+                if (getUser() != null) {
+                    getSelectedBusiness().setEnteredBy(getUserEmployee());
+                    getSelectedBusiness().setEditedBy(getUserEmployee());
+                }
+            }
+
+            if (getBusinessIsDirty()) {
+                getSelectedBusiness().setDateEdited(new Date());
+                if (getUser() != null) {
+                    getSelectedBusiness().setEditedBy(getUserEmployee());
+
+                    if (getSelectedBusiness().getEnteredBy() == null) {
+                        getSelectedBusiness().setEnteredBy(getUserEmployee());
+                    }
+                }
+
+                ReturnMessage rm = getSelectedBusiness().saveUnique(getEntityManager1());
+
+                if (!rm.isSuccess()) {
+                    PrimeFacesUtils.addMessage(
+                            rm.getHeader(),
+                            rm.getMessage(),
+                            FacesMessage.SEVERITY_ERROR);
+
+                    return;
+                }
+
+                setBusinessIsDirty(false);
+            }
+
+            PrimeFaces.current().dialog().closeDynamic(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
     }
 
     public void saveSelectedBusinessOffice() {
@@ -1464,25 +1631,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         updateManufacturer();
     }
 
-    public void createNewAddress() {
-        selectedAddress = null;
-
-        for (Address address : getSelectedManufacturer().getAddresses()) {
-            if (address.getAddressLine1().trim().isEmpty()) {
-                selectedAddress = address;
-                break;
-            }
-        }
-
-        if (selectedAddress == null) {
-            selectedAddress = new Address("", "Billing");
-        }
-
-        setEdit(false);
-
-        getSelectedManufacturer().setIsDirty(false);
-    }
-
     public void createNewContact() {
         selectedContact = null;
 
@@ -1501,6 +1649,26 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         setEdit(false);
 
         getSelectedManufacturer().setIsDirty(false);
+    }
+
+    public void createNewBusinessContact() {
+        selectedContact = null;
+
+        for (Contact contact : getSelectedBusiness().getContacts()) {
+            if (contact.getFirstName().trim().isEmpty()) {
+                selectedContact = contact;
+                break;
+            }
+        }
+
+        if (selectedContact == null) {
+            selectedContact = new Contact("", "", "Main");
+            selectedContact.setInternet(new Internet());
+        }
+
+        setEdit(false);
+
+        setBusinessIsDirty(false);
     }
 
     public Contact getSelectedContact() {
@@ -1566,7 +1734,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public void updateAddress() {
+
+        getSelectedAddress().setIsDirty(true);
+
         getSelectedManufacturer().setIsDirty(true);
+    }
+
+    public void updateBusinessAddress() {
+
+        getSelectedAddress().setIsDirty(true);
+
+        setBusinessIsDirty(true);
     }
 
     public void removeContact() {
@@ -1797,7 +1975,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List getContactTypes() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "personalContactTypes");
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(), "personalContactTypes");
     }
 
     public List getPersonalTitles() {
@@ -1806,7 +1984,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<SelectItem> getTypesOfBusinessList() {
 
-        return getStringListAsSelectItems(getEntityManager1(), "typesOfBusinessList");
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(), "typesOfBusinessList");
     }
 
 }
