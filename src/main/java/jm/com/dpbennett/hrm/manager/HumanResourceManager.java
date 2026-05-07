@@ -124,7 +124,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         setBusinessIsDirty(true);
         selectedContact = null;
     }
-    
+
     public void removeBusinessAddress() {
         getSelectedBusiness().getAddresses().remove(selectedAddress);
         setBusinessIsDirty(true);
@@ -1695,6 +1695,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Contact> getContactsModel() {
         return getSelectedManufacturer().getContacts();
+    }
+
+    public List<Contact> getBusinessContactsModel() {
+        return getSelectedBusiness().getContacts();
     }
 
     public void okAddress() {
