@@ -274,7 +274,9 @@ public class JobContractManager extends GeneralManager
             } else {
                 parameters.put("paymentTerms", "Not applicable");
             }
-            parameters.put("agentOrCashier", getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy().getName());
+            if (getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy() != null) {
+                parameters.put("agentOrCashier", getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy().getName());
+            }
             Address billingAddress = getCurrentJob().getBillingAddress();
             parameters.put("clientNameAndBillingAddress",
                     getCurrentJob().getClient().getName() + "\n"
@@ -999,11 +1001,12 @@ public class JobContractManager extends GeneralManager
             dataCellStyle.setFont(defaultFont);
             dataCellStyle.setAlignment(HorizontalAlignment.CENTER);
             dataCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-            ReportUtils.setExcelCellValue(
-                    wb, serviceContractSheet, "AL12",
-                    getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy().getName(),
-                    "java.lang.String", dataCellStyle);
-
+            if (getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy() != null) {
+                ReportUtils.setExcelCellValue(
+                        wb, serviceContractSheet, "AL12",
+                        getCurrentJob().getJobCostingAndPayment().getLastPaymentEnteredBy().getName(),
+                        "java.lang.String", dataCellStyle);
+            }
             // CLIENT NAME & BILLING ADDRESS
             // Name
             dataCellStyle = getDefaultCellStyle(wb);

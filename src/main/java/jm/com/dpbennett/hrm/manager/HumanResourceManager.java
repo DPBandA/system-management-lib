@@ -1180,29 +1180,27 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 }
             }
 
-            if (getBusinessIsDirty()) {
-                getSelectedBusiness().setDateEdited(new Date());
-                if (getUser() != null) {
-                    getSelectedBusiness().setEditedBy(getUserEmployee());
+            getSelectedBusiness().setDateEdited(new Date());
+            if (getUser() != null) {
+                getSelectedBusiness().setEditedBy(getUserEmployee());
 
-                    if (getSelectedBusiness().getEnteredBy() == null) {
-                        getSelectedBusiness().setEnteredBy(getUserEmployee());
-                    }
+                if (getSelectedBusiness().getEnteredBy() == null) {
+                    getSelectedBusiness().setEnteredBy(getUserEmployee());
                 }
-
-                ReturnMessage rm = getSelectedBusiness().saveUnique(getEntityManager1());
-
-                if (!rm.isSuccess()) {
-                    PrimeFacesUtils.addMessage(
-                            rm.getHeader(),
-                            rm.getMessage(),
-                            FacesMessage.SEVERITY_ERROR);
-
-                    return;
-                }
-
-                setBusinessIsDirty(false);
             }
+
+            ReturnMessage rm = getSelectedBusiness().saveUnique(getEntityManager1());
+
+            if (!rm.isSuccess()) {
+                PrimeFacesUtils.addMessage(
+                        rm.getHeader(),
+                        rm.getMessage(),
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            setBusinessIsDirty(false);
 
             PrimeFaces.current().dialog().closeDynamic(null);
 
