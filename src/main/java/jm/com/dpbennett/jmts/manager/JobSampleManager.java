@@ -33,6 +33,7 @@ import jm.com.dpbennett.business.entity.jmts.JobSample;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
+import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -221,11 +222,10 @@ public class JobSampleManager extends GeneralManager
                         getSystemManager().getEntityManager1(),
                         "sampleCollectionDays");
 
-        String org
-                = (String) SystemOption.getOptionValueObject(
-                        getSystemManager().getEntityManager1(),
-                        "organizationName");
-
+        Business org = User.getUserOrganizationByDepartment(
+                getHumanResourceManager().getEntityManager1(), 
+                getUser());
+      
         methods.add(new SelectItem("1", "Collected by the client within " + days + " days"));
         if (org != null) {
             methods.add(new SelectItem("2", "Disposed of by " + org));

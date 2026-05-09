@@ -3858,18 +3858,10 @@ public class JobFinanceManager extends GeneralManager
 
         } else {
 
-            if (getJobManager().getCurrentJob().getIsDirty()) {
-                getJobManager().saveCurrentJob();
-            }
-
-            if (getCurrentJob().getId() != null) {
-                editJobCosting();
-            } else {
-                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
-                        "This " + getCurrentJob().getType()
-                        + " must be saved before the costing can be viewed or edited",
-                        FacesMessage.SEVERITY_WARN);
-            }
+            PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
+                    "This " + getCurrentJob().getType()
+                    + " must be saved before the costing can be viewed or edited",
+                    FacesMessage.SEVERITY_WARN);
         }
     }
 
