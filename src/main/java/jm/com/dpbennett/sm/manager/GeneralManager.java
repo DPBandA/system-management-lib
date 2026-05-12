@@ -81,12 +81,12 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void setManagerUser() {
 
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                manager.setUser(getUser());
+        for (String moduleName : getModuleNames()) {
+            if (getManager(moduleName) != null) {
+                getManager(moduleName).setUser(getUser());
             }
         }
+
     }
 
     @Override
@@ -113,8 +113,11 @@ public class GeneralManager implements Manager, Serializable {
         if (moduleNames == null) {
             moduleNames = new ArrayList<>();
 
-            for (Module mod : getUser().getActiveModules()) {
+            for (Module mod : Module.findAllActive(
+                    getSystemManager().getEntityManager1(), 0)) {
+
                 moduleNames.add(mod.getName());
+
             }
 
         }
@@ -280,7 +283,7 @@ public class GeneralManager implements Manager, Serializable {
             if (manager != null) {
                 manager.openMainViewTab(mod.getMainViewTitle());
             }
-            
+
         }
 
     }
