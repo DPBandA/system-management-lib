@@ -44,6 +44,11 @@ public class FinancialUtils {
 
         return getStringListAsSelectItems(em, "costTypes");
     }
+    
+    public static List getCostCategoryList(EntityManager em) {
+
+        return getStringListAsSelectItems(em, "categoryTypes");
+    }
 
     public static List getDiscountTypes(EntityManager em) {
 

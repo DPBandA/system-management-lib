@@ -762,6 +762,10 @@ public class JobFinanceManager extends GeneralManager
         return FinancialUtils.getCostTypeList(getSystemManager().getEntityManager1());
     }
 
+    public List getCostCategoryList() {
+        return FinancialUtils.getCostCategoryList(getSystemManager().getEntityManager1());
+    }
+
     public List getPaymentTypes() {
         return FinancialUtils.getPaymentTypes(getSystemManager().getEntityManager1());
     }
