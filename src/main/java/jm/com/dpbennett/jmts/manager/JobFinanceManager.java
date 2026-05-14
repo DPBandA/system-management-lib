@@ -2050,6 +2050,23 @@ public class JobFinanceManager extends GeneralManager
                 getSystemManager().getEntityManager1(), "useMulticurrency");
     }
 
+    public Boolean getRenderCurrency() {
+
+        if (getSelectedCostComponent() != null) {
+            return !getSelectedCostComponent().getIsHeading()
+                    && SystemOption.getBoolean(getSystemManager().getEntityManager1(), "useMulticurrency");
+        } else {
+            return SystemOption.getBoolean(getSystemManager().getEntityManager1(), "useMulticurrency");
+        }
+
+    }
+    
+    public Boolean getRenderInvoicesPanel() {
+        
+        return getUser().can("AccessInvoicing") && getCurrentJob().getType().equals("Job");
+        
+    }
+ 
     public Boolean getEnableOnlyPaymentEditing() {
         if (enableOnlyPaymentEditing == null) {
             enableOnlyPaymentEditing = false;
