@@ -2060,13 +2060,13 @@ public class JobFinanceManager extends GeneralManager
         }
 
     }
-    
+
     public Boolean getRenderInvoicesPanel() {
-        
+
         return getUser().can("AccessInvoicing") && getCurrentJob().getType().equals("Job");
-        
+
     }
- 
+
     public Boolean getEnableOnlyPaymentEditing() {
         if (enableOnlyPaymentEditing == null) {
             enableOnlyPaymentEditing = false;
@@ -2517,15 +2517,15 @@ public class JobFinanceManager extends GeneralManager
                     getSystemManager().getEntityManager1(), "logoURL");
             parameters.put("logoURL", logoURL);
             parameters.put("jobId", lastInvoice.getId());
-            parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(lastInvoice.getContact()));
+            //parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(lastInvoice.getContact()));
             parameters.put("customerAddress", lastInvoice.getBillingAddress().toString());
             parameters.put("contactNumbers", lastInvoice.getContact().getMainPhoneNumber().getLocalNumber());
             parameters.put("jobDescription", lastInvoice.getJobDescription());
             parameters.put("totalCost", lastInvoice.getJobCostingAndPayment().getTotalJobCostingsAmount());
-            parameters.put("depositReceiptNumbers", lastInvoice.getJobCostingAndPayment().getReceiptNumbers());
-            parameters.put("discount", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValue());
-            parameters.put("discountType", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValueType());
-            parameters.put("deposit", lastInvoice.getJobCostingAndPayment().getTotalPayment());
+            //parameters.put("depositReceiptNumbers", lastInvoice.getJobCostingAndPayment().getReceiptNumbers());
+            //parameters.put("discount", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValue());
+            //parameters.put("discountType", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValueType());
+            //parameters.put("deposit", lastInvoice.getJobCostingAndPayment().getTotalPayment());
             parameters.put("amountDue", lastInvoice.getJobCostingAndPayment().getAmountDue());
             parameters.put("totalTax", getTotalTax(lastInvoice));
             parameters.put("totalTaxLabel", lastInvoice.getJobCostingAndPayment().getTotalTaxLabel());
@@ -2544,6 +2544,11 @@ public class JobFinanceManager extends GeneralManager
             parameters.put("approvalDate",
                     BusinessEntityUtils.getDateInMediumDateFormat(
                             lastInvoice.getJobStatusAndTracking().getDateCostingApproved()));
+            if (lastInvoice.getJobStatusAndTracking().getExpectedDateOfCompletion() != null) {
+                parameters.put("dueDate",
+                        BusinessEntityUtils.getDateInMediumDateFormat(
+                                lastInvoice.getJobStatusAndTracking().getExpectedDateOfCompletion()));
+            }
 
             em.getTransaction().begin();
             Connection con = BusinessEntityUtils.getConnection(em);
