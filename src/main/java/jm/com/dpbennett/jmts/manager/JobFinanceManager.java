@@ -2519,8 +2519,12 @@ public class JobFinanceManager extends GeneralManager
             parameters.put("jobId", lastInvoice.getId());
             //parameters.put("contactPersonName", BusinessEntityUtils.getContactFullName(lastInvoice.getContact()));
             parameters.put("customerAddress", lastInvoice.getBillingAddress().toString());
-            parameters.put("contactNumbers", lastInvoice.getContact().getMainPhoneNumber().getLocalNumber());
-            parameters.put("jobDescription", lastInvoice.getJobDescription());
+            parameters.put("organizationName", lastInvoice.getBusiness().getName());
+            parameters.put("organizationDescription", lastInvoice.getBusiness().getDescription());
+            parameters.put("organizationAddress", lastInvoice.getBusiness().getBillingAddress().toString());
+            parameters.put("organizationPhone", lastInvoice.getBusiness().getContact().getMainPhoneNumber().getLocalNumber());
+            parameters.put("organizationEmail", lastInvoice.getBusiness().getContact().getInternet().getEmail1());
+            //parameters.put("jobDescription", lastInvoice.getJobDescription());
             parameters.put("totalCost", lastInvoice.getJobCostingAndPayment().getTotalJobCostingsAmount());
             //parameters.put("depositReceiptNumbers", lastInvoice.getJobCostingAndPayment().getReceiptNumbers());
             //parameters.put("discount", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValue());
