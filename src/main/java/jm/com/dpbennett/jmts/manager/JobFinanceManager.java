@@ -2524,22 +2524,21 @@ public class JobFinanceManager extends GeneralManager
             parameters.put("organizationAddress", lastInvoice.getBusiness().getBillingAddress().toString());
             parameters.put("organizationPhone", lastInvoice.getBusiness().getContact().getMainPhoneNumber().getLocalNumber());
             parameters.put("organizationEmail", lastInvoice.getBusiness().getContact().getInternet().getEmail1());
-            //parameters.put("jobDescription", lastInvoice.getJobDescription());
+            parameters.put("organizationWebsite", lastInvoice.getBusiness().getContact().getInternet().getWebsite1());
+            parameters.put("organizationTRN", lastInvoice.getBusiness().getTaxRegistrationNumber());
             parameters.put("totalCost", lastInvoice.getJobCostingAndPayment().getTotalJobCostingsAmount());
-            //parameters.put("depositReceiptNumbers", lastInvoice.getJobCostingAndPayment().getReceiptNumbers());
-            //parameters.put("discount", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValue());
-            //parameters.put("discountType", lastInvoice.getJobCostingAndPayment().getDiscount().getDiscountValueType());
-            //parameters.put("deposit", lastInvoice.getJobCostingAndPayment().getTotalPayment());
-            parameters.put("amountDue", lastInvoice.getJobCostingAndPayment().getAmountDue());
             parameters.put("totalTax", getTotalTax(lastInvoice));
-            parameters.put("totalTaxLabel", lastInvoice.getJobCostingAndPayment().getTotalTaxLabel());
-            parameters.put("grandTotalCostLabel", lastInvoice.getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
             parameters.put("grandTotalCost", lastInvoice.getJobCostingAndPayment().getTotalCost());
-            if (lastInvoice.getJobCostingAndPayment().getCostingPreparedBy() != null) {
-                parameters.put("preparedBy",
-                        lastInvoice.getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
-                        + lastInvoice.getJobCostingAndPayment().getCostingPreparedBy().getLastName());
-            }
+            parameters.put("amountDue", lastInvoice.getJobCostingAndPayment().getAmountDue());
+            parameters.put("reference", "Ref: P.O. # " + lastInvoice.getJobCostingAndPayment().getPurchaseOrderNumber());
+            parameters.put("specialInstructions", lastInvoice.getServiceContract().getSpecialInstructions());
+            //parameters.put("totalTaxLabel", lastInvoice.getJobCostingAndPayment().getTotalTaxLabel());
+            //parameters.put("grandTotalCostLabel", lastInvoice.getJobCostingAndPayment().getTotalCostWithTaxLabel().toUpperCase().trim());
+//            if (lastInvoice.getJobCostingAndPayment().getCostingPreparedBy() != null) {
+//                parameters.put("preparedBy",
+//                        lastInvoice.getJobCostingAndPayment().getCostingPreparedBy().getFirstName() + " "
+//                        + lastInvoice.getJobCostingAndPayment().getCostingPreparedBy().getLastName());
+//            }
             if (lastInvoice.getJobCostingAndPayment().getCostingApprovedBy() != null) {
                 parameters.put("approvedBy",
                         lastInvoice.getJobCostingAndPayment().getCostingApprovedBy().getFirstName() + " "
