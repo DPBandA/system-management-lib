@@ -2760,16 +2760,19 @@ public class JobFinanceManager extends GeneralManager
             return false;
 
         }
-        // Check for a valid client Id
-        if (job.getClient().getFinancialAccount().getIdCust().isEmpty()) {
 
-            PrimeFacesUtils.addMessage("Client Identification required",
-                    "The client identification (Id) is not set for "
-                    + job.getJobNumber(),
-                    FacesMessage.SEVERITY_ERROR);
+        if (!getUser().can("AccessInvoicing")) {
+            // Check for a valid client Id
+            if (job.getClient().getFinancialAccount().getIdCust().isEmpty()) {
 
-            return false;
+                PrimeFacesUtils.addMessage("Client Identification required",
+                        "The client identification (Id) is not set for "
+                        + job.getJobNumber(),
+                        FacesMessage.SEVERITY_ERROR);
 
+                return false;
+
+            }
         }
 
         return true;
