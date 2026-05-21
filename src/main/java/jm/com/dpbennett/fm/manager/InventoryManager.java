@@ -106,6 +106,25 @@ public class InventoryManager extends GeneralManager implements Serializable {
     }
 
     @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().getDashboard().openTab("Inventory");
+
+        // tk set command target
+        //getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().getMainTabView().openTab("Inventory Requisitions");
+
+        // tk set command target
+        // getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
+    }
+
+    @Override
     public int getSizeOfActiveNotifications() {
 
         return getSystemManager().getActiveNotifications().size();

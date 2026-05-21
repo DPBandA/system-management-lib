@@ -125,6 +125,25 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public PurchasingManager() {
         init();
     }
+    
+    @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().getDashboard().openTab("Procurement");
+
+        // tk set command target
+        //getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().getMainTabView().openTab("Purchase Requisitions");
+
+        // tk set command target
+        // getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
+    }
 
     @Override
     public int getSizeOfActiveNotifications() {

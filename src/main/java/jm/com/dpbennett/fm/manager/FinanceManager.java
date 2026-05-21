@@ -59,6 +59,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.dashboard.DashboardModel;
 import org.primefaces.model.dashboard.DefaultDashboardModel;
@@ -126,6 +127,28 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public FinanceManager() {
         init();
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+            }
+        }
+
+    }
+    
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+            }
+        }
+
     }
 
     @Override
@@ -1090,6 +1113,8 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void openDashboardTab(String title) {
+
+        getSystemManager().getDashboard().openTab("Financial Administration");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
