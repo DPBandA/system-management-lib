@@ -1,5 +1,5 @@
 /*
-Financial Management (FM) 
+Purchase Management (PM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -1012,38 +1012,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         editClassification();
     }
-
-    public void doSupplierSearch() {
-        getPurchasingManager().doSupplierSearch();
-    }
-
-    public String getPurchaseReqSearchText() {
-        return getPurchasingManager().getPurchaseReqSearchText();
-    }
-
-    public void setPurchaseReqSearchText(String purchaseReqSearchText) {
-        getPurchasingManager().setPurchaseReqSearchText(purchaseReqSearchText);
-    }
-
-    public void doPurchaseReqSearch() {
-
-        if (getSearchType().equals("My dept. requisitions")) {
-            getPurchasingManager().
-                    doPurchaseReqSearch(
-                            getDateSearchPeriod(),
-                            getSearchType(),
-                            getPurchaseReqSearchText(),
-                            getEmployee().getDepartment().getId());
-        } else if (getSearchType().equals("All requisitions")) {
-            getPurchasingManager().
-                    doPurchaseReqSearch(
-                            getDateSearchPeriod(),
-                            getSearchType(),
-                            getPurchaseReqSearchText(),
-                            null);
-        }
-    }
-
+    
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -1828,8 +1797,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setName("financeManager");
         setSearchType("Accounting Codes");
         setSearchText("");
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
-
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2074,38 +2042,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
             default:
                 break;
         }
-
-        return dateSearchFields;
-    }
-
-    public ArrayList<SelectItem> getPurchReqSearchTypes() {
-        ArrayList purchReqSearchTypes = new ArrayList();
-
-        if (getUser().can("AccessAllPurchaseRequisitions")) {
-            purchReqSearchTypes.add(new SelectItem("All requisitions", "All requisitions"));
-            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
-        } else {
-            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
-        }
-
-        return purchReqSearchTypes;
-
-    }
-
-    public ArrayList<SelectItem> getPurchReqDateSearchFields() {
-        ArrayList dateSearchFields = new ArrayList();
-
-        dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-        dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-        dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-        dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-        dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-        dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-        dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-        dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-        dateSearchFields.add(new SelectItem("financeDirectorApprovalDate", "Finance Director approval date"));
-        dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
 
         return dateSearchFields;
     }

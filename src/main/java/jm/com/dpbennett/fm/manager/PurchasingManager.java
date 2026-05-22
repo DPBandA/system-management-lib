@@ -1,5 +1,5 @@
 /*
-Purchase Management
+Purchase Management (PM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -101,7 +101,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     private List<PurchaseRequisition> selectedPurchaseRequisitions;
     private Employee selectedApprover;
     private Boolean edit;
-    private String purchaseReqSearchText;
     private List<PurchaseRequisition> foundPurchaseReqs;
     private List<PurchaseRequisition> procurementTasks;
     private Long searchDepartmentId;
@@ -125,14 +124,31 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public PurchasingManager() {
         init();
     }
-    
+
+    public ArrayList<SelectItem> getPurchReqDateSearchFields() {
+        ArrayList dateSearchFields = new ArrayList();
+
+        dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
+        dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
+        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
+        dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
+        dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
+        dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
+        dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
+        dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
+        dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
+        dateSearchFields.add(new SelectItem("financeDirectorApprovalDate", "Finance Director approval date"));
+        dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
+
+        return dateSearchFields;
+    }
+
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().getDashboard().openTab("Procurement");
+        getSystemManager().getDashboard().openTab("Purchasing");
 
-        // tk set command target
-        //getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
     }
 
     @Override
@@ -140,9 +156,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         getSystemManager().getMainTabView().openTab("Purchase Requisitions");
 
-        // tk set command target
-        // getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
-
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
     }
 
     @Override
@@ -585,10 +599,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Suppliers":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:supplierSearchButton");
+                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:supplierSearchButton");
                 return true;
             case "Purchase Requisitions":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
+            case "Purchasing":
+                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
                 return true;
             default:
                 return false;
@@ -753,8 +768,14 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public ArrayList<SelectItem> getSearchTypes() {
         ArrayList searchTypes = new ArrayList();
 
-        searchTypes.add(new SelectItem("Purchase requisitions", "Purchase requisitions"));
-        searchTypes.add(new SelectItem("Suppliers", "Suppliers"));
+        if (getUser().can("AccessAllPurchaseRequisitions")) {
+            searchTypes.add(new SelectItem("All requisitions", "All requisitions"));
+            searchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
+            searchTypes.add(new SelectItem("Suppliers", "Suppliers"));
+        } else {
+            searchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
+            searchTypes.add(new SelectItem("Suppliers", "Suppliers"));
+        }
 
         return searchTypes;
     }
@@ -1703,7 +1724,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     public void openPurchaseReqsTab() {
         getSystemManager().getMainTabView().openTab("Purchase Requisitions");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
     }
 
     public void editPurchReqGeneralEmail() {
@@ -2535,7 +2556,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
             PrimeFaces.current().ajax().update("headerForm:growl3");
 
         }
-   
+
     }
 
     public void createNewPurhaseReqSupplier() {
@@ -2573,32 +2594,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     public void setFoundPurchaseReqs(List<PurchaseRequisition> foundPurchaseReqs) {
         this.foundPurchaseReqs = foundPurchaseReqs;
-    }
-
-    public void doPurchaseReqSearch(DatePeriod dateSearchPeriod,
-            String searchType, String searchText, Long searchDepartmentId) {
-
-        int maxSearchResults = SystemOption.getInteger(
-                getSystemManager().getEntityManager1(),
-                "maxSearchResults");
-
-        foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
-                getEntityManager1(),
-                dateSearchPeriod.getDateField(),
-                searchType,
-                searchText,
-                dateSearchPeriod.getStartDate(), dateSearchPeriod.getEndDate(),
-                searchDepartmentId,
-                maxSearchResults);
-
-    }
-
-    public String getPurchaseReqSearchText() {
-        return purchaseReqSearchText;
-    }
-
-    public void setPurchaseReqSearchText(String purchaseReqSearchText) {
-        this.purchaseReqSearchText = purchaseReqSearchText;
     }
 
     public void approvePurchaseReqs() {
@@ -2669,7 +2664,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         setName("purchasingManager");
         setSearchType("Purchase requisitions");
         setSearchText("");
-        setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2678,7 +2673,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         foundPurchaseReqs = new ArrayList<>();
         toEmployees = new ArrayList<>();
         supplierSearchText = "";
-        purchaseReqSearchText = "";
 
     }
 
@@ -3068,6 +3062,18 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 "prPriorityCodes");
     }
 
+    public void doDefaultSearch() {
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
+
+    }
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -3082,8 +3088,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 "maxSearchResults");
 
         switch (searchType) {
-            case "Purchase requisitions":
-
+            case "All requisitions":
+            case "My dept. requisitions":
                 foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
                         getEntityManager1(),
                         dateSearchField,
