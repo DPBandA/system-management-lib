@@ -3088,8 +3088,8 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 "maxSearchResults");
 
         switch (searchType) {
-            case "All requisitions":
             case "My dept. requisitions":
+                searchDepartmentId = getEmployee().getDepartment().getId();                
                 foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
                         getEntityManager1(),
                         dateSearchField,
@@ -3098,6 +3098,17 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         startDate,
                         endDate,
                         searchDepartmentId,
+                        maxSearchResults);
+                break;
+            case "All requisitions":            
+                foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
+                        getEntityManager1(),
+                        dateSearchField,
+                        searchType,
+                        searchText,
+                        startDate,
+                        endDate,
+                        null,
                         maxSearchResults);
 
                 openPurchaseReqsTab();
