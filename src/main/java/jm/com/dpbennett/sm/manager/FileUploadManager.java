@@ -1,6 +1,6 @@
 /*
-Financial Management (FM) 
-Copyright (C) 2021  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -38,7 +38,7 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 
 /**
  *
- * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
+ * @author Desmond Bennett
  */
 public class FileUploadManager {
 
@@ -81,7 +81,6 @@ public class FileUploadManager {
         try {
             OutputStream outputStream;
             
-            // Save file
             File fileToSave = 
                     new File(SystemOption.getOptionValueObject(getEntityManager(), 
                             "purchReqUploadFolder") + 
@@ -89,9 +88,7 @@ public class FileUploadManager {
             outputStream = new FileOutputStream(fileToSave);
             outputStream.write(event.getFile().getContent());
             outputStream.close();
-            
-            // Create attachment
-            
+
             PrimeFacesUtils.addMessage("Successful!", event.getFile().getFileName() + " was uploaded.", FacesMessage.SEVERITY_INFO);
 
         } catch (IOException ex) {

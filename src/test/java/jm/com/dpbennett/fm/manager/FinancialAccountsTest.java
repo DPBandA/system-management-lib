@@ -1,5 +1,5 @@
 /*
-System Management (SM)
+Financial Accounting (FA) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -17,22 +17,30 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.optimization.core;
+package jm.com.dpbennett.fm.manager;
 
-import com.google.ortools.Loader;
+import jm.com.dpbennett.jmts.manager.*;
+import java.util.HashMap;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import jm.com.dpbennett.business.entity.StatusNote;
+import jm.com.dpbennett.business.entity.fm.FinancialAccount;
+import org.junit.Test;
 
 /**
  *
  * @author Desmond Bennett
  */
-public final class OrToolsBootstrap {
+public class FinancialAccountsTest {
 
-    private static volatile boolean initialized = false;
+    @Test
+    public void creatEntity() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
+        EntityManager em = emf.createEntityManager();
 
-    public static synchronized void init() {
-        if (!initialized) {
-            Loader.loadNativeLibraries();
-            initialized = true;
-        }
+        System.out.println("Account found: " + FinancialAccount.findActive(em));           
+
     }
+
 }

@@ -1,6 +1,6 @@
 /*
 Inventory Management
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -103,6 +103,25 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public InventoryManager() {
         init();
+    }
+
+    @Override
+    public void openDashboardTab(String title) {
+
+        getSystemManager().getDashboard().openTab("Inventory");
+
+        // tk set command target
+        //getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        getSystemManager().getMainTabView().openTab("Inventory Requisitions");
+
+        // tk set command target
+        // getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
     }
 
     @Override
@@ -312,18 +331,15 @@ public class InventoryManager extends GeneralManager implements Serializable {
         this.activeInventoryProductsOnly = activeInventoryProductsOnly;
     }
 
-    // tk
     public BannerView getBannerView() {
         return bannerView;
     }
 
-    // tk
     public void setBannerView(BannerView bannerView) {
         this.bannerView = bannerView;
     }
 
     public Boolean getCanExportInventoryRequisitionForm() {
-        // tk
         return true;
     }
 
@@ -386,14 +402,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
             if (con != null) {
                 try {
                     StreamedContent streamContent;
-                    // Compile report
                     JasperReport jasperReport
                             = JasperCompileManager.
                                     compileReport((String) SystemOption.getOptionValueObject(
                                             getSystemManager().getEntityManager1(),
                                             "storesRequisition"));
 
-                    // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
                     byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
@@ -1047,11 +1061,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return subHeader;
     }
 
-    /**
-     * Gets the title of the application which may be saved in a database.
-     *
-     * @return
-     */
     public String getTitle() {
         return "Inventory Manager";
     }
@@ -1271,7 +1280,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
             String role,
             String action) {
 
-        // tk Template to be created
         Email email = Email.findActiveEmailByName(em, "ims-email-template");
 
         if (email != null) {
@@ -1506,7 +1514,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<Inventory> getFoundInventories() {
         if (foundInventories == null) {
-            //doInventorySearch();
             foundInventories = new ArrayList<>();
         }
         return foundInventories;
@@ -1546,7 +1553,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public List<InventoryRequisition> getFoundInventoryRequisitions() {
         if (foundInventoryRequisitions == null) {
-            //doInventoryRequisitionSearch();
             foundInventoryRequisitions = new ArrayList<>();
         }
 
@@ -1669,7 +1675,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
         responsiveOptions.add(new ResponsiveOption("768px", 2, 2));
         responsiveOptions.add(new ResponsiveOption("560px", 1, 1));
 
-        // tk
         bannerView = new BannerView();
     }
 
@@ -1753,9 +1758,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
                             searchText, 0);
                 }
 
-//                if (startDate != null) {
-//                    openInventoryTab();
-//                }
                 break;
             case "Inventory Products":
                 if (getActiveInventoryProductsOnly()) {
@@ -1766,17 +1768,12 @@ public class InventoryManager extends GeneralManager implements Serializable {
                             getEntityManager1(), searchText, "Inventory");
                 }
 
-//                if (startDate != null) {
-//                    openInventoryProductBrowser();
-//                }
                 break;
             case "Inventory Requisitions":
                 foundInventoryRequisitions = InventoryRequisition.find(
                         getEntityManager1(),
                         searchText, 0);
-//                if (startDate != null) {
-//                    openInventoryRequisitionTab();
-//                }
+
                 break;
             default:
                 break;

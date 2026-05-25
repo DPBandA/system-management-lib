@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("addressValidator")
 public class AddressValidator implements Validator {
@@ -44,8 +44,8 @@ public class AddressValidator implements Validator {
 
     public void validate(FacesContext context, String componentId, Address address) throws ValidatorException {
 
-        if (address != null) {            
-            if (!BusinessEntityUtils.validateAddressLine(address.getAddressLine1().trim())) { // tk !BusinessEntityUtils.validateAddressLine(address.getAddressLine1().trim()
+        if (address != null) {
+            if (!BusinessEntityUtils.validateAddressLine(address.getAddressLine1().trim())) {
                 throw new ValidatorException(getMessage(componentId));
             }
         } else {

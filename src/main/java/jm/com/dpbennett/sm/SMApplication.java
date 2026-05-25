@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2021  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -58,9 +58,5 @@ public class SMApplication implements Serializable {
     public EntityManager getEntityManager1() {
         return  EMF1.createEntityManager();
     }
-
-//    public EntityManager getEntityManager2() {
-//        return em2; //EMF2.createEntityManager();
-//    }
 
 }

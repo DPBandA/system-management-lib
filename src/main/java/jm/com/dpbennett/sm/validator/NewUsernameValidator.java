@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesValidator("newUsernameValidator")
 public class NewUsernameValidator implements Validator {
@@ -51,7 +51,6 @@ public class NewUsernameValidator implements Validator {
                 emf = Persistence.createEntityManagerFactory("JMTSPU");
                 em = emf.createEntityManager();
 
-                // Find active user by username
                 User foundUser = User.findActiveByUsername(em, value.toString().trim());
                 if (foundUser != null) {
                     throw new ValidatorException(getMessage("Username Exists"));

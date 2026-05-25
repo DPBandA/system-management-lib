@@ -1,6 +1,6 @@
 /*
 LegalOffice (LO) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -48,6 +48,7 @@ import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -71,7 +72,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class LegalDocumentManager extends GeneralManager implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTS5PU")
+    @PersistenceUnit(unitName = "LOPU")
     private EntityManagerFactory LOPU;
     private List<LegalDocument> documentSearchResultList;
     private LegalDocument selectedDocument;
@@ -175,41 +176,33 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         return searchTypes;
     }
 
-    // tk make system option
     public List getDocumentForms() {
-        ArrayList forms = new ArrayList();
 
-        forms.add(new SelectItem("E", "Electronic"));
-        forms.add(new SelectItem("H", "Hard copy"));
-        forms.add(new SelectItem("V", "Verbal"));
+        List<String> forms = (List<String>) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(),
+                "documentFormsList");
+        ArrayList selectItems = new ArrayList<>();
 
-        return forms;
+        for (String form : forms) {
+            String item[] = form.split(",");
+            selectItems.add(new SelectItem(item[0], item[1]));
+        }
+
+        return selectItems;
     }
 
-    // tk make system option
     public List getPriorityLevels() {
-        ArrayList levels = new ArrayList();
 
-        levels.add(new SelectItem("--", "--"));
-        levels.add(new SelectItem("High", "High"));
-        levels.add(new SelectItem("Medium", "Medium"));
-        levels.add(new SelectItem("Low", "Low"));
-        levels.add(new SelectItem("Emergency", "Emergency"));
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+                "priorityLevelsList");
 
-        return levels;
     }
 
-    // tk make system option
     public List getDocumentStatuses() {
-        ArrayList statuses = new ArrayList();
 
-        statuses.add(new SelectItem("--", "--"));
-        statuses.add(new SelectItem("Clarification required", "Clarification required"));
-        statuses.add(new SelectItem("Completed", "Completed"));
-        statuses.add(new SelectItem("On target", "On target"));
-        statuses.add(new SelectItem("Transferred to Ministry", "Transferred to Ministry"));
+        return getStringListAsSelectItems(getSystemManager().getEntityManager1(),
+                "documentStatusList");
 
-        return statuses;
     }
 
     public List<String> completeStrategicPriority(String query) {
@@ -234,7 +227,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void openReportsTab() {
 
-        getReportManager().openReportsTab("Legal"); // tk review to make it still works.
+        getReportManager().openReportsTab("Legal");
     }
 
     @Override
@@ -244,9 +237,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         setName("legalDocumentManager");
         setSearchType("Legal Documents");
         setSearchText("");
-        setModuleNames(new String[]{
-            "systemManager",
-            "legalDocumentManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateReceived", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -356,8 +346,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         em.remove(document);
         em.flush();
         em.getTransaction().commit();
-
-        //doDefaultSearch();
 
         closeDialog(null);
     }
@@ -681,9 +669,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void formatDocumentTableXLS(Object document, String headerTitle) {
         HSSFWorkbook wb = (HSSFWorkbook) document;
         HSSFSheet sheet = wb.getSheetAt(0);
-        // get columns row
         int numCols = sheet.getRow(0).getPhysicalNumberOfCells();
-        // create heading row
         sheet.shiftRows(0, sheet.getLastRowNum(), 1);
 
         HSSFRow header = sheet.getRow(0);
@@ -701,22 +687,18 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             cell.setCellStyle(headerCellStyle);
         }
         header.getCell(0).setCellValue(headerTitle);
-        // merge header cells
         sheet.addMergedRegion(new CellRangeAddress(
-                0, //first row
-                (short) 0, //last row
-                0, //first column
-                (short) (numCols - 1) //last column
+                0,
+                (short) 0,
+                0,
+                (short) (numCols - 1)
         ));
 
-        // Column setup
-        // get columns row
         HSSFRow cols = sheet.getRow(1);
         HSSFCellStyle cellStyle = wb.createCellStyle();
         cellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
         cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-        // set columns widths
         for (int i = 0; i < cols.getPhysicalNumberOfCells(); i++) {
 
             sheet.autoSizeColumn(i);
@@ -726,7 +708,6 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
             }
 
         }
-        // set columns cell style
         for (int i = 0; i < cols.getPhysicalNumberOfCells(); i++) {
             HSSFCell cell = cols.getCell(i);
             cell.setCellStyle(cellStyle);
@@ -742,8 +723,9 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public List<String> completeGoal(String query) {
-        // tk put in sys options
-        String goals[] = {"# 1", "# 2", "# 3", "# 4", "# 5"};
+        List<String> goals = SystemOption.getStringList(
+                getSystemManager().getEntityManager1(),
+                "goalList");
         List<String> matchedGoals = new ArrayList<>();
 
         for (String goal : goals) {
@@ -785,7 +767,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationSubheader() {
-        
+
         return "Legal Office Administration";
     }
 
@@ -797,7 +779,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     @Override
     public EntityManager getEntityManager2() {
-        
+
         return getSystemManager().getEntityManager2();
     }
 

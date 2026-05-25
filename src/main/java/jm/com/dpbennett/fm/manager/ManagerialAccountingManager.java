@@ -1,6 +1,6 @@
 /*
 Accounting Management (AM) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -39,14 +39,14 @@ import org.primefaces.model.TreeNode;
  *
  * @author Desmond Bennett
  */
-public class AccountingManager extends GeneralManager implements Serializable {
+public class ManagerialAccountingManager extends GeneralManager implements Serializable {
 
     private EntityManagerFactory AMPU;
     private TreeNode<FinancialAccount> chartOfAccounts;
     private List<SortMeta> sortBy;
     private FinancialAccount selectedFinancialAccount;
 
-    public AccountingManager() {
+    public ManagerialAccountingManager() {
         init();
     }
 
@@ -119,7 +119,6 @@ public class AccountingManager extends GeneralManager implements Serializable {
 
     }
 
-    // tk sample accounts
     private TreeNode createAccounts() {
         TreeNode<FinancialAccount> chart = new DefaultTreeNode(new FinancialAccount("Bank", "Bank account", 230.0), null);
 

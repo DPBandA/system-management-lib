@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activeEmployeeConverter")
 public class ActiveEmployeeConverter extends ConverterAdapter {
@@ -40,7 +40,7 @@ public class ActiveEmployeeConverter extends ConverterAdapter {
         Employee employee = Employee.findActiveByName(em, value);
 
         if (value == null) {
-            employee = new Employee("--", "--");
+            employee = new Employee();
         }
 
         return employee;

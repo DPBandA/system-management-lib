@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited.
+Copyright (C) 2026  D P Bennett & Associates Limited.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -78,7 +78,6 @@ public class JfreeCandlestickChart extends JPanel {
         this.candlestickChart = candlestickChart;
     }
     
-    // tk for moving average
     private static double[][] calculateMovingAverage(OHLCSeriesCollection dataset, int period) {
         OHLCSeries series = dataset.getSeries(0);
         //int itemCount = series.getItemCount();

@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2017  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ import jm.com.dpbennett.sm.validator.ValidatorAdapter;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennet
  */
 @FacesValidator("subcontractedDepartmentValidator")
 public class SubcontractedDepartmentValidator extends ValidatorAdapter {
@@ -66,7 +66,6 @@ public class SubcontractedDepartmentValidator extends ValidatorAdapter {
             }
         }
 
-        // Check for self contracts    
         if (subContractedDepartment != null) {
             if (subContractedDepartment.getName().equals(departmentName)) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Same Departments", "The main and subcontracted departments cannot be the same."));

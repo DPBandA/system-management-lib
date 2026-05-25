@@ -1,6 +1,6 @@
 /*
-Job Management & Tracking System (JMTS) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,7 @@ import org.primefaces.PrimeFaces;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 public class MainTabView implements Serializable {
 

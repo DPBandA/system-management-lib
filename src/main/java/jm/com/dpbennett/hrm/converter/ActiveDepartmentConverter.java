@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -40,17 +40,14 @@ public class ActiveDepartmentConverter implements Converter<Department> {
             return null;
         }
 
-        // The picklist stores objects in the dual list.
         DualListModel<Department> dualList = (DualListModel<Department>) ((PickList) component).getValue();
 
-        // Search in source
         for (Department d : dualList.getSource()) {
             if (String.valueOf(d.getId()).equals(value)) {
                 return d;
             }
         }
 
-        // Search in target
         for (Department d : dualList.getTarget()) {
             if (String.valueOf(d.getId()).equals(value)) {
                 return d;

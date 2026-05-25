@@ -1,6 +1,6 @@
 /*
 Standards Compliance (SC) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -249,9 +249,11 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
     @Override
     public void openDashboardTab(String title) {
 
+        // tk
         //getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:petrolStationSearchButton");
+        //getSystemManager().getDashboard().openTab(title);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:petrolStationSearchButton");
 
-        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override

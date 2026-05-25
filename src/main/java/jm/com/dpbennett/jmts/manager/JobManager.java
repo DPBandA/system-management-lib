@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +71,7 @@ import org.primefaces.model.StreamedContent;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
 import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.Email;
+import jm.com.dpbennett.business.entity.jmts.JobStatusAndTracking;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityActionUtils;
@@ -108,11 +110,12 @@ import org.primefaces.event.TabChangeEvent;
 public class JobManager extends GeneralManager
         implements Serializable, BusinessEntityManagement {
 
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory JMTSPU;
     private JMTSApplication application;
     private Job currentJob;
     private Job selectedJob;
+    private Job parentJob;
     @ManagedProperty(value = "Jobs")
     private Boolean useAccPacCustomerList;
     private Boolean showJobEntry;
@@ -127,9 +130,24 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    public Job getParentJob() {
+        return parentJob;
+    }
+
+    public void setParentJob(Job parentJob) {
+        this.parentJob = parentJob;
+    }
+
+    @Override
+    public void reInitUI() {
+        getSystemManager().reInitUI();
+        getFinanceManager().reInitUI();
+        getHumanResourceManager().reInitUI();
+    }
+
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-       
+
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
@@ -140,7 +158,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
-       
+
         for (Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
@@ -167,11 +185,11 @@ public class JobManager extends GeneralManager
 
     public List<Business> completeActiveBusiness(String query) {
 
+        List<Business> businesses = new ArrayList<>();
+
         if (getUser().can("EnterJob") || getUser().can("EditJob")) {
             return getHumanResourceManager().completeActiveBusiness(query);
         }
-
-        List<Business> businesses = new ArrayList<>();
 
         Business userBusiness = User.getUserOrganizationByDepartment(
                 getHumanResourceManager().getEntityManager1(), getUser());
@@ -184,6 +202,7 @@ public class JobManager extends GeneralManager
     public List<Employee> completeActiveEmployee(String query) {
 
         List<Employee> employees = new ArrayList<>();
+        List<Employee> departmentEmployees = new ArrayList<>();
 
         try {
             if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeSubcontracted()) {
@@ -196,14 +215,20 @@ public class JobManager extends GeneralManager
                 employees.addAll(getCurrentJob().getDepartment().getStaff());
             }
 
-            Collections.sort(employees);
+            for (Employee employee : employees) {
+                if (employee.getName().toUpperCase().contains(query.toUpperCase())) {
+                    departmentEmployees.add(employee);
+                }
+            }
+
+            Collections.sort(departmentEmployees);
 
         } catch (Exception e) {
             System.out.println(e);
             return new ArrayList<>();
         }
 
-        return employees;
+        return departmentEmployees;
     }
 
     public List<Department> completeActiveDepartmentByBusiness(String query) {
@@ -241,257 +266,6 @@ public class JobManager extends GeneralManager
         return Employee.findById(hrmem, getUser().getEmployee().getId());
     }
 
-    // tk remove?
-    public void jobGroupingDialogReturn() {
-
-        if (getCurrentJob().getId() != null) {
-            if (getCurrentJob().getIsDirty()) {
-                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
-
-                    processJobActions();
-                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
-                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Grouping"
-                            + " Saved", "This job"
-                            + " and the job grouping were saved", FacesMessage.SEVERITY_INFO);
-
-                } else {
-                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Grouping"
-                            + " NOT Saved", "This job"
-                            + " and the job grouping were NOT saved",
-                            FacesMessage.SEVERITY_ERROR);
-                }
-            }
-
-        }
-    }
-
-    // tk remove?
-    public void jobStatusAndTrackingDialogReturn() {
-
-        if (getCurrentJob().getId() != null) {
-            if (getCurrentJob().getIsDirty()) {
-                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
-
-                    processJobActions();
-                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
-                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Status and Tracking"
-                            + " Saved", "This job"
-                            + " and the job status and tracking were saved",
-                            FacesMessage.SEVERITY_INFO);
-
-                } else {
-                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Status and Tracking"
-                            + " NOT Saved", "This job"
-                            + " and the job status and tracking were NOT saved",
-                            FacesMessage.SEVERITY_ERROR);
-                }
-            }
-
-        }
-    }
-
-    // tk remove?
-    public void jobReportingDialogReturn() {
-
-        if (getCurrentJob().getId() != null) {
-            if (getCurrentJob().getIsDirty()) {
-                if (getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
-
-                    processJobActions();
-                    getCurrentJob().getJobStatusAndTracking().setEditStatus("");
-                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Reporting"
-                            + " Saved", "This job"
-                            + " and the job reporting were saved",
-                            FacesMessage.SEVERITY_INFO);
-
-                } else {
-                    PrimeFacesUtils.addMessage(getCurrentJob().getType()
-                            + " Reporting"
-                            + " NOT Saved", "This job"
-                            + " and the job reporting were NOT saved",
-                            FacesMessage.SEVERITY_ERROR);
-                }
-            }
-
-        }
-    }
-
-    // tk remove?
-    public void editJobGrouping() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/job/grouping/jobGroupingDialog", options, null);
-
-    }
-
-    // tk remove?
-    public void editJobStatusAndTracking() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/job/tracking/jobStatusAndTrackingDialog", options, null);
-
-    }
-
-    // tk remove?
-    public void editJobReporting() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/job/reporting/jobReportingDialog", options, null);
-
-    }
-
-    // tk remove?
-    public void openJobGroupingDialog() {
-        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
-
-            editJobGrouping();
-
-        } else {
-
-            if (getCurrentJob().getIsDirty()) {
-                saveCurrentJob();
-            }
-
-            if (getCurrentJob().getId() != null) {
-                editJobGrouping();
-            } else {
-                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
-                        "This " + getCurrentJob().getType()
-                        + " must be saved before the grouping can be viewed or edited",
-                        FacesMessage.SEVERITY_WARN);
-            }
-        }
-    }
-
-    // tk remove?
-    public void openJobStatusAndTrackingDialog() {
-        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
-
-            editJobStatusAndTracking();
-
-        } else {
-
-            if (getCurrentJob().getIsDirty()) {
-                saveCurrentJob();
-            }
-
-            if (getCurrentJob().getId() != null) {
-                editJobStatusAndTracking();
-            } else {
-                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
-                        "This " + getCurrentJob().getType()
-                        + " must be saved before the status and tracking can be viewed or edited",
-                        FacesMessage.SEVERITY_WARN);
-            }
-        }
-    }
-
-    // tk remove?
-    public void openJobReportingDialog() {
-        if (getCurrentJob().getId() != null && !getCurrentJob().getIsDirty()) {
-
-            editJobReporting();
-
-        } else {
-
-            if (getCurrentJob().getIsDirty()) {
-                saveCurrentJob();
-            }
-
-            if (getCurrentJob().getId() != null) {
-                editJobReporting();
-            } else {
-                PrimeFacesUtils.addMessage(getCurrentJob().getType() + " NOT Saved",
-                        "This " + getCurrentJob().getType()
-                        + " must be saved before the reporting can be viewed or edited",
-                        FacesMessage.SEVERITY_WARN);
-            }
-        }
-    }
-
-    // tk remove?
-    public void okJobGrouping(ActionEvent actionEvent) {
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    // tk remove?
-    public void okJobStatusAndTracking(ActionEvent actionEvent) {
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    // tk remove?
-    public void okJobReporting(ActionEvent actionEvent) {
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    // tk remove?
-    public void cancelJobGroupingEdit(ActionEvent actionEvent) {
-
-        getCurrentJob().setIsDirty(false);
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    // tk remove?
-    public void cancelJobStatusAndTrackingEdit(ActionEvent actionEvent) {
-
-        getCurrentJob().setIsDirty(false);
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    // tk remove?
-    public void cancelJobReportingEdit(ActionEvent actionEvent) {
-
-        getCurrentJob().setIsDirty(false);
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
     @Override
     public boolean handleTabChange(String tabTitle) {
 
@@ -510,6 +284,11 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getSearchText() {
+
+        if (searchText == null) {
+            searchText = "";
+        }
+
         return searchText;
     }
 
@@ -528,6 +307,7 @@ public class JobManager extends GeneralManager
 
         if (tab.equals("General")
                 && (getCurrentJob().getType().equals("Proforma Invoice")
+                || getCurrentJob().getType().equals("Invoice")
                 || getCurrentJob().getType().equals("Job"))) {
             return true;
         } else if (tab.equals("Services")) {
@@ -540,8 +320,8 @@ public class JobManager extends GeneralManager
             return true;
         } else if (tab.equals("StatusAndTracking")
                 && (getCurrentJob().getType().equals("Job")
-                || // tk remove Proforma Invoice after testing
-                getCurrentJob().getType().equals("Proforma Invoice"))) {
+                || getCurrentJob().getType().equals("Invoice")
+                || getCurrentJob().getType().equals("Proforma Invoice"))) {
             return true;
         } else if (tab.equals("Reporting")
                 && (getCurrentJob().getType().equals("Job"))) {
@@ -559,6 +339,7 @@ public class JobManager extends GeneralManager
 
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
@@ -637,7 +418,6 @@ public class JobManager extends GeneralManager
                 + " " + getCurrentJob().getAssignedTo().getLastName();
         String paymentAmount = "$0.00";
         if (!getCurrentJob().getCashPayments().isEmpty()) {
-            // Get and use last payment  
             paymentAmount = formatAsCurrency(getCurrentJob().getCashPayments().
                     get(getCurrentJob().getCashPayments().size() - 1).getPayment(), "$");
         }
@@ -791,7 +571,6 @@ public class JobManager extends GeneralManager
 
                         if (employeeUser != null) {
                             if (User.isNotificationActive(employeeUser,
-                                    getSystemManager().getEntityManager1(),
                                     "jobAssigned")) {
 
                                 sendJobEntryEmail(getSystemManager().getEntityManager1(),
@@ -812,7 +591,6 @@ public class JobManager extends GeneralManager
 
                         if (employeeUser != null) {
                             if (User.isNotificationActive(employeeUser,
-                                    getSystemManager().getEntityManager1(),
                                     "jobCostingPrepared")) {
 
                                 sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -831,7 +609,6 @@ public class JobManager extends GeneralManager
 
                             if (employeeUser != null) {
                                 if (User.isNotificationActive(employeeUser,
-                                        getSystemManager().getEntityManager1(),
                                         "jobCostingPrepared")) {
 
                                     sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -852,7 +629,6 @@ public class JobManager extends GeneralManager
                         if (employeeUser != null) {
 
                             if (User.isNotificationActive(employeeUser,
-                                    getSystemManager().getEntityManager1(),
                                     "jobCostingPrepared")) {
 
                                 sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -871,7 +647,6 @@ public class JobManager extends GeneralManager
                             if (employeeUser != null) {
 
                                 if (User.isNotificationActive(employeeUser,
-                                        getSystemManager().getEntityManager1(),
                                         "jobCostingPrepared")) {
 
                                     sendJobCostingPreparedEmail(getSystemManager().getEntityManager1(),
@@ -888,8 +663,6 @@ public class JobManager extends GeneralManager
                     break;
                 case APPROVE:
 
-                    // NB: This notifies only the assignee of the parent job when the 
-                    // child job costing is approved
                     if (getCurrentJob().getIsSubContract()) {
 
                         if (getCurrentJob().getParent() != null) {
@@ -901,7 +674,6 @@ public class JobManager extends GeneralManager
                             if (employeeUser != null) {
 
                                 if (User.isNotificationActive(employeeUser,
-                                        getSystemManager().getEntityManager1(),
                                         "jobCostingApproved")) {
 
                                     sendChildJobCostingApprovalEmail(getSystemManager().getEntityManager1(),
@@ -923,7 +695,6 @@ public class JobManager extends GeneralManager
                     if (employeeUser != null) {
 
                         if (User.isNotificationActive(employeeUser,
-                                getSystemManager().getEntityManager1(),
                                 "cashPaymentMade")) {
 
                             sendJobPaymentEmail(getSystemManager().getEntityManager1(),
@@ -1017,12 +788,13 @@ public class JobManager extends GeneralManager
                 "enableMultipleStatusNotes");
     }
 
-    /**
-     * Determines if a job dialog field is to be disabled.
-     *
-     * @param field
-     * @return
-     */
+    public Boolean booleanSetting(String setting) {
+
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
+                setting);
+
+    }
+
     public Boolean disableJobDialogField(String field) {
 
         return disableJobDialogField(getCurrentJob(), field);
@@ -1037,7 +809,7 @@ public class JobManager extends GeneralManager
                         "activateJobDialogFieldDisabling");
 
         Boolean userHasPrivilege = getUser().can("EditDisabledJobField")
-                || getUser().can("CreateDirectSubcontract"); // tk
+                || getUser().can("CreateDirectSubcontract");
 
         Boolean jobIsNotNew = job.getId() != null;
 
@@ -1111,7 +883,6 @@ public class JobManager extends GeneralManager
 
     public Boolean getDisableDepartmentEntry() {
 
-        // allow department entry only if business office is null
         if (currentJob != null) {
             if (currentJob.getBusinessOffice() != null) {
                 return !currentJob.getBusinessOffice().getCode().trim().equals("");
@@ -1185,20 +956,23 @@ public class JobManager extends GeneralManager
     }
 
     public List<String> getJobTableViews() {
-        EntityManager em;
+//        EntityManager em;
+//
+//        try {
+//            em = getSystemManager().getEntityManager1();
+//
+//            List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
+//
+//            return preferenceValues;
+//
+//        } catch (Exception e) {
+//            System.out.println(e);
+//
+//            return new ArrayList<>();
+//        }
 
-        try {
-            em = getSystemManager().getEntityManager1();
-
-            List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
-
-            return preferenceValues;
-
-        } catch (Exception e) {
-            System.out.println(e);
-
-            return new ArrayList<>();
-        }
+        return SystemOption.getStringList(getSystemManager().getEntityManager1(),
+                "jobTableViewsList");
     }
 
     public void updateAccPacCustomer(SelectEvent event) {
@@ -1231,27 +1005,22 @@ public class JobManager extends GeneralManager
 
     public void onJobCostingCellEdit(CellEditEvent event) {
 
-        // Set edited by
         getJobSearchResultList().get(event.getRowIndex()).
                 getClient().setEditedBy(getUserEmployee());
 
-        // Set date edited
         getJobSearchResultList().get(event.getRowIndex()).
                 getClient().setDateEdited(new Date());
 
-        // Set the Accounting ID
         getJobSearchResultList().get(event.getRowIndex()).
                 getClient().setAccountingId(
                         getJobSearchResultList().get(event.getRowIndex()).
                                 getClient().getFinancialAccount().getIdCust());
 
-        // Set credit limit
         getJobSearchResultList().get(event.getRowIndex()).
                 getClient().setCreditLimit(
                         getJobSearchResultList().get(event.getRowIndex()).
                                 getClient().getFinancialAccount().getCreditLimit().doubleValue());
 
-        // Save
         getJobSearchResultList().get(event.getRowIndex()).
                 getClient().save(getEntityManager1());
 
@@ -1335,12 +1104,20 @@ public class JobManager extends GeneralManager
             searchTypes.add(new SelectItem("Incomplete jobs", "Incomplete jobs"));
             searchTypes.add(new SelectItem("Invoiced jobs", "Invoiced jobs"));
 
+            if (getSearchType() == null) {
+                setSearchType("General");
+            }
+
         } else {
 
             searchTypes.add(new SelectItem("My jobs", "My jobs"));
             searchTypes.add(new SelectItem("My department's jobs", "My department's jobs"));
             searchTypes.add(new SelectItem("My dept's proforma invoices",
                     "My dept's proforma invoices"));
+
+            if (getSearchType() == null) {
+                setSearchType("My jobs");
+            }
 
         }
 
@@ -1369,8 +1146,6 @@ public class JobManager extends GeneralManager
         super.reset();
 
         setName("jobManager");
-        setSearchType("My department's jobs");
-        setSearchText("");
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1427,12 +1202,17 @@ public class JobManager extends GeneralManager
             getUser().setJobTableViewPreference("Job Costings");
         }
 
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
+        if (!getUser().isRenderMobileUI()) {
+            getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
+        }
 
         Module module = getModule();
         if (module != null) {
             getSystemManager().getMainTabView().openTab(module.getMainViewTitle());
-            getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+
+            if (!getUser().isRenderMobileUI()) {
+                getSystemManager().getDashboard().openTab(module.getDashboardTitle());
+            }
         }
 
     }
@@ -1479,12 +1259,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    /**
-     * Can edit job only if the job is assigned to your department or if you
-     * have job entry privilege
-     *
-     * @return
-     */
     public Boolean getCanEditDepartmentalJob() {
         if (getCanEnterJob()) {
             return true;
@@ -1509,12 +1283,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    /**
-     * For future implementation if necessary
-     *
-     * @param query
-     * @return
-     */
     public List<String> completeSearchText(String query) {
         List<String> suggestions = new ArrayList<>();
 
@@ -1623,7 +1391,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    // NB: This and other code that get date is no longer necessary. Clean up!
     public Date getExpectedDateOfCompletion() {
         if (currentJob != null) {
             return currentJob.getJobStatusAndTracking().getExpectedDateOfCompletion();
@@ -1652,10 +1419,6 @@ public class JobManager extends GeneralManager
         currentJob.getJobStatusAndTracking().setDateDocumentCollected(date);
     }
 
-    /**
-     *
-     * @return
-     */
     public Boolean getCompleted() {
         if (currentJob != null) {
             return currentJob.getJobStatusAndTracking().getCompleted();
@@ -1699,7 +1462,6 @@ public class JobManager extends GeneralManager
     @Override
     public EntityManager getEntityManager2() {
 
-        //return getSystemManager().getEntityManager2        
         return getFinanceManager().getFINPU().createEntityManager();
     }
 
@@ -1746,13 +1508,10 @@ public class JobManager extends GeneralManager
 
     public void updateJobClassification() {
 
-        // Setup default tax
         if (currentJob.getClassification().getDefaultTax().getId() != null) {
             currentJob.getJobCostingAndPayment().setTax(currentJob.getClassification().getDefaultTax());
         }
 
-        // Get the clasification saved for use in setting taxes
-        // Update all costs that depend on tax
         if (currentJob.getId() != null) {
             getJobFinanceManager().updateAllTaxes(null);
         }
@@ -1839,11 +1598,9 @@ public class JobManager extends GeneralManager
     public Boolean checkJobWorkProgressReadinessToBeChanged(Job job) {
         EntityManager em = getEntityManager1();
 
-        // Find the currently stored job and check it's work status
         if (job.getId() != null) {
             Job savedJob = Job.findJobById(em, job.getId());
 
-            // Do not allow flagging job as completed unless job costing is approved
             if (!job.getJobCostingAndPayment().getCostingApproved()
                     && job.getJobStatusAndTracking().
                             getWorkProgress().equals("Completed")) {
@@ -1860,7 +1617,6 @@ public class JobManager extends GeneralManager
             if (savedJob.getJobStatusAndTracking().getWorkProgress().equals("Completed")
                     && !getUser().isUserDepartmentSupervisor(job, em)) {
 
-                // Reset current job to its saved work progress
                 job.getJobStatusAndTracking().
                         setWorkProgress(savedJob.getJobStatusAndTracking().getWorkProgress());
 
@@ -1871,13 +1627,12 @@ public class JobManager extends GeneralManager
                 return false;
             } else if (savedJob.getJobStatusAndTracking().getWorkProgress().equals("Completed")
                     && (getUser().isUserDepartmentSupervisor(job, em))) {
-                // System admin can change work status even if it's completed.
+
                 return true;
             } else if (!savedJob.getJobStatusAndTracking().getWorkProgress().equals("Completed")
                     && job.getJobStatusAndTracking().getWorkProgress().equals("Completed")
                     && !job.getJobCostingAndPayment().getCostingCompleted()) {
 
-                // Reset current job to its saved work progress
                 job.getJobStatusAndTracking().
                         setWorkProgress(savedJob.getJobStatusAndTracking().getWorkProgress());
 
@@ -1909,18 +1664,13 @@ public class JobManager extends GeneralManager
                 job.getJobStatusAndTracking().setCompleted(false);
                 job.getJobStatusAndTracking().setSamplesCollected(false);
                 job.getJobStatusAndTracking().setDocumentCollected(false);
-                // overall job completion
                 job.getJobStatusAndTracking().setDateOfCompletion(null);
-                job.getJobStatusAndTracking().
-                        setCompletedBy(null);
-                // sample collection
+                job.getJobStatusAndTracking().setCompletedBy(null);
                 job.getJobStatusAndTracking().setSamplesCollectedBy(null);
                 job.getJobStatusAndTracking().setDateSamplesCollected(null);
-                // document collection
                 job.getJobStatusAndTracking().setDocumentCollectedBy(null);
                 job.getJobStatusAndTracking().setDateDocumentCollected(null);
 
-                // Update start date
                 if (job.getJobStatusAndTracking().getWorkProgress().equals("Ongoing")
                         && job.getJobStatusAndTracking().getStartDate() == null) {
                     job.getJobStatusAndTracking().setStartDate(new Date());
@@ -1938,7 +1688,6 @@ public class JobManager extends GeneralManager
             setIsDirty(true);
         } else {
             if (job.getId() != null) {
-                // Reset work progress to the currently saved state
                 Job job1 = Job.findJobById(getEntityManager1(), job.getId());
                 if (job1 != null) {
                     job.getJobStatusAndTracking().setWorkProgress(job1.getJobStatusAndTracking().getWorkProgress());
@@ -1970,15 +1719,11 @@ public class JobManager extends GeneralManager
 
             if (isSubcontract) {
 
-                // Save current job as parent job for use in the subcontract
                 Job parent = currentJob;
-                // Create copy of job and use current sequence number and year.                
                 Long currentJobSequenceNumber = parent.getJobSequenceNumber();
                 Integer yearReceived = parent.getYearReceived();
-                currentJob = Job.copy(em, parent, getUser(), true, false);
+                currentJob = Job.copy(parent);
                 currentJob.setParent(parent);
-                //Business userOrg = User.getUserOrganizationByDepartment(
-                //        getHumanResourceManager().getEntityManager1(), getUser());
                 currentJob.setBusiness(null);
                 currentJob.setClassification(new Classification());
                 currentJob.setClient(new Client());
@@ -1994,11 +1739,9 @@ public class JobManager extends GeneralManager
                 currentJob.setJobSubCategory(JobSubCategory.findJobSubCategoryByName(fmem, "--"));
                 currentJob.setSubContractedDepartment(new Department());
                 currentJob.setIsToBeSubcontracted(isSubcontract);
-                currentJob.getJobStatusAndTracking().setDateAndTimeEntered(null);
                 currentJob.setYearReceived(yearReceived);
                 currentJob.setJobSequenceNumber(currentJobSequenceNumber);
                 currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
-                // Services
                 currentJob.setServiceContract(new ServiceContract());
                 currentJob.setServices(null);
 
@@ -2006,7 +1749,24 @@ public class JobManager extends GeneralManager
                     currentJob.getJobCostingAndPayment().setCostComponents(
                             getJobFinanceManager().copyCostComponents(parent.getJobCostingAndPayment().getCostComponents()));
                     currentJob.getJobCostingAndPayment().setIsDirty(true);
+                } else {
+                    currentJob.setJobCostingAndPayment(new JobCostingAndPayment());
                 }
+
+                currentJob.setJobStatusAndTracking(new JobStatusAndTracking());
+
+                currentJob.setNewClient(false);
+                currentJob.setReportNumber("");
+                currentJob.setNoOfTests(0);
+                currentJob.setNoOfCalibrations(0);
+                currentJob.setNoOfTestsOrCalibrations(0);
+                currentJob.setNoOfInspections(0);
+                currentJob.setNoOfTrainings(0);
+                currentJob.setNoOfLabelAssessments(0);
+                currentJob.setNoOfCertifications(0);
+                currentJob.setNoOfConsultations(0);
+                currentJob.setNoOfTests(0);
+                currentJob.setComment("");
 
             } else {
                 currentJob = Job.create(em, hrem, fmem, getUser(), true);
@@ -2035,17 +1795,11 @@ public class JobManager extends GeneralManager
         return true;
     }
 
-    /**
-     *
-     * @param serviceRequest
-     */
     public void createNewJob(ServiceRequest serviceRequest) {
-        // handle user privilege and return if the user does not have
-        // the privilege to do what they wish
+
         EntityManager em = getEntityManager1();
         createJob(em, false, false);
 
-        // fill in fields from service request
         currentJob.setBusinessOffice(serviceRequest.getBusinessOffice());
         currentJob.setJobSequenceNumber(serviceRequest.getServiceRequestSequenceNumber());
         currentJob.getClient().doCopy(serviceRequest.getClient());
@@ -2054,8 +1808,7 @@ public class JobManager extends GeneralManager
         if (currentJob.getAutoGenerateJobNumber()) {
             currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
         }
-        // set job dirty to ensure it is saved if attempt is made to close it
-        //  before saving
+
         setIsDirty(true);
     }
 
@@ -2126,28 +1879,24 @@ public class JobManager extends GeneralManager
     public void cancelJobEdit(ActionEvent actionEvent) {
         setIsDirty(false);
         PrimeFacesUtils.closeDialog(null);
-        //doJobSearch();
     }
 
     private boolean prepareAndSaveJob(Job job) {
         ReturnMessage returnMessage;
 
-        // tk testing this
         returnMessage = job.prepareAndSave(getEntityManager1(), getUser());
 
         if (returnMessage.isSuccess()) {
-//            if (job.getJobCostingAndPayment().getEstimate()) {
+
             PrimeFacesUtils.addMessage("Saved!", job.getType() + " was saved", FacesMessage.SEVERITY_INFO);
-//            } else {
-//                PrimeFacesUtils.addMessage("Saved!", "Job was saved", FacesMessage.SEVERITY_INFO);
-//            }
+
             job.getJobStatusAndTracking().setEditStatus("        ");
 
             return true;
         } else {
             PrimeFacesUtils.addMessage(job.getType() + " NOT Saved!",
                     job.getType() + " was NOT saved. Please contact the System Administrator!: "
-                    + returnMessage.getDetail(), // tk to be commented out.
+                    + returnMessage.getDetail(),
                     FacesMessage.SEVERITY_ERROR);
 
             sendErrorEmail("An error occurred while saving a " + job.getType(),
@@ -2164,7 +1913,6 @@ public class JobManager extends GeneralManager
         EntityManager em = getEntityManager1();
         Job savedJob;
 
-        // Check if cost estimate exceeds credit limit
         if (isJobNew(job)) {
             if (job.getClient().getCreditLimit() > 0.0
                     && !job.getJobCostingAndPayment().getEstimate()
@@ -2181,9 +1929,6 @@ public class JobManager extends GeneralManager
             }
         }
 
-        // Do not save changed job if it's already marked as completed in the database
-        // However, saving is allowed if the user belongs to the "Invoicing department"
-        // or is a system administrator
         if (!isJobNew(job)) {
             savedJob = Job.findJobById(em, job.getId());
             if (savedJob.getJobStatusAndTracking().getWorkProgress().equals("Completed")
@@ -2200,16 +1945,6 @@ public class JobManager extends GeneralManager
             }
         }
 
-        // Ensure that at least 1 service is selected
-        // tk commment out
-//        if (job.getServices().isEmpty()) {
-//            PrimeFacesUtils.addMessage("Service(s) NOT Selected",
-//                    "Please select at least one service",
-//                    FacesMessage.SEVERITY_ERROR);
-//
-//            return;
-//        }
-        // Check if there exists another job/subcontract with the same job number.
         Job savedSubcontract = Job.findJobByJobNumber(getEntityManager1(), job.getJobNumber());
         if (savedSubcontract != null && isJobNew(job)
                 && !savedSubcontract.getJobStatusAndTracking().getWorkProgress().equals("Cancelled")) {
@@ -2220,16 +1955,12 @@ public class JobManager extends GeneralManager
             return;
         }
 
-        // Do privelege checks and save if possible
-        // Check for job entry privileges
         if (isJobNew(job)
-                && ((getUser().can("EnterDepartmentJob") // Use Department.findDepartmentAssignedToJob() instead?
+                && ((getUser().can("EnterDepartmentJob")
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
-                // Can the user assign a job to themself provided that the user belongs to the job's parent department?
                 || (getUser().can("EnterOwnJob")
-                && Objects.equals(getUserEmployee().getId(), job.getAssignedTo().getId()) // Use Department.findDepartmentAssignedToJob() instead?
+                && Objects.equals(getUserEmployee().getId(), job.getAssignedTo().getId())
                 && (getUser().isMemberOf(em, job.getDepartment()) || getUser().isMemberOf(em, job.getSubContractedDepartment())))
-                // Can the user enter any job?
                 || getUser().can("EnterJob"))) {
 
             if (prepareAndSaveJob(job)) {
@@ -2253,7 +1984,7 @@ public class JobManager extends GeneralManager
                             FacesMessage.SEVERITY_ERROR);
                 }
             } else {
-                // This job is not a subscontract
+
                 if ((getUser().can("EditDepartmentJob")
                         && (getUser().isMemberOf(em, savedJob.getDepartment())))
                         || (getUser().can("EditOwnJob")
@@ -2296,13 +2027,6 @@ public class JobManager extends GeneralManager
         return BusinessEntityUtils.validateText(currentJob.getBillingAddress().getName());
     }
 
-    /**
-     * NB: Message body and subject are to be obtained from a "template". The
-     * variables in the template are to be inserted where {variable} appears.
-     *
-     * @param job
-     * @return
-     */
     public String getUpdatedJobEmailMessage(Job job) {
         EntityManager em = getSystemManager().getEntityManager1();
         String message = "";
@@ -2329,18 +2053,12 @@ public class JobManager extends GeneralManager
         return message;
     }
 
-    /**
-     * Update/create alert for the current job if the job is not completed.
-     *
-     * @param em
-     * @throws java.lang.Exception
-     */
     public void updateAlert(EntityManager em) throws Exception {
         if (getCurrentJob().getJobStatusAndTracking().getCompleted() == null) {
             em.getTransaction().begin();
 
             Notification notification = Notification.findFirstNotificationByOwnerId(em, currentJob.getId());
-            if (notification == null) { // This seems to be a new job
+            if (notification == null) {
                 notification = new Notification(currentJob.getId(), new Date(), "Job entered");
                 em.persist(notification);
             } else {
@@ -2355,7 +2073,7 @@ public class JobManager extends GeneralManager
             em.getTransaction().begin();
 
             Notification notification = Notification.findFirstNotificationByOwnerId(em, currentJob.getId());
-            if (notification == null) { // This seems to be a new job
+            if (notification == null) {
                 notification = new Notification(currentJob.getId(), new Date(), "Job saved");
                 em.persist(notification);
             } else {
@@ -2374,7 +2092,6 @@ public class JobManager extends GeneralManager
         try {
             EntityManager em = getSystemManager().getEntityManager1();
 
-            // send error message to developer's email            
             MailUtils.postMail(null,
                     SystemOption.getString(em, "jobManagerEmailAddress"),
                     SystemOption.getString(em, "jobManagerEmailName"),
@@ -2532,6 +2249,19 @@ public class JobManager extends GeneralManager
 
     }
 
+    public void doJobSearchDialogSearch() {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
+    }
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -2578,41 +2308,6 @@ public class JobManager extends GeneralManager
 
     }
 
-    // tk del?
-//    public void doJobSearch(Integer maxResults) {
-//
-//        if (getUser().getId() != null) {
-//            jobSearchResultList = findJobs(maxResults);
-//
-//        } else {
-//            jobSearchResultList = new ArrayList<>();
-//        }
-//
-//    }
-    // tk del?
-//    public void doJobSearch(DatePeriod dateSearchPeriod, String searchType, String searchText) {
-//
-//        doJobSearch();
-//    }
-    /**
-     *
-     * @return
-     */
-//    public List<Classification> getActiveClassifications() {
-//        EntityManager em = getEntityManager1();
-//
-//        List<Classification> classifications = Classification.findAllActiveClassifications(em);
-//
-//        return classifications;
-//    }
-//
-//    public List<Sector> getActiveSectors() {
-//        EntityManager em = getEntityManager1();
-//
-//        List<Sector> sectors = Sector.findAllActiveSectors(em);
-//
-//        return sectors;
-//    }
     public List<Address> getClientAddresses() {
 
         List<Address> addresses = getCurrentJob().getClient().getAddresses();
@@ -2620,21 +2315,6 @@ public class JobManager extends GeneralManager
         return addresses;
     }
 
-//    public List<JobCategory> getActiveJobCategories() {
-//        EntityManager em = getEntityManager1();
-//
-//        List<JobCategory> categories = JobCategory.findAllActiveJobCategories(em);
-//
-//        return categories;
-//    }
-//
-//    public List<JobSubCategory> getActiveJobSubCategories() {
-//        EntityManager em = getEntityManager1();
-//
-//        List<JobSubCategory> subCategories = JobSubCategory.findAllActiveJobSubCategories(em);
-//
-//        return subCategories;
-//    }
     public List<Job> getJobSearchResultList() {
 
         if (jobSearchResultList == null) {
@@ -2666,11 +2346,39 @@ public class JobManager extends GeneralManager
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
                 .resizable(false)
+                .closable(true)
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
+
+    }
+
+    public void closeDialog() {
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
+    public void editInvoice() {
+    }
+
+    public void viewJobSearchDialog() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width("300px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job/jobSearchDialog", options, null);
 
     }
 
@@ -2695,13 +2403,20 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
+            if (!getCurrentJob().getServices().isEmpty()) {
+                getCurrentJob().getServiceContract().setSelectedService(
+                        getCurrentJob().getServices().get(0));
+                getCurrentJob().setIsDirty(true);
+                getCurrentJob().getJobStatusAndTracking().setEditStatus("(edited)");
+            }
+        }
+
     }
 
     public void copyCurrentJob() {
 
-        EntityManager em = getEntityManager1();
-
-        // Do not allow copying of suhcontracts
         if (currentJob.getIsSubContract()) {
 
             PrimeFacesUtils.addMessage("Job Copy NOT Created",
@@ -2713,10 +2428,15 @@ public class JobManager extends GeneralManager
                     FacesMessage.SEVERITY_ERROR);
         } else {
 
-            currentJob = Job.copy(em, currentJob, getUser(), true, false);
+            currentJob = Job.copy(currentJob);
+            currentJob.setJobSequenceNumber(null);
+            currentJob.setYearReceived(Calendar.getInstance().get(Calendar.YEAR));
+            currentJob.setJobNumber(Job.generateJobNumber(currentJob,
+                    getEntityManager1()));
+
+            getJobFinanceManager().setEnableOnlyPaymentEditing(false);
             BusinessEntityActionUtils.addAction(BusinessEntity.Action.CREATE,
                     currentJob.getActions());
-            getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
             PrimeFacesUtils.addMessage("Job Copied",
                     "The current job was copied but the copy was not saved. "
@@ -2785,7 +2505,6 @@ public class JobManager extends GeneralManager
 
         try {
 
-            //EntityManager hrem = getHumanResourceManager().getEntityManager1();
             if (currentJob.getAutoGenerateJobNumber()) {
                 currentJob.setJobNumber(getCurrentJobNumber());
             }
@@ -2798,10 +2517,6 @@ public class JobManager extends GeneralManager
                 currentJob.setAssignedTo(currentJob.getSubContractedDepartment().getHead());
             }
 
-            // tk
-//            if (getCurrentJob().getSubContractedDepartment().getId() == null) {
-//                getCurrentJob().setSubContractedDepartment(Department.findDefault(hrem, "--"));
-//            }
             setIsDirty(true);
 
         } catch (Exception e) {
@@ -2809,9 +2524,6 @@ public class JobManager extends GeneralManager
         }
     }
 
-    /**
-     * Do update for the client field on the General tab on the Job Details form
-     */
     public void updateJobEntryTabClient() {
 
         getJobFinanceManager().getAccPacCustomer().setCustomerName(currentJob.getClient().getName());
@@ -2822,12 +2534,10 @@ public class JobManager extends GeneralManager
         currentJob.setBillingAddress(new Address());
         currentJob.setContact(new Contact());
 
-        // Set default tax
         if (currentJob.getClient().getDefaultTax().getId() != null) {
             currentJob.getJobCostingAndPayment().setTax(currentJob.getClient().getDefaultTax());
         }
 
-        // Set default discount
         if (currentJob.getClient().getDiscount().getId() != null) {
             currentJob.getJobCostingAndPayment().setDiscount(currentJob.getClient().getDiscount());
         }
@@ -2883,41 +2593,6 @@ public class JobManager extends GeneralManager
         return sr;
     }
 
-//    public User createNewUser(EntityManager em) {
-//        User jmuser = new User();
-//
-//        jmuser.setEmployee(Employee.findDefault(em, "--", "--", true));
-//
-//        return jmuser;
-//    }
-//    public EntityManagerFactory setupDatabaseConnection(String PU) {
-//        try {
-//            EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU);
-//            if (emf.isOpen()) {
-//                return emf;
-//            } else {
-//                return null;
-//            }
-//        } catch (Exception ex) {
-//            System.out.println(PU + " Connection failed: " + ex);
-//            return null;
-//        }
-//    }
-//    public HashMap<String, String> getConnectionProperties(
-//            String url,
-//            String driver,
-//            String username,
-//            String password) {
-//
-//        // Setup new database connection properties
-//        HashMap<String, String> prop = new HashMap<>();
-//        prop.put("javax.persistence.jdbc.user", username);
-//        prop.put("javax.persistence.jdbc.password", password);
-//        prop.put("javax.persistence.jdbc.url", url);
-//        prop.put("javax.persistence.jdbc.driver", driver);
-//
-//        return prop;
-//    }
     public Date getCurrentDate() {
         return new Date();
     }
@@ -2946,12 +2621,11 @@ public class JobManager extends GeneralManager
         EntityManager em = getSystemManager().getEntityManager1();
 
         if (mailSession == null) {
-            //Set the host smtp address
+
             Properties props = new Properties();
             String mailServer = (String) SystemOption.getOptionValueObject(em, "mail.smtp.host");
             props.put("mail.smtp.host", mailServer);
 
-            // create some properties and get the default Session
             Session session = Session.getDefaultInstance(props, null);
             session.setDebug(debug);
             msg = new MimeMessage(session);
@@ -2959,10 +2633,9 @@ public class JobManager extends GeneralManager
             msg = new MimeMessage(mailSession);
         }
 
-        // set the from and to address
         String email = (String) SystemOption.getOptionValueObject(em, "jobManagerEmailAddress");
         String name = (String) SystemOption.getOptionValueObject(em, "jobManagerEmailName");
-        InternetAddress addressFrom = new InternetAddress(email, name); // option job manager email addres
+        InternetAddress addressFrom = new InternetAddress(email, name);
         msg.setFrom(addressFrom);
 
         InternetAddress[] addressTo = new InternetAddress[1];
@@ -2976,7 +2649,6 @@ public class JobManager extends GeneralManager
 
         msg.setRecipients(Message.RecipientType.TO, addressTo);
 
-        // Setting the Subject and Content Type
         msg.setSubject(subject);
         msg.setContent(message, "text/plain");
         Transport.send(msg);
@@ -2995,7 +2667,7 @@ public class JobManager extends GeneralManager
 
         try {
             if (mailSession == null) {
-                //Set the host smtp address
+
                 Properties props = new Properties();
                 String mailServer = (String) SystemOption.getOptionValueObject(
                         em, "mail.smtp.host");
@@ -3004,7 +2676,6 @@ public class JobManager extends GeneralManager
                 props.put("mail.smtp.host", mailServer);
                 props.setProperty("mail.smtp.ssl.trust", trust);
 
-                // create some properties and get the default Session
                 Session session = Session.getDefaultInstance(props, null);
                 session.setDebug(debug);
                 msg = new MimeMessage(session);
@@ -3012,7 +2683,6 @@ public class JobManager extends GeneralManager
                 msg = new MimeMessage(mailSession);
             }
 
-            // set the from and to address
             String email = (String) SystemOption.getOptionValueObject(
                     em, "jobManagerEmailAddress");
             String name = (String) SystemOption.getOptionValueObject(
@@ -3026,7 +2696,6 @@ public class JobManager extends GeneralManager
 
             msg.setRecipients(Message.RecipientType.TO, addressTo);
 
-            // Setting the Subject and Content Type
             msg.setSubject(subject);
             msg.setContent(message, "text/html; charset=utf-8");
 
@@ -3040,11 +2709,6 @@ public class JobManager extends GeneralManager
         return new JobDataModel(jobSearchResultList);
     }
 
-    /**
-     * This is to be implemented further
-     *
-     * @return
-     */
     public Boolean getDisableSubContracting() {
         try {
             if (getCurrentJob().getIsSubContract() || getCurrentJob().getIsToBeCopied()) {
@@ -3067,11 +2731,6 @@ public class JobManager extends GeneralManager
         return (getCurrentJob().getId() == null);
     }
 
-    public void openClientsTab() {
-
-        getSystemManager().getMainTabView().openTab("Clients");
-    }
-
     public void openReportsTab() {
 
         getSystemManager().getMainTabView().openTab("Reports");
@@ -3091,7 +2750,10 @@ public class JobManager extends GeneralManager
         ArrayList<SelectItem> groupedSearchTypes = new ArrayList<>();
 
         groupedSearchTypes.add(getSearchTypesGroup());
-        groupedSearchTypes.add(getJobFinanceManager().getSearchTypesGroup());
+
+        if (getUser().can("AddProformaInvoice")) {
+            groupedSearchTypes.add(getJobFinanceManager().getSearchTypesGroup());
+        }
 
         return groupedSearchTypes;
     }
@@ -3129,6 +2791,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getSearchType() {
+
         return searchType;
     }
 
@@ -3143,7 +2806,7 @@ public class JobManager extends GeneralManager
 
     @Override
     public ArrayList<SelectItem> getDateSearchFields(String searchType) {
-        ArrayList<SelectItem> dateSearchFields = new ArrayList<>();
+        ArrayList<SelectItem> dateSearchFields;
 
         switch (searchType) {
             case "General":
@@ -3158,6 +2821,7 @@ public class JobManager extends GeneralManager
                 dateSearchFields = DateUtils.getJobDateSearchFields();
                 break;
             default:
+                dateSearchFields = DateUtils.getJobDateSearchFields();
                 break;
         }
 
@@ -3178,7 +2842,7 @@ public class JobManager extends GeneralManager
                 break;
 
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
     }
 }

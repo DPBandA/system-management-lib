@@ -1,6 +1,6 @@
 /*
-Client Management 
-Copyright (C) 2025  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -64,7 +64,7 @@ import org.primefaces.model.DialogFrameworkOptions;
  */
 public class ClientManager extends GeneralManager implements Serializable {
 
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "CMPU")
     private EntityManagerFactory CMPU;
     private Boolean isActiveClientsOnly;
     private Client selectedClient;
@@ -76,9 +76,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     private String clientSearchText;
     private LazyClientDataModel lazyClientDataModel;
 
-    /**
-     * Creates a new instance of ClientManager
-     */
     public ClientManager() {
         init();
     }
@@ -190,16 +187,12 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void openMainViewTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
-
-        getSystemManager().getMainTabView().openTab(title);
     }
 
     @Override
     public void openDashboardTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
-
-        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
@@ -227,9 +220,6 @@ public class ClientManager extends GeneralManager implements Serializable {
         setName("clientManager");
         setSearchType("Clients");
         setSearchText("");
-        setModuleNames(new String[]{
-            "systemManager",
-            "clientManager"});
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -389,7 +379,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width(getDialogWidth() + "px")
+                .width((getDialogWidth() + 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -414,7 +404,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void updateFinancialAccountId() {
 
         selectedClient.setAccountingId(selectedClient.getFinancialAccount().getIdCust());
-        // Set credit limit 
         selectedClient.setCreditLimit((selectedClient.
                 getFinancialAccount().
                 getCreditLimit().doubleValue()));
@@ -460,7 +449,6 @@ public class ClientManager extends GeneralManager implements Serializable {
         return getSelectedClient().getIsDirty();
     }
 
-    // tk could be replaced with the same method in the Client class.
     public void setIsDirty(Boolean isDirty) {
         getSelectedClient().setIsDirty(isDirty);
     }
@@ -479,7 +467,6 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         setIsDirty(false);
 
-        // Remove unsaved addresses
         Iterator addressIterator = getSelectedClient().getAddresses().iterator();
         Address address;
         while (addressIterator.hasNext()) {
@@ -488,7 +475,6 @@ public class ClientManager extends GeneralManager implements Serializable {
                 addressIterator.remove();
             }
         }
-        // Remove unsaved contacts
         Iterator contactIterator = getSelectedClient().getContacts().iterator();
         Contact contact;
         while (contactIterator.hasNext()) {
@@ -521,8 +507,6 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         try {
 
-            // Validate 
-            // Check for a valid address
             for (Address address : selectedClient.getAddresses()) {
                 hasValidAddress = hasValidAddress || Address.validate(address);
             }
@@ -534,7 +518,6 @@ public class ClientManager extends GeneralManager implements Serializable {
                 return;
             }
 
-            // Check for a valid contact
             for (Contact contact : selectedClient.getContacts()) {
                 hasValidContact = hasValidContact || Contact.validate(contact);
             }
@@ -546,7 +529,6 @@ public class ClientManager extends GeneralManager implements Serializable {
                 return;
             }
 
-            // Update tracking
             if (getIsNewClient()) {
                 getSelectedClient().setDateFirstReceived(new Date());
                 getSelectedClient().setDateEntered(new Date());
@@ -557,7 +539,6 @@ public class ClientManager extends GeneralManager implements Serializable {
                 }
             }
 
-            // Do save
             if (getIsDirty()) {
                 getSelectedClient().setDateEdited(new Date());
                 if (getUser() != null) {
@@ -661,7 +642,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void createNewAddress() {
         selectedAddress = null;
 
-        // Find an existing invalid or blank address and use it as the neww address
         for (Address address : getSelectedClient().getAddresses()) {
             if (address.getAddressLine1().trim().isEmpty()) {
                 selectedAddress = address;
@@ -669,7 +649,6 @@ public class ClientManager extends GeneralManager implements Serializable {
             }
         }
 
-        // No existing blank or invalid address found so creating new one.
         if (selectedAddress == null) {
             selectedAddress = new Address("", "Billing");
         }
@@ -798,7 +777,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 break;
 
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
     }
 

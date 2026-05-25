@@ -1,6 +1,6 @@
 /*
-Financial Management (FM) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Purchase Management (PM)
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -53,13 +53,13 @@ import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
-import jm.com.dpbennett.sm.util.Dashboard;
 import jm.com.dpbennett.sm.util.FinancialUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DialogFrameworkOptions;
 import org.primefaces.model.dashboard.DashboardModel;
 import org.primefaces.model.dashboard.DefaultDashboardModel;
@@ -73,7 +73,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @PersistenceUnit(unitName = "FINPU")
     private EntityManagerFactory FINPU;
-    @PersistenceUnit(unitName = "JMTS3PU")
+    @PersistenceUnit(unitName = "FMPU")
     private EntityManagerFactory FMPU;
     private AccountingCode selectedAccountingCode;
     private Tax selectedTax;
@@ -123,9 +123,47 @@ public class FinanceManager extends GeneralManager implements Serializable {
     private ProcurementMethod selectedProcurementMethod;
     private static final String RESPONSIVE_CLASS = "col-12 lg:col-6 xl:col-6";
     private DashboardModel dashboardModel;
+    private Integer innerTabIndex;
 
     public FinanceManager() {
         init();
+    }
+
+    @Override
+    public void onDashboardTabChange(TabChangeEvent event) {
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+            }
+        }
+
+    }
+    
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+            }
+        }
+
+    }
+
+    @Override
+    public void reInitUI() {
+        setInnerTabIndex(0);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+
+    }
+
+    public Integer getInnerTabIndex() {
+        return innerTabIndex;
+    }
+
+    public void setInnerTabIndex(Integer innerTabIndex) {
+        this.innerTabIndex = innerTabIndex;
     }
 
     public List<SelectItem> getServiceLocationList() {
@@ -307,39 +345,50 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Financial Administration":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+                selectTab(getInnerTabIndex());
                 return true;
             case "Accounting Codes":
+                setInnerTabIndex(0);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
                 return true;
-            case "Currencies":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:currencySearchButton");
-                return true;
-            case "Discounts":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:discountSearchButton");
-                return true;
-            case "Taxes":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:taxSearchButton");
-                return true;
             case "Classifications":
+                setInnerTabIndex(1);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:classificationSearchButton");
                 return true;
             case "Sectors":
+                setInnerTabIndex(2);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:sectorSearchButton");
                 return true;
             case "Job Categories":
+                setInnerTabIndex(3);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:jobCategorySearchButton");
                 return true;
             case "Job Subcategories":
+                setInnerTabIndex(4);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:jobSubCategorySearchButton");
                 return true;
             case "Services":
+                setInnerTabIndex(5);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:serviceSearchButton");
                 return true;
             case "Procurement":
+                setInnerTabIndex(6);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:procurementMethodSearchButton");
                 return true;
+            case "Currencies":
+                setInnerTabIndex(7);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:currencySearchButton");
+                return true;
+            case "Discounts":
+                setInnerTabIndex(8);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:discountSearchButton");
+                return true;
+            case "Taxes":
+                setInnerTabIndex(9);
+                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:taxSearchButton");
+                return true;
             case "Settings":
+                setInnerTabIndex(10);
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:settingSearchButton");
                 return true;
             default:
@@ -493,8 +542,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     public void selectTab(int innerTabIndex) {
-
-        getSystemManager().getMainTabView().openTab("Financial Administration");
 
         PrimeFaces.current().executeScript("PF('" + "financialAdminTabVar" + "').select(" + innerTabIndex + ");");
 
@@ -687,7 +734,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 break;
 
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
 
     }
@@ -965,38 +1012,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         editClassification();
     }
-
-    public void doSupplierSearch() {
-        getPurchasingManager().doSupplierSearch();
-    }
-
-    public String getPurchaseReqSearchText() {
-        return getPurchasingManager().getPurchaseReqSearchText();
-    }
-
-    public void setPurchaseReqSearchText(String purchaseReqSearchText) {
-        getPurchasingManager().setPurchaseReqSearchText(purchaseReqSearchText);
-    }
-
-    public void doPurchaseReqSearch() {
-
-        if (getSearchType().equals("My dept. requisitions")) {
-            getPurchasingManager().
-                    doPurchaseReqSearch(
-                            getDateSearchPeriod(),
-                            getSearchType(),
-                            getPurchaseReqSearchText(),
-                            getEmployee().getDepartment().getId());
-        } else if (getSearchType().equals("All requisitions")) {
-            getPurchasingManager().
-                    doPurchaseReqSearch(
-                            getDateSearchPeriod(),
-                            getSearchType(),
-                            getPurchaseReqSearchText(),
-                            null);
-        }
-    }
-
+    
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -1067,9 +1083,9 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().getDashboard().openTab("Financial Administration");
 
-        getSystemManager().getDashboard().openTab(title);
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1082,9 +1098,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     public void openFinancialAdministration() {
 
-        getSystemManager().getMainTabView().openTab("Financial Administration");
+        openMainViewTab("Financial Administration");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+//        getSystemManager().getMainTabView().openTab("Financial Administration");
+//
+//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1779,12 +1797,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setName("financeManager");
         setSearchType("Accounting Codes");
         setSearchText("");
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:purchaseReqSearchButton");
-        setModuleNames(new String[]{
-            "systemManager",
-            "financeManager",
-            "purchasingManager",
-            "inventoryManager"});
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1812,6 +1825,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         isActiveClassificationsOnly = true;
         isActiveMarketProductsOnly = true;
         isActiveProcurementMethodsOnly = true;
+        innerTabIndex = 0;
 
         dashboardModel = new DefaultDashboardModel();
         dashboardModel.addWidget(new DefaultDashboardWidget("procurementTasks", RESPONSIVE_CLASS));
@@ -2028,38 +2042,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
             default:
                 break;
         }
-
-        return dateSearchFields;
-    }
-
-    public ArrayList<SelectItem> getPurchReqSearchTypes() {
-        ArrayList purchReqSearchTypes = new ArrayList();
-
-        if (getUser().can("AccessAllPurchaseRequisitions")) {
-            purchReqSearchTypes.add(new SelectItem("All requisitions", "All requisitions"));
-            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
-        } else {
-            purchReqSearchTypes.add(new SelectItem("My dept. requisitions", "My dept. requisitions"));
-        }
-
-        return purchReqSearchTypes;
-
-    }
-
-    public ArrayList<SelectItem> getPurchReqDateSearchFields() {
-        ArrayList dateSearchFields = new ArrayList();
-
-        dateSearchFields.add(new SelectItem("requisitionDate", "Requisition date"));
-        dateSearchFields.add(new SelectItem("dateOfCompletion", "Date completed"));
-        dateSearchFields.add(new SelectItem("dateEdited", "Date edited"));
-        dateSearchFields.add(new SelectItem("expectedDateOfCompletion", "Exp'ted date of completion"));
-        dateSearchFields.add(new SelectItem("dateRequired", "Date required"));
-        dateSearchFields.add(new SelectItem("purchaseOrderDate", "Purchase order date"));
-        dateSearchFields.add(new SelectItem("teamLeaderApprovalDate", "Team Leader approval date"));
-        dateSearchFields.add(new SelectItem("divisionalManagerApprovalDate", "Divisional Manager approval date"));
-        dateSearchFields.add(new SelectItem("divisionalDirectorApprovalDate", "Divisional Director approval date"));
-        dateSearchFields.add(new SelectItem("financeDirectorApprovalDate", "Finance Director approval date"));
-        dateSearchFields.add(new SelectItem("executiveDirectorApprovalDate", "Executive Director approval date"));
 
         return dateSearchFields;
     }

@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -128,7 +128,6 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
         try {
 
-            // Update tracking
             if (getIsNewPost()) {
                 getSelectedPost().setDateEntered(new Date());
                 getSelectedPost().setDateEdited(new Date());
@@ -138,7 +137,6 @@ public final class DocumentManager extends GeneralManager implements Serializabl
                 }
             }
 
-            // Do save
             if (getSelectedPost().getIsDirty()) {
                 getSelectedPost().setDateEdited(new Date());
                 if (getUser() != null) {
@@ -188,7 +186,6 @@ public final class DocumentManager extends GeneralManager implements Serializabl
 
     public List<Post> getFoundPosts() {
         if (foundPosts == null) {
-            //foundPosts = Post.findActive(getEntityManager1(), "", 25);
             foundPosts = new ArrayList<>();
         }
 
@@ -207,10 +204,12 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         this.selectedPost = selectedPost;
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
         return 500;
     }

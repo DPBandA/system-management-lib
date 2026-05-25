@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -55,7 +55,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class ReportUtils {
     
@@ -552,17 +552,6 @@ public class ReportUtils {
         return value;
     }
 
-    /**
-     * Determines the corresponding index for a maximum sequence of characters.
-     * The sequence of characters are those that are obtained from a spreadsheet
-     * column heading (eg AR).Currently it works for alphabets up to "ZZ" but
-     * falls apart beyond that. Need to fix this!
-     *
-     * @param alphabet
-     * @param len
-     * @param num
-     * @return
-     */
     public static int convertAlphabetToNumber(String alphabet, int len, int num) {
         int letterIndex, previousLetterIndex;
 

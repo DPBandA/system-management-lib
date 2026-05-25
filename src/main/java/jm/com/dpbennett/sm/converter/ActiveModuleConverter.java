@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,7 @@ import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("activeModuleConverter")
 public class ActiveModuleConverter extends ConverterAdapter {
@@ -36,7 +36,7 @@ public class ActiveModuleConverter extends ConverterAdapter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Module module = Module.findActiveModuleByName(em, value);
+        Module module = Module.findActiveByName(em, value);
 
         if (module == null) {
             module = new Module(value);

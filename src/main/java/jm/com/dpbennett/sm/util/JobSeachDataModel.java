@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ import org.primefaces.model.SelectableDataModel;
 
 /**
  *
- * @author dbennett
+ * @author Desmond Bennett
  */
 public class JobSeachDataModel extends ListDataModel<Object[]> implements SelectableDataModel<Job> {
 
@@ -39,11 +39,6 @@ public class JobSeachDataModel extends ListDataModel<Object[]> implements Select
         super(list);
         this.list = list;
     }
-
-//    @Override
-//    public Object getRowKey(Job job) {
-//        return job.getId();
-//    }
 
     @Override
     public Job getRowData(String rowKey) {

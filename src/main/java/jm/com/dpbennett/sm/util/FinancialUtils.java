@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -26,27 +26,15 @@ import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectIte
 
 /**
  *
- * @author Desmond Bennett <info@dpbennett.com.jm at http//dpbennett.com.jm>
+ * @author Desmond Bennett
  */
 public class FinancialUtils {
 
-    /**
-     * NB: Payment types to be put in database...
-     *
-     * @param em
-     * @return
-     */
     public static List<SelectItem> getPaymentTypes(EntityManager em) {
 
         return getStringListAsSelectItems(em, "cashPaymentTypes");
     }
 
-    /**
-     * NB: Payment purposes to be put in database...
-     *
-     * @return
-     * @param em
-     */
     public static List getPaymentPurposes(EntityManager em) {
 
         return getStringListAsSelectItems(em, "cashPaymentPurposes");
@@ -56,14 +44,12 @@ public class FinancialUtils {
 
         return getStringListAsSelectItems(em, "costTypes");
     }
+    
+    public static List getCostCategoryList(EntityManager em) {
 
-    /**
-     * Returns the discount type that can be applied to a payment/amount NB: To
-     * be deprecated
-     *
-     * @param em
-     * @return
-     */
+        return getStringListAsSelectItems(em, "categoryTypes");
+    }
+
     public static List getDiscountTypes(EntityManager em) {
 
         return getStringListAsSelectItems(em, "discountTypes");

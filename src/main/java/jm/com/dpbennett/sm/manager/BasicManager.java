@@ -1,6 +1,6 @@
 /*
-Basic Manager (BM)
-Copyright (C) 2025  D P Bennett & Associates Limited
+System Manager (BM)
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -47,6 +47,7 @@ public class BasicManager extends GeneralManager implements Serializable {
         init();
     }
 
+    @Override
     public SystemManager getSystemManager() {
 
         if (systemManager == null) {
@@ -210,7 +211,7 @@ public class BasicManager extends GeneralManager implements Serializable {
 
                 break;
             default:
-                System.out.println("Unkown type");
+                System.out.println("Unknown type");
         }
 
     }
@@ -243,9 +244,6 @@ public class BasicManager extends GeneralManager implements Serializable {
         setName("basicManager");
         setSearchType("Basics");
         setSearchText("");
-        setModuleNames(new String[]{
-            "basicManager",
-            "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateAndTimeEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

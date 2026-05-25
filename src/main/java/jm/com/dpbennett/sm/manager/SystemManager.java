@@ -1,6 +1,6 @@
 /*
 System Management (SM)
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -39,10 +39,9 @@ import jm.com.dpbennett.business.entity.auth.Privilege;
 import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
-import jm.com.dpbennett.business.entity.sm.LdapContext;
+import jm.com.dpbennett.business.entity.auth.LdapContext;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
-import jm.com.dpbennett.business.entity.dm.Issue;
 import jm.com.dpbennett.business.entity.hrm.Email;
 import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.sm.Category;
@@ -79,7 +78,7 @@ import jm.com.dpbennett.sc.manager.ComplianceManager;
  */
 public final class SystemManager extends GeneralManager {
 
-    @PersistenceUnit(unitName = "JMTSPU")
+    @PersistenceUnit(unitName = "SMPU")
     private EntityManagerFactory SMPU;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
@@ -129,7 +128,7 @@ public final class SystemManager extends GeneralManager {
     private String emailSearchText;
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
-    private Issue issue;
+    private Integer innerTabIndex;
 
     public SystemManager() {
         init();
@@ -143,11 +142,27 @@ public final class SystemManager extends GeneralManager {
     }
 
     @Override
+    public void reInitUI() {
+        setInnerTabIndex(0);
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
+    }
+
+    public Integer getInnerTabIndex() {
+        return innerTabIndex;
+    }
+
+    public void setInnerTabIndex(Integer innerTabIndex) {
+        this.innerTabIndex = innerTabIndex;
+    }
+
+    public Date getTime() {
+        return new Date();
+    }
+
+    @Override
     public void openDashboardTab(String title) {
 
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
-
-        getDashboard().openTab(title);
     }
 
     @Override
@@ -161,14 +176,6 @@ public final class SystemManager extends GeneralManager {
     public EntityManagerFactory getSMPU() {
 
         return SMPU;
-    }
-
-    public Issue getIssue() {
-        return issue;
-    }
-
-    public void setIssue(Issue issue) {
-        this.issue = issue;
     }
 
     public Employee getEmployee() {
@@ -316,46 +323,55 @@ public final class SystemManager extends GeneralManager {
 
         switch (tabTitle) {
             case "System Administration":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
+                selectTab(getInnerTabIndex());
                 return true;
             case "Users":
+                setInnerTabIndex(0);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:userSearchButton");
                 return true;
             case "Modules":
+                setInnerTabIndex(1);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:moduleSearchButton");
                 return true;
             case "Privileges":
+                setInnerTabIndex(2);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:privilegeSearchButton");
                 return true;
             case "Categories":
+                setInnerTabIndex(3);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:categorySearchButton");
                 return true;
-            case "Countries":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:countrySearchButton");
-                return true;
             case "Document Types":
+                setInnerTabIndex(4);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:documentTypeSearchButton");
                 return true;
             case "Authentication":
+                setInnerTabIndex(5);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:ldapSearchButton");
                 return true;
             case "Attachments":
+                setInnerTabIndex(6);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:attachmentSearchButton");
                 return true;
             case "Email Templates":
+                setInnerTabIndex(7);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:emailTemplateSearchButton");
                 return true;
             case "Notifications":
+                setInnerTabIndex(8);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:notificationSearchButton");
                 return true;
             case "Posts":
+                setInnerTabIndex(9);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:postSearchButton");
                 return true;
-            case "System Settings":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:systemOptionSearchButton");
+            case "Countries":
+                setInnerTabIndex(10);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:countrySearchButton");
                 return true;
-            case "Report Templates":
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:reportTemplateSearchButton");
+            case "System Settings":
+                setInnerTabIndex(11);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:systemOptionSearchButton");
                 return true;
             default:
                 return false;
@@ -411,6 +427,10 @@ public final class SystemManager extends GeneralManager {
 
     public boolean getEnableUpdateLDAPUser() {
         return SystemOption.getBoolean(getEntityManager1(), "updateLDAPUser");
+    }
+
+    public boolean booleanOption(String optionName) {
+        return SystemOption.getBoolean(getEntityManager1(), optionName);
     }
 
     public boolean getShowUserProfileSecurityTab() {
@@ -561,7 +581,7 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void addUserModules() {
-        List<Module> source = Module.findAllActiveModules(getEntityManager1(), 0);
+        List<Module> source = Module.findAllActive(getEntityManager1(), 0);
         List<Module> target = selectedUser.getActiveModules();
 
         source.removeAll(target);
@@ -794,6 +814,25 @@ public final class SystemManager extends GeneralManager {
 
     }
 
+    public void editUserProfile() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 125) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("userProfileDialog", options, null);
+
+    }
+
     public User getSelectedUser() {
         if (selectedUser == null) {
             selectedUser = new User();
@@ -803,8 +842,6 @@ public final class SystemManager extends GeneralManager {
     }
 
     public void setEditSelectedUser(User selectedUser) {
-
-        selectedUser.loadSettings(getEntityManager1());
 
         this.selectedUser = selectedUser;
     }
@@ -918,16 +955,6 @@ public final class SystemManager extends GeneralManager {
             return;
         }
 
-        rm = getSelectedUser().saveNotificationSettings(getEntityManager1());
-        if (!rm.isSuccess()) {
-            PrimeFacesUtils.addMessage(
-                    rm.getHeader(),
-                    rm.getMessage(),
-                    FacesMessage.SEVERITY_ERROR);
-
-            return;
-        }
-
         if (getSelectedUser().getUpdateLDAPUser()) {
             if (updateLDAPUser()) {
 
@@ -958,8 +985,6 @@ public final class SystemManager extends GeneralManager {
 
         if (!LdapContext.updateUser(context, selectedUser)) {
 
-            // Try to add a new LDAP user if it can't be updated
-            // NB: LdapContext.addUser() needs a password to add the user
             if (checkMatchingUserPasswords(selectedUser)) {
                 selectedUser.setPassword(selectedUser.getNewPassword());
 
@@ -986,13 +1011,10 @@ public final class SystemManager extends GeneralManager {
 
     public void closeUserProfileDialog(ActionEvent actionEvent) {
 
-        PrimeFaces.current().ajax().update(":headerForm");
-        PrimeFaces.current().ajax().update(":dashboardForm");
-        PrimeFaces.current().ajax().update(":mainTabViewForm");
+        getUser().save(getEntityManager1());
 
-        PrimeFaces.current().executeScript("PF('userProfileDialog').hide();");
+        closeDialog(actionEvent);
 
-        getUser().saveNotificationSettings(getEntityManager1());
     }
 
     public void saveUserSecurityProfile() {
@@ -1179,11 +1201,11 @@ public final class SystemManager extends GeneralManager {
             case "Modules":
 
                 if (getIsActiveModulesOnly()) {
-                    foundModules = Module.findActiveModules(
+                    foundModules = Module.findActive(
                             getEntityManager1(),
                             searchText, maxSearchResults);
                 } else {
-                    foundModules = Module.findModules(
+                    foundModules = Module.findAll(
                             getEntityManager1(),
                             searchText, maxSearchResults);
                 }
@@ -1206,7 +1228,6 @@ public final class SystemManager extends GeneralManager {
     @Override
     public void viewUserProfile() {
 
-        getUser().loadSettings(getEntityManager1());
     }
 
     @Override
@@ -1380,12 +1401,10 @@ public final class SystemManager extends GeneralManager {
 
         List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
 
-        
-        // tk from ChatGPT
         if (stringList == null || stringList.isEmpty()) {
-            return list; // EMPTY list, never null
+            return list;
         }
-        
+
         for (String name : stringList) {
             String items[] = name.split(",");
 
@@ -1394,7 +1413,7 @@ public final class SystemManager extends GeneralManager {
 
         return list;
     }
-    
+
     public List getValueTypes() {
         ArrayList valueTypes = new ArrayList();
 
@@ -1942,9 +1961,8 @@ public final class SystemManager extends GeneralManager {
         isActiveDocumentTypesOnly = true;
         isActiveUsersOnly = true;
         isActiveEmailsOnly = true;
+        innerTabIndex = 0;
         setSearchType("Users");
-        setModuleNames(new String[]{
-            "systemManager"});
         setDateSearchPeriod(new DatePeriod("This month", "month",
                 "dateEntered", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -2028,15 +2046,6 @@ public final class SystemManager extends GeneralManager {
         this.systemOptionSearchText = systemOptionSearchText;
     }
 
-    /**
-     * Select an system administration tab based on whether or not the tab is
-     * already opened.
-     *
-     * @param mainTabView
-     * @param openTab
-     * @param innerTabViewVar
-     * @param innerTabIndex
-     */
     public void selectSystemAdminTab(
             MainTabView mainTabView,
             Boolean openTab,
@@ -2051,10 +2060,7 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void selectTab(
-            int innerTabIndex) {
-
-        getMainTabView().openTab("System Administration");
+    public void selectTab(int innerTabIndex) {
 
         PrimeFaces.current().executeScript("PF('" + "centerTabVar" + "').select(" + innerTabIndex + ");");
 
@@ -2406,15 +2412,14 @@ public final class SystemManager extends GeneralManager {
         this.notificationSearchText = notificationSearchText;
     }
 
-    // tk move to JobManager
+    public List<SelectItem> getJobTableViews(EntityManager em) {
+
+        return getStringListAsSelectItems(em, "jobTableViewsList");
+    }
+
     public List<SelectItem> getJobTableViews() {
-        ArrayList views = new ArrayList();
 
-        views.add(new SelectItem("Jobs", "Jobs"));
-        views.add(new SelectItem("Job Costings", "Job Costings"));
-        views.add(new SelectItem("Cashier View", "Cashier View"));
-
-        return views;
+        return getJobTableViews(getEntityManager1());
     }
 
     public Boolean isSelectedSystemOptionValueType(String valueType) {

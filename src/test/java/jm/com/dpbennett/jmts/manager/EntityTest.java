@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2018  D P Bennett & Associates Limited
+Job Management & Tracking System (JMTS) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import jm.com.dpbennett.business.entity.StatusNote;
+import jm.com.dpbennett.business.entity.jmts.Job;
 import org.junit.Test;
 
 /**
@@ -32,24 +33,19 @@ import org.junit.Test;
  */
 public class EntityTest {
 
-//    @Test
-//    public void creatEntity() {
-//        HashMap prop = new HashMap();
-//
-//        prop.put("javax.persistence.jdbc.user",
-//                "");
-//        prop.put("javax.persistence.jdbc.password",
-//                ""); // REMOVE PWD WHEN DONE AND SET SKIP TEST TRUE
-//        prop.put("javax.persistence.jdbc.url",
-//                "jdbc:mysql://172.16.0.39:3306/jmts");
-//        prop.put("javax.persistence.jdbc.driver",
-//                "com.mysql.jdbc.Driver");
-//
-//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU", prop);
-//        EntityManager em = emf.createEntityManager();
-//
-//        StatusNote s = new StatusNote();
-//
-//    }
+    @Test
+    public void creatEntity() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PU");
+        EntityManager em = emf.createEntityManager();
+
+        Job parent = Job.findJobByJobNumber(em, "21/2026/0058");
+
+        if (parent != null) {
+
+            System.out.println("Invoices found: " + Job.findInvoices(em, parent));
+            
+        }
+
+    }
 
 }

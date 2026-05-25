@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -25,13 +25,6 @@ public class MathUtils {
 
     public static final String TWO_DEC_DOUBLE_FORMAT = "##.00";
 
-    /**
-     * Round double.
-     *
-     * @param value the value
-     * @param format the format
-     * @return the double
-     */
     public static double roundDouble(double value, String format) {
         DecimalFormat df = new DecimalFormat(format);
         return Double.parseDouble(df.format(value));

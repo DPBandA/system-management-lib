@@ -1,6 +1,6 @@
 /*
 Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -21,12 +21,6 @@ package jm.com.dpbennett.sm.util;
 
 public class TimeUtils {
 
-    /**
-     * Convert to millis time.
-     *
-     * @param time the time
-     * @return the long
-     */
     public static long convertToMillisTime(String time) {
         long timeMillis;
         long hours = Integer.parseInt(time.substring(0, 2));
@@ -43,12 +37,6 @@ public class TimeUtils {
         return timeMillis;
     }
 
-    /**
-     * Convert to readable time.
-     *
-     * @param millis the millis
-     * @return the string
-     */
     public static String convertToReadableTime(long millis) {
         long second = (millis / 1000) % 60;
         long minute = (millis / (1000 * 60)) % 60;

@@ -1,6 +1,6 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
-Copyright (C) 2024  D P Bennett & Associates Limited
+System Management (SM) 
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
- * @author desbenn
+ * @author Desmond Bennett
  */
 @FacesConverter("clientContactConverter")
 public class ClientContactConverter extends ConverterAdapter {
@@ -46,15 +46,11 @@ public class ClientContactConverter extends ConverterAdapter {
             if (currentClient != null) {
                 contact = Contact.findClientContact(em, value, currentClient);
                 if (contact == null) {
-                    // This means the contact was not found.
-                    // NB: The addres created here will be invalid because it may
-                    // have ; and other invalid characters.
+               
                     contact = new Contact(value);
                 }
             } else {
-                // This means the client attribute was not set.
-                // NB: The addres created here will be invalid because it may
-                // have ; and other invalid characters.
+          
                 contact = new Contact(value);
             }
 

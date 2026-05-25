@@ -1,6 +1,6 @@
 /*
 Job Management & Tracking System (JMTS) 
-Copyright (C) 2025  D P Bennett & Associates Limited
+Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -33,6 +33,7 @@ import jm.com.dpbennett.business.entity.jmts.JobSample;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.gm.BusinessEntityManagement;
+import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -195,10 +196,12 @@ public class JobSampleManager extends GeneralManager
 
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
         return 500;
     }
@@ -211,12 +214,6 @@ public class JobSampleManager extends GeneralManager
         this.cancelEdit = cancelEdit;
     }
 
-    /*
-     * NB: Methods may be put in system options and not hard coded.
-     * The user's organization could be used in the code.
-     * The number of days for sample collection could be put as a system option 
-     * instead of being hard coded.
-     */
     public List getMethodsOfDisposal() {
         ArrayList methods = new ArrayList();
 
@@ -225,11 +222,10 @@ public class JobSampleManager extends GeneralManager
                         getSystemManager().getEntityManager1(),
                         "sampleCollectionDays");
 
-        String org
-                = (String) SystemOption.getOptionValueObject(
-                        getSystemManager().getEntityManager1(),
-                        "organizationName");
-
+        Business org = User.getUserOrganizationByDepartment(
+                getHumanResourceManager().getEntityManager1(), 
+                getUser());
+      
         methods.add(new SelectItem("1", "Collected by the client within " + days + " days"));
         if (org != null) {
             methods.add(new SelectItem("2", "Disposed of by " + org));
@@ -276,7 +272,6 @@ public class JobSampleManager extends GeneralManager
         } else {
             selectedJobSample = new JobSample();
             selectedJobSample.setIsToBeAdded(true);
-            // Init sample
             selectedJobSample.setJobId(getCurrentJob().getId());
             selectedJobSample.setSampleQuantity(1L);
             selectedJobSample.setQuantity(1L);
@@ -298,6 +293,7 @@ public class JobSampleManager extends GeneralManager
         editJobSample(event);
     }
 
+    @Override
     public User getUser() {
         return getJobManager().getUser();
     }
@@ -334,25 +330,17 @@ public class JobSampleManager extends GeneralManager
                 } else if (isCurrentJobDirty() && !getSelectedJobSample().getIsDirty()) {
                     PrimeFacesUtils.addMessage("Job to be Saved", "Sample(s) not edited but this job was previously edited but not saved", FacesMessage.SEVERITY_WARN);
                 } else if (!isCurrentJobDirty() && !getSelectedJobSample().getIsDirty()) {
-                    // Nothing to do yet
                 }
             }
         }
     }
 
-    /**
-     * To be applied when sample if saved
-     *
-     * @param event
-     */
     public void updateSampleQuantity(AjaxBehaviorEvent event) {
         getSelectedJobSample().setIsDirty(true);
         updateSampleReference();
     }
 
     private void updateSampleReference() {
-        // update reference while ensuring number of samples is not less than 1
-        // or greater than 700 (for now but to be made system option)        
         if (selectedJobSample.getSampleQuantity() != null) {
             if (selectedJobSample.getSampleQuantity() == 1) {
                 selectedJobSample.setReference(BusinessEntityUtils.getAlphaCode(selectedJobSample.getReferenceIndex()));
@@ -395,7 +383,6 @@ public class JobSampleManager extends GeneralManager
 
         updateSampleReferences();
 
-        // Update department
         if (!getCurrentJob().getDepartment().getName().equals("")) {
             Department department = Department.findByName(
                     em,
@@ -405,7 +392,6 @@ public class JobSampleManager extends GeneralManager
                 getCurrentJob().setDepartment(department);
             }
         }
-        // Update subcontracted department
         if (!getCurrentJob().getSubContractedDepartment().getName().equals("")) {
             Department subContractedDepartment
                     = Department.findByName(
@@ -424,7 +410,6 @@ public class JobSampleManager extends GeneralManager
 
     public void deleteJobSample() {
 
-        // update number of samples
         if ((getCurrentJob().getNumberOfSamples() - selectedJobSample.getSampleQuantity()) > 0) {
             getCurrentJob().setNumberOfSamples(getCurrentJob().getNumberOfSamples() - selectedJobSample.getSampleQuantity());
         } else {
@@ -435,7 +420,6 @@ public class JobSampleManager extends GeneralManager
         int index = 0;
         for (JobSample sample : samples) {
             if (sample.getReference().equals(selectedJobSample.getReference())) {
-                // removed sample record
                 samples.remove(index);
                 break;
             }
@@ -448,7 +432,6 @@ public class JobSampleManager extends GeneralManager
             getCurrentJob().setJobNumber(getCurrentJobNumber());
         }
 
-        // Do job save if possible...
         if (getCurrentJob().getId() != null
                 && getCurrentJob().prepareAndSave(getEntityManager1(), getUser()).isSuccess()) {
             PrimeFacesUtils.addMessage("Job Saved",
@@ -508,9 +491,8 @@ public class JobSampleManager extends GeneralManager
 
     public void doCopyJobSample() {
 
-        selectedJobSample = new JobSample(selectedJobSample);
+        selectedJobSample = JobSample.copy(selectedJobSample);
         selectedJobSample.setReferenceIndex(getCurrentNumberOfJobSamples());
-        // Init sample    
         if (selectedJobSample.getSampleQuantity() == 1L) {
             selectedJobSample.setReference(BusinessEntityUtils.getAlphaCode(getCurrentNumberOfJobSamples()));
         } else {
@@ -567,19 +549,14 @@ public class JobSampleManager extends GeneralManager
         }
     }
 
-    /**
-     * Checks maximum allowed samples and groups. Currently not used
-     */
     public void checkNumberOfJobSamplesAndGroups() {
         EntityManager em = getSystemManager().getEntityManager1();
 
-        // check for max sample
         int maxSamples = (Integer) SystemOption.getOptionValueObject(em,
                 "maximumJobSamples");
         if (getCurrentNumberOfJobSamples() == maxSamples) {
             PrimeFaces.current().ajax().addCallbackParam("maxJobSamplesReached", true);
         }
-        // check for max sample groups
         int maxGropus = (Integer) SystemOption.getOptionValueObject(em,
                 "maximumJobSampleGroups");
         if (getCurrentJob().getJobSamples().size() == maxGropus) {
@@ -637,6 +614,7 @@ public class JobSampleManager extends GeneralManager
         return Job.generateJobNumber(getCurrentJob(), getEntityManager1());
     }
 
+    @Override
     public EntityManager getEntityManager1() {
         return getJobManager().getEntityManager1();
     }
