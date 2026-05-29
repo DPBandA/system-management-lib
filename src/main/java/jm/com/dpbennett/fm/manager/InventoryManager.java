@@ -210,6 +210,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return inventoryTasks;
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -470,14 +471,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 "productTypes");
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
-        return 650;
+        return 700;
     }
 
+    @Override
     public String getScrollPanelHeight() {
         return "350px";
     }
