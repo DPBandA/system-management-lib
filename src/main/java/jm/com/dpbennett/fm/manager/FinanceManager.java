@@ -132,22 +132,23 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
-        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+       for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
             if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
             }
         }
 
     }
-    
+
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+       for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
             if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
             }
         }
+
 
     }
 
@@ -1012,7 +1013,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         editClassification();
     }
-    
+
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -1090,10 +1091,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void openMainViewTab(String title) {
+        
+        getSystemManager().getMainTabView().openTab("Financial Administration");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
-
-        getSystemManager().getMainTabView().openTab("Financial Administration");
+        
     }
 
     public void openFinancialAdministration() {
