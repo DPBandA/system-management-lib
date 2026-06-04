@@ -43,7 +43,7 @@ public interface Manager {
 
     public void reset();
 
-    public void setManagerUser();
+    public void initManager();
 
     public SelectItemGroup getSearchTypesGroup();
 

@@ -50,6 +50,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -132,9 +133,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
-       for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
-            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+        setTabTitle(event.getTab().getTitle());
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            Manager manager = getManager(mod.getName());
+            if (manager != null) {
+                if (manager.handleTabChange(getTabTitle())) {
+                    getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+                    return;
+                }
             }
         }
 
@@ -143,20 +150,23 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-       for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
-            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+        setTabTitle(event.getTab().getTitle());
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            Manager manager = getManager(mod.getName());
+            if (manager != null) {
+                if (manager.handleTabChange(getTabTitle())) {
+                    getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+                    return;
+                }
             }
         }
-
 
     }
 
     @Override
     public void reInitUI() {
         setInnerTabIndex(0);
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
-
     }
 
     public Integer getInnerTabIndex() {
@@ -1091,20 +1101,18 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     @Override
     public void openMainViewTab(String title) {
-        
+
         getSystemManager().getMainTabView().openTab("Financial Administration");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
-        
+
     }
 
     public void openFinancialAdministration() {
 
         openMainViewTab("Financial Administration");
 
-//        getSystemManager().getMainTabView().openTab("Financial Administration");
-//
-//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1799,7 +1807,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setName("financeManager");
         setSearchType("Accounting Codes");
         setSearchText("");
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

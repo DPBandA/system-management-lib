@@ -108,17 +108,19 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public void openDashboardTab(String title) {
 
+        getSystemManager().getDashboard().openTab(title);
+
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
 
-        getSystemManager().getDashboard().openTab(title);
     }
 
     @Override
     public void openMainViewTab(String title) {
 
+        getSystemManager().getMainTabView().openTab(title);
+
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
 
-        getSystemManager().getMainTabView().openTab(title);
     }
 
     @Override
@@ -1738,6 +1740,18 @@ public class InventoryManager extends GeneralManager implements Serializable {
         }
 
         return foundActiveInventories;
+    }
+
+    public void doDefaultSearch() {
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
+
     }
 
     @Override

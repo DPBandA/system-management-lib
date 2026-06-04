@@ -79,7 +79,7 @@ public class GeneralManager implements Manager, Serializable {
     }
 
     @Override
-    public void setManagerUser() {
+    public void initManager() {
 
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
@@ -579,7 +579,7 @@ public class GeneralManager implements Manager, Serializable {
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
-        setManagerUser();
+        initManager();
 
         initMainTabView();
 
@@ -857,6 +857,7 @@ public class GeneralManager implements Manager, Serializable {
     public void setDefaultCommandTarget(String defaultCommandTarget) {
 
         this.defaultCommandTarget = defaultCommandTarget;
+      
     }
 
     @Override
