@@ -257,23 +257,6 @@ public class GeneralManager implements Manager, Serializable {
     }
 
     @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        setTabTitle(event.getTab().getTitle());
-
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                if (manager.handleTabChange(getTabTitle())) {
-
-                    return;
-                }
-            }
-        }
-
-    }
-
-    @Override
     public void initMainTabView() {
 
         getSystemManager().getMainTabView().reset(getUser());
@@ -857,7 +840,7 @@ public class GeneralManager implements Manager, Serializable {
     public void setDefaultCommandTarget(String defaultCommandTarget) {
 
         this.defaultCommandTarget = defaultCommandTarget;
-      
+
     }
 
     @Override
@@ -908,7 +891,22 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
-        onMainViewTabChange(event);
+        for (Module mod : getUser().getActiveModules()) {
+            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+            }
+        }
+
+    }
+
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        for (Module mod : getUser().getActiveModules()) {
+            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+            }
+        }
 
     }
 

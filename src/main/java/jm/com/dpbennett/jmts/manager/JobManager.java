@@ -146,28 +146,6 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        for (Module mod : getUser().getActiveModules()) {
-            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
-            }
-        }
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        for (Module mod : getUser().getActiveModules()) {
-            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
-            }
-        }
-
-    }
-
-    @Override
     public void openDashboardTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
@@ -956,20 +934,6 @@ public class JobManager extends GeneralManager
     }
 
     public List<String> getJobTableViews() {
-//        EntityManager em;
-//
-//        try {
-//            em = getSystemManager().getEntityManager1();
-//
-//            List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
-//
-//            return preferenceValues;
-//
-//        } catch (Exception e) {
-//            System.out.println(e);
-//
-//            return new ArrayList<>();
-//        }
 
         return SystemOption.getStringList(getSystemManager().getEntityManager1(),
                 "jobTableViewsList");

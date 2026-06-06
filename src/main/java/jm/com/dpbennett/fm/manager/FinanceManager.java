@@ -131,40 +131,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     }
 
     @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        setTabTitle(event.getTab().getTitle());
-
-        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                if (manager.handleTabChange(getTabTitle())) {
-                    getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
-                    return;
-                }
-            }
-        }
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        setTabTitle(event.getTab().getTitle());
-
-        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                if (manager.handleTabChange(getTabTitle())) {
-                    getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
-                    return;
-                }
-            }
-        }
-
-    }
-
-    @Override
     public void reInitUI() {
         setInnerTabIndex(0);
     }
