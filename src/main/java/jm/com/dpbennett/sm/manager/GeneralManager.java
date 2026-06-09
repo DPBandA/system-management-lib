@@ -890,21 +890,21 @@ public class GeneralManager implements Manager, Serializable {
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-
-        for (Module mod : getUser().getActiveModules()) {
-            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
-            }
-        }
-
+        onMainViewTabChange(event);
     }
 
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
-        for (Module mod : getUser().getActiveModules()) {
-            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+        setTabTitle(event.getTab().getTitle());
+
+        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+            Manager manager = getManager(mod.getName());
+            if (manager != null) {
+                if (manager.handleTabChange(getTabTitle())) {
+
+                    return;
+                }
             }
         }
 
