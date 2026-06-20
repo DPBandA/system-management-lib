@@ -80,7 +80,7 @@ public class LearningManager extends GeneralManager
             moduleNames.add("learningManager");
             moduleNames.add("systemManager");
             moduleNames.add("clientManager");
-            moduleNames.add("financeManager");
+            //moduleNames.add("financeManager");
             moduleNames.add("humanResourceManager");
             moduleNames.add("reportManager");
 
@@ -100,7 +100,9 @@ public class LearningManager extends GeneralManager
             Manager manager = getManager(moduleName);
             if (manager != null) {
                 Module mod = Module.findActiveByName(em, moduleName);
-                manager.openDashboardTab(mod.getDashboardTitle());
+                if (mod != null) {
+                    manager.openDashboardTab(mod.getDashboardTitle());
+                }
             }
         }
 
@@ -117,34 +119,12 @@ public class LearningManager extends GeneralManager
             Manager manager = getManager(moduleName);
             if (manager != null) {
                 Module mod = Module.findActiveByName(em, moduleName);
-                manager.openMainViewTab(mod.getMainViewTitle());
+                if (mod != null) {
+                    manager.openMainViewTab(mod.getMainViewTitle());
+                }
             }
 
         }
-    }
-
-    @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        // tk
-        System.out.println("LMS onDashboardTabChange");
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        // tk
-        System.out.println("LMS onMainViewTabChange");
-
-    }
-
-    @Override
-    public void onCentreViewTabChange(TabChangeEvent event) {
-
-        // tk
-        // onMainViewTabChange(event);
-        System.out.println("LMS onCentreViewTabChange");
     }
 
     @Override
@@ -213,7 +193,7 @@ public class LearningManager extends GeneralManager
     @Override
     public String getLogoURL() {
         return SystemOption.getString(
-                getSystemManager().getEntityManager1(), "JMTSLogo");
+                getSystemManager().getEntityManager1(), "AALogo");
     }
 
     @Override
@@ -241,7 +221,7 @@ public class LearningManager extends GeneralManager
     @Override
     public String getApplicationHeader() {
         return SystemOption.getString(getSystemManager().getEntityManager1(),
-                "JMTSName");
+                "AAName");
     }
 
     public final void init() {
@@ -497,7 +477,7 @@ public class LearningManager extends GeneralManager
     @Override
     public String getApplicationSubheader() {
 
-        return SystemOption.getString(getSystemManager().getEntityManager1(), "JMTSTagLine");
+        return SystemOption.getString(getSystemManager().getEntityManager1(), "AATagLine");
     }
 
     @Override
