@@ -207,7 +207,7 @@ public class LearningManager extends GeneralManager
     public String getAppShortcutIconURL() {
 
         return SystemOption.getString(
-                getSystemManager().getEntityManager1(), "JMTSLogo");
+                getSystemManager().getEntityManager1(), "AALogo");
 
     }
 
