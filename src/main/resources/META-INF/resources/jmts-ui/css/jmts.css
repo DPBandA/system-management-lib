@@ -33,3 +33,23 @@
 .hamburger-icon .ui-icon, .hamburger-icon .ui-button-icon {
     font-size: 1.6em;
 }
+
+.navbar2 {
+    background: var(--surface-card);
+    color: var(--text-color);
+    border-bottom: 1px solid var(--surface-border);
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem 1rem;
+}
+
+.navbar2 a {
+    color: var(--text-color);
+}
+
+.navbar2 a:hover {
+    color: var(--primary-color);
+}
