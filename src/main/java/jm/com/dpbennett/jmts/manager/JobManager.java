@@ -1265,6 +1265,17 @@ public class JobManager extends GeneralManager
         editJob();
 
     }
+    
+    public void addNewJob() {
+
+        EntityManager em = getEntityManager1();
+
+        createJob(em, false, false);
+        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        editJob();
+
+    }
 
     public void createNewSubcontract() {
 
@@ -2755,6 +2766,10 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getSearchType() {
+
+        if (searchType == null) {
+            searchType = "";
+        }
 
         return searchType;
     }
