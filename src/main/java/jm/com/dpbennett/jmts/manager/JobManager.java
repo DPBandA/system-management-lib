@@ -2353,7 +2353,7 @@ public class JobManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/dashboard/job/jobSearchDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/jobSearchDialog", options, null);
 
     }
 
