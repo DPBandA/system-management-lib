@@ -2344,7 +2344,7 @@ public class JobManager extends GeneralManager
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width("300px")
+                .width("350px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
