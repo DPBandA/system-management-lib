@@ -1265,7 +1265,20 @@ public class JobManager extends GeneralManager
         editJob();
 
     }
-    
+
+    public void createNewJobdInline() {
+
+        EntityManager em = getEntityManager1();
+
+        createJob(em, false, false);
+        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        openJobBrowser();
+
+        editJobDInline();
+
+    }
+
     public void addNewJob() {
 
         EntityManager em = getEntityManager1();
@@ -2327,6 +2340,26 @@ public class JobManager extends GeneralManager
                 .build();
 
         PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
+
+    }
+
+    public void editJobDInline() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .closable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job-d-inline/jobDialog", options, null);
 
     }
 
