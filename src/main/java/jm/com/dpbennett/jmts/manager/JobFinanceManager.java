@@ -1947,8 +1947,16 @@ public class JobFinanceManager extends GeneralManager
         String revenueCode;
         String revenueCodeAbbr;
 
-        if (!job.getServices().isEmpty()) {
-            revenueCode = job.getServices().get(0).getAccountingCode().getCode();
+        if (job.getServiceContract().getSelectedService().getId() == null) {
+
+            if (!job.getServices().isEmpty()) {
+                job.getServiceContract().setSelectedService(
+                        job.getServices().get(0));
+                job.setIsDirty(true);
+                job.getJobStatusAndTracking().setEditStatus("(edited)");
+            }
+
+            revenueCode = job.getServiceContract().getSelectedService().getAccountingCode().getCode();
 
             String deptFullCode = HumanResourceManager.getDepartmentFullCode(
                     getEntityManager1(),
@@ -1966,20 +1974,24 @@ public class JobFinanceManager extends GeneralManager
             }
 
         } else {
-            // Get and use default accounting code
-            Service service = Service.findActiveByNameAndAccountingCode(
-                    getEntityManager1(),
-                    "Miscellaneous",
-                    HumanResourceManager.getDepartmentFullCode(getEntityManager1(),
-                            job.getDepartmentAssignedToJob()));
 
-            if (service != null) {
-                revenueCodeAbbr = service.getAccountingCode().getAbbreviation();
+            revenueCode = job.getServiceContract().getSelectedService().getAccountingCode().getCode();
+
+            String deptFullCode = HumanResourceManager.getDepartmentFullCode(
+                    getEntityManager1(),
+                    job.getDepartmentAssignedToJob());
+
+            // Find an accounting code that contains the department's full code
+            AccountingCode accountingCode
+                    = AccountingCode.findActiveByCode(getEntityManager1(),
+                            revenueCode + "-" + deptFullCode);
+
+            if (accountingCode != null) {
+                revenueCodeAbbr = accountingCode.getAbbreviation();
             } else {
-                // NB: Just using this revenue code for testing for now.
-                // This value is to be obtained from system option.
                 revenueCodeAbbr = "MISC";
             }
+
         }
 
         return revenueCodeAbbr;

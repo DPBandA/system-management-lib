@@ -79,7 +79,7 @@ public class GeneralManager1 implements Manager, Serializable {
     }
 
     @Override
-    public void setManagerUser() {
+    public void initManager() {
 
         // tk set for the user's active modules instead.
         for (String moduleName : getModuleNames()) {
@@ -624,7 +624,7 @@ public class GeneralManager1 implements Manager, Serializable {
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
-        setManagerUser();
+        initManager();
 
         initMainTabView();
 

@@ -1,5 +1,5 @@
 <!--
-Job Management & Tracking System (JMTS) 
+System Management (SM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -27,52 +27,71 @@ Email: info@dpbennett.com.jm
     xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <h:head>
-        
+
         <!-- Mobile responsiveness -->
         <f:facet name="first">
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </f:facet>
-        
+
         <!-- Per-page head -->
         <ui:insert name="head"/>
-        
+
         <script type="text/javascript" src="js/app.js"/>
         <script type="text/javascript" src="js/javascript.js"/>
 
-        <!-- Global JMTS styles -->
+        <!-- Styles -->
         <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css"/>
         <h:outputStylesheet library="jmts-ui" name="css/main.css?v=#{systemManager.time}"/>
         <h:outputStylesheet library="jmts-ui" name="css/jmts.css?v=#{systemManager.time}"/>        
+
     </h:head>
 
     <h:body id="appBody" class="flex flex-column min-h-screen">
 
+        <!-- GLOBAL DIALOGS -->
         <ui:insert name="dialogs"/>
 
-        <p:panel>
+        <!-- SCROLL TOP -->
+        <p:scrollTop target="window"/>
 
-            <p:scrollTop/>
-
+        <!-- HEADER -->
+        <header class="shadow-2 z-5">
             <ui:insert name="header">
                 <ui:include src="/jmts-ui/fragments/jmts-header.xhtml"/>
             </ui:insert>
+        </header>
 
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1">
+
+            <!-- Optional top divider -->
             <ui:insert name="upper-divider">
-                <p:divider rendered="true" />
+                <p:divider />
             </ui:insert>
 
-            <ui:insert name="main-content"/>
+            <!-- Responsive content wrapper -->
+            <div class="px-3 md:px-5 py-3">
+                <div class="mx-auto w-full xl:w-10">
 
+                    <ui:insert name="main-content"/>
+
+                </div>
+            </div>
+
+            <!-- Optional bottom divider -->
             <ui:insert name="lower-divider">
-                <p:divider rendered="true" />
+                <p:divider />
             </ui:insert>
 
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="surface-100 border-top-1 surface-border p-3 text-center">
             <ui:insert name="footer">
                 <ui:include src="/jmts-ui/fragments/jmts-footer.xhtml"/>
             </ui:insert>
-
-        </p:panel>
+        </footer>
 
     </h:body>
-    
+
 </html>

@@ -26,10 +26,16 @@ Email: info@dpbennett.com.jm
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <h:head>        
+    <h:head>     
+
+        <!-- Mobile responsiveness -->
+        <f:facet name="first">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        </f:facet>
+
         <!-- Per-page head -->
         <ui:insert name="head"/>
-      
+
         <h:outputScript library="jmts-ui" name="js/javascripts.js" target="head"/>
         <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css" />   
         <h:outputStylesheet library="jmts-ui" name="css/main.css?v=#{systemManager.time}"/>

@@ -50,6 +50,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
+import jm.com.dpbennett.sm.manager.Manager;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -128,7 +129,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
     public FinanceManager() {
         init();
     }
-
+    
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
@@ -139,7 +140,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         }
 
     }
-    
+
     @Override
     public void onMainViewTabChange(TabChangeEvent event) {
 
@@ -154,8 +155,6 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void reInitUI() {
         setInnerTabIndex(0);
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
-
     }
 
     public Integer getInnerTabIndex() {
@@ -1012,7 +1011,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
         editClassification();
     }
-    
+
     public PurchasingManager getPurchasingManager() {
         return BeanUtils.findBean("purchasingManager");
     }
@@ -1083,26 +1082,25 @@ public class FinanceManager extends GeneralManager implements Serializable {
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().getDashboard().openTab("Financial Administration");
+//        getSystemManager().getDashboard().openTab("Financial Administration");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
     public void openMainViewTab(String title) {
 
+        getSystemManager().getMainTabView().openTab("Financial Administration");
+
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
 
-        getSystemManager().getMainTabView().openTab("Financial Administration");
     }
 
     public void openFinancialAdministration() {
 
         openMainViewTab("Financial Administration");
 
-//        getSystemManager().getMainTabView().openTab("Financial Administration");
-//
-//        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
     }
 
     @Override
@@ -1797,7 +1795,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         setName("financeManager");
         setSearchType("Accounting Codes");
         setSearchText("");
-        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "requisitionDate", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();

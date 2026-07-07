@@ -62,7 +62,7 @@ public class GeneralManager implements Manager, Serializable {
     private ArrayList<SelectItem> groupedSearchTypes;
     private DatePeriod dateSearchPeriod;
     private ArrayList<SelectItem> allDateSearchFields;
-    private List<String> moduleNames;
+    protected List<String> moduleNames;
     private User user;
     private String username;
     private String logonMessage;
@@ -79,7 +79,7 @@ public class GeneralManager implements Manager, Serializable {
     }
 
     @Override
-    public void setManagerUser() {
+    public void initManager() {
 
         for (String moduleName : getModuleNames()) {
             if (getManager(moduleName) != null) {
@@ -254,23 +254,6 @@ public class GeneralManager implements Manager, Serializable {
         String tabId = ((TabPanel) event.getData()).getId();
 
         getMainTabView().closeTab(tabId);
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        setTabTitle(event.getTab().getTitle());
-
-        for (Module mod : getUser().getActiveModules()) {
-            Manager manager = getManager(mod.getName());
-            if (manager != null) {
-                if (manager.handleTabChange(getTabTitle())) {
-
-                    return;
-                }
-            }
-        }
-
     }
 
     @Override
@@ -579,7 +562,7 @@ public class GeneralManager implements Manager, Serializable {
 
         PrimeFaces.current().executeScript("PF('loginDialog').hide();");
 
-        setManagerUser();
+        initManager();
 
         initMainTabView();
 
@@ -857,6 +840,7 @@ public class GeneralManager implements Manager, Serializable {
     public void setDefaultCommandTarget(String defaultCommandTarget) {
 
         this.defaultCommandTarget = defaultCommandTarget;
+
     }
 
     @Override
@@ -907,10 +891,76 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
 
-        onMainViewTabChange(event);
+        if (SystemOption.getBoolean(getSystemManager().getEntityManager1(),
+                "syncWithMainTabView")) {
+            for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+                if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
+                    getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
+                }
+            }
+        } else {
+            setTabTitle(event.getTab().getTitle());
+
+            for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+                Manager manager = getManager(mod.getName());
+                if (manager != null) {
+                    if (manager.handleTabChange(getTabTitle())) {
+
+                        return;
+                    }
+                }
+            }
+        }
 
     }
 
+    @Override
+    public void onMainViewTabChange(TabChangeEvent event) {
+
+        if (SystemOption.getBoolean(getSystemManager().getEntityManager1(),
+                "syncWithDashboard")) {
+            for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+                if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
+                    getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
+                }
+            }
+        } else {
+            setTabTitle(event.getTab().getTitle());
+
+            for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+                Manager manager = getManager(mod.getName());
+                if (manager != null) {
+                    if (manager.handleTabChange(getTabTitle())) {
+
+                        return;
+                    }
+                }
+            }
+        }
+
+    }
+
+//    @Override
+//    public void onDashboardTabChange(TabChangeEvent event) {
+//        onMainViewTabChange(event);
+//    }
+//
+//    @Override
+//    public void onMainViewTabChange(TabChangeEvent event) {
+//
+//        setTabTitle(event.getTab().getTitle());
+//
+//        for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
+//            Manager manager = getManager(mod.getName());
+//            if (manager != null) {
+//                if (manager.handleTabChange(getTabTitle())) {
+//
+//                    return;
+//                }
+//            }
+//        }
+//
+//    }
     @Override
     public int getSizeOfActiveNotifications() {
 

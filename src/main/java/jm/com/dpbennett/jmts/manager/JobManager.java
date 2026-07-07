@@ -146,28 +146,6 @@ public class JobManager extends GeneralManager
     }
 
     @Override
-    public void onDashboardTabChange(TabChangeEvent event) {
-
-        for (Module mod : getUser().getActiveModules()) {
-            if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
-            }
-        }
-
-    }
-
-    @Override
-    public void onMainViewTabChange(TabChangeEvent event) {
-
-        for (Module mod : getUser().getActiveModules()) {
-            if (mod.getMainViewTitle().equals(event.getTab().getTitle())) {
-                getManager(mod.getName()).openDashboardTab(mod.getDashboardTitle());
-            }
-        }
-
-    }
-
-    @Override
     public void openDashboardTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:jobSearchButton");
@@ -956,20 +934,6 @@ public class JobManager extends GeneralManager
     }
 
     public List<String> getJobTableViews() {
-//        EntityManager em;
-//
-//        try {
-//            em = getSystemManager().getEntityManager1();
-//
-//            List<String> preferenceValues = Preference.findAllPreferenceValues(em, "");
-//
-//            return preferenceValues;
-//
-//        } catch (Exception e) {
-//            System.out.println(e);
-//
-//            return new ArrayList<>();
-//        }
 
         return SystemOption.getStringList(getSystemManager().getEntityManager1(),
                 "jobTableViewsList");
@@ -1297,6 +1261,30 @@ public class JobManager extends GeneralManager
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
         openJobBrowser();
+
+        editJob();
+
+    }
+
+    public void createNewJobdInline() {
+
+        EntityManager em = getEntityManager1();
+
+        createJob(em, false, false);
+        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        openJobBrowser();
+
+        editJobDInline();
+
+    }
+
+    public void addNewJob() {
+
+        EntityManager em = getEntityManager1();
+
+        createJob(em, false, false);
+        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
         editJob();
 
@@ -2355,6 +2343,26 @@ public class JobManager extends GeneralManager
 
     }
 
+    public void editJobDInline() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .closable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/job-d-inline/jobDialog", options, null);
+
+    }
+
     public void closeDialog() {
 
         PrimeFaces.current().dialog().closeDynamic(null);
@@ -2369,7 +2377,7 @@ public class JobManager extends GeneralManager
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width("300px")
+                .width("350px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -2791,6 +2799,10 @@ public class JobManager extends GeneralManager
 
     @Override
     public String getSearchType() {
+
+        if (searchType == null) {
+            searchType = "";
+        }
 
         return searchType;
     }

@@ -108,19 +108,18 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public void openDashboardTab(String title) {
 
-        getSystemManager().getDashboard().openTab("Inventory");
+        getSystemManager().getDashboard().openTab(title);
 
-        // tk set command target
-        //getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
+
     }
 
     @Override
     public void openMainViewTab(String title) {
 
-        getSystemManager().getMainTabView().openTab("Inventory Requisitions");
+        getSystemManager().getMainTabView().openTab(title);
 
-        // tk set command target
-        // getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:financialAdminTabView:accountingCodeSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
 
     }
 
@@ -210,6 +209,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return inventoryTasks;
     }
 
+    @Override
     public SystemManager getSystemManager() {
         return BeanUtils.findBean("systemManager");
     }
@@ -219,13 +219,9 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         switch (tabTitle) {
             case "Inventory Products":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryProductSearchButton");
-                return true;
             case "Inventory":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventorySearchButton");
-                return true;
             case "Inventory Requisitions":
-                getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryRequisitionSearchButton");
+                getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
                 return true;
             default:
                 return false;
@@ -470,14 +466,17 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 "productTypes");
     }
 
+    @Override
     public Integer getDialogHeight() {
         return 400;
     }
 
+    @Override
     public Integer getDialogWidth() {
-        return 650;
+        return 700;
     }
 
+    @Override
     public String getScrollPanelHeight() {
         return "350px";
     }
@@ -876,7 +875,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         getSystemManager().getMainTabView().openTab("Inventory Products");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryProductSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
     }
 
     public void createNewInventoryProduct() {
@@ -1083,13 +1082,15 @@ public class InventoryManager extends GeneralManager implements Serializable {
     public void openInventoryTab() {
         getSystemManager().getMainTabView().openTab("Inventory");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventorySearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
+
     }
 
     public void openInventoryRequisitionTab() {
         getSystemManager().getMainTabView().openTab("Inventory Requisitions");
 
-        getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:inventoryRequisitionSearchButton");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
+
     }
 
     public void updateCost() {
@@ -1480,7 +1481,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width("700px")
+                .width((getDialogWidth() + 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -1499,7 +1500,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .modal(true)
                 .fitViewport(true)
                 .responsive(true)
-                .width((getDialogWidth() + 100) + "px")
+                .width((getDialogWidth() + 200) + "px")
                 .contentWidth("100%")
                 .resizeObserver(true)
                 .resizeObserverCenter(true)
@@ -1565,8 +1566,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void doInventorySearch() {
 
-        setDefaultCommandTarget("@this");
-
+        //setDefaultCommandTarget("@this");
         doDefaultSearch(
                 getSystemManager().getMainTabView(),
                 getDateSearchPeriod().getDateField(),
@@ -1660,7 +1660,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
         super.reset();
 
         setName("inventoryManager");
-        setSearchType("Inventory");
+        setSearchType("Inventory Requisitions");
+        getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
         setDateSearchPeriod(new DatePeriod("This year", "year",
                 "dateEdited", null, null, null, false, false, false));
         getDateSearchPeriod().initDatePeriod();
@@ -1695,6 +1696,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
         group.setSelectItems(getSearchTypes().toArray(new SelectItem[0]));
 
         return group;
+    }
+
+    public ArrayList<SelectItem> getDateSearchFields() {
+        return getDateSearchFields(getSearchType());
     }
 
     @Override
@@ -1737,6 +1742,18 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return foundActiveInventories;
     }
 
+    public void doDefaultSearch() {
+
+        doDefaultSearch(
+                getSystemManager().getMainTabView(),
+                getDateSearchPeriod().getDateField(),
+                getSearchType(),
+                getSearchText(),
+                getDateSearchPeriod().getStartDate(),
+                getDateSearchPeriod().getEndDate());
+
+    }
+
     @Override
     public void doDefaultSearch(
             MainTabView mainTabView,
@@ -1758,6 +1775,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
                             searchText, 0);
                 }
 
+                openInventoryTab();
+
                 break;
             case "Inventory Products":
                 if (getActiveInventoryProductsOnly()) {
@@ -1768,11 +1787,15 @@ public class InventoryManager extends GeneralManager implements Serializable {
                             getEntityManager1(), searchText, "Inventory");
                 }
 
+                openInventoryProductBrowser();
+
                 break;
             case "Inventory Requisitions":
                 foundInventoryRequisitions = InventoryRequisition.find(
                         getEntityManager1(),
                         searchText, 0);
+
+                openInventoryRequisitionTab();
 
                 break;
             default:

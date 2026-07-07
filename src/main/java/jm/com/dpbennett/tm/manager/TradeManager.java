@@ -36,7 +36,7 @@ import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.tm.chart.FxMarketPxFeeder;
 import jm.com.dpbennett.tm.chart.JfreeCandlestickChart;
-import org.jfree.chart.ChartUtils;
+//import org.jfree.chart.ChartUtils;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -138,8 +138,8 @@ public class TradeManager extends GeneralManager implements Serializable {
                     .writer((os) -> {
                         try {
 
-                            ChartUtils.writeChartAsPNG(os,
-                                    jfreeCandlestickChart.getCandlestickChart(), 1000, 500);
+//                            ChartUtils.writeChartAsPNG(os,
+//                                    jfreeCandlestickChart.getCandlestickChart(), 1000, 500);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -161,9 +161,9 @@ public class TradeManager extends GeneralManager implements Serializable {
                     .stream(() -> {
                         try {
                             File chartFile = new File("image-" + random.nextInt() + ".png");
-                            ChartUtils.saveChartAsPNG(chartFile,
-                                    jfreeCandlestickChart.getCandlestickChart(),
-                                    1000, 500);
+//                            ChartUtils.saveChartAsPNG(chartFile,
+//                                    jfreeCandlestickChart.getCandlestickChart(),
+//                                    1000, 500);
 
                             return new FileInputStream(chartFile);
 
