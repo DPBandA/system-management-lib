@@ -35,7 +35,8 @@ import org.junit.Test;
  */
 public class EntityTest {
 
-    //private static final Logger LOG = Logger.getLogger(EntityTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(EntityTest.class.getName());
+    
     @Test
     public void testEntity() {
 
