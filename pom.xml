@@ -14,6 +14,7 @@
     </repositories>
         
     <properties>
+        <eclipselink.version>2.7.12</eclipselink.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
         <skipTests>false</skipTests>
     </properties>
@@ -27,17 +28,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>                    
-                    <source>1.8</source>
-                    <target>1.8</target>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                     <parameters>true</parameters>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12.4</version>
+                <version>3.5.3</version>
                 <configuration>
                     <skipTests>${skipTests}</skipTests>
                 </configuration>
@@ -46,6 +48,17 @@
     </build>
     
     <dependencies>   
+        
+        <!--
+            Required when JPA tests run directly through Maven outside Payara.
+            Payara supplies EclipseLink in production, but Maven Surefire does not.
+        -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>${eclipselink.version}</version>
+            <scope>test</scope>
+        </dependency>
         
         <dependency> 
             <groupId>com.google.ortools</groupId> 
