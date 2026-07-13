@@ -1512,6 +1512,25 @@ public class InventoryManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().openDynamic("inventoryRequisitionDialog", options, null);
 
     }
+    
+    public void editSelectedInventoryDisbursement() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/ims/inventoryDisbursementDialog", options, null);
+
+    }
 
     public List<Inventory> getFoundInventories() {
         if (foundInventories == null) {
