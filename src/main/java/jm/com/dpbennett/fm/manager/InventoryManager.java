@@ -497,6 +497,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         setEdit(false);
 
+        editSelectedInventoryDisbursement();
+
     }
 
     public InventoryRequisition getSelectedInventoryRequisition() {
@@ -577,6 +579,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void editDisbursement(ActionEvent event) {
         setEdit(true);
+
+        editSelectedInventoryDisbursement();
     }
 
     public void deleteSelectedDisbursement() {
@@ -655,6 +659,8 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     public void cancelDisbursementEdit() {
         selectedInventoryDisbursement.setIsDirty(false);
+
+        closeDialog();
     }
 
     public void okDisbursement() {
@@ -666,7 +672,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         updateDisbursement(selectedInventoryDisbursement);
         updateInventoryRequisition(null);
 
-        PrimeFaces.current().executeScript("PF('inventoryDisbursementDialog').hide();");
+        closeDialog();
     }
 
     public void updateCostType() {
@@ -982,6 +988,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
             getSelectedInventory().setSupplier(getPurchasingManager().getSelectedSupplier());
             updateInventory(null);
         }
+    }
+
+    public void inventoryDisbursementDialogReturn() {
+
     }
 
     public void inventoryCategoryDialogReturn() {
@@ -1512,7 +1522,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().openDynamic("inventoryRequisitionDialog", options, null);
 
     }
-    
+
     public void editSelectedInventoryDisbursement() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -1528,7 +1538,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/ims/inventoryDisbursementDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/finance/ims/inventoryDisbursementDialog", options, null);
 
     }
 
