@@ -832,6 +832,25 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("userProfileDialog", options, null);
 
     }
+    
+    public void editUserProfileDInline() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 125) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(true)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/admin/userProfileDialogDInline", options, null);
+
+    }
 
     public User getSelectedUser() {
         if (selectedUser == null) {
