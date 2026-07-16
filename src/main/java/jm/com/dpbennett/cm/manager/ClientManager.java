@@ -80,6 +80,12 @@ public class ClientManager extends GeneralManager implements Serializable {
         init();
     }
 
+    @Override
+    public String getLogoURL() {
+        return SystemOption.getString(
+                getSystemManager().getEntityManager1(), "JMTSLogo");
+    }
+
     public EntityManagerFactory getCMPU() {
 
         return CMPU;
