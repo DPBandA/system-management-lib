@@ -397,6 +397,27 @@ public class ClientManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
+    
+    public void editSelectedClientDInline() {
+
+        setClientDialogTitle("Client");
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width((getDialogWidth() + 200) + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/client-d-inline/clientDialog", options, null);
+
+    }
 
     public void updateClient() {
         setIsDirty(true);
@@ -443,6 +464,14 @@ public class ClientManager extends GeneralManager implements Serializable {
         getSystemManager().getMainTabView().openTab("Clients");
 
         editSelectedClient();
+    }
+    
+    public void createNewClientDInline() {
+        createNewClient(true);
+
+        getSystemManager().getMainTabView().openTab("Clients");
+
+        editSelectedClientDInline();
     }
 
     public void createNewClient(Boolean active) {
