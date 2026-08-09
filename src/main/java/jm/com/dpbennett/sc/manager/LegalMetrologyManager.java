@@ -826,21 +826,21 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void editCertification() {
 
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpNozzleDialog",
-                options, null);
+//        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+//                .modal(true)
+//                .fitViewport(true)
+//                .responsive(true)
+//                .width((getDialogWidth() + 200) + "px")
+//                .contentWidth("100%")
+//                .resizeObserver(true)
+//                .resizeObserverCenter(true)
+//                .resizable(false)
+//                .styleClass("max-w-screen")
+//                .iframeStyleClass("max-w-screen")
+//                .build();
+//
+//        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpNozzleDialog",
+//                options, null);
 
     }
 

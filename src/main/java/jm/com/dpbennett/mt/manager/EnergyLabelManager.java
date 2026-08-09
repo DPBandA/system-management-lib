@@ -139,14 +139,14 @@ public class EnergyLabelManager extends GeneralManager
 
         getSystemManager().doSystemOptionSearch("Energy Efficiency");
 
-        getSystemManager().getMainTabView().openTab("Energy Efficiency");
+        getSystemManager().getMainTabView().openTab("Energy Efficiency Settings");
     }
 
     public void openLabelPrintSettingsTab() {
 
         getSystemManager().doSystemOptionSearch("LabelPrint");
 
-        getSystemManager().getMainTabView().openTab("LabelPrint");
+        getSystemManager().getMainTabView().openTab("LabelPrint Settings");
     }
 
     public void energyLabelDialogReturn() {

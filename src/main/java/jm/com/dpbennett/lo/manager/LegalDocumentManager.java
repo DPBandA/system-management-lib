@@ -254,7 +254,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void editExternalClient() {
 
         getClientManager().setSelectedClient(getCurrentDocument().getExternalClient());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         getClientManager().editSelectedClient();
 
@@ -297,7 +297,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void createNewExternalClient() {
 
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         getClientManager().editSelectedClient();
 

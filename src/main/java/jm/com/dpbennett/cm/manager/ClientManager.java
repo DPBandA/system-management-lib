@@ -373,8 +373,6 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public void editSelectedClient() {
 
-        setClientDialogTitle("Client");
-
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
                 .fitViewport(true)

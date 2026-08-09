@@ -142,6 +142,13 @@ public class ComplianceManager extends GeneralManager
     public ComplianceManager() {
         init();
     }
+    
+     public void openComplianceSettingsTab() {
+
+        getSystemManager().doSystemOptionSearch("Compliance");
+
+        getSystemManager().getMainTabView().openTab("Compliance Settings");
+    }
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
@@ -860,7 +867,7 @@ public class ComplianceManager extends GeneralManager
 
     public void editReceivedVia() {
         getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         editClient();
 
@@ -921,7 +928,7 @@ public class ComplianceManager extends GeneralManager
 
     public void createNewReceivedVia() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         editClient();
 
