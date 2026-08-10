@@ -130,6 +130,28 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    public List<String> completeJobNumber(String query) {
+        List<String> jobNumbers = new ArrayList<>();
+        int maxResult = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");
+
+        try {
+
+            List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query, maxResult);
+
+            for (Job job : foundJobs) {
+                jobNumbers.add(job.getJobNumber());
+            }
+
+            return jobNumbers;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
     public Job getParentJob() {
         return parentJob;
     }
@@ -2567,7 +2589,7 @@ public class JobManager extends GeneralManager
 
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         getClientManager().editSelectedClient();
 
@@ -2575,7 +2597,7 @@ public class JobManager extends GeneralManager
 
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         getClientManager().editSelectedClient();
 
