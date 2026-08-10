@@ -124,6 +124,19 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         init();
     }
 
+    public void updateManufacturerCertificateSigning() {
+
+        if (selectedCertification.getCertificateSignedBy().getId() == null) {
+            selectedCertification.setDateSigned(new Date());
+            selectedCertification.setCertificateSignedBy(getUserEmployee());            
+        } else {
+            selectedCertification.setDateSigned(null);
+            selectedCertification.setCertificateSignedBy(null);
+        }
+
+        updateCertification();
+    }
+
     public void createNewJob() {
 
         getJobManager().createJob(getJobManager().getEntityManager1(), false, false);
