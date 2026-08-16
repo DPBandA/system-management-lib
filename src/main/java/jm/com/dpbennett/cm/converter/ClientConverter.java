@@ -1,5 +1,5 @@
 /*
-Financial Management (FM)
+Client Management (CM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -17,26 +17,26 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.fm.converter;
+package jm.com.dpbennett.cm.converter;
 
 import javax.faces.convert.FacesConverter;
-import jm.com.dpbennett.business.entity.fm.Discount;
+import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter(value = "discountConverter", managed = true)
-public class DiscountConverter extends EntityConverter<Discount> {
+@FacesConverter(value = "clientConverter", managed = true)
+public class ClientConverter extends EntityConverter<Client> {
 
-    public DiscountConverter() {
-        super(Discount.class);
+    public ClientConverter() {
+        super(Client.class);
     }
 
     @Override
-    protected Long getId(Discount discount) {
-        return discount.getId();
+    protected Long getId(Client client) {
+        return client.getId();
     }
 
 }

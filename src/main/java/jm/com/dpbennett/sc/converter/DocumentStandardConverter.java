@@ -19,31 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sc.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("activeDocumentStandardConverter")
-public class ActiveDocumentStandardConverter extends ConverterAdapter {
+@FacesConverter(value = "documentStandardConverter", managed = true)
+public class DocumentStandardConverter extends EntityConverter<DocumentStandard> {
+
+    public DocumentStandardConverter() {
+        super(DocumentStandard.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        DocumentStandard documentStandard = DocumentStandard.findActiveByName(em,
-                submittedValue, Boolean.FALSE);
-
-        if (documentStandard == null) {
-            documentStandard = new DocumentStandard(submittedValue);
-        }
-
-        return documentStandard;
+    protected Long getId(DocumentStandard documentStandard) {
+        return documentStandard.getId();
     }
+
 }

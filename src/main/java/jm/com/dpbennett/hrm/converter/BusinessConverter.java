@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Human Resource Management (HRM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,31 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Business;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennet
  */
-@FacesConverter("businessConverter")
-public class BusinessConverter extends ConverterAdapter {
+@FacesConverter(value = "businessConverter", managed = true)
+public class BusinessConverter extends EntityConverter<Business> {
+
+    public BusinessConverter() {
+        super(Business.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Business business = Business.findByName(em, value);
-
-        if (business == null) {
-            business = new Business(value);
-        }
-
-        return business;
+    protected Long getId(Business business) {
+        return business.getId();
     }
 
 }

@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Human Resource Management (HRM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,31 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.hrm.EmployeePosition;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennet
  */
-@FacesConverter("activeEmployeePositionConverter")
-public class ActiveEmployeePositionConverter extends ConverterAdapter {
+@FacesConverter(value = "subgroupConverter", managed = true)
+public class SubgroupConverter extends EntityConverter<Subgroup> {
+
+    public SubgroupConverter() {
+        super(Subgroup.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        EmployeePosition position
-                = EmployeePosition.findActiveEmployeePositionByTitle(em, value);
-
-        if (value == null) {
-            position = new EmployeePosition(value);
-        }
-
-        return position;
+    protected Long getId(Subgroup subgroup) {
+        return subgroup.getId();
     }
+
 }

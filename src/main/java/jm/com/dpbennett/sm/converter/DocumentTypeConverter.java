@@ -19,30 +19,23 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("documentTypeConverter")
-public class DocumentTypeConverter extends ConverterAdapter {
+@FacesConverter(value = "documentTypeConverter", managed = true)
+public class DocumentTypeConverter extends EntityConverter<DocumentType> {
+
+    public DocumentTypeConverter() {
+        super(DocumentType.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        DocumentType documentType = DocumentType.findByName(em, value);
-
-        if (documentType == null) {
-            documentType = new DocumentType(value);
-        }
-
-        return documentType;
+    protected Long getId(DocumentType documentType) {
+        return documentType.getId();
     }
 
 }

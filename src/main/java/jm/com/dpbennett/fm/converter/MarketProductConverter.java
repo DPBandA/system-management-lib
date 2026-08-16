@@ -19,39 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.fm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.im.Inventory;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("activeInventoryConverter")
-public class ActiveInventoryConverter extends ConverterAdapter {
+@FacesConverter(value = "marketProductConverter", managed = true)
+public class MarketProductConverter extends EntityConverter<MarketProduct> {
 
-    @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Inventory inventory = 
-                Inventory.findActiveByName(em, value);
-
-        if (inventory == null) {
-            inventory = new Inventory(value);
-        }
-       
-        return inventory;
+    public MarketProductConverter() {
+        super(MarketProduct.class);
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((Inventory) value).getName();
+    protected Long getId(MarketProduct marketProduct) {
+        return marketProduct.getId();
     }
-    
-    
 
 }

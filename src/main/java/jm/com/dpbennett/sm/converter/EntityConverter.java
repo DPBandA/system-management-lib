@@ -108,12 +108,16 @@ public abstract class EntityConverter<T extends Serializable> implements Convert
 
     /**
      * Each entity must return its ID.
+     * @param entity
+     * @return 
      */
     protected abstract Long getId(T entity);
 
     /**
      * If autocomplete needs to create new instances (e.g. by name),
      * override this in your converter.
+     * @param value
+     * @return 
      */
     protected T createFromString(String value) {
         throw new UnsupportedOperationException(
