@@ -101,7 +101,6 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
 import jm.com.dpbennett.business.entity.sm.Module;
-import org.primefaces.event.TabChangeEvent;
 
 /**
  *
@@ -125,9 +124,50 @@ public class JobManager extends GeneralManager
     private StatusNote selectedStatusNote;
     private String searchText;
     private String searchType;
+    private String statusNoteSearchText;
+    List<StatusNote> filteredStatusNotes;
 
     public JobManager() {
         init();
+    }
+
+    public List<StatusNote> getFilteredStatusNotes() {
+        return filteredStatusNotes;
+    }
+
+    public void setFilteredStatusNotes(List<StatusNote> filteredStatusNotes) {
+        this.filteredStatusNotes = filteredStatusNotes;
+    }
+
+    public void doStatusNoteSearch() {
+
+        getFilteredStatusNotes().clear();
+
+        if (getStatusNoteSearchText().isEmpty()) {
+            setFilteredStatusNotes(getStatusNotes());
+
+            return;
+        }
+
+        for (StatusNote statusNote : getStatusNotes()) {
+            if (statusNote.getText().toUpperCase().contains(getStatusNoteSearchText().
+                    toUpperCase())) {
+
+                getFilteredStatusNotes().add(statusNote);
+            }
+        }
+    }
+
+    public String getStatusNoteSearchText() {
+        if (statusNoteSearchText == null) {
+            statusNoteSearchText = "";
+        }
+
+        return statusNoteSearchText;
+    }
+
+    public void setStatusNoteSearchText(String statusNoteSearchText) {
+        this.statusNoteSearchText = statusNoteSearchText;
     }
 
     public Job getParentJob() {
@@ -1117,7 +1157,6 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
-
     }
 
     public void openSystemBrowser() {
@@ -2411,6 +2450,8 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+        
+        setFilteredStatusNotes(getStatusNotes());
 
         if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
             if (!getCurrentJob().getServices().isEmpty()) {
