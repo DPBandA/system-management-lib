@@ -80,6 +80,25 @@ public class ClientManager extends GeneralManager implements Serializable {
     public ClientManager() {
         init();
     }
+    
+    public void doStatusNoteSearch() {
+
+        getFilteredStatusNotes().clear();
+
+        if (getStatusNoteSearchText().isEmpty()) {
+            setFilteredStatusNotes(getStatusNotes());
+
+            return;
+        }
+
+        for (StatusNote statusNote : getStatusNotes()) {
+            if (statusNote.getText().toUpperCase().contains(getStatusNoteSearchText().
+                    toUpperCase())) {
+
+                getFilteredStatusNotes().add(statusNote);
+            }
+        }
+    }
 
     public String getAddressSearchText() {
 
