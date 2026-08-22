@@ -114,7 +114,7 @@ public class ClientManager extends GeneralManager implements Serializable {
             return;
         }
 
-        for (Address address : getFilteredAddressesModel()) {
+        for (Address address : getAddressesModel()) {
             if (address.toString().toUpperCase().contains(getAddressSearchText().
                     toUpperCase())) {
 
