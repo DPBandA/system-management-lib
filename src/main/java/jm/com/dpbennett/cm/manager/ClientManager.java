@@ -76,26 +76,44 @@ public class ClientManager extends GeneralManager implements Serializable {
     private String clientSearchText;
     private String addressSearchText;
     private LazyClientDataModel lazyClientDataModel;
+    private List<Address> filteredAddressesModel;
+    private List<Contact> filteredContactsModel;
 
     public ClientManager() {
         init();
     }
+
+    public List<Address> getFilteredAddressesModel() {
+        return filteredAddressesModel;
+    }
+
+    public void setFilteredAddressesModel(List<Address> filteredAddressesModel) {
+        this.filteredAddressesModel = filteredAddressesModel;
+    }
+
+    public List<Contact> getFilteredContactsModel() {
+        return filteredContactsModel;
+    }
+
+    public void setFilteredContactsModel(List<Contact> filteredContactsModel) {
+        this.filteredContactsModel = filteredContactsModel;
+    }
     
-    public void doStatusNoteSearch() {
+    public void doAddressSearch() {
 
-        getFilteredStatusNotes().clear();
+        getFilteredAddressesModel().clear();
 
-        if (getStatusNoteSearchText().isEmpty()) {
-            setFilteredStatusNotes(getStatusNotes());
+        if (getAddressSearchText().isEmpty()) {
+            setFilteredAddressesModel(getAddressesModel());
 
             return;
         }
 
-        for (StatusNote statusNote : getStatusNotes()) {
-            if (statusNote.getText().toUpperCase().contains(getStatusNoteSearchText().
+        for (Address address : getFilteredAddressesModel()) {
+            if (address.toString().toUpperCase().contains(getAddressSearchText().
                     toUpperCase())) {
 
-                getFilteredStatusNotes().add(statusNote);
+                getFilteredAddressesModel().add(address);
             }
         }
     }
