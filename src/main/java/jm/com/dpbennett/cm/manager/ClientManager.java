@@ -74,10 +74,24 @@ public class ClientManager extends GeneralManager implements Serializable {
     private Boolean edit;
     private String clientDialogTitle;
     private String clientSearchText;
+    private String addressSearchText;
     private LazyClientDataModel lazyClientDataModel;
 
     public ClientManager() {
         init();
+    }
+
+    public String getAddressSearchText() {
+
+        if (addressSearchText == null) {
+            addressSearchText = "";
+        }
+
+        return addressSearchText;
+    }
+
+    public void setAddressSearchText(String addressSearchText) {
+        this.addressSearchText = addressSearchText;
     }
 
     public EntityManagerFactory getCMPU() {
