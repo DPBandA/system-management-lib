@@ -84,6 +84,11 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public List<Address> getFilteredAddressesModel() {
+
+        if (filteredAddressesModel == null) {
+            filteredAddressesModel = new ArrayList<>();
+        }
+
         return filteredAddressesModel;
     }
 
@@ -98,7 +103,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void setFilteredContactsModel(List<Contact> filteredContactsModel) {
         this.filteredContactsModel = filteredContactsModel;
     }
-    
+
     public void doAddressSearch() {
 
         getFilteredAddressesModel().clear();
@@ -292,7 +297,10 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public void setSelectedClient(Client selectedClient) {
-        this.selectedClient = selectedClient;
+        this.selectedClient = selectedClient;        
+                  
+        setFilteredAddressesModel(getAddressesModel());
+        setFilteredContactsModel(getContactsModel());
     }
 
     public Contact getSelectedContact() {
@@ -436,7 +444,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
-
+      
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
@@ -483,7 +491,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void createNewClient() {
         createNewClient(true);
 
-        getSystemManager().getMainTabView().openTab("Clients");
+        getSystemManager().getMainTabView().openTab("Clients");        
 
         editSelectedClient();
     }
