@@ -101,7 +101,6 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
 import jm.com.dpbennett.business.entity.sm.Module;
-import org.primefaces.event.TabChangeEvent;
 
 /**
  *
@@ -125,9 +124,46 @@ public class JobManager extends GeneralManager
     private StatusNote selectedStatusNote;
     private String searchText;
     private String searchType;
+    private String statusNoteSearchText;
+    private List<StatusNote> filteredStatusNotes;
 
     public JobManager() {
         init();
+    }
+
+    public String getStatusNoteSearchText() {
+        return statusNoteSearchText;
+    }
+
+    public void setStatusNoteSearchText(String statusNoteSearchText) {
+        this.statusNoteSearchText = statusNoteSearchText;
+    }
+
+    public List<StatusNote> getFilteredStatusNotes() {
+        return filteredStatusNotes;
+    }
+
+    public void setFilteredStatusNotes(List<StatusNote> filteredStatusNotes) {
+        this.filteredStatusNotes = filteredStatusNotes;
+    }
+
+    public void doStatusNoteSearch() {
+
+        getFilteredStatusNotes().clear();
+
+        if (getStatusNoteSearchText().isEmpty()) {
+            setFilteredStatusNotes(getStatusNotes());
+
+            return;
+        }
+
+        for (StatusNote statusNote : getStatusNotes()) {
+            if (statusNote.getText().toUpperCase().contains(getStatusNoteSearchText().
+                    toUpperCase())) {
+
+                getFilteredStatusNotes().add(statusNote);
+            }
+        }
     }
 
     public List<String> completeJobNumber(String query) {
@@ -2433,6 +2469,9 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        setStatusNoteSearchText("");
+        setFilteredStatusNotes(getStatusNotes());
 
         if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
             if (!getCurrentJob().getServices().isEmpty()) {
