@@ -75,6 +75,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     private String clientDialogTitle;
     private String clientSearchText;
     private String addressSearchText;
+    private String contactSearchText;
     private LazyClientDataModel lazyClientDataModel;
     private List<Address> filteredAddressesModel;
     private List<Contact> filteredContactsModel;
@@ -86,7 +87,12 @@ public class ClientManager extends GeneralManager implements Serializable {
     public List<Address> getFilteredAddressesModel() {
 
         if (filteredAddressesModel == null) {
+
             filteredAddressesModel = new ArrayList<>();
+
+            for (Address address : getAddressesModel()) {
+                filteredAddressesModel.add(address);
+            }
         }
 
         return filteredAddressesModel;
@@ -97,6 +103,15 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public List<Contact> getFilteredContactsModel() {
+         if (filteredContactsModel == null) {
+
+            filteredContactsModel = new ArrayList<>();
+
+            for (Contact contact : getContactsModel()) {
+                filteredContactsModel.add(contact);
+            }
+        }        
+        
         return filteredContactsModel;
     }
 
@@ -108,13 +123,8 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         getFilteredAddressesModel().clear();
 
-        if (getAddressSearchText().isEmpty()) {
-            setFilteredAddressesModel(getAddressesModel());
-
-            return;
-        }
-
         for (Address address : getAddressesModel()) {
+
             if (address.toString().toUpperCase().contains(getAddressSearchText().
                     toUpperCase())) {
 
@@ -122,18 +132,35 @@ public class ClientManager extends GeneralManager implements Serializable {
             }
         }
     }
+    
+     public void doContactSearch() {
+
+        getFilteredContactsModel().clear();
+
+        for (Contact contact : getContactsModel()) {
+
+            if (contact.toString().toUpperCase().contains(getContactSearchText().
+                    toUpperCase())) {
+
+                getFilteredContactsModel().add(contact);
+            }
+        }
+    }
 
     public String getAddressSearchText() {
-
-        if (addressSearchText == null) {
-            addressSearchText = "";
-        }
-
         return addressSearchText;
     }
 
     public void setAddressSearchText(String addressSearchText) {
         this.addressSearchText = addressSearchText;
+    }
+
+    public String getContactSearchText() {
+        return contactSearchText;
+    }
+
+    public void setContactSearchText(String contactSearchText) {
+        this.contactSearchText = contactSearchText;
     }
 
     public EntityManagerFactory getCMPU() {
@@ -297,10 +324,13 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public void setSelectedClient(Client selectedClient) {
-        this.selectedClient = selectedClient;        
-                  
-        setFilteredAddressesModel(getAddressesModel());
-        setFilteredContactsModel(getContactsModel());
+        this.selectedClient = selectedClient;
+
+        addressSearchText = "";
+        contactSearchText = "";
+
+        filteredAddressesModel = null;
+        filteredContactsModel = null;
     }
 
     public Contact getSelectedContact() {
@@ -444,7 +474,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .styleClass("max-w-screen")
                 .iframeStyleClass("max-w-screen")
                 .build();
-      
+
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
@@ -491,7 +521,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void createNewClient() {
         createNewClient(true);
 
-        getSystemManager().getMainTabView().openTab("Clients");        
+        getSystemManager().getMainTabView().openTab("Clients");
 
         editSelectedClient();
     }
@@ -654,6 +684,9 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getIsNewContact()) {
             getSelectedClient().getContacts().add(selectedContact);
         }
+        
+        // tk
+        doContactSearch();
 
         PrimeFaces.current().executeScript("PF('contactFormDialog').hide();");
 
@@ -666,6 +699,9 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getIsNewAddress()) {
             getSelectedClient().getAddresses().add(selectedAddress);
         }
+        
+        // tk
+        doAddressSearch();
 
         PrimeFaces.current().executeScript("PF('addressFormDialog').hide();");
 
