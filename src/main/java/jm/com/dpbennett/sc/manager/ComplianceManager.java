@@ -57,6 +57,7 @@ import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -142,8 +143,12 @@ public class ComplianceManager extends GeneralManager
     public ComplianceManager() {
         init();
     }
-    
-     public void openComplianceSettingsTab() {
+
+    public List<Business> completeActiveBusiness(String query) {
+        return getHumanResourceManager().completeActiveBusiness(query);
+    }
+
+    public void openComplianceSettingsTab() {
 
         getSystemManager().doSystemOptionSearch("Compliance");
 
@@ -152,7 +157,7 @@ public class ComplianceManager extends GeneralManager
 
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-       
+
         for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
             if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
@@ -2062,7 +2067,7 @@ public class ComplianceManager extends GeneralManager
 
         currentComplianceSurvey = new ComplianceSurvey();
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
-        currentComplianceSurvey.setSurveyType("Market Survey"); 
+        currentComplianceSurvey.setSurveyType("Market Survey");
         currentComplianceSurvey.setDateOfSurvey(new Date());
         currentComplianceSurvey.setInspector(getUserEmployee());
 
