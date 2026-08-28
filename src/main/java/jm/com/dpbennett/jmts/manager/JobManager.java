@@ -778,6 +778,8 @@ public class JobManager extends GeneralManager
 
     public void okStatusNote() {
         selectedStatusNote.save(getEntityManager1());
+        
+        doStatusNoteSearch();
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
