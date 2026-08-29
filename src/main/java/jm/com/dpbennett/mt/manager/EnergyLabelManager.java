@@ -132,7 +132,7 @@ public class EnergyLabelManager extends GeneralManager
 
         getSystemManager().doSystemOptionSearch("Compliance");
 
-        getSystemManager().getMainTabView().openTab("Compliance");
+        getSystemManager().getMainTabView().openTab("Compliance Settings");
     }
 
     public void openEnergyEfficiencySettingsTab() {
