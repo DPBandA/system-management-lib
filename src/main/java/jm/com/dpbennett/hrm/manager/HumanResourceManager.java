@@ -128,7 +128,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         if (selectedCertification.getCertificateSignedBy().getId() == null) {
             selectedCertification.setDateSigned(new Date());
-            selectedCertification.setCertificateSignedBy(getUserEmployee());            
+            selectedCertification.setCertificateSignedBy(getUserEmployee());
         } else {
             selectedCertification.setDateSigned(null);
             selectedCertification.setCertificateSignedBy(null);
@@ -194,6 +194,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     }
 
     public Certification getSelectedCertification() {
+
+        if (selectedCertification == null) {
+            return new Certification();
+        }
+
         return selectedCertification;
     }
 
@@ -1581,7 +1586,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void createNewManufacturerCertificate() {
 
         selectedCertification = new Certification();
-        selectedCertification.setOwnerId(getSelectedManufacturer().getId());
+
+        if (getSelectedManufacturer().getId() != null) {
+            selectedCertification.setOwnerId(getSelectedManufacturer().getId());
+        }
 
         editSelectedCertification();
     }
@@ -1715,6 +1723,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     public void okCertificate() {
 
         try {
+
+//            if (getSelectedManufacturer().getId() != null) {
+//                selectedCertification.setOwnerId(getSelectedManufacturer().getId());
+//            }
 
             getSelectedCertification().save(getEntityManager1());
             getSelectedCertification().setIsDirty(false);
@@ -1875,7 +1887,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         EntityManager em = getEntityManager1();
 
-        return Certification.findAllByOwnerId(em, getSelectedManufacturer().getId());
+        if (getSelectedManufacturer().getId() != null) {
+            return Certification.findAllByOwnerId(em, getSelectedManufacturer().getId());
+        }
+
+        return new ArrayList<>();
     }
 
     public List<Contact> getBusinessContactsModel() {
