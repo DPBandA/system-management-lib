@@ -1724,10 +1724,6 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         try {
 
-//            if (getSelectedManufacturer().getId() != null) {
-//                selectedCertification.setOwnerId(getSelectedManufacturer().getId());
-//            }
-
             getSelectedCertification().save(getEntityManager1());
             getSelectedCertification().setIsDirty(false);
 
