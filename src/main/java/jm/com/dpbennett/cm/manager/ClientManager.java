@@ -88,6 +88,8 @@ public class ClientManager extends GeneralManager implements Serializable {
     public String getLogoURL() {
         return SystemOption.getString(
                 getSystemManager().getEntityManager1(), "JMTSLogo");
+    }
+
     public List<Address> getFilteredAddressesModel() {
 
         if (filteredAddressesModel == null) {
@@ -107,15 +109,15 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public List<Contact> getFilteredContactsModel() {
-         if (filteredContactsModel == null) {
+        if (filteredContactsModel == null) {
 
             filteredContactsModel = new ArrayList<>();
 
             for (Contact contact : getContactsModel()) {
                 filteredContactsModel.add(contact);
             }
-        }        
-        
+        }
+
         return filteredContactsModel;
     }
 
@@ -136,8 +138,8 @@ public class ClientManager extends GeneralManager implements Serializable {
             }
         }
     }
-    
-     public void doContactSearch() {
+
+    public void doContactSearch() {
 
         getFilteredContactsModel().clear();
 
@@ -482,7 +484,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
 
     }
-    
+
     public void editSelectedClientDInline() {
 
         setClientDialogTitle("Client");
@@ -550,7 +552,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
         editSelectedClient();
     }
-    
+
     public void createNewClientDInline() {
         createNewClient(true);
 
@@ -717,7 +719,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getIsNewContact()) {
             getSelectedClient().getContacts().add(selectedContact);
         }
-        
+
         // tk
         doContactSearch();
 
@@ -732,7 +734,7 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getIsNewAddress()) {
             getSelectedClient().getAddresses().add(selectedAddress);
         }
-        
+
         // tk
         doAddressSearch();
 
