@@ -125,6 +125,7 @@ public class JobManager extends GeneralManager
     private String searchText;
     private String searchType;
     private String statusNoteSearchText;
+    List<StatusNote> filteredStatusNotes;
     private List<StatusNote> filteredStatusNotes;
 
     public JobManager() {
@@ -166,6 +167,16 @@ public class JobManager extends GeneralManager
         }
     }
 
+    public String getStatusNoteSearchText() {
+        if (statusNoteSearchText == null) {
+            statusNoteSearchText = "";
+        }
+
+        return statusNoteSearchText;
+    }
+
+    public void setStatusNoteSearchText(String statusNoteSearchText) {
+        this.statusNoteSearchText = statusNoteSearchText;
     public List<String> completeJobNumber(String query) {
         List<String> jobNumbers = new ArrayList<>();
         int maxResult = SystemOption.getInteger(
@@ -1177,7 +1188,6 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
-
     }
 
     public void openSystemBrowser() {
@@ -2471,6 +2481,8 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+        
+        setFilteredStatusNotes(getStatusNotes());
 
         setStatusNoteSearchText("");
         setFilteredStatusNotes(getStatusNotes());
