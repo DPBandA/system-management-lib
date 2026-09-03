@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Human Resource Management (HRM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,30 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.hrm.Employee;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.business.entity.hrm.EmployeePosition;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
- * @author Desmond Bennett
+ * @author Desmond Bennet
  */
-@FacesConverter("activeEmployeeConverter")
-public class ActiveEmployeeConverter extends ConverterAdapter {
-    
+@FacesConverter(value = "employeePositionConverter", managed = true)
+public class EmployeePositionConverter extends EntityConverter<EmployeePosition> {
+
+    public EmployeePositionConverter() {
+        super(EmployeePosition.class);
+    }
+
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-                
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Employee employee = Employee.findActiveByName(em, value);
+    protected Long getId(EmployeePosition employeePosition) {
+        return employeePosition.getId();
+    }
 
-        if (value == null) {
-            employee = new Employee();
-        }
-
-        return employee;
-    }    
 }

@@ -19,30 +19,23 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.sm.Country;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("countryConverter")
-public class CountryConverter extends ConverterAdapter {
+@FacesConverter(value = "countryConverter", managed = true)
+public class CountryConverter extends EntityConverter<Country> {
+
+    public CountryConverter() {
+        super(Country.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Country country = Country.findCountryByName(em, value);
-
-        if (country == null) {
-            country = new Country(value);
-        }
-
-        return country;
+    protected Long getId(Country country) {
+        return country.getId();
     }
 
 }

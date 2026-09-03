@@ -57,6 +57,7 @@ import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -143,9 +144,20 @@ public class ComplianceManager extends GeneralManager
         init();
     }
 
+    public List<Business> completeActiveBusiness(String query) {
+        return getHumanResourceManager().completeActiveBusiness(query);
+    }
+
+    public void openComplianceSettingsTab() {
+
+        getSystemManager().doSystemOptionSearch("Compliance");
+
+        getSystemManager().getMainTabView().openTab("Compliance Settings");
+    }
+
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-       
+
         for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
             if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
@@ -860,7 +872,7 @@ public class ComplianceManager extends GeneralManager
 
     public void editReceivedVia() {
         getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         editClient();
 
@@ -921,7 +933,7 @@ public class ComplianceManager extends GeneralManager
 
     public void createNewReceivedVia() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         editClient();
 
@@ -1519,95 +1531,14 @@ public class ComplianceManager extends GeneralManager
         this.currentShippingContainer = currentShippingContainer;
     }
 
-    public StreamedContent getAuthSigForDetentionRequestPOE() {
-        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getInspectorSigForSampleRequestPOE() {
-        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getPreparedBySigForReleaseRequestPOE() {
-        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage() != null) {
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getAuthSigForNoticeOfDentionDM() {
-        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() != null) {
-            if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getApprovedBySigForReleaseRequestPOE() {
-        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
     public void updateAuthDetentionRequestPOE() {
 
         if (currentComplianceSurvey.getAuthEmployeeForDetentionRequestPOE().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
             currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(getUserEmployee());
-            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUserEmployee().getSignature());
         } else {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(null);
-            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
         }
 
         updateSurvey();
@@ -1619,11 +1550,9 @@ public class ComplianceManager extends GeneralManager
         if (currentComplianceSurvey.getInspectorForSampleRequestPOE().getId() == null) {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
             currentComplianceSurvey.setInspectorForSampleRequestPOE(getUserEmployee());
-            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUserEmployee().getSignature());
         } else {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorForSampleRequestPOE(null);
-            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
         }
 
         updateSurvey();
@@ -1633,11 +1562,9 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getPreparedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUserEmployee().getSignature());
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUserEmployee());
         } else {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(null);
-            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(null);
         }
 
@@ -1649,11 +1576,9 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getAuthEmployeeForNoticeOfDentionDM().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
-            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUserEmployee().getSignature());
             currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(getUserEmployee());
         } else {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
-            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(null);
         }
 
@@ -1665,11 +1590,9 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getApprovedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUserEmployee().getSignature());
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUserEmployee());
         } else {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(null);
-            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(null);
         }
 
@@ -2055,7 +1978,7 @@ public class ComplianceManager extends GeneralManager
 
         currentComplianceSurvey = new ComplianceSurvey();
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
-        currentComplianceSurvey.setSurveyType("Market Survey"); 
+        currentComplianceSurvey.setSurveyType("Market Survey");
         currentComplianceSurvey.setDateOfSurvey(new Date());
         currentComplianceSurvey.setInspector(getUserEmployee());
 

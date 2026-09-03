@@ -84,22 +84,25 @@ public class EnergyLabelManager extends GeneralManager
     @Override
     public void openDashboardTab(String title) {
 
+        //getSystemManager().getDashboard().openTab(title);
+
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
     }
 
     @Override
     public void openMainViewTab(String title) {
 
+        getSystemManager().getMainTabView().openTab(title);
+
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
-        getSystemManager().getMainTabView().openTab(title);
     }
 
     @Override
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
-            case "Label Browser":
+            case "Labels":
                 getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
                 return true;
@@ -119,7 +122,7 @@ public class EnergyLabelManager extends GeneralManager
 
     public void openEnergyLabelBrowser() {
 
-        getSystemManager().getMainTabView().openTab("Label Browser");
+        getSystemManager().getMainTabView().openTab("Labels");
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:energyLabelSearchButton");
 
@@ -129,21 +132,21 @@ public class EnergyLabelManager extends GeneralManager
 
         getSystemManager().doSystemOptionSearch("Compliance");
 
-        getSystemManager().getMainTabView().openTab("Compliance");
+        getSystemManager().getMainTabView().openTab("Compliance Settings");
     }
 
     public void openEnergyEfficiencySettingsTab() {
 
         getSystemManager().doSystemOptionSearch("Energy Efficiency");
 
-        getSystemManager().getMainTabView().openTab("Energy Efficiency");
+        getSystemManager().getMainTabView().openTab("Energy Efficiency Settings");
     }
 
     public void openLabelPrintSettingsTab() {
 
         getSystemManager().doSystemOptionSearch("LabelPrint");
 
-        getSystemManager().getMainTabView().openTab("LabelPrint");
+        getSystemManager().getMainTabView().openTab("LabelPrint Settings");
     }
 
     public void energyLabelDialogReturn() {

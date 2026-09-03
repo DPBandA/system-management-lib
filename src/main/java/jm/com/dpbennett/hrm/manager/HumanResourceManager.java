@@ -35,6 +35,7 @@ import javax.faces.model.SelectItemGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import jm.com.dpbennett.business.entity.cert.Certification;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.BusinessOffice;
@@ -49,9 +50,12 @@ import jm.com.dpbennett.business.entity.hrm.Laboratory;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.Preference;
 import jm.com.dpbennett.business.entity.hrm.Subgroup;
+import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
+import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.jmts.manager.JobManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.validator.AddressValidator;
 import jm.com.dpbennett.sm.validator.ContactValidator;
@@ -112,11 +116,94 @@ public class HumanResourceManager extends GeneralManager implements Serializable
     private Contact selectedContact;
     private Address selectedAddress;
     private Manufacturer selectedManufacturer;
+    private Certification selectedCertification;
     private Boolean edit;
     private Integer innerTabIndex;
 
     public HumanResourceManager() {
         init();
+    }
+
+    public void updateManufacturerCertificateSigning() {
+
+        if (selectedCertification.getCertificateSignedBy().getId() == null) {
+            selectedCertification.setDateSigned(new Date());
+            selectedCertification.setCertificateSignedBy(getUserEmployee());
+        } else {
+            selectedCertification.setDateSigned(null);
+            selectedCertification.setCertificateSignedBy(null);
+        }
+
+        updateCertification();
+    }
+
+    public void createNewJob() {
+
+        getJobManager().createJob(getJobManager().getEntityManager1(), false, false);
+        getJobManager().getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        getJobManager().editJob();
+    }
+
+    private void updateDialogJobNumber(String dialog) {
+        switch (dialog) {
+            case "Certificate":
+                getSelectedCertification().
+                        setNumber(getJobManager().getCurrentJob().getJobNumber());
+                updateCertification();
+                PrimeFaces.current().ajax().update("certificateFormTabVar");
+        }
+    }
+
+    public void jobDialogReturn(String dialog) {
+        if (getJobManager().getCurrentJob().getIsDirty()) {
+            PrimeFacesUtils.addMessage("Job was NOT saved",
+                    "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+        } else {
+            updateDialogJobNumber(dialog);
+        }
+    }
+
+    public void editJob(String dialog) {
+        Job job = Job.findJobByJobNumber(getJobManager().getEntityManager1(),
+                getDialogJobNumber(dialog));
+
+        if (job != null) {
+            getJobManager().setEditCurrentJob(job);
+            getJobManager().editJob();
+        } else {
+            PrimeFacesUtils.addMessage("Job NOT found!",
+                    "The job was not found", FacesMessage.SEVERITY_ERROR);
+        }
+    }
+
+    private String getDialogJobNumber(String dialog) {
+
+        switch (dialog) {
+            case "Certificate":
+                return getSelectedCertification().getNumber();
+        }
+
+        return "";
+    }
+
+    public JobManager getJobManager() {
+
+        return BeanUtils.findBean("jobManager");
+
+    }
+
+    public Certification getSelectedCertification() {
+
+        if (selectedCertification == null) {
+            return new Certification();
+        }
+
+        return selectedCertification;
+    }
+
+    public void setSelectedCertification(Certification selectedCertification) {
+        this.selectedCertification = selectedCertification;
     }
 
     public void removeBusinessContact() {
@@ -1496,6 +1583,36 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         editSelectedManufacturer();
     }
 
+    public void createNewManufacturerCertificate() {
+
+        selectedCertification = new Certification();
+
+        if (getSelectedManufacturer().getId() != null) {
+            selectedCertification.setOwnerId(getSelectedManufacturer().getId());
+        }
+
+        editSelectedCertification();
+    }
+
+    public void editSelectedCertification() {
+
+        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+                .modal(true)
+                .fitViewport(true)
+                .responsive(true)
+                .width(getDialogWidth() + 200 + "px")
+                .contentWidth("100%")
+                .resizeObserver(true)
+                .resizeObserverCenter(true)
+                .resizable(false)
+                .styleClass("max-w-screen")
+                .iframeStyleClass("max-w-screen")
+                .build();
+
+        PrimeFaces.current().dialog().openDynamic("/hr/manufacturer/certificateDialog", options, null);
+
+    }
+
     public void createNewManufacturer(Boolean active) {
         selectedManufacturer = new Manufacturer("");
     }
@@ -1542,6 +1659,15 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         } else {
             foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager1(), manufacturerSearchText);
         }
+    }
+
+    public void doManufacturerCertificateSearch() {
+
+//        if (getIsActiveManufacturersOnly()) {
+//            foundManufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager1(), manufacturerSearchText);
+//        } else {
+//            foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager1(), manufacturerSearchText);
+//        }
     }
 
     public void onManufacturerCellEdit(CellEditEvent event) {
@@ -1594,6 +1720,20 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         }
     }
 
+    public void okCertificate() {
+
+        try {
+
+            getSelectedCertification().save(getEntityManager1());
+            getSelectedCertification().setIsDirty(false);
+
+            PrimeFaces.current().dialog().closeDynamic(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public void cancelManufacturerEdit(ActionEvent actionEvent) {
 
         getSelectedManufacturer().setIsDirty(false);
@@ -1619,8 +1759,52 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    public void cancelCertificateEdit(ActionEvent actionEvent) {
+
+        getSelectedCertification().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
     public void updateManufacturer() {
         getSelectedManufacturer().setIsDirty(true);
+    }
+
+    public void updateCertification() {
+        getSelectedCertification().setIsDirty(true);
+    }
+
+    public Boolean getIsCertificateApplicantNameValid() {
+
+        return BusinessEntityUtils.validateText(getSelectedCertification()
+                .getApplicant().getName());
+
+    }
+
+    public ClientManager getClientManager() {
+
+        return BeanUtils.findBean("clientManager");
+    }
+
+    public void editCertificateApplicant() {
+        getClientManager().setSelectedClient(getSelectedCertification().getApplicant());
+        getClientManager().setClientDialogTitle("Applicant");
+
+        getClientManager().editSelectedClient();
+
+    }
+
+    public void certificateApplicantDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getSelectedCertification().setApplicant(getClientManager().getSelectedClient());
+        }
+    }
+
+    public void createNewCertificateApplicant() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Applicant");
+
+        getClientManager().editSelectedClient();
     }
 
     public void updateManufacturerName(AjaxBehaviorEvent event) {
@@ -1693,6 +1877,17 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     public List<Contact> getContactsModel() {
         return getSelectedManufacturer().getContacts();
+    }
+
+    public List<Certification> getSelectedManufacturerCertifications() {
+
+        EntityManager em = getEntityManager1();
+
+        if (getSelectedManufacturer().getId() != null) {
+            return Certification.findAllByOwnerId(em, getSelectedManufacturer().getId());
+        }
+
+        return new ArrayList<>();
     }
 
     public List<Contact> getBusinessContactsModel() {
@@ -1917,7 +2112,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     @Override
     public String getApplicationSubheader() {
-        return "Human Resource Administration &amp; Management";
+        return "Human Resource Administration & Management";
     }
 
     @Override

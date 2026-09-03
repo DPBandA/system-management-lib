@@ -1,5 +1,5 @@
 /*
-System Management (SM) 
+System Manager (SM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -17,33 +17,24 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.cm.converter;
+package jm.com.dpbennett.sm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.cm.Client;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.business.entity.sm.Category;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("activeClientConverter")
-public class ActiveClientConverter extends ConverterAdapter {
+@FacesConverter(value = "categoryConverter", managed = true)
+public class CategoryConverter extends EntityConverter<Category> {
 
-    @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Client client = Client.findActiveByName(em, submittedValue, Boolean.FALSE);
-
-        if (client == null) {
-            client = new Client(submittedValue);
-        }
-
-        return client;
+    public CategoryConverter() {
+        super(Category.class);
     }
 
+    @Override
+    protected Long getId(Category category) {
+        return category.getId();
+    }
 }

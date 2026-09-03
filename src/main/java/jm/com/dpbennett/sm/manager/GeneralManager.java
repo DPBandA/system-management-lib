@@ -245,7 +245,7 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public String getApplicationSubheader() {
 
-        return "General System Administration &amp; Management";
+        return "General System Administration & Management";
 
     }
 

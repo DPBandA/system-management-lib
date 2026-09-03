@@ -126,9 +126,18 @@ public class JobManager extends GeneralManager
     private String searchType;
     private String statusNoteSearchText;
     List<StatusNote> filteredStatusNotes;
+    private List<StatusNote> filteredStatusNotes;
 
     public JobManager() {
         init();
+    }
+
+    public String getStatusNoteSearchText() {
+        return statusNoteSearchText;
+    }
+
+    public void setStatusNoteSearchText(String statusNoteSearchText) {
+        this.statusNoteSearchText = statusNoteSearchText;
     }
 
     public List<StatusNote> getFilteredStatusNotes() {
@@ -168,6 +177,26 @@ public class JobManager extends GeneralManager
 
     public void setStatusNoteSearchText(String statusNoteSearchText) {
         this.statusNoteSearchText = statusNoteSearchText;
+    public List<String> completeJobNumber(String query) {
+        List<String> jobNumbers = new ArrayList<>();
+        int maxResult = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");
+
+        try {
+
+            List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query, maxResult);
+
+            for (Job job : foundJobs) {
+                jobNumbers.add(job.getJobNumber());
+            }
+
+            return jobNumbers;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
     }
 
     public Job getParentJob() {
@@ -760,6 +789,8 @@ public class JobManager extends GeneralManager
 
     public void okStatusNote() {
         selectedStatusNote.save(getEntityManager1());
+        
+        doStatusNoteSearch();
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
@@ -2453,6 +2484,9 @@ public class JobManager extends GeneralManager
         
         setFilteredStatusNotes(getStatusNotes());
 
+        setStatusNoteSearchText("");
+        setFilteredStatusNotes(getStatusNotes());
+
         if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
             if (!getCurrentJob().getServices().isEmpty()) {
                 getCurrentJob().getServiceContract().setSelectedService(
@@ -2608,7 +2642,7 @@ public class JobManager extends GeneralManager
 
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         getClientManager().editSelectedClient();
 
@@ -2616,7 +2650,7 @@ public class JobManager extends GeneralManager
 
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         getClientManager().editSelectedClient();
 

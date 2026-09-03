@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Financial Management (FM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,32 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.fm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.fm.Service;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("serviceConverter")
-public class ServiceConverter extends ConverterAdapter {
+@FacesConverter(value = "serviceConverter", managed = true)
+public class ServiceConverter extends EntityConverter<Service> {
+
+    public ServiceConverter() {
+        super(Service.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Service service = Service.findByExactName(em, value);
-
-        if (service == null) {
-            service =  new Service(value);
-        }
-
-        return service;
+    protected Long getId(Service service) {
+        return service.getId();
     }
 
 }

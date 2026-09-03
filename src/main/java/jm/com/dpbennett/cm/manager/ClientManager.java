@@ -74,7 +74,11 @@ public class ClientManager extends GeneralManager implements Serializable {
     private Boolean edit;
     private String clientDialogTitle;
     private String clientSearchText;
+    private String addressSearchText;
+    private String contactSearchText;
     private LazyClientDataModel lazyClientDataModel;
+    private List<Address> filteredAddressesModel;
+    private List<Contact> filteredContactsModel;
 
     public ClientManager() {
         init();
@@ -84,6 +88,83 @@ public class ClientManager extends GeneralManager implements Serializable {
     public String getLogoURL() {
         return SystemOption.getString(
                 getSystemManager().getEntityManager1(), "JMTSLogo");
+    public List<Address> getFilteredAddressesModel() {
+
+        if (filteredAddressesModel == null) {
+
+            filteredAddressesModel = new ArrayList<>();
+
+            for (Address address : getAddressesModel()) {
+                filteredAddressesModel.add(address);
+            }
+        }
+
+        return filteredAddressesModel;
+    }
+
+    public void setFilteredAddressesModel(List<Address> filteredAddressesModel) {
+        this.filteredAddressesModel = filteredAddressesModel;
+    }
+
+    public List<Contact> getFilteredContactsModel() {
+         if (filteredContactsModel == null) {
+
+            filteredContactsModel = new ArrayList<>();
+
+            for (Contact contact : getContactsModel()) {
+                filteredContactsModel.add(contact);
+            }
+        }        
+        
+        return filteredContactsModel;
+    }
+
+    public void setFilteredContactsModel(List<Contact> filteredContactsModel) {
+        this.filteredContactsModel = filteredContactsModel;
+    }
+
+    public void doAddressSearch() {
+
+        getFilteredAddressesModel().clear();
+
+        for (Address address : getAddressesModel()) {
+
+            if (address.toString().toUpperCase().contains(getAddressSearchText().
+                    toUpperCase())) {
+
+                getFilteredAddressesModel().add(address);
+            }
+        }
+    }
+    
+     public void doContactSearch() {
+
+        getFilteredContactsModel().clear();
+
+        for (Contact contact : getContactsModel()) {
+
+            if (contact.toString().toUpperCase().contains(getContactSearchText().
+                    toUpperCase())) {
+
+                getFilteredContactsModel().add(contact);
+            }
+        }
+    }
+
+    public String getAddressSearchText() {
+        return addressSearchText;
+    }
+
+    public void setAddressSearchText(String addressSearchText) {
+        this.addressSearchText = addressSearchText;
+    }
+
+    public String getContactSearchText() {
+        return contactSearchText;
+    }
+
+    public void setContactSearchText(String contactSearchText) {
+        this.contactSearchText = contactSearchText;
     }
 
     public EntityManagerFactory getCMPU() {
@@ -248,6 +329,12 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public void setSelectedClient(Client selectedClient) {
         this.selectedClient = selectedClient;
+
+        addressSearchText = "";
+        contactSearchText = "";
+
+        filteredAddressesModel = null;
+        filteredContactsModel = null;
     }
 
     public Contact getSelectedContact() {
@@ -378,8 +465,6 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public void editSelectedClient() {
-
-        setClientDialogTitle("Client");
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -632,6 +717,9 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getIsNewContact()) {
             getSelectedClient().getContacts().add(selectedContact);
         }
+        
+        // tk
+        doContactSearch();
 
         PrimeFaces.current().executeScript("PF('contactFormDialog').hide();");
 
@@ -644,6 +732,9 @@ public class ClientManager extends GeneralManager implements Serializable {
         if (getIsNewAddress()) {
             getSelectedClient().getAddresses().add(selectedAddress);
         }
+        
+        // tk
+        doAddressSearch();
 
         PrimeFaces.current().executeScript("PF('addressFormDialog').hide();");
 

@@ -1,5 +1,5 @@
 /*
-System Management (SM) 
+Client Management (CM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,43 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.cm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.hrm.Address;
-import jm.com.dpbennett.business.entity.cm.Client;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("clientAddressConverter")
-public class ClientAddressConverter extends ConverterAdapter {
+@FacesConverter(value = "clientAddressConverter", managed = true)
+public class ClientAddressConverter extends EntityConverter<Address> {
+
+    public ClientAddressConverter() {
+        super(Address.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Address address;
-
-        try {
-
-            Client client = (Client) component.getAttributes().get("currentClient");
-            if (client != null) {
-                address = Address.findClientAddress(value, client);
-                if (address == null) {                                    
-                    address = new Address(value);
-                }
-            } else {
-           
-                address = new Address(value);
-            }
-
-        } catch (Exception e) {
-            System.out.println(e);
-            address = new Address(value);
-        }
-
-        return address;
+    protected Long getId(Address address) {
+        return address.getId();
     }
 
 }
