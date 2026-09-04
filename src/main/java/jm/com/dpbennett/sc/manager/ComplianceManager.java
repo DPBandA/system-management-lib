@@ -2533,14 +2533,13 @@ public class ComplianceManager extends GeneralManager
 
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
 
-//        updateComplianceSurvey(em);
         // Set parameters
         parameters.put("formId", currentComplianceSurvey.getId());
 
         // Broker detail
-        //Client broker = jm.getClientByName(em, currentComplianceSurvey.getBroker().getName());
-        //Contact brokerRep = jm.getContactByName(em, username, username);
         parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
                 + currentComplianceSurvey.getBrokerRepresentative().getFirstName() + " "
                 + currentComplianceSurvey.getBrokerRepresentative().getLastName() + "\n"
@@ -2550,7 +2549,6 @@ public class ComplianceManager extends GeneralManager
                 + currentComplianceSurvey.getBroker().getBillingAddress().getStateOrProvince());
 
         //Consignee detail
-        //Client consignee = jm.getClientByName(em, currentComplianceSurvey.getConsignee().getName());
         parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getName() + "\n"
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
@@ -2561,6 +2559,7 @@ public class ComplianceManager extends GeneralManager
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+        parameters.put("logo", logo);
 
         return getComplianceSurveyFormPDFFile(
                 em,
@@ -2969,8 +2968,6 @@ public class ComplianceManager extends GeneralManager
                     // Compile report
                     JasperReport jasperReport = JasperCompileManager.compileReport(reportFileURL);
 
-                    // generate report
-//                    JasperPrint print = JasperFillManager.fillReport(reportFileURL, parameters, con);
                     // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
