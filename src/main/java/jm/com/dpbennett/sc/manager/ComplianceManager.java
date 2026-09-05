@@ -2600,15 +2600,20 @@ public class ComplianceManager extends GeneralManager
 
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
 
-        // Broker
-        parameters.put("formId", currentComplianceSurvey.getId());
+        parameters.put("logo", logo);
+
+        // Broker      
+        parameters.put("importerOrBrokerName", currentComplianceSurvey.getBroker().getName());
         parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
                 + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
 
         // Consignee
+        parameters.put("consigneeName", currentComplianceSurvey.getConsignee().getName());
         parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
