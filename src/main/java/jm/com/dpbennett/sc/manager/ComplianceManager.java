@@ -2627,7 +2627,58 @@ public class ComplianceManager extends GeneralManager
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
 
-        // sample disposal
+        // Sample disposal
+        if (currentComplianceSurvey.getSamplesToBeCollected()) {
+            // \u2713 is the unicode for the tick character
+            parameters.put("samplesToBeCollected", "\u2713");
+        } else {
+            parameters.put("samplesToBeCollected", "");
+        }
+        if (currentComplianceSurvey.getSamplesToBeDisposed()) {
+            parameters.put("samplesToBeDisposed", "\u2713");
+        } else {
+            parameters.put("samplesToBeDisposed", "");
+        }
+
+        return getComplianceSurveyFormPDFFile(
+                em,
+                "portOfEntryDetentionSampleRequestForm",
+                "sample_request.pdf",
+                parameters);
+    }
+    
+    public StreamedContent getDMSampleRequestFile() {
+
+        EntityManager em = getEntityManager1();
+        HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
+
+        parameters.put("logo", logo);
+
+        // Broker      
+        parameters.put("importerOrBrokerName", currentComplianceSurvey.getBroker().getName());
+        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
+                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
+
+        // Consignee
+        parameters.put("consigneeName", currentComplianceSurvey.getConsignee().getName());
+        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
+
+        // Consignee contact person
+        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
+
+        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
+        parameters.put("products", getComplianceSurveyProductNames());
+        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+
+        // Sample disposal
         if (currentComplianceSurvey.getSamplesToBeCollected()) {
             // \u2713 is the unicode for the tick character
             parameters.put("samplesToBeCollected", "\u2713");
