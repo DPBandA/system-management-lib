@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -2646,15 +2647,25 @@ public class ComplianceManager extends GeneralManager
                 "sample_request.pdf",
                 parameters);
     }
-    
+
     public StreamedContent getDMSampleRequestFile() {
 
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
         String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
                 "SCFormLogo");
+        Long defaultTestingLaboratoryID = SystemOption.getLong(getSystemManager().getEntityManager1(),
+                "defaultTestingLaboratoryID");
 
+        // Form logo
         parameters.put("logo", logo);
+
+        // Testing lab
+        Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
+        if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
+            parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
+            // tk set/unset check boxes 
+        }
 
         // Broker      
         parameters.put("importerOrBrokerName", currentComplianceSurvey.getBroker().getName());
@@ -2693,8 +2704,8 @@ public class ComplianceManager extends GeneralManager
 
         return getComplianceSurveyFormPDFFile(
                 em,
-                "portOfEntryDetentionSampleRequestForm",
-                "sample_request.pdf",
+                "domesticMarketSampleRequestForm",
+                "dm_sample_request.pdf",
                 parameters);
     }
 
