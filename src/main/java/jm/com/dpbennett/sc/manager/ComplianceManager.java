@@ -2603,8 +2603,20 @@ public class ComplianceManager extends GeneralManager
         HashMap parameters = new HashMap();
         String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
                 "SCFormLogo");
+        Long defaultTestingLaboratoryID = SystemOption.getLong(getSystemManager().getEntityManager1(),
+                "defaultTestingLaboratoryID");
 
+        // Form logo
         parameters.put("logo", logo);
+        
+        // Testing lab
+        Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
+                
+        if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
+            parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
+            parameters.put("defaultTestingLaboratory", "");
+            parameters.put("otherTestingLaboratory", "\u2713");
+        }
 
         // Broker      
         parameters.put("importerOrBrokerName", currentComplianceSurvey.getBroker().getName());
@@ -2622,8 +2634,8 @@ public class ComplianceManager extends GeneralManager
 
         // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
+        
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
@@ -2662,32 +2674,12 @@ public class ComplianceManager extends GeneralManager
 
         // Testing lab
         Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
+                
         if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
             parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
-            // tk set/unset check boxes 
+            parameters.put("defaultTestingLaboratory", "");
+            parameters.put("otherTestingLaboratory", "\u2713");
         }
-
-        // Broker      
-        parameters.put("importerOrBrokerName", currentComplianceSurvey.getBroker().getName());
-        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
-                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
-                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
-                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
-
-        // Consignee
-        parameters.put("consigneeName", currentComplianceSurvey.getConsignee().getName());
-        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
-
-        // Consignee contact person
-        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-
-        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
-        parameters.put("products", getComplianceSurveyProductNames());
-        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
-        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
 
         // Sample disposal
         if (currentComplianceSurvey.getSamplesToBeCollected()) {
