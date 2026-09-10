@@ -65,6 +65,13 @@ public class JobSampleManager extends GeneralManager
         init();
     }
 
+    public void marketProductDialogReturn() {
+        if (getFinanceManager().getSelectedMarketProduct().getId() != null) {
+            getSelectedJobSample().setMarketProduct(getFinanceManager().getSelectedMarketProduct());
+            getSelectedJobSample().setName(getFinanceManager().getSelectedMarketProduct().getName());
+        }
+    }
+
     public void createNewMarketProduct() {
 
         getFinanceManager().setSelectedMarketProduct(new MarketProduct());

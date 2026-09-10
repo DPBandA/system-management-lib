@@ -457,17 +457,14 @@ public class ComplianceManager extends GeneralManager
             case "Complaint":
                 getCurrentComplaint().
                         setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-                updateComplaint();
                 PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
             case "Survey":
                 getCurrentComplianceSurvey().
                         setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-                updateSurvey();
                 PrimeFaces.current().ajax().update(":ComplianceSurveyDialogForm:topToolbar,generalPanelGrid,complianceSurveyTabView");
             case "FactoryInspection":
                 getCurrentFactoryInspection().
                         setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-                updateFactoryInspection();
                 PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
         }
     }
@@ -2608,10 +2605,10 @@ public class ComplianceManager extends GeneralManager
 
         // Form logo
         parameters.put("logo", logo);
-        
+
         // Testing lab
         Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
-                
+
         if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
             parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
             parameters.put("defaultTestingLaboratory", "");
@@ -2635,7 +2632,7 @@ public class ComplianceManager extends GeneralManager
         // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
-        
+
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
@@ -2674,7 +2671,7 @@ public class ComplianceManager extends GeneralManager
 
         // Testing lab
         Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
-                
+
         if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
             parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
             parameters.put("defaultTestingLaboratory", "");
