@@ -1805,6 +1805,54 @@ public class ComplianceManager extends GeneralManager
         getCurrentComplianceSurvey().setIsDirty(true);
     }
 
+    public void updateTemporaryDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getTemporarily()) {
+            getCurrentComplianceSurvey().setPermanently(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updatePermanentDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getPermanently()) {
+            getCurrentComplianceSurvey().setTemporarily(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updateImporterDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getImporter()) {
+            getCurrentComplianceSurvey().setManufacturer(false);
+            getCurrentComplianceSurvey().setProcessor(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+    
+    public void updateManufacturerDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getManufacturer()) {
+            getCurrentComplianceSurvey().setImporter(false);
+            getCurrentComplianceSurvey().setProcessor(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+    
+    public void updateProcessorDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getProcessor()) {
+            getCurrentComplianceSurvey().setImporter(false);
+            getCurrentComplianceSurvey().setManufacturer(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
     public void updateCIF() {
 
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
