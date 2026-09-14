@@ -145,6 +145,17 @@ public class ComplianceManager extends GeneralManager
         init();
     }
 
+    public void updateNoticeOfDiscontinuanceIssued() {
+
+        if (getCurrentComplianceSurvey().getNoticeOfDiscontinuanceIssuedForDomesticMarket()) {
+            getCurrentComplianceSurvey().setDateOfDiscontinuance(new Date());
+        } else {
+            getCurrentComplianceSurvey().setDateOfDiscontinuance(null);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
     public List<Business> completeActiveBusiness(String query) {
         return getHumanResourceManager().completeActiveBusiness(query);
     }
@@ -1556,6 +1567,32 @@ public class ComplianceManager extends GeneralManager
         updateSurvey();
     }
 
+    public void updateInspectorSigForNoticeOfDiscontinuanceDM() {
+
+        if (currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getId() == null) {
+            currentComplianceSurvey.setDateNoticeOfDiscontinuanceSigned(new Date());
+            currentComplianceSurvey.setInspectorForNoticeOfDiscontinuanceDM(getUserEmployee());
+        } else {
+            currentComplianceSurvey.setDateNoticeOfDiscontinuanceSigned(null);
+            currentComplianceSurvey.setInspectorForNoticeOfDiscontinuanceDM(null);
+        }
+
+        updateSurvey();
+    }
+
+    public void updateInspectorSigForSampleRequestDM() {
+
+        if (currentComplianceSurvey.getInspectorForSampleRequestDM().getId() == null) {
+            currentComplianceSurvey.setInspectorSigDateForSampleRequestDM(new Date());
+            currentComplianceSurvey.setInspectorForSampleRequestDM(getUserEmployee());
+        } else {
+            currentComplianceSurvey.setInspectorSigDateForSampleRequestDM(null);
+            currentComplianceSurvey.setInspectorForSampleRequestDM(null);
+        }
+
+        updateSurvey();
+    }
+
     public void updatePreparedBySigForReleaseRequestPOE() {
 
         if (currentComplianceSurvey.getPreparedByEmployeeForReleaseRequestPOE().getId() == null) {
@@ -1832,7 +1869,7 @@ public class ComplianceManager extends GeneralManager
 
         getCurrentComplianceSurvey().setIsDirty(true);
     }
-    
+
     public void updateManufacturerDiscontinuance() {
 
         if (getCurrentComplianceSurvey().getManufacturer()) {
@@ -1842,7 +1879,7 @@ public class ComplianceManager extends GeneralManager
 
         getCurrentComplianceSurvey().setIsDirty(true);
     }
-    
+
     public void updateProcessorDiscontinuance() {
 
         if (getCurrentComplianceSurvey().getProcessor()) {
