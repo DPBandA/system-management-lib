@@ -2783,6 +2783,80 @@ public class ComplianceManager extends GeneralManager
                 parameters);
     }
 
+    public StreamedContent getNoticeOfDiscontinuanceFile() {
+
+        EntityManager em = getEntityManager1();
+        HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
+
+        // Form logo
+        parameters.put("logo", logo);
+
+        parameters.put("retailOutletContactPerson",
+                BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getRetailRepresentative()));
+        parameters.put("retailOutletName", currentComplianceSurvey.getRetailOutlet().getName());
+        parameters.put("retailOutletAddress", currentComplianceSurvey.getRetailOutletAddress().toString());
+
+        // Duration
+        if (currentComplianceSurvey.getTemporarily()) {
+            parameters.put("temporarily", "\u2713");
+        } else {
+            parameters.put("temporarily", "");
+        }
+        if (currentComplianceSurvey.getPermanently()) {
+            parameters.put("permanently", "\u2713");
+        } else {
+            parameters.put("permanently", "");
+        }
+
+        // Discontinued as:
+        if (currentComplianceSurvey.getImporter()) {
+            parameters.put("importer", "\u2713");
+        } else {
+            parameters.put("importer", "");
+        }        
+        if (currentComplianceSurvey.getManufacturer()) {
+            parameters.put("manufacturer", "\u2713");
+        } else {
+            parameters.put("manufacturer", "");
+        }
+        if (currentComplianceSurvey.getProcessor()) {
+            parameters.put("processor", "\u2713");
+        } else {
+            parameters.put("processor", "");
+        }
+        
+        // Administrative Closure
+        if (currentComplianceSurvey.getAdministrativeClosure()) {
+            parameters.put("administrativeClosure", "\u2713");
+            parameters.put("notAdministrativeClosure", "");
+        } else {
+            parameters.put("notAdministrativeClosure", "\u2713");
+            parameters.put("administrativeClosure", "");
+        }
+        
+        // Inspector and code for Notice of Discontinuance
+        parameters.put("inspectorAndCodeForNoticeOfDiscontinuanceDM", 
+                currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getFullname()
+        + " (" + currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getNumber()
+        + ")");
+        
+        // Inspector signature
+        parameters.put("inspectorForNoticeOfDiscontinuanceDM", 
+                currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getFullname());
+        
+        parameters.put("dateInspectorSignedNoticeOfDiscontinuanceDM",
+                        BusinessEntityUtils.getDateInMediumDateFormat(
+                                currentComplianceSurvey.getDateNoticeOfDiscontinuanceSigned()));
+ 
+        return getComplianceSurveyFormPDFFile(
+                em,
+                "noticeOfDiscontinuanceForm",
+                "notice_discontinuance_form.pdf",
+                parameters);
+    }
+
     public StreamedContent getNoticeOfReleaseFromDetentionFile() {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
