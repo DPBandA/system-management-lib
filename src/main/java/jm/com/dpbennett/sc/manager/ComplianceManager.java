@@ -2815,7 +2815,7 @@ public class ComplianceManager extends GeneralManager
             parameters.put("importer", "\u2713");
         } else {
             parameters.put("importer", "");
-        }        
+        }
         if (currentComplianceSurvey.getManufacturer()) {
             parameters.put("manufacturer", "\u2713");
         } else {
@@ -2826,7 +2826,7 @@ public class ComplianceManager extends GeneralManager
         } else {
             parameters.put("processor", "");
         }
-        
+
         // Administrative Closure
         if (currentComplianceSurvey.getAdministrativeClosure()) {
             parameters.put("administrativeClosure", "\u2713");
@@ -2835,21 +2835,21 @@ public class ComplianceManager extends GeneralManager
             parameters.put("notAdministrativeClosure", "\u2713");
             parameters.put("administrativeClosure", "");
         }
-        
+
         // Inspector and code for Notice of Discontinuance
-        parameters.put("inspectorAndCodeForNoticeOfDiscontinuanceDM", 
+        parameters.put("inspectorAndCodeForNoticeOfDiscontinuanceDM",
                 currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getFullname()
-        + " (" + currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getNumber()
-        + ")");
-        
+                + " (" + currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getNumber()
+                + ")");
+
         // Inspector signature
-        parameters.put("inspectorForNoticeOfDiscontinuanceDM", 
+        parameters.put("inspectorForNoticeOfDiscontinuanceDM",
                 currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getFullname());
-        
+
         parameters.put("dateInspectorSignedNoticeOfDiscontinuanceDM",
-                        BusinessEntityUtils.getDateInMediumDateFormat(
-                                currentComplianceSurvey.getDateNoticeOfDiscontinuanceSigned()));
- 
+                BusinessEntityUtils.getDateInMediumDateFormat(
+                        currentComplianceSurvey.getDateNoticeOfDiscontinuanceSigned()));
+
         return getComplianceSurveyFormPDFFile(
                 em,
                 "noticeOfDiscontinuanceForm",
@@ -2861,6 +2861,8 @@ public class ComplianceManager extends GeneralManager
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
+        parameters.put("jobNumber", currentComplianceSurvey.getJobNumber());
+
         // Full release
         if (currentComplianceSurvey.getFullRelease()) {
             parameters.put("fullRelease", "\u2713");
@@ -2868,7 +2870,7 @@ public class ComplianceManager extends GeneralManager
             parameters.put("fullRelease", "");
         }
 
-        // Retailer, distributor, other?
+        // Retailer, distributor, importer, other?
         if (currentComplianceSurvey.getRetailer()) {
             parameters.put("retailer", "\u2713");
         } else {
@@ -2878,6 +2880,11 @@ public class ComplianceManager extends GeneralManager
             parameters.put("distributor", "\u2713");
         } else {
             parameters.put("distributor", "");
+        }
+        if (currentComplianceSurvey.getImporter()) {
+            parameters.put("importer", "\u2713");
+        } else {
+            parameters.put("importer", "");
         }
         if (currentComplianceSurvey.getOtherCompanyTypes()) {
             parameters.put("otherCompanyTypes", "\u2713");
@@ -2896,9 +2903,11 @@ public class ComplianceManager extends GeneralManager
                 + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
 
         // Consignee
-        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
+        parameters.put("consigneeDetail",
+                currentComplianceSurvey.getConsignee().getName() + "\n\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + "\n"
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
 
         // Provisional release location 
@@ -2924,6 +2933,18 @@ public class ComplianceManager extends GeneralManager
         parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+        
+        // Container numbers
+        String cns = "";
+        for (String cn : getAllShippingContainers()) {
+            if (cns.isEmpty()) {
+                cns = cn;
+            }
+            else {
+                cns = cns + ", " + cn;
+            }
+        }
+        parameters.put("containerNumbers", cns);
 
         return getComplianceSurveyFormPDFFile(
                 em,
