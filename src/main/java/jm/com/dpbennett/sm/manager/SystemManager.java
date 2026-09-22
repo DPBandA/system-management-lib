@@ -133,6 +133,16 @@ public final class SystemManager extends GeneralManager {
     public SystemManager() {
         init();
     }
+    
+    public String getJMTSWebsiteURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "JMTSWebsiteURL");
+    }
+    
+    public String getJMTSUserGuideURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "JMTSUserGuideURL");
+    }
 
     @Override
     public SystemManager getSystemManager() {
