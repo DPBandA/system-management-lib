@@ -154,6 +154,11 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public String getAddressSearchText() {
+
+        if (addressSearchText == null) {
+            addressSearchText = "";
+        }
+
         return addressSearchText;
     }
 
@@ -162,6 +167,11 @@ public class ClientManager extends GeneralManager implements Serializable {
     }
 
     public String getContactSearchText() {
+
+        if (contactSearchText == null) {
+            contactSearchText = "";
+        }
+
         return contactSearchText;
     }
 
