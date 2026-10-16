@@ -1013,11 +1013,8 @@ public final class SystemManager extends GeneralManager {
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
-
-            if (checkMatchingUserPasswords(selectedUser)) {
-                selectedUser.setPassword(selectedUser.getNewPassword());
-
-                System.out.println("Will attempt to add user");
+            
+           if (checkMatchingUserPasswords(selectedUser)) {
 
                 return LdapContext.addUser(em, context, selectedUser);
             } else {
