@@ -133,12 +133,12 @@ public final class SystemManager extends GeneralManager {
     public SystemManager() {
         init();
     }
-    
+
     public String getJMTSWebsiteURL() {
         return (String) SystemOption.getOptionValueObject(
                 getSystemManager().getEntityManager1(), "JMTSWebsiteURL");
     }
-    
+
     public String getJMTSUserGuideURL() {
         return (String) SystemOption.getOptionValueObject(
                 getSystemManager().getEntityManager1(), "JMTSUserGuideURL");
@@ -842,7 +842,7 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("userProfileDialog", options, null);
 
     }
-    
+
     public void editUserProfileDInline() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -974,7 +974,48 @@ public final class SystemManager extends GeneralManager {
 
     public void saveSelectedUser() {
 
-        ReturnMessage rm = getSelectedUser().saveUnique(getEntityManager1());
+        EntityManager em = getSystemManager().getEntityManager1();
+        LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
+
+        if (getSelectedUser().getId() == null) {
+
+            ReturnMessage rm = getSelectedUser().saveUnique(em);
+            if (!rm.isSuccess()) {
+                PrimeFacesUtils.addMessage(
+                        rm.getHeader(),
+                        rm.getMessage(),
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            if (checkMatchingUserPasswords(selectedUser)) {
+
+                if (!LdapContext.addUser(em, context, selectedUser)) {
+                    PrimeFacesUtils.addMessage(
+                            "User Security Detail NOT Added!",
+                            "The user's security detail was NOT Added. Consult the System Administrator.",
+                            FacesMessage.SEVERITY_ERROR);
+
+                    return;
+                }
+
+                PrimeFaces.current().dialog().closeDynamic(null);
+
+                return;
+
+            } else {
+                PrimeFacesUtils.addMessage(
+                        "No Match",
+                        "Passwords do NOT match",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+        }
+
+        ReturnMessage rm = getSelectedUser().saveUnique(em);
         if (!rm.isSuccess()) {
             PrimeFacesUtils.addMessage(
                     rm.getHeader(),
@@ -1013,8 +1054,8 @@ public final class SystemManager extends GeneralManager {
         LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
 
         if (!LdapContext.updateUser(context, selectedUser)) {
-            
-           if (checkMatchingUserPasswords(selectedUser)) {
+
+            if (checkMatchingUserPasswords(selectedUser)) {
 
                 return LdapContext.addUser(em, context, selectedUser);
             } else {
