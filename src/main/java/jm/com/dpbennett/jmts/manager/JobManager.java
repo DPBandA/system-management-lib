@@ -19,6 +19,7 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.jmts.manager;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -30,8 +31,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
@@ -205,6 +208,15 @@ public class JobManager extends GeneralManager
         getSystemManager().reInitUI();
         getFinanceManager().reInitUI();
         getHumanResourceManager().reInitUI();
+
+        // tk
+//        try {
+//            FacesContext.getCurrentInstance()
+//                    .getExternalContext()
+//                    .redirect("index-m.xhtml");
+//        } catch (IOException e) {
+//            throw new FacesException(e);
+//        }
     }
 
     @Override
