@@ -209,14 +209,6 @@ public class JobManager extends GeneralManager
         getFinanceManager().reInitUI();
         getHumanResourceManager().reInitUI();
 
-        // tk
-//        try {
-//            FacesContext.getCurrentInstance()
-//                    .getExternalContext()
-//                    .redirect("index-m.xhtml");
-//        } catch (IOException e) {
-//            throw new FacesException(e);
-//        }
     }
 
     @Override
