@@ -64,6 +64,7 @@ import org.primefaces.model.file.UploadedFile;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.jmts.manager.JobManager;
@@ -132,6 +133,23 @@ public final class SystemManager extends GeneralManager {
 
     public SystemManager() {
         init();
+    }
+
+    public void switchPage(String targetPage) {
+
+        try {
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .redirect(
+                            FacesContext.getCurrentInstance()
+                                    .getExternalContext()
+                                    .getRequestContextPath()
+                            + targetPage
+                    );
+        } catch (IOException ex) {
+            Logger.getLogger(JobManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public String getJMTSWebsiteURL() {

@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
@@ -132,6 +134,20 @@ public class JobManager extends GeneralManager
 
     public JobManager() {
         init();
+    }
+
+    @Override
+    public void completeLogin() {
+
+        super.completeLogin();
+
+        if (getUser().isRenderMobileUI()) {
+            getSystemManager().switchPage("/index-m.xhtml");
+        }
+        else {
+            getSystemManager().switchPage("/index.xhtml");
+        }
+
     }
 
     public void setStatusNoteSearchText(String statusNoteSearchText) {
