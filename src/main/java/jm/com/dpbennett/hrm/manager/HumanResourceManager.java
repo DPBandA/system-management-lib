@@ -137,15 +137,15 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         updateCertification();
     }
 
-    public void createNewJob() {
+    public void createNewJob(String dialog) {
 
         getJobManager().createJob(getJobManager().getEntityManager1(), false, false);
         getJobManager().getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
-        getJobManager().editJob();
+        getJobManager().editJob(dialog);
     }
 
-    private void updateDialogJobNumber(String dialog) {
+    private void updateDialogJobNumber(String dialog, String jobDialog) {
         switch (dialog) {
             case "Certificate":
                 getSelectedCertification().
@@ -155,12 +155,12 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         }
     }
 
-    public void jobDialogReturn(String dialog) {
+    public void jobDialogReturn(String dialog, String jobDialog) {
         if (getJobManager().getCurrentJob().getIsDirty()) {
             PrimeFacesUtils.addMessage("Job was NOT saved",
                     "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
         } else {
-            updateDialogJobNumber(dialog);
+            updateDialogJobNumber(dialog, jobDialog);
         }
     }
 
@@ -170,7 +170,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
         if (job != null) {
             getJobManager().setEditCurrentJob(job);
-            getJobManager().editJob();
+            getJobManager().editJob(dialog);
         } else {
             PrimeFacesUtils.addMessage("Job NOT found!",
                     "The job was not found", FacesMessage.SEVERITY_ERROR);

@@ -441,12 +441,12 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public void createNewJob() {
+    public void createNewJob(String dialog) {
 
         getJobManager().createJob(getJobManager().getEntityManager1(), false, false);
         getJobManager().getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
-        getJobManager().editJob();
+        getJobManager().editJob(dialog);
     }
 
     private String getDialogJobNumber(String dialog) {
@@ -480,13 +480,13 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public void editJob(String dialog) {
+    public void editJob(String dialog, String jobDialog) {
         Job job = Job.findJobByJobNumber(getJobManager().getEntityManager1(),
                 getDialogJobNumber(dialog));
 
         if (job != null) {
             getJobManager().setEditCurrentJob(job);
-            getJobManager().editJob();
+            getJobManager().editJob(jobDialog);
         } else {
             PrimeFacesUtils.addMessage("Job NOT found!",
                     "The job was not found", FacesMessage.SEVERITY_ERROR);

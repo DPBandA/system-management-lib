@@ -449,7 +449,7 @@ public class JobFinanceManager extends GeneralManager
         return BeanUtils.findBean("systemManager");
     }
 
-    public void createNewProformaInvoice() {
+    public void createNewProformaInvoice(String dialog) {
 
         createNewJob();
 
@@ -471,7 +471,7 @@ public class JobFinanceManager extends GeneralManager
         getCurrentJob().setJobNumber(Job.generateJobNumber(getCurrentJob(),
                 getEntityManager1()));
 
-        getJobManager().editJob();
+        getJobManager().editJob(dialog);
 
         openProformaInvoicesTab();
     }

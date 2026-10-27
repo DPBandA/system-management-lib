@@ -143,8 +143,7 @@ public class JobManager extends GeneralManager
 
         if (getUser().isRenderMobileUI()) {
             getSystemManager().switchPage("/index-m.xhtml");
-        }
-        else {
+        } else {
             getSystemManager().switchPage("/index.xhtml");
         }
 
@@ -1336,7 +1335,7 @@ public class JobManager extends GeneralManager
         return suggestions;
     }
 
-    public void createNewJob() {
+    public void createNewJob(String dialog) {
 
         EntityManager em = getEntityManager1();
 
@@ -1345,35 +1344,22 @@ public class JobManager extends GeneralManager
 
         openJobBrowser();
 
-        editJob();
+        editJob(dialog);
 
     }
 
-    public void createNewJobdInline() {
+    public void addNewJob(String dialog) {
 
         EntityManager em = getEntityManager1();
 
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
-        openJobBrowser();
-
-        editJobDInline();
+        editJob(dialog);
 
     }
 
-    public void addNewJob() {
-
-        EntityManager em = getEntityManager1();
-
-        createJob(em, false, false);
-        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
-
-        editJob();
-
-    }
-
-    public void createNewSubcontract() {
+    public void createNewSubcontract(String dialog) {
 
         EntityManager em = getEntityManager1();
 
@@ -1381,7 +1367,7 @@ public class JobManager extends GeneralManager
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
         getCurrentJob().setIsToBeSubcontracted(true);
 
-        editJob();
+        editJob(dialog);
 
         openJobBrowser();
     }
@@ -2406,7 +2392,7 @@ public class JobManager extends GeneralManager
         this.currentJob = currentJob;
     }
 
-    public void editJob() {
+    public void editJob(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -2422,27 +2408,7 @@ public class JobManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
-
-    }
-
-    public void editJobDInline() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .closable(true)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/job-d-inline/jobDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/" + dialog, options, null);
 
     }
 
