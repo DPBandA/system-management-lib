@@ -298,7 +298,7 @@ public class JobSampleManager extends GeneralManager
         return dirty;
     }
 
-    public void createNewJobSample(ActionEvent event) {
+    public void createNewJobSample(String dialog) {
 
         if (getCurrentJob().hasOnlyDefaultJobSample()) {
             selectedJobSample = getCurrentJob().getJobSamples().get(0);
@@ -325,7 +325,7 @@ public class JobSampleManager extends GeneralManager
         selectedJobSample.setDateSampled(new Date());
         jobSampleDialogTabViewActiveIndex = 0;
 
-        editJobSample(event);
+        editJobSample(dialog);
     }
 
     @Override
@@ -485,7 +485,7 @@ public class JobSampleManager extends GeneralManager
         return new JobSampleDataModel(getCurrentJob().getFilteredJobSamples());
     }
 
-    public void editJobSample(ActionEvent event) {
+    public void editJobSample(String dialog) {
         jobSampleDialogTabViewActiveIndex = 0;
         setCancelEdit(false);
 
@@ -502,7 +502,7 @@ public class JobSampleManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/sample/" + dialog, options, null);
 
     }
 
