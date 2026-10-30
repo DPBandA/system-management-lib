@@ -147,7 +147,7 @@ public final class SystemManager extends GeneralManager {
                             + targetPage
                     );
         } catch (IOException ex) {
-            Logger.getLogger(JobManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SystemManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

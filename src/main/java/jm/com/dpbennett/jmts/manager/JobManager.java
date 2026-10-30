@@ -136,19 +136,6 @@ public class JobManager extends GeneralManager
                 "showOrganization");
     }
 
-    @Override
-    public void completeLogin() {
-
-        super.completeLogin();
-
-        if (getUser().isRenderMobileUI()) {
-            getSystemManager().switchPage("/index-m.xhtml");
-        } else {
-            getSystemManager().switchPage("/index.xhtml");
-        }
-
-    }
-
     public void setStatusNoteSearchText(String statusNoteSearchText) {
         this.statusNoteSearchText = statusNoteSearchText;
     }

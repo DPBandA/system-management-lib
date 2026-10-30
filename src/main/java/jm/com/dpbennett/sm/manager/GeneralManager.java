@@ -568,6 +568,12 @@ public class GeneralManager implements Manager, Serializable {
 
         initDashboard();
 
+        if (getUser().isRenderMobileUI()) {
+            getSystemManager().switchPage("/index-m.xhtml");
+        } else {
+            getSystemManager().switchPage("/index.xhtml");
+        }
+
     }
 
     @Override
