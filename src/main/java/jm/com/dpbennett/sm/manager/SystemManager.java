@@ -823,7 +823,7 @@ public final class SystemManager extends GeneralManager {
         foundUser.setUsername(username);
     }
 
-    public void editUser() {
+    public void editUser(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -838,7 +838,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -969,7 +969,7 @@ public final class SystemManager extends GeneralManager {
         }
     }
 
-    public void createNewUser() {
+    public void createNewUser(String dialog) {
 
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
         EntityManager em = getEntityManager1();
@@ -981,7 +981,7 @@ public final class SystemManager extends GeneralManager {
         selectedUser.setNewPassword(defaultUserPassword);
         selectedUser.setConfirmedNewPassword(defaultUserPassword);
 
-        editUser();
+        editUser(dialog);
     }
 
     public void updateUserPrivilege(ValueChangeEvent event) {
