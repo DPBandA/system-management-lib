@@ -130,7 +130,7 @@ public class JobManager extends GeneralManager
     public JobManager() {
         init();
     }
-    
+
     public Boolean showOrganization() {
         return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
                 "showOrganization");
@@ -2610,7 +2610,12 @@ public class JobManager extends GeneralManager
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
+
+        }
 
     }
 
@@ -2618,8 +2623,12 @@ public class JobManager extends GeneralManager
         getClientManager().setSelectedClient(getCurrentJob().getClient());
         getClientManager().setClientDialogTitle("Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,

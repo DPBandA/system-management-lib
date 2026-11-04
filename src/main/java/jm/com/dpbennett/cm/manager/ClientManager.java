@@ -476,7 +476,7 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void editClient() {
     }
 
-    public void editSelectedClient() {
+    public void editSelectedClient(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -491,7 +491,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/client/clientDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/client/" + dialog, options, null);
 
     }
 
@@ -555,12 +555,12 @@ public class ClientManager extends GeneralManager implements Serializable {
         setIsDirty(true);
     }
 
-    public void createNewClient() {
+    public void createNewClient(String dialog) {
         createNewClient(true);
 
         getSystemManager().getMainTabView().openTab("Clients");
 
-        editSelectedClient();
+        editSelectedClient(dialog);
     }
 
     public void createNewClientDInline() {

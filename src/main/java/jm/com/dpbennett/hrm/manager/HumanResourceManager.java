@@ -1077,7 +1077,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
-    public void editEmployeePosition() {
+    public void editEmployeePosition(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1092,7 +1092,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("employeePositionDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1172,7 +1172,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
-    public void editEmployee() {
+    public void editEmployee(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1187,7 +1187,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("employeeDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1365,11 +1365,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         editDepartment();
     }
 
-    public void createNewEmployeePosition() {
+    public void createNewEmployeePosition(String dialog) {
 
         selectedEmployeePosition = new EmployeePosition();
 
-        editEmployeePosition();
+        editEmployeePosition(dialog);
     }
 
     public void openDepartmentPickListDialog() {
@@ -1510,11 +1510,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         editSubgroup();
     }
 
-    public void createNewEmployee() {
+    public void createNewEmployee(String dialog) {
 
         selectedEmployee = new Employee();
 
-        editEmployee();
+        editEmployee(dialog);
     }
 
     public void createNewDivision() {
@@ -1790,8 +1790,12 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         getClientManager().setSelectedClient(getSelectedCertification().getApplicant());
         getClientManager().setClientDialogTitle("Applicant");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void certificateApplicantDialogReturn() {
@@ -1804,7 +1808,12 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Applicant");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
+
+        }
     }
 
     public void updateManufacturerName(AjaxBehaviorEvent event) {

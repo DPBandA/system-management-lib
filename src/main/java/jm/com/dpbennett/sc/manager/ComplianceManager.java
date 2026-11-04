@@ -859,8 +859,12 @@ public class ComplianceManager extends GeneralManager
 
     public void editClient() {
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void editConsignee() {
@@ -2933,14 +2937,13 @@ public class ComplianceManager extends GeneralManager
         parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
-        
+
         // Container numbers
         String cns = "";
         for (String cn : getAllShippingContainers()) {
             if (cns.isEmpty()) {
                 cns = cn;
-            }
-            else {
+            } else {
                 cns = cns + ", " + cn;
             }
         }

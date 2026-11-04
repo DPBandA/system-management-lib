@@ -290,7 +290,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().setSelectedClient(getCurrentPetrolStation().getClient());
         getClientManager().setClientDialogTitle("Petrol Company Detail");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
+
+        }
 
     }
 
@@ -298,8 +303,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().setSelectedClient(getCurrentScale().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void petrolCompanyDialogReturn() {
@@ -318,16 +327,24 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client/Company Detail");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void createNewScaleClient() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Scale Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public Boolean getIsPetrolStationClientNameValid() {
@@ -841,7 +858,6 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 //
 //        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpNozzleDialog",
 //                options, null);
-
     }
 
     public void editPetrolStation() {

@@ -519,7 +519,7 @@ public final class SystemManager extends GeneralManager {
         this.selectedEmail = selectedEmail;
     }
 
-    public void editEmailTemplate() {
+    public void editEmailTemplate(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -534,7 +534,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/admin/emailTemplateDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/admin/" + dialog, options, null);
 
     }
 
@@ -545,11 +545,11 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void createNewEmailTemplate() {
+    public void createNewEmailTemplate(String dialog) {
 
         selectedEmail = new Email();
 
-        editEmailTemplate();
+        editEmailTemplate(dialog);
     }
 
     public void doEmailSearch() {
@@ -1778,11 +1778,11 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void createNewModule() {
+    public void createNewModule(String dialog) {
         selectedModule = new Module();
         selectedModule.setActive(true);
 
-        editModule();
+        editModule(dialog);
 
     }
 
@@ -1932,7 +1932,7 @@ public final class SystemManager extends GeneralManager {
         return (!getActiveNotifications().isEmpty());
     }
 
-    public void editModule() {
+    public void editModule(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1947,7 +1947,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("moduleDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
