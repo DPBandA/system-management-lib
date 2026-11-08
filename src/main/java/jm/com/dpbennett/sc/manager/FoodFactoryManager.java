@@ -132,9 +132,9 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
         getHumanResourceManager().setSelectedManufacturer(selectedFactory);
     }
 
-    public void editSelectedFactory() {
+    public void editSelectedFactory(String dialog) {
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
@@ -190,11 +190,11 @@ public class FoodFactoryManager extends GeneralManager implements Serializable {
         this.factories = factories;
     }
 
-    public void createNewFoodFactory() {
+    public void createNewFoodFactory(String dialog) {
 
         getHumanResourceManager().createNewManufacturer(true);
         getHumanResourceManager().getSelectedManufacturer().setType("Food Factory");
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
         openFactoryBrowser();
     }

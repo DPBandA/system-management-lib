@@ -1058,7 +1058,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
-    public void editDepartment() {
+    public void editDepartment(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1073,7 +1073,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("departmentDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1096,7 +1096,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
-    public void editSubgroup() {
+    public void editSubgroup(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1111,11 +1111,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("subgroupDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editDivision() {
+    public void editDivision(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1130,7 +1130,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("divisionDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1358,11 +1358,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         return Utils.getSexes(getSystemManager().getEntityManager1());
     }
 
-    public void createNewDepartment() {
+    public void createNewDepartment(String dialog) {
 
         selectedDepartment = new Department();
 
-        editDepartment();
+        editDepartment(dialog);
     }
 
     public void createNewEmployeePosition(String dialog) {
@@ -1503,11 +1503,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         editBusinessOffice();
     }
 
-    public void createNewSubgroup() {
+    public void createNewSubgroup(String dialog) {
 
         selectedSubgroup = new Subgroup();
 
-        editSubgroup();
+        editSubgroup(dialog);
     }
 
     public void createNewEmployee(String dialog) {
@@ -1517,11 +1517,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         editEmployee(dialog);
     }
 
-    public void createNewDivision() {
+    public void createNewDivision(String dialog) {
 
         selectedDivision = new Division();
 
-        editDivision();
+        editDivision(dialog);
     }
 
     public List<BusinessOffice> getBusinessOffices() {
@@ -1577,13 +1577,13 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         this.foundManufacturers = foundManufacturers;
     }
 
-    public void createNewManufacturer() {
+    public void createNewManufacturer(String dialog) {
         createNewManufacturer(true);
 
-        editSelectedManufacturer();
+        editSelectedManufacturer(dialog);
     }
 
-    public void createNewManufacturerCertificate() {
+    public void createNewManufacturerCertificate(String dialog) {
 
         selectedCertification = new Certification();
 
@@ -1591,10 +1591,10 @@ public class HumanResourceManager extends GeneralManager implements Serializable
             selectedCertification.setOwnerId(getSelectedManufacturer().getId());
         }
 
-        editSelectedCertification();
+        editSelectedCertification(dialog);
     }
 
-    public void editSelectedCertification() {
+    public void editSelectedCertification(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1609,7 +1609,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/hr/manufacturer/certificateDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/hr/manufacturer/" + dialog, options, null);
 
     }
 
@@ -1617,7 +1617,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         selectedManufacturer = new Manufacturer("");
     }
 
-    public void editSelectedManufacturer() {
+    public void editSelectedManufacturer(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1632,7 +1632,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/hr/manufacturer/manufacturerDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/hr/manufacturer/" + dialog, options, null);
 
     }
 

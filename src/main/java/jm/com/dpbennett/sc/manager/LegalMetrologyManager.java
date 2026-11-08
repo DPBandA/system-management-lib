@@ -143,35 +143,35 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return BusinessEntityUtils.validateText(getCurrentPetrolPumpNozzle().getManufacturer().getName());
     }
 
-    public void editPetrolPumpManufacturer() {
+    public void editPetrolPumpManufacturer(String dialog) {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPump().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void editPetrolPumpNozzleManufacturer() {
+    public void editPetrolPumpNozzleManufacturer(String dialog) {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPumpNozzle().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void editScaleManufacturer() {
+    public void editScaleManufacturer(String dialog) {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentScale().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void createNewManufacturer() {
+    public void createNewManufacturer(String dialog) {
 
         getHumanResourceManager().createNewManufacturer(true);
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
     }
 
     public void petrolPumpManufacturerDialogReturn() {

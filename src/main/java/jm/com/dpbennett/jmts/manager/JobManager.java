@@ -101,6 +101,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
 import jm.com.dpbennett.business.entity.sm.Module;
+import kotlin.collections.ArrayDeque;
 
 /**
  *
@@ -141,6 +142,11 @@ public class JobManager extends GeneralManager
     }
 
     public List<StatusNote> getFilteredStatusNotes() {
+
+        if (filteredStatusNotes == null) {
+            filteredStatusNotes = new ArrayList<>();
+        }
+
         return filteredStatusNotes;
     }
 

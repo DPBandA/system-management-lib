@@ -231,9 +231,9 @@ public class ComplianceManager extends GeneralManager
         getHumanResourceManager().setSelectedManufacturer(selectedManufacturer);
     }
 
-    public void editSelectedManufacturer() {
+    public void editSelectedManufacturer(String dialog) {
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
@@ -899,17 +899,17 @@ public class ComplianceManager extends GeneralManager
 
     }
 
-    public void editManufacturer() {
+    public void editManufacturer(String dialog) {
         getHumanResourceManager().setSelectedManufacturer(getCurrentProductInspection().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void editFactoryInspectionManufacturer() {
+    public void editFactoryInspectionManufacturer(String dialog) {
         getHumanResourceManager().setSelectedManufacturer(getCurrentFactoryInspection().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
     }
 
     public void editDistributor() {
@@ -968,10 +968,10 @@ public class ComplianceManager extends GeneralManager
 
     }
 
-    public void createNewManufacturer() {
+    public void createNewManufacturer(String dialog) {
         getHumanResourceManager().createNewManufacturer(true);
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
     }
 
     public void createNewRetailOutlet() {
