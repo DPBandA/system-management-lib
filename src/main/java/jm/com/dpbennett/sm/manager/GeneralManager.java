@@ -19,11 +19,15 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.manager;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.naming.NamingEnumeration;
@@ -85,6 +89,24 @@ public class GeneralManager implements Manager, Serializable {
             if (getManager(moduleName) != null) {
                 getManager(moduleName).setUser(getUser());
             }
+        }
+
+    }
+    
+    @Override
+    public void switchPage(String targetPage) {
+
+        try {
+            FacesContext.getCurrentInstance()
+                    .getExternalContext()
+                    .redirect(
+                            FacesContext.getCurrentInstance()
+                                    .getExternalContext()
+                                    .getRequestContextPath()
+                            + targetPage
+                    );
+        } catch (IOException ex) {
+            Logger.getLogger(GeneralManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

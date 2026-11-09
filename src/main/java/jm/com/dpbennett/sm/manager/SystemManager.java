@@ -135,23 +135,6 @@ public final class SystemManager extends GeneralManager {
         init();
     }
 
-    public void switchPage(String targetPage) {
-
-        try {
-            FacesContext.getCurrentInstance()
-                    .getExternalContext()
-                    .redirect(
-                            FacesContext.getCurrentInstance()
-                                    .getExternalContext()
-                                    .getRequestContextPath()
-                            + targetPage
-                    );
-        } catch (IOException ex) {
-            Logger.getLogger(SystemManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
     public String getJMTSWebsiteURL() {
         return (String) SystemOption.getOptionValueObject(
                 getSystemManager().getEntityManager1(), "JMTSWebsiteURL");
