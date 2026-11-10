@@ -19,30 +19,23 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.auth.Privilege;
+import jm.com.dpbennett.business.entity.sm.Module;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("activePrivilegeConverter")
-public class ActivePrivilegeConverter extends ConverterAdapter {
+@FacesConverter(value = "moduleConverter", managed = true)
+public class ModuleConverter extends EntityConverter<Module> {
+
+    public ModuleConverter() {
+        super(Module.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Privilege privilege = Privilege.findActiveByName(em, value);
-
-        if (privilege == null) {
-            privilege = new Privilege(value);
-        }
-
-        return privilege;
+    protected Long getId(Module module) {
+        return  module.getId();
     }
 
 }

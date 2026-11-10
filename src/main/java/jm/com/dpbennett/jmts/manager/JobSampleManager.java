@@ -28,6 +28,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
+import jm.com.dpbennett.business.entity.fm.MarketProduct;
 import jm.com.dpbennett.business.entity.hrm.Department;
 import jm.com.dpbennett.business.entity.jmts.JobSample;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -37,6 +38,7 @@ import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.sm.Notification;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.jmts.JobSampleDataModel;
 import jm.com.dpbennett.sm.manager.GeneralManager;
@@ -61,6 +63,39 @@ public class JobSampleManager extends GeneralManager
 
     public JobSampleManager() {
         init();
+    }
+
+    public void marketProductDialogReturn() {
+        if (getFinanceManager().getSelectedMarketProduct().getId() != null) {
+            getSelectedJobSample().setMarketProduct(getFinanceManager().getSelectedMarketProduct());
+            getSelectedJobSample().setName(getFinanceManager().getSelectedMarketProduct().getName());
+        }
+    }
+
+    public void createNewMarketProduct() {
+
+        getFinanceManager().setSelectedMarketProduct(new MarketProduct());
+
+        getFinanceManager().editSelectedMarketProduct();
+    }
+
+    public FinanceManager getFinanceManager() {
+
+        return BeanUtils.findBean("financeManager");
+    }
+
+    public void editMarketProduct() {
+
+        getFinanceManager().
+                setSelectedMarketProduct(getSelectedJobSample().
+                        getMarketProduct());
+
+        getFinanceManager().editSelectedMarketProduct();
+    }
+
+    public Boolean getIsMarketProductNameValid() {
+        return BusinessEntityUtils.validateText(
+                getSelectedJobSample().getMarketProduct().getName());
     }
 
     @Override
@@ -104,9 +139,9 @@ public class JobSampleManager extends GeneralManager
     }
 
     public final void init() {
-        
+
         reset();
-       
+
     }
 
     @Override
@@ -223,9 +258,9 @@ public class JobSampleManager extends GeneralManager
                         "sampleCollectionDays");
 
         Business org = User.getUserOrganizationByDepartment(
-                getHumanResourceManager().getEntityManager1(), 
+                getHumanResourceManager().getEntityManager1(),
                 getUser());
-      
+
         methods.add(new SelectItem("1", "Collected by the client within " + days + " days"));
         if (org != null) {
             methods.add(new SelectItem("2", "Disposed of by " + org));
@@ -247,10 +282,10 @@ public class JobSampleManager extends GeneralManager
     @Override
     public void reset() {
         super.reset();
-        
+
         setName("jobSampleManager");
         selectedJobSample = new JobSample();
-        jobSampleDialogTabViewActiveIndex = 0; 
+        jobSampleDialogTabViewActiveIndex = 0;
     }
 
     public Boolean isSamplesDirty() {
@@ -263,7 +298,7 @@ public class JobSampleManager extends GeneralManager
         return dirty;
     }
 
-    public void createNewJobSample(ActionEvent event) {
+    public void createNewJobSample(String dialog) {
 
         if (getCurrentJob().hasOnlyDefaultJobSample()) {
             selectedJobSample = getCurrentJob().getJobSamples().get(0);
@@ -290,7 +325,7 @@ public class JobSampleManager extends GeneralManager
         selectedJobSample.setDateSampled(new Date());
         jobSampleDialogTabViewActiveIndex = 0;
 
-        editJobSample(event);
+        editJobSample(dialog);
     }
 
     @Override
@@ -367,6 +402,7 @@ public class JobSampleManager extends GeneralManager
     public void updateSample(AjaxBehaviorEvent event) {
         if (event.getComponent() != null) {
             getSelectedJobSample().setIsDirty(true);
+            getSelectedJobSample().setName(getSelectedJobSample().getMarketProduct().getName());
         }
     }
 
@@ -449,7 +485,7 @@ public class JobSampleManager extends GeneralManager
         return new JobSampleDataModel(getCurrentJob().getFilteredJobSamples());
     }
 
-    public void editJobSample(ActionEvent event) {
+    public void editJobSample(String dialog) {
         jobSampleDialogTabViewActiveIndex = 0;
         setCancelEdit(false);
 
@@ -466,7 +502,7 @@ public class JobSampleManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/sample/jobSampleDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/sample/" + dialog, options, null);
 
     }
 
@@ -603,6 +639,7 @@ public class JobSampleManager extends GeneralManager
     }
 
     public JobSample getSelectedJobSample() {
+
         return selectedJobSample;
     }
 

@@ -1,5 +1,5 @@
 /*
-System Management (SM) 
+Job Management & Tracking System (JMTS) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,33 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.jmts.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.jmts.Job;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-public class JobConverter implements Converter {
+@FacesConverter(value = "jobConverter", managed = true)
+public class JobConverter extends EntityConverter<Job> {
 
-    @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Job job = new Job();
-
-        if (value != null) {            
-            job.setJobNumber(value);
-        }
-        else {
-            job.setJobNumber("");
-        }
-
-        return job;
+    public JobConverter() {
+        super(Job.class);
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((Job) value).getJobNumber();
+    protected Long getId(Job job) {
+        return job.getId();
     }
+
 }

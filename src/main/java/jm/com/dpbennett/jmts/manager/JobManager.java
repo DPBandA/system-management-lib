@@ -101,7 +101,7 @@ import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import jm.com.dpbennett.sm.util.ReportUtils;
 import org.primefaces.model.DialogFrameworkOptions;
 import jm.com.dpbennett.business.entity.sm.Module;
-import org.primefaces.event.TabChangeEvent;
+import kotlin.collections.ArrayDeque;
 
 /**
  *
@@ -125,9 +125,82 @@ public class JobManager extends GeneralManager
     private StatusNote selectedStatusNote;
     private String searchText;
     private String searchType;
+    private String statusNoteSearchText;
+    private List<StatusNote> filteredStatusNotes;
 
     public JobManager() {
         init();
+    }
+
+    public Boolean showOrganization() {
+        return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
+                "showOrganization");
+    }
+
+    public void setStatusNoteSearchText(String statusNoteSearchText) {
+        this.statusNoteSearchText = statusNoteSearchText;
+    }
+
+    public List<StatusNote> getFilteredStatusNotes() {
+
+        if (filteredStatusNotes == null) {
+            filteredStatusNotes = new ArrayList<>();
+        }
+
+        return filteredStatusNotes;
+    }
+
+    public void setFilteredStatusNotes(List<StatusNote> filteredStatusNotes) {
+        this.filteredStatusNotes = filteredStatusNotes;
+    }
+
+    public void doStatusNoteSearch() {
+
+        getFilteredStatusNotes().clear();
+
+        if (getStatusNoteSearchText().isEmpty()) {
+            setFilteredStatusNotes(getStatusNotes());
+
+            return;
+        }
+
+        for (StatusNote statusNote : getStatusNotes()) {
+            if (statusNote.getText().toUpperCase().contains(getStatusNoteSearchText().
+                    toUpperCase())) {
+
+                getFilteredStatusNotes().add(statusNote);
+            }
+        }
+    }
+
+    public String getStatusNoteSearchText() {
+        if (statusNoteSearchText == null) {
+            statusNoteSearchText = "";
+        }
+
+        return statusNoteSearchText;
+    }
+
+    public List<String> completeJobNumber(String query) {
+        List<String> jobNumbers = new ArrayList<>();
+        int maxResult = SystemOption.getInteger(
+                getSystemManager().getEntityManager1(),
+                "maxSearchResults");
+
+        try {
+
+            List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query, maxResult);
+
+            for (Job job : foundJobs) {
+                jobNumbers.add(job.getJobNumber());
+            }
+
+            return jobNumbers;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
     }
 
     public Job getParentJob() {
@@ -143,6 +216,7 @@ public class JobManager extends GeneralManager
         getSystemManager().reInitUI();
         getFinanceManager().reInitUI();
         getHumanResourceManager().reInitUI();
+
     }
 
     @Override
@@ -721,6 +795,8 @@ public class JobManager extends GeneralManager
     public void okStatusNote() {
         selectedStatusNote.save(getEntityManager1());
 
+        doStatusNoteSearch();
+
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
@@ -1117,7 +1193,6 @@ public class JobManager extends GeneralManager
         showJobEntry = false;
         useAccPacCustomerList = false;
         jobSearchResultList = new ArrayList<>();
-
     }
 
     public void openSystemBrowser() {
@@ -1253,7 +1328,7 @@ public class JobManager extends GeneralManager
         return suggestions;
     }
 
-    public void createNewJob() {
+    public void createNewJob(String dialog) {
 
         EntityManager em = getEntityManager1();
 
@@ -1262,35 +1337,22 @@ public class JobManager extends GeneralManager
 
         openJobBrowser();
 
-        editJob();
+        editJob(dialog);
 
     }
 
-    public void createNewJobdInline() {
+    public void addNewJob(String dialog) {
 
         EntityManager em = getEntityManager1();
 
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
-        openJobBrowser();
-
-        editJobDInline();
+        editJob(dialog);
 
     }
 
-    public void addNewJob() {
-
-        EntityManager em = getEntityManager1();
-
-        createJob(em, false, false);
-        getJobFinanceManager().setEnableOnlyPaymentEditing(false);
-
-        editJob();
-
-    }
-
-    public void createNewSubcontract() {
+    public void createNewSubcontract(String dialog) {
 
         EntityManager em = getEntityManager1();
 
@@ -1298,7 +1360,7 @@ public class JobManager extends GeneralManager
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
         getCurrentJob().setIsToBeSubcontracted(true);
 
-        editJob();
+        editJob(dialog);
 
         openJobBrowser();
     }
@@ -2323,7 +2385,7 @@ public class JobManager extends GeneralManager
         this.currentJob = currentJob;
     }
 
-    public void editJob() {
+    public void editJob(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -2339,27 +2401,7 @@ public class JobManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/job/jobDialog", options, null);
-
-    }
-
-    public void editJobDInline() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .closable(true)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/job-d-inline/jobDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/job/" + dialog, options, null);
 
     }
 
@@ -2411,6 +2453,11 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+
+        setFilteredStatusNotes(getStatusNotes());
+
+        setStatusNoteSearchText("");
+        setFilteredStatusNotes(getStatusNotes());
 
         if (getCurrentJob().getServiceContract().getSelectedService().getId() == null) {
             if (!getCurrentJob().getServices().isEmpty()) {
@@ -2567,18 +2614,27 @@ public class JobManager extends GeneralManager
 
     public void createNewJobClient() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
+
+        }
 
     }
 
     public void editJobClient() {
         getClientManager().setSelectedClient(getCurrentJob().getClient());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public ServiceRequest createNewServiceRequest(EntityManager em,

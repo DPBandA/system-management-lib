@@ -44,6 +44,8 @@ public interface Manager {
     public void reset();
 
     public void initManager();
+    
+    public void switchPage(String targetPage);
 
     public SelectItemGroup getSearchTypesGroup();
 

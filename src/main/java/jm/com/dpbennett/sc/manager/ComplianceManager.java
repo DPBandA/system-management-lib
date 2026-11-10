@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -57,6 +58,7 @@ import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.business.entity.hrm.Business;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -143,9 +145,31 @@ public class ComplianceManager extends GeneralManager
         init();
     }
 
+    public void updateNoticeOfDiscontinuanceIssued() {
+
+        if (getCurrentComplianceSurvey().getNoticeOfDiscontinuanceIssuedForDomesticMarket()) {
+            getCurrentComplianceSurvey().setDateOfDiscontinuance(new Date());
+        } else {
+            getCurrentComplianceSurvey().setDateOfDiscontinuance(null);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public List<Business> completeActiveBusiness(String query) {
+        return getHumanResourceManager().completeActiveBusiness(query);
+    }
+
+    public void openComplianceSettingsTab() {
+
+        getSystemManager().doSystemOptionSearch("Compliance");
+
+        getSystemManager().getMainTabView().openTab("Compliance Settings");
+    }
+
     @Override
     public void onDashboardTabChange(TabChangeEvent event) {
-       
+
         for (jm.com.dpbennett.business.entity.sm.Module mod : getUser().getActiveModules()) {
             if (mod.getDashboardTitle().equals(event.getTab().getTitle())) {
                 getManager(mod.getName()).openMainViewTab(mod.getMainViewTitle());
@@ -207,9 +231,9 @@ public class ComplianceManager extends GeneralManager
         getHumanResourceManager().setSelectedManufacturer(selectedManufacturer);
     }
 
-    public void editSelectedManufacturer() {
+    public void editSelectedManufacturer(String dialog) {
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
@@ -417,12 +441,12 @@ public class ComplianceManager extends GeneralManager
         }
     }
 
-    public void createNewJob() {
+    public void createNewJob(String dialog) {
 
         getJobManager().createJob(getJobManager().getEntityManager1(), false, false);
         getJobManager().getJobFinanceManager().setEnableOnlyPaymentEditing(false);
 
-        getJobManager().editJob();
+        getJobManager().editJob(dialog);
     }
 
     private String getDialogJobNumber(String dialog) {
@@ -444,28 +468,25 @@ public class ComplianceManager extends GeneralManager
             case "Complaint":
                 getCurrentComplaint().
                         setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-                updateComplaint();
                 PrimeFaces.current().ajax().update(":complaintDialogForm:topToolbar,complaintTabView");
             case "Survey":
                 getCurrentComplianceSurvey().
                         setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-                updateSurvey();
                 PrimeFaces.current().ajax().update(":ComplianceSurveyDialogForm:topToolbar,generalPanelGrid,complianceSurveyTabView");
             case "FactoryInspection":
                 getCurrentFactoryInspection().
                         setJobNumber(getJobManager().getCurrentJob().getJobNumber());
-                updateFactoryInspection();
                 PrimeFaces.current().ajax().update(":factoryInspectionDialogForm:topToolbar,factoryInspectionTabView");
         }
     }
 
-    public void editJob(String dialog) {
+    public void editJob(String dialog, String jobDialog) {
         Job job = Job.findJobByJobNumber(getJobManager().getEntityManager1(),
                 getDialogJobNumber(dialog));
 
         if (job != null) {
             getJobManager().setEditCurrentJob(job);
-            getJobManager().editJob();
+            getJobManager().editJob(jobDialog);
         } else {
             PrimeFacesUtils.addMessage("Job NOT found!",
                     "The job was not found", FacesMessage.SEVERITY_ERROR);
@@ -838,8 +859,12 @@ public class ComplianceManager extends GeneralManager
 
     public void editClient() {
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void editConsignee() {
@@ -860,7 +885,7 @@ public class ComplianceManager extends GeneralManager
 
     public void editReceivedVia() {
         getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         editClient();
 
@@ -874,17 +899,17 @@ public class ComplianceManager extends GeneralManager
 
     }
 
-    public void editManufacturer() {
+    public void editManufacturer(String dialog) {
         getHumanResourceManager().setSelectedManufacturer(getCurrentProductInspection().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void editFactoryInspectionManufacturer() {
+    public void editFactoryInspectionManufacturer(String dialog) {
         getHumanResourceManager().setSelectedManufacturer(getCurrentFactoryInspection().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
     }
 
     public void editDistributor() {
@@ -921,7 +946,7 @@ public class ComplianceManager extends GeneralManager
 
     public void createNewReceivedVia() {
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
         editClient();
 
@@ -943,10 +968,10 @@ public class ComplianceManager extends GeneralManager
 
     }
 
-    public void createNewManufacturer() {
+    public void createNewManufacturer(String dialog) {
         getHumanResourceManager().createNewManufacturer(true);
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
     }
 
     public void createNewRetailOutlet() {
@@ -1519,95 +1544,14 @@ public class ComplianceManager extends GeneralManager
         this.currentShippingContainer = currentShippingContainer;
     }
 
-    public StreamedContent getAuthSigForDetentionRequestPOE() {
-        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getInspectorSigForSampleRequestPOE() {
-        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getPreparedBySigForReleaseRequestPOE() {
-        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage() != null) {
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getAuthSigForNoticeOfDentionDM() {
-        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() != null) {
-            if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public StreamedContent getApprovedBySigForReleaseRequestPOE() {
-        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() != null) {
-            if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage() != null) {
-
-                return DefaultStreamedContent.builder()
-                        .stream(() -> new ByteArrayInputStream(currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage()))
-                        .contentType("image/png")
-                        .build();
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
     public void updateAuthDetentionRequestPOE() {
 
         if (currentComplianceSurvey.getAuthEmployeeForDetentionRequestPOE().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
             currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(getUserEmployee());
-            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUserEmployee().getSignature());
         } else {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthEmployeeForDetentionRequestPOE(null);
-            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
         }
 
         updateSurvey();
@@ -1619,11 +1563,35 @@ public class ComplianceManager extends GeneralManager
         if (currentComplianceSurvey.getInspectorForSampleRequestPOE().getId() == null) {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
             currentComplianceSurvey.setInspectorForSampleRequestPOE(getUserEmployee());
-            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUserEmployee().getSignature());
         } else {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorForSampleRequestPOE(null);
-            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
+        }
+
+        updateSurvey();
+    }
+
+    public void updateInspectorSigForNoticeOfDiscontinuanceDM() {
+
+        if (currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getId() == null) {
+            currentComplianceSurvey.setDateNoticeOfDiscontinuanceSigned(new Date());
+            currentComplianceSurvey.setInspectorForNoticeOfDiscontinuanceDM(getUserEmployee());
+        } else {
+            currentComplianceSurvey.setDateNoticeOfDiscontinuanceSigned(null);
+            currentComplianceSurvey.setInspectorForNoticeOfDiscontinuanceDM(null);
+        }
+
+        updateSurvey();
+    }
+
+    public void updateInspectorSigForSampleRequestDM() {
+
+        if (currentComplianceSurvey.getInspectorForSampleRequestDM().getId() == null) {
+            currentComplianceSurvey.setInspectorSigDateForSampleRequestDM(new Date());
+            currentComplianceSurvey.setInspectorForSampleRequestDM(getUserEmployee());
+        } else {
+            currentComplianceSurvey.setInspectorSigDateForSampleRequestDM(null);
+            currentComplianceSurvey.setInspectorForSampleRequestDM(null);
         }
 
         updateSurvey();
@@ -1633,11 +1601,9 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getPreparedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUserEmployee().getSignature());
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUserEmployee());
         } else {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(null);
-            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(null);
         }
 
@@ -1649,11 +1615,9 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getAuthEmployeeForNoticeOfDentionDM().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
-            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUserEmployee().getSignature());
             currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(getUserEmployee());
         } else {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
-            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthEmployeeForNoticeOfDentionDM(null);
         }
 
@@ -1665,11 +1629,9 @@ public class ComplianceManager extends GeneralManager
 
         if (currentComplianceSurvey.getApprovedByEmployeeForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUserEmployee().getSignature());
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUserEmployee());
         } else {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(null);
-            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(null);
         }
 
@@ -1884,6 +1846,54 @@ public class ComplianceManager extends GeneralManager
         getCurrentComplianceSurvey().setIsDirty(true);
     }
 
+    public void updateTemporaryDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getTemporarily()) {
+            getCurrentComplianceSurvey().setPermanently(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updatePermanentDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getPermanently()) {
+            getCurrentComplianceSurvey().setTemporarily(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updateImporterDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getImporter()) {
+            getCurrentComplianceSurvey().setManufacturer(false);
+            getCurrentComplianceSurvey().setProcessor(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updateManufacturerDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getManufacturer()) {
+            getCurrentComplianceSurvey().setImporter(false);
+            getCurrentComplianceSurvey().setProcessor(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updateProcessorDiscontinuance() {
+
+        if (getCurrentComplianceSurvey().getProcessor()) {
+            getCurrentComplianceSurvey().setImporter(false);
+            getCurrentComplianceSurvey().setManufacturer(false);
+        }
+
+        getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
     public void updateCIF() {
 
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
@@ -2055,7 +2065,7 @@ public class ComplianceManager extends GeneralManager
 
         currentComplianceSurvey = new ComplianceSurvey();
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
-        currentComplianceSurvey.setSurveyType("Market Survey"); 
+        currentComplianceSurvey.setSurveyType("Market Survey");
         currentComplianceSurvey.setDateOfSurvey(new Date());
         currentComplianceSurvey.setInspector(getUserEmployee());
 
@@ -2610,14 +2620,13 @@ public class ComplianceManager extends GeneralManager
 
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
 
-//        updateComplianceSurvey(em);
         // Set parameters
         parameters.put("formId", currentComplianceSurvey.getId());
 
         // Broker detail
-        //Client broker = jm.getClientByName(em, currentComplianceSurvey.getBroker().getName());
-        //Contact brokerRep = jm.getContactByName(em, username, username);
         parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
                 + currentComplianceSurvey.getBrokerRepresentative().getFirstName() + " "
                 + currentComplianceSurvey.getBrokerRepresentative().getLastName() + "\n"
@@ -2627,7 +2636,6 @@ public class ComplianceManager extends GeneralManager
                 + currentComplianceSurvey.getBroker().getBillingAddress().getStateOrProvince());
 
         //Consignee detail
-        //Client consignee = jm.getClientByName(em, currentComplianceSurvey.getConsignee().getName());
         parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getName() + "\n"
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
@@ -2638,6 +2646,7 @@ public class ComplianceManager extends GeneralManager
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+        parameters.put("logo", logo);
 
         return getComplianceSurveyFormPDFFile(
                 em,
@@ -2678,15 +2687,32 @@ public class ComplianceManager extends GeneralManager
 
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
+        Long defaultTestingLaboratoryID = SystemOption.getLong(getSystemManager().getEntityManager1(),
+                "defaultTestingLaboratoryID");
 
-        // Broker
-        parameters.put("formId", currentComplianceSurvey.getId());
+        // Form logo
+        parameters.put("logo", logo);
+
+        // Testing lab
+        Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
+
+        if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
+            parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
+            parameters.put("defaultTestingLaboratory", "");
+            parameters.put("otherTestingLaboratory", "\u2713");
+        }
+
+        // Broker      
+        parameters.put("importerOrBrokerName", currentComplianceSurvey.getBroker().getName());
         parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
                 + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
 
         // Consignee
+        parameters.put("consigneeName", currentComplianceSurvey.getConsignee().getName());
         parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
@@ -2694,13 +2720,13 @@ public class ComplianceManager extends GeneralManager
 
         // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
+
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
 
-        // sample disposal
+        // Sample disposal
         if (currentComplianceSurvey.getSamplesToBeCollected()) {
             // \u2713 is the unicode for the tick character
             parameters.put("samplesToBeCollected", "\u2713");
@@ -2720,9 +2746,126 @@ public class ComplianceManager extends GeneralManager
                 parameters);
     }
 
+    public StreamedContent getDMSampleRequestFile() {
+
+        EntityManager em = getEntityManager1();
+        HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
+        Long defaultTestingLaboratoryID = SystemOption.getLong(getSystemManager().getEntityManager1(),
+                "defaultTestingLaboratoryID");
+
+        // Form logo
+        parameters.put("logo", logo);
+
+        // Testing lab
+        Long testLabId = currentComplianceSurvey.getTestingLaboratory().getId();
+
+        if (!Objects.equals(testLabId, defaultTestingLaboratoryID)) {
+            parameters.put("otherLabNameAndAddress", currentComplianceSurvey.getTestingLaboratory().getName());
+            parameters.put("defaultTestingLaboratory", "");
+            parameters.put("otherTestingLaboratory", "\u2713");
+        }
+
+        // Sample disposal
+        if (currentComplianceSurvey.getSamplesToBeCollected()) {
+            // \u2713 is the unicode for the tick character
+            parameters.put("samplesToBeCollected", "\u2713");
+        } else {
+            parameters.put("samplesToBeCollected", "");
+        }
+        if (currentComplianceSurvey.getSamplesToBeDisposed()) {
+            parameters.put("samplesToBeDisposed", "\u2713");
+        } else {
+            parameters.put("samplesToBeDisposed", "");
+        }
+
+        return getComplianceSurveyFormPDFFile(
+                em,
+                "domesticMarketSampleRequestForm",
+                "dm_sample_request.pdf",
+                parameters);
+    }
+
+    public StreamedContent getNoticeOfDiscontinuanceFile() {
+
+        EntityManager em = getEntityManager1();
+        HashMap parameters = new HashMap();
+        String logo = SystemOption.getString(getSystemManager().getEntityManager1(),
+                "SCFormLogo");
+
+        // Form logo
+        parameters.put("logo", logo);
+
+        parameters.put("retailOutletContactPerson",
+                BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getRetailRepresentative()));
+        parameters.put("retailOutletName", currentComplianceSurvey.getRetailOutlet().getName());
+        parameters.put("retailOutletAddress", currentComplianceSurvey.getRetailOutletAddress().toString());
+
+        // Duration
+        if (currentComplianceSurvey.getTemporarily()) {
+            parameters.put("temporarily", "\u2713");
+        } else {
+            parameters.put("temporarily", "");
+        }
+        if (currentComplianceSurvey.getPermanently()) {
+            parameters.put("permanently", "\u2713");
+        } else {
+            parameters.put("permanently", "");
+        }
+
+        // Discontinued as:
+        if (currentComplianceSurvey.getImporter()) {
+            parameters.put("importer", "\u2713");
+        } else {
+            parameters.put("importer", "");
+        }
+        if (currentComplianceSurvey.getManufacturer()) {
+            parameters.put("manufacturer", "\u2713");
+        } else {
+            parameters.put("manufacturer", "");
+        }
+        if (currentComplianceSurvey.getProcessor()) {
+            parameters.put("processor", "\u2713");
+        } else {
+            parameters.put("processor", "");
+        }
+
+        // Administrative Closure
+        if (currentComplianceSurvey.getAdministrativeClosure()) {
+            parameters.put("administrativeClosure", "\u2713");
+            parameters.put("notAdministrativeClosure", "");
+        } else {
+            parameters.put("notAdministrativeClosure", "\u2713");
+            parameters.put("administrativeClosure", "");
+        }
+
+        // Inspector and code for Notice of Discontinuance
+        parameters.put("inspectorAndCodeForNoticeOfDiscontinuanceDM",
+                currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getFullname()
+                + " (" + currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getNumber()
+                + ")");
+
+        // Inspector signature
+        parameters.put("inspectorForNoticeOfDiscontinuanceDM",
+                currentComplianceSurvey.getInspectorForNoticeOfDiscontinuanceDM().getFullname());
+
+        parameters.put("dateInspectorSignedNoticeOfDiscontinuanceDM",
+                BusinessEntityUtils.getDateInMediumDateFormat(
+                        currentComplianceSurvey.getDateNoticeOfDiscontinuanceSigned()));
+
+        return getComplianceSurveyFormPDFFile(
+                em,
+                "noticeOfDiscontinuanceForm",
+                "notice_discontinuance_form.pdf",
+                parameters);
+    }
+
     public StreamedContent getNoticeOfReleaseFromDetentionFile() {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
+
+        parameters.put("jobNumber", currentComplianceSurvey.getJobNumber());
 
         // Full release
         if (currentComplianceSurvey.getFullRelease()) {
@@ -2731,7 +2874,7 @@ public class ComplianceManager extends GeneralManager
             parameters.put("fullRelease", "");
         }
 
-        // Retailer, distributor, other?
+        // Retailer, distributor, importer, other?
         if (currentComplianceSurvey.getRetailer()) {
             parameters.put("retailer", "\u2713");
         } else {
@@ -2741,6 +2884,11 @@ public class ComplianceManager extends GeneralManager
             parameters.put("distributor", "\u2713");
         } else {
             parameters.put("distributor", "");
+        }
+        if (currentComplianceSurvey.getImporter()) {
+            parameters.put("importer", "\u2713");
+        } else {
+            parameters.put("importer", "");
         }
         if (currentComplianceSurvey.getOtherCompanyTypes()) {
             parameters.put("otherCompanyTypes", "\u2713");
@@ -2759,9 +2907,11 @@ public class ComplianceManager extends GeneralManager
                 + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
 
         // Consignee
-        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
-                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
+        parameters.put("consigneeDetail",
+                currentComplianceSurvey.getConsignee().getName() + "\n\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + "\n"
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
 
         // Provisional release location 
@@ -2787,6 +2937,17 @@ public class ComplianceManager extends GeneralManager
         parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+
+        // Container numbers
+        String cns = "";
+        for (String cn : getAllShippingContainers()) {
+            if (cns.isEmpty()) {
+                cns = cn;
+            } else {
+                cns = cns + ", " + cn;
+            }
+        }
+        parameters.put("containerNumbers", cns);
 
         return getComplianceSurveyFormPDFFile(
                 em,
@@ -3046,8 +3207,6 @@ public class ComplianceManager extends GeneralManager
                     // Compile report
                     JasperReport jasperReport = JasperCompileManager.compileReport(reportFileURL);
 
-                    // generate report
-//                    JasperPrint print = JasperFillManager.fillReport(reportFileURL, parameters, con);
                     // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 

@@ -1,5 +1,5 @@
 /*
-System Manager (BM)
+System Manager (SM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify

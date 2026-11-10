@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Report Management (RM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,31 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.rm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.rm.Report;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("reportConverter")
-public class ReportConverter extends ConverterAdapter {
+@FacesConverter(value = "reportConverter", managed = true)
+public class ReportConverter extends EntityConverter<Report> {
+
+    public ReportConverter() {
+        super(Report.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Report report = Report.findReportByName(em, value);
-
-        if (report == null) {
-            report = new Report(value);
-        }
-
-        return report;
+    protected Long getId(Report report) {
+        return report.getId();
     }
 
 }

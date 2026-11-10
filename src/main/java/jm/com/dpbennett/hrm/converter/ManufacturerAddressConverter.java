@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Human Resource Management (HRM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,42 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import jm.com.dpbennett.business.entity.hrm.Address;
-import jm.com.dpbennett.business.entity.hrm.Manufacturer;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennet
  */
-@FacesConverter("manufacturerAddressConverter")
-public class ManufacturerAddressConverter extends ConverterAdapter {
+@FacesConverter(value = "manufacturerAddressConverter", managed = true)
+public class ManufacturerAddressConverter extends EntityConverter<Address> {
+
+    public ManufacturerAddressConverter() {
+        super(Address.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Address address;
-
-        try {
-
-            Manufacturer manufacturer = (Manufacturer) component.getAttributes().get("currentManufacturer");
-            if (manufacturer != null) {
-                address = Address.findAddress(value, manufacturer.getAddresses());
-                if (address == null) {                            
-                    address = new Address(value);
-                }
-            } else {
-                      address = new Address(value);
-            }
-
-        } catch (Exception e) {
-            System.out.println(e);
-            address = new Address(value);
-        }
-
-        return address;
+    protected Long getId(Address address) {
+        return address.getId();
     }
 
 }

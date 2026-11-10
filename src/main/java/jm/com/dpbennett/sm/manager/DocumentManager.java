@@ -214,7 +214,7 @@ public final class DocumentManager extends GeneralManager implements Serializabl
         return 500;
     }
 
-    public void editSelectedPost() {
+    public void editSelectedPost(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -229,16 +229,16 @@ public final class DocumentManager extends GeneralManager implements Serializabl
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/admin/postDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/admin/" + dialog, options, null);
 
     }
 
-    public void createNewPost() {
+    public void createNewPost(String dialog) {
 
         selectedPost = new Post();
         selectedPost.setIsDirty(true);
 
-        editSelectedPost();
+        editSelectedPost(dialog);
 
     }
 

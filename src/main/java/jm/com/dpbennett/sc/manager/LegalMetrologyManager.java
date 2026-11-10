@@ -143,35 +143,35 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         return BusinessEntityUtils.validateText(getCurrentPetrolPumpNozzle().getManufacturer().getName());
     }
 
-    public void editPetrolPumpManufacturer() {
+    public void editPetrolPumpManufacturer(String dialog) {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPump().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void editPetrolPumpNozzleManufacturer() {
+    public void editPetrolPumpNozzleManufacturer(String dialog) {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentPetrolPumpNozzle().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void editScaleManufacturer() {
+    public void editScaleManufacturer(String dialog) {
 
         getHumanResourceManager().setSelectedManufacturer(getCurrentScale().getManufacturer());
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
 
     }
 
-    public void createNewManufacturer() {
+    public void createNewManufacturer(String dialog) {
 
         getHumanResourceManager().createNewManufacturer(true);
 
-        getHumanResourceManager().editSelectedManufacturer();
+        getHumanResourceManager().editSelectedManufacturer(dialog);
     }
 
     public void petrolPumpManufacturerDialogReturn() {
@@ -290,7 +290,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().setSelectedClient(getCurrentPetrolStation().getClient());
         getClientManager().setClientDialogTitle("Petrol Company Detail");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
+
+        }
 
     }
 
@@ -298,8 +303,12 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().setSelectedClient(getCurrentScale().getClient());
         getClientManager().setClientDialogTitle("Client Detail");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void petrolCompanyDialogReturn() {
@@ -318,16 +327,24 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client/Company Detail");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void createNewScaleClient() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Scale Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public Boolean getIsPetrolStationClientNameValid() {
@@ -826,22 +843,21 @@ public class LegalMetrologyManager extends GeneralManager implements Serializabl
 
     public void editCertification() {
 
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpNozzleDialog",
-                options, null);
-
+//        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+//                .modal(true)
+//                .fitViewport(true)
+//                .responsive(true)
+//                .width((getDialogWidth() + 200) + "px")
+//                .contentWidth("100%")
+//                .resizeObserver(true)
+//                .resizeObserverCenter(true)
+//                .resizable(false)
+//                .styleClass("max-w-screen")
+//                .iframeStyleClass("max-w-screen")
+//                .build();
+//
+//        PrimeFaces.current().dialog().openDynamic("/legalmet/petrolPumpNozzleDialog",
+//                options, null);
     }
 
     public void editPetrolStation() {

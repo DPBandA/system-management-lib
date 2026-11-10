@@ -1,5 +1,5 @@
 /*
-System Management (SM) 
+Client Management (CM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,31 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.cm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.cm.Client;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("activeClientConverter")
-public class ActiveClientConverter extends ConverterAdapter {
+@FacesConverter(value = "clientConverter", managed = true)
+public class ClientConverter extends EntityConverter<Client> {
+
+    public ClientConverter() {
+        super(Client.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Client client = Client.findActiveByName(em, submittedValue, Boolean.FALSE);
-
-        if (client == null) {
-            client = new Client(submittedValue);
-        }
-
-        return client;
+    protected Long getId(Client client) {
+        return client.getId();
     }
 
 }

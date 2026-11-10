@@ -64,6 +64,7 @@ import org.primefaces.model.file.UploadedFile;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.jmts.manager.JobManager;
@@ -132,6 +133,16 @@ public final class SystemManager extends GeneralManager {
 
     public SystemManager() {
         init();
+    }
+
+    public String getJMTSWebsiteURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "JMTSWebsiteURL");
+    }
+
+    public String getJMTSUserGuideURL() {
+        return (String) SystemOption.getOptionValueObject(
+                getSystemManager().getEntityManager1(), "JMTSUserGuideURL");
     }
 
     @Override
@@ -491,7 +502,7 @@ public final class SystemManager extends GeneralManager {
         this.selectedEmail = selectedEmail;
     }
 
-    public void editEmailTemplate() {
+    public void editEmailTemplate(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -506,7 +517,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/admin/emailTemplateDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/admin/" + dialog, options, null);
 
     }
 
@@ -517,11 +528,11 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void createNewEmailTemplate() {
+    public void createNewEmailTemplate(String dialog) {
 
         selectedEmail = new Email();
 
-        editEmailTemplate();
+        editEmailTemplate(dialog);
     }
 
     public void doEmailSearch() {
@@ -795,7 +806,7 @@ public final class SystemManager extends GeneralManager {
         foundUser.setUsername(username);
     }
 
-    public void editUser() {
+    public void editUser(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -810,7 +821,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("userDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -832,7 +843,7 @@ public final class SystemManager extends GeneralManager {
         PrimeFaces.current().dialog().openDynamic("userProfileDialog", options, null);
 
     }
-    
+
     public void editUserProfileDInline() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -941,7 +952,7 @@ public final class SystemManager extends GeneralManager {
         }
     }
 
-    public void createNewUser() {
+    public void createNewUser(String dialog) {
 
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
         EntityManager em = getEntityManager1();
@@ -953,7 +964,7 @@ public final class SystemManager extends GeneralManager {
         selectedUser.setNewPassword(defaultUserPassword);
         selectedUser.setConfirmedNewPassword(defaultUserPassword);
 
-        editUser();
+        editUser(dialog);
     }
 
     public void updateUserPrivilege(ValueChangeEvent event) {
@@ -964,7 +975,48 @@ public final class SystemManager extends GeneralManager {
 
     public void saveSelectedUser() {
 
-        ReturnMessage rm = getSelectedUser().saveUnique(getEntityManager1());
+        EntityManager em = getSystemManager().getEntityManager1();
+        LdapContext context = LdapContext.findActiveLdapContextByName(em, "LDAP");
+
+        if (getSelectedUser().getId() == null) {
+
+            ReturnMessage rm = getSelectedUser().saveUnique(em);
+            if (!rm.isSuccess()) {
+                PrimeFacesUtils.addMessage(
+                        rm.getHeader(),
+                        rm.getMessage(),
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+            if (checkMatchingUserPasswords(selectedUser)) {
+
+                if (!LdapContext.addUser(em, context, selectedUser)) {
+                    PrimeFacesUtils.addMessage(
+                            "User Security Detail NOT Added!",
+                            "The user's security detail was NOT Added. Consult the System Administrator.",
+                            FacesMessage.SEVERITY_ERROR);
+
+                    return;
+                }
+
+                PrimeFaces.current().dialog().closeDynamic(null);
+
+                return;
+
+            } else {
+                PrimeFacesUtils.addMessage(
+                        "No Match",
+                        "Passwords do NOT match",
+                        FacesMessage.SEVERITY_ERROR);
+
+                return;
+            }
+
+        }
+
+        ReturnMessage rm = getSelectedUser().saveUnique(em);
         if (!rm.isSuccess()) {
             PrimeFacesUtils.addMessage(
                     rm.getHeader(),
@@ -1005,9 +1057,6 @@ public final class SystemManager extends GeneralManager {
         if (!LdapContext.updateUser(context, selectedUser)) {
 
             if (checkMatchingUserPasswords(selectedUser)) {
-                selectedUser.setPassword(selectedUser.getNewPassword());
-
-                System.out.println("Will attempt to add user");
 
                 return LdapContext.addUser(em, context, selectedUser);
             } else {
@@ -1712,11 +1761,11 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void createNewModule() {
+    public void createNewModule(String dialog) {
         selectedModule = new Module();
         selectedModule.setActive(true);
 
-        editModule();
+        editModule(dialog);
 
     }
 
@@ -1866,7 +1915,7 @@ public final class SystemManager extends GeneralManager {
         return (!getActiveNotifications().isEmpty());
     }
 
-    public void editModule() {
+    public void editModule(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1881,7 +1930,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("moduleDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 

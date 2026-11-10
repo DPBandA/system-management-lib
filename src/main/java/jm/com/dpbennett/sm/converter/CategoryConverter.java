@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+System Manager (SM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,29 +19,22 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.sm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.sm.Notification;
+import jm.com.dpbennett.business.entity.sm.Category;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("notificationConverter")
-public class notificationConverter extends ConverterAdapter {
+@FacesConverter(value = "categoryConverter", managed = true)
+public class CategoryConverter extends EntityConverter<Category> {
+
+    public CategoryConverter() {
+        super(Category.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-
-        EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Notification notification = Notification.findNotificationByName(em, submittedValue, false);
-
-        if (notification == null) {
-            notification = new Notification(submittedValue);
-        }
-
-        return notification;
+    protected Long getId(Category category) {
+        return category.getId();
     }
 }

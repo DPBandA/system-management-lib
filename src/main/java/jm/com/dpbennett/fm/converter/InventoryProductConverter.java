@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Financial Management (FM)
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -17,31 +17,40 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.converter;
+package jm.com.dpbennett.fm.converter;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
 import javax.persistence.EntityManager;
-import jm.com.dpbennett.business.entity.sm.Category;
+import jm.com.dpbennett.business.entity.fm.MarketProduct;
+import jm.com.dpbennett.sm.converter.ConverterAdapter;
 
 /**
  *
  * @author Desmond Bennett
  */
-@FacesConverter("activeCategoryConverter")
-public class ActiveCategoryConverter extends ConverterAdapter {
+@FacesConverter(value = "inventoryProductConverter", managed = true)
+public class InventoryProductConverter extends ConverterAdapter {
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
         EntityManager em = (EntityManager) component.getAttributes().get("em");
-        Category category = Category.findActiveCategoryByName(em, submittedValue, false);
+        MarketProduct marketProduct = 
+                MarketProduct.findActiveMarketProductByType(em, value, "Inventory");
 
-        if (category == null) {
-            category = new Category(submittedValue);
+        if (marketProduct == null) {
+            marketProduct = new MarketProduct(value);
+            marketProduct.setType("Inventory");
         }
-
-        return category;
+       
+        return marketProduct;
     }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, Object value) {
+        return ((MarketProduct) value).getName();
+    }
+
 }

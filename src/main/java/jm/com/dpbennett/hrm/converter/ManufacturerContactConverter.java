@@ -1,5 +1,5 @@
 /*
-Business Entity Library (BEL) - A foundational library for JSF web applications 
+Human Resource Management (HRM) 
 Copyright (C) 2026  D P Bennett & Associates Limited
 
 This program is free software: you can redistribute it and/or modify
@@ -19,46 +19,24 @@ Email: info@dpbennett.com.jm
  */
 package jm.com.dpbennett.hrm.converter;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import javax.faces.convert.FacesConverter;
-import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.hrm.Contact;
-import jm.com.dpbennett.business.entity.hrm.Manufacturer;
-import jm.com.dpbennett.sm.converter.ConverterAdapter;
+import jm.com.dpbennett.sm.converter.EntityConverter;
 
 /**
  *
  * @author Desmond Bennet
  */
-@FacesConverter("manufacturerContactConverter")
-public class ManufacturerContactConverter extends ConverterAdapter {
+@FacesConverter(value = "manufacturerContactConverter", managed = true)
+public class ManufacturerContactConverter extends EntityConverter<Contact> {
+
+    public ManufacturerContactConverter() {
+        super(Contact.class);
+    }
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Contact contact;
-
-        try {
-            
-            EntityManager em = (EntityManager) component.getAttributes().get("em");
-            Manufacturer currentManufacturer = (Manufacturer) component.getAttributes().get("currentManufacturer");
-
-            if (currentManufacturer != null) {
-                contact = Contact.findContact(em, value, currentManufacturer.getContacts());
-                if (contact == null) {
-                  
-                    contact = new Contact(value);
-                }
-            } else {
-                       
-                contact = new Contact(value);
-            }
-
-        } catch (Exception e) {
-            System.out.println(e);
-            contact = new Contact(value);
-        }
-
-        return contact;
+    protected Long getId(Contact contact) {
+        return contact.getId();
     }
+
 }

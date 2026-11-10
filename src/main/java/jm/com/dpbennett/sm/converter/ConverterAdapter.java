@@ -39,5 +39,5 @@ public class ConverterAdapter implements Converter {
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         return ((BusinessEntity) value).getName();
     }
-   
+
 }

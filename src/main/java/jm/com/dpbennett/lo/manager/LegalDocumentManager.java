@@ -254,10 +254,14 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void editExternalClient() {
 
         getClientManager().setSelectedClient(getCurrentDocument().getExternalClient());
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void externalClientDialogReturn() {
@@ -297,10 +301,14 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public void createNewExternalClient() {
 
         getClientManager().createNewClient(true);
-        getClientManager().setClientDialogTitle("Client Detail");
+        getClientManager().setClientDialogTitle("Client");
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
 
+        }
     }
 
     public void createNewClient() {
@@ -308,7 +316,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
         getClientManager().openClientsTab();
 
-        getClientManager().editSelectedClient();
+        if (getUser().isRenderMobileUI()) {
+            getClientManager().editSelectedClient("clientDialog-m");
+        } else {
+            getClientManager().editSelectedClient("clientDialog");
+
+        }
     }
 
     public DocumentReport getDocumentReport() {
