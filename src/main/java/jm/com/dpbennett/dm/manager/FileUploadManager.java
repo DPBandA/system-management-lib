@@ -17,7 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 Email: info@dpbennett.com.jm
  */
-package jm.com.dpbennett.sm.manager;
+package jm.com.dpbennett.dm.manager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.file.UploadedFile;

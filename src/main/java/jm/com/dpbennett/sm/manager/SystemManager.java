@@ -64,7 +64,6 @@ import org.primefaces.model.file.UploadedFile;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.jmts.manager.JobManager;
@@ -83,36 +82,30 @@ public final class SystemManager extends GeneralManager {
     private EntityManagerFactory SMPU;
     private int activeNavigationTabIndex;
     private Boolean isActiveLdapsOnly;
-    private Boolean isActiveDocumentTypesOnly;
     private Boolean isActiveUsersOnly;
     private Boolean isActiveModulesOnly;
     private Boolean isActivePrivilegesOnly;
     private Boolean isActiveCategoriesOnly;
     private String systemOptionSearchText;
     private String ldapSearchText;
-    private String documentTypeSearchText;
     private String categorySearchText;
     private String countrySearchText;
     private String notificationSearchText;
     private String privilegeSearchText;
     private String moduleSearchText;
-    private String attachmentSearchText;
     private List<SystemOption> foundSystemOptions;
     private List<SystemOption> foundSystemOptionsByCategory;
     private List<LdapContext> foundLdapContexts;
-    private List<DocumentType> foundDocumentTypes;
     private List<Category> foundCategories;
     private List<Country> foundCountries;
     private List<Notification> foundNotifications;
     private List<Privilege> foundPrivileges;
     private List<Module> foundModules;
     private List<User> foundUsers;
-    private List<Attachment> foundAttachments;
     private SystemOption selectedSystemOption;
     private DualListModel<Privilege> privilegeDualList;
     private DualListModel<Module> moduleDualList;
     private LdapContext selectedLdapContext;
-    private DocumentType selectedDocumentType;
     private Category selectedCategory;
     private Country selectedCountry;
     private Privilege selectedPrivilege;
@@ -121,12 +114,6 @@ public final class SystemManager extends GeneralManager {
     private User selectedUser;
     private User foundUser;
     private String userSearchText;
-    private Attachment attachment;
-    private UploadedFile uploadedFile;
-    private Email selectedEmail;
-    private Boolean isActiveEmailsOnly;
-    private List<Email> foundEmails;
-    private String emailSearchText;
     private List<Notification> notifications;
     private SystemOption selectedSystemOptionText;
     private Integer innerTabIndex;
@@ -352,29 +339,13 @@ public final class SystemManager extends GeneralManager {
                 setInnerTabIndex(3);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:categorySearchButton");
                 return true;
-            case "Document Types":
-                setInnerTabIndex(4);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:documentTypeSearchButton");
-                return true;
             case "Authentication":
                 setInnerTabIndex(5);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:ldapSearchButton");
                 return true;
-            case "Attachments":
-                setInnerTabIndex(6);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:attachmentSearchButton");
-                return true;
-            case "Email Templates":
-                setInnerTabIndex(7);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:emailTemplateSearchButton");
-                return true;
             case "Notifications":
                 setInnerTabIndex(8);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:notificationSearchButton");
-                return true;
-            case "Posts":
-                setInnerTabIndex(9);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:postSearchButton");
                 return true;
             case "Countries":
                 setInnerTabIndex(10);
@@ -472,101 +443,6 @@ public final class SystemManager extends GeneralManager {
 
     public void setSelectedNotification(Notification selectedNotification) {
         this.selectedNotification = selectedNotification;
-    }
-
-    public String getEmailSearchText() {
-        return emailSearchText;
-    }
-
-    public void setEmailSearchText(String emailSearchText) {
-        this.emailSearchText = emailSearchText;
-    }
-
-    public List<Email> getFoundEmails() {
-        if (foundEmails == null) {
-            foundEmails = new ArrayList<>();
-        }
-
-        return foundEmails;
-    }
-
-    public void setFoundEmails(List<Email> foundEmails) {
-        this.foundEmails = foundEmails;
-    }
-
-    public Email getSelectedEmail() {
-        return selectedEmail;
-    }
-
-    public void setSelectedEmail(Email selectedEmail) {
-        this.selectedEmail = selectedEmail;
-    }
-
-    public void editEmailTemplate(String dialog) {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(true)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/admin/" + dialog, options, null);
-
-    }
-
-    public void saveSelectedEmail() {
-
-        selectedEmail.save(getEntityManager1());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void createNewEmailTemplate(String dialog) {
-
-        selectedEmail = new Email();
-
-        editEmailTemplate(dialog);
-    }
-
-    public void doEmailSearch() {
-
-        if (getIsActiveEmailsOnly()) {
-            foundEmails = Email.findActiveEmails(getEntityManager1(), getEmailSearchText());
-        } else {
-            foundEmails = Email.findEmails(getEntityManager1(), getEmailSearchText());
-        }
-
-    }
-
-    public UploadedFile getUploadedFile() {
-        return uploadedFile;
-    }
-
-    public void setUploadedFile(UploadedFile uploadedFile) {
-        this.uploadedFile = uploadedFile;
-    }
-
-    public String getAttachmentSearchText() {
-        return attachmentSearchText;
-    }
-
-    public void setAttachmentSearchText(String attachmentSearchText) {
-        this.attachmentSearchText = attachmentSearchText;
-    }
-
-    public Attachment getAttachment() {
-        return attachment;
-    }
-
-    public void setAttachment(Attachment attachment) {
-        this.attachment = attachment;
     }
 
     public DualListModel<Module> getModuleDualList() {
@@ -751,13 +627,6 @@ public final class SystemManager extends GeneralManager {
         return foundUsers;
     }
 
-    public List<Attachment> getFoundAttachments() {
-        if (foundAttachments == null) {
-            foundAttachments = new ArrayList<>();
-        }
-        return foundAttachments;
-    }
-
     public String getUserSearchText() {
         return userSearchText;
     }
@@ -773,18 +642,6 @@ public final class SystemManager extends GeneralManager {
                 getDateSearchPeriod().getDateField(),
                 "Users",
                 getUserSearchText(),
-                null,
-                null);
-
-    }
-
-    public void doAttachmentSearch() {
-
-        doDefaultSearch(
-                getMainTabView(),
-                getDateSearchPeriod().getDateField(),
-                "Attachments",
-                getAttachmentSearchText(),
                 null,
                 null);
 
@@ -1241,16 +1098,6 @@ public final class SystemManager extends GeneralManager {
                         searchText);
 
                 break;
-            case "Document Types":
-                if (getIsActiveDocumentTypesOnly()) {
-                    foundDocumentTypes = DocumentType.findAllActiveByName(getEntityManager1(),
-                            searchText);
-                } else {
-                    foundDocumentTypes = DocumentType.findAllByName(getEntityManager1(),
-                            searchText);
-                }
-
-                break;
             case "System Settings":
                 foundSystemOptions = SystemOption.findSystemOptions(getEntityManager1(),
                         searchText);
@@ -1277,12 +1124,6 @@ public final class SystemManager extends GeneralManager {
                             getEntityManager1(),
                             searchText, maxSearchResults);
                 }
-
-                break;
-            case "Attachments":
-
-                foundAttachments = Attachment.findAttachmentsByName(getEntityManager1(),
-                        searchText, maxSearchResults);
 
                 break;
             default:
@@ -1529,56 +1370,12 @@ public final class SystemManager extends GeneralManager {
         reset();
     }
 
-    public Boolean getIsActiveEmailsOnly() {
-        return isActiveEmailsOnly;
-    }
-
-    public void setIsActiveEmailsOnly(Boolean isActiveEmailsOnly) {
-        this.isActiveEmailsOnly = isActiveEmailsOnly;
-    }
-
     public String getModuleSearchText() {
         return moduleSearchText;
     }
 
     public void setModuleSearchText(String moduleSearchText) {
         this.moduleSearchText = moduleSearchText;
-    }
-
-    public Boolean getIsActiveDocumentTypesOnly() {
-        return isActiveDocumentTypesOnly;
-    }
-
-    public void setIsActiveDocumentTypesOnly(Boolean isActiveDocumentTypesOnly) {
-        this.isActiveDocumentTypesOnly = isActiveDocumentTypesOnly;
-    }
-
-    public String getDocumentTypeSearchText() {
-        return documentTypeSearchText;
-    }
-
-    public void setDocumentTypeSearchText(String documentTypeSearchText) {
-        this.documentTypeSearchText = documentTypeSearchText;
-    }
-
-    public DocumentType getSelectedDocumentType() {
-        return selectedDocumentType;
-    }
-
-    public void setSelectedDocumentType(DocumentType selectedDocumentType) {
-        this.selectedDocumentType = selectedDocumentType;
-    }
-
-    public List<DocumentType> getFoundDocumentTypes() {
-        if (foundDocumentTypes == null) {
-            foundDocumentTypes = new ArrayList<>();
-        }
-
-        return foundDocumentTypes;
-    }
-
-    public void setFoundDocumentTypes(List<DocumentType> foundDocumentTypes) {
-        this.foundDocumentTypes = foundDocumentTypes;
     }
 
     public List<Category> getFoundCategories() {
@@ -1628,18 +1425,6 @@ public final class SystemManager extends GeneralManager {
 
     public void setFoundModules(List<Module> foundModules) {
         this.foundModules = foundModules;
-    }
-
-    public void doDocumentTypeSearch() {
-
-        doDefaultSearch(
-                getMainTabView(),
-                getDateSearchPeriod().getDateField(),
-                "Document Types",
-                getDocumentTypeSearchText(),
-                null,
-                null);
-
     }
 
     public void doCategorySearch() {
@@ -1697,43 +1482,6 @@ public final class SystemManager extends GeneralManager {
                 getModuleSearchText(),
                 null,
                 null);
-
-    }
-
-    public void openDocumentTypeDialog(String url) {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(true)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic(url, options, null);
-
-    }
-
-    public void cancelDocumentTypeEdit(ActionEvent actionEvent) {
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void saveSelectedDocumentType() {
-
-        selectedDocumentType.save(getEntityManager1());
-
-        PrimeFaces.current().dialog().closeDynamic(null);
-    }
-
-    public void createNewDocumentType() {
-        selectedDocumentType = new DocumentType();
-
-        editDocumentType();
 
     }
 
@@ -1972,14 +1720,6 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void editDocumentType() {
-        openDocumentTypeDialog("/admin/documentTypeDialog");
-    }
-
-    public List<DocumentType> getDocumentTypes() {
-        return DocumentType.findAll(getEntityManager1());
-    }
-
     public Boolean getIsActiveLdapsOnly() {
         return isActiveLdapsOnly;
     }
@@ -2016,19 +1756,14 @@ public final class SystemManager extends GeneralManager {
         foundLdapContexts = null;
         systemOptionSearchText = "";
         ldapSearchText = "";
-        documentTypeSearchText = "";
         categorySearchText = "";
         countrySearchText = "";
         notificationSearchText = "";
         privilegeSearchText = "";
         moduleSearchText = "";
         userSearchText = "";
-        attachmentSearchText = "";
-        emailSearchText = "";
         isActiveLdapsOnly = true;
-        isActiveDocumentTypesOnly = true;
         isActiveUsersOnly = true;
-        isActiveEmailsOnly = true;
         innerTabIndex = 0;
         setSearchType("Users");
         setDateSearchPeriod(new DatePeriod("This month", "month",
@@ -2208,33 +1943,6 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void createNewAttachment() {
-        attachment = new Attachment();
-        String destURL = (String) SystemOption.getOptionValueObject(getEntityManager1(),
-                "defaultUploadLocation");
-        attachment.setDestinationURL(destURL);
-        openAttachmentDialog();
-    }
-
-    public void openAttachmentDialog() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width(getDialogWidth() + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(true)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/admin/attachmentDialog", options, null);
-
-    }
-
     public void editLdapContext() {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -2313,50 +2021,6 @@ public final class SystemManager extends GeneralManager {
         selectedSystemOption.save(getDefaultEntityManager());
 
         PrimeFaces.current().dialog().closeDynamic(null);
-
-    }
-
-    public void okAttachment() {
-        if (getUploadedFile() != null) {
-            uploadAttachment();
-
-        } else {
-            PrimeFacesUtils.addMessage("No File", "No file was choosen",
-                    FacesMessage.SEVERITY_INFO);
-        }
-    }
-
-    public void uploadAttachment() {
-
-        try {
-
-            OutputStream outputStream;
-
-            String sourceURL = getUploadedFile().getFileName();
-            getAttachment().setSourceURL(sourceURL);
-            if (getAttachment().getName().isEmpty()) {
-                getAttachment().setName(sourceURL);
-            }
-
-            File fileToSave = new File(getAttachment().getDestinationURL() + getUploadedFile().getFileName());
-            outputStream = new FileOutputStream(fileToSave);
-            outputStream.write(getUploadedFile().getContent());
-            outputStream.close();
-
-            PrimeFacesUtils.addMessage("Succesful", getUploadedFile().getFileName() + " was uploaded.", FacesMessage.SEVERITY_INFO);
-
-            getAttachment().save(getEntityManager1());
-
-            closeDialog(null);
-
-        } catch (FileNotFoundException ex) {
-            System.out.println(ex);
-            PrimeFacesUtils.addMessage("File Not Found", getUploadedFile().getFileName() + " was NOT found", FacesMessage.SEVERITY_ERROR);
-        } catch (IOException ex) {
-            System.out.println(ex);
-            PrimeFacesUtils.addMessage("Read/Write Error", " A read/write error occured with the file "
-                    + getUploadedFile().getFileName(), FacesMessage.SEVERITY_ERROR);
-        }
 
     }
 

@@ -43,6 +43,7 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.dm.manager.DocumentManager;
 import jm.com.dpbennett.fm.manager.FinanceManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.rm.manager.ReportManager;
@@ -285,8 +286,8 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void documentTypeDialogReturn() {
-        if (getSystemManager().getSelectedDocumentType().getId() != null) {
-            getCurrentDocument().setDocumentType(getSystemManager().getSelectedDocumentType());
+        if (getDocumentManager().getSelectedDocumentType().getId() != null) {
+            getCurrentDocument().setDocumentType(getDocumentManager().getSelectedDocumentType());
 
             updateDocument();
         }
@@ -412,10 +413,10 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     public void editDocumentType(ActionEvent actionEvent) {
 
-        getSystemManager().setSelectedDocumentType(getCurrentDocument().getDocumentType());
+        getDocumentManager().setSelectedDocumentType(getCurrentDocument().getDocumentType());
         getCurrentDocument().setDocumentType(null);
 
-        getSystemManager().editDocumentType();
+        getDocumentManager().editDocumentType();
 
     }
 
@@ -435,7 +436,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     }
 
     public void createNewDocumentType(ActionEvent actionEvent) {
-        getSystemManager().setSelectedDocumentType(new DocumentType());
+        getDocumentManager().setSelectedDocumentType(new DocumentType());
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -667,6 +668,11 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
     public SystemManager getSystemManager() {
 
         return BeanUtils.findBean("systemManager");
+    }
+
+    public DocumentManager getDocumentManager() {
+
+        return BeanUtils.findBean("documentManager");
     }
 
     public ReportManager getReportManager() {
