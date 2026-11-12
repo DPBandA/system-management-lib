@@ -32,6 +32,8 @@ import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.Attachment;
 import jm.com.dpbennett.business.entity.dm.DocumentType;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -82,6 +84,27 @@ public class DocumentManager extends GeneralManager implements Serializable {
         init();
     }
     
+    @Override
+    public void reInitUI() {
+        setInnerTabIndex(0);
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
+    }
+    
+    @Override
+    public void openDashboardTab(String title) {
+        
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
+        
+    }
+
+    @Override
+    public void openMainViewTab(String title) {
+
+        setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
+
+        getMainTabView().openTab(title);
+    }
+    
     public Integer getInnerTabIndex() {
         return innerTabIndex;
     }
@@ -96,20 +119,20 @@ public class DocumentManager extends GeneralManager implements Serializable {
         switch (tabTitle) {
 
             case "Document Types":
-                setInnerTabIndex(4);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:documentTypeSearchButton");
+                setInnerTabIndex(0);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
                 return true;
             case "Attachments":
-                setInnerTabIndex(6);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:attachmentSearchButton");
+                setInnerTabIndex(1);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:attachmentSearchButton");
                 return true;
             case "Email Templates":
-                setInnerTabIndex(7);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:emailTemplateSearchButton");
+                setInnerTabIndex(2);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:emailTemplateSearchButton");
                 return true;
             case "Posts":
-                setInnerTabIndex(9);
-                setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:postSearchButton");
+                setInnerTabIndex(3);
+                setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:postSearchButton");
                 return true;
             default:
                 return false;
@@ -488,12 +511,6 @@ public class DocumentManager extends GeneralManager implements Serializable {
     public HumanResourceManager getHumanResourceManager() {
 
         return BeanUtils.findBean("humanResourceManager");
-    }
-
-    @Override
-    public User getUser() {
-
-        return getSystemManager().getUser();
     }
 
     public Boolean getIsNewPost() {

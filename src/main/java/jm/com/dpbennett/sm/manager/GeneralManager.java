@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
@@ -92,7 +93,7 @@ public class GeneralManager implements Manager, Serializable {
         }
 
     }
-    
+
     @Override
     public void switchPage(String targetPage) {
 
@@ -513,6 +514,7 @@ public class GeneralManager implements Manager, Serializable {
     @Override
     public void reset() {
         setName("generalManager");
+
         searchText = "";
         dashboard = new Dashboard(getUser());
         mainTabView = new MainTabView(getUser());
@@ -532,7 +534,7 @@ public class GeneralManager implements Manager, Serializable {
         user = new User();
         user.setPFThemeName(theme);
         defaultCommandTarget = "defaultCommandButton";
-
+        
     }
 
     @Override
