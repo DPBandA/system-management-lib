@@ -478,26 +478,13 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public void editSelectedClient(String dialog) {
 
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/client/" + dialog, options, null);
+       editSelectedClient(dialog, "Client");
 
     }
 
     public void editSelectedClient(String dialog, String title) {
 
-        setClientDialogTitle("Client");
+        setClientDialogTitle(title);
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
