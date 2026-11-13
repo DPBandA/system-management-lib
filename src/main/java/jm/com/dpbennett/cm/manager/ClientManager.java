@@ -495,7 +495,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     }
 
-    public void editSelectedClientDInline() {
+    public void editSelectedClient(String dialog, String title) {
 
         setClientDialogTitle("Client");
 
@@ -512,7 +512,7 @@ public class ClientManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/client-d-inline/clientDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/client/" + dialog, options, null);
 
     }
 
@@ -563,18 +563,12 @@ public class ClientManager extends GeneralManager implements Serializable {
         editSelectedClient(dialog);
     }
 
-    public void createNewClientDInline() {
-        createNewClient(true);
-
-        getSystemManager().getMainTabView().openTab("Clients");
-
-        editSelectedClientDInline();
-    }
-
     public void createNewClient(Boolean active) {
         selectedClient = new Client("", active);
         selectedClient.setDiscount(Discount.findDefault(getFinanceManager().getEntityManager1(), "0.0"));
         selectedClient.setDefaultTax(Tax.findDefault(getFinanceManager().getEntityManager1(), "0.0"));
+
+        setClientDialogTitle("Client");
     }
 
     public Boolean getIsDirty() {
