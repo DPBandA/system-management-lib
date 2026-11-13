@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
+import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -46,6 +47,7 @@ import jm.com.dpbennett.business.entity.sm.User;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.manager.GeneralManager;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
@@ -83,18 +85,30 @@ public class DocumentManager extends GeneralManager implements Serializable {
     public DocumentManager() {
         init();
     }
-    
+
+    public List getContentTypes() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "contentTypeList");
+    }
+
+    public List<SelectItem> getAttachmentTypeList() {
+
+        return getStringListAsSelectItems(getEntityManager1(),
+                "attachmentTypeList");
+    }
+
     @Override
     public void reInitUI() {
         setInnerTabIndex(0);
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
     }
-    
+
     @Override
     public void openDashboardTab(String title) {
-        
+
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
-        
+
     }
 
     @Override
@@ -102,9 +116,9 @@ public class DocumentManager extends GeneralManager implements Serializable {
 
         setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");
 
-        getMainTabView().openTab(title);
+        getSystemManager().getMainTabView().openTab(title);
     }
-    
+
     public Integer getInnerTabIndex() {
         return innerTabIndex;
     }
@@ -207,7 +221,7 @@ public class DocumentManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/admin/attachmentDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/doc/attachmentDialog", options, null);
 
     }
 
@@ -235,7 +249,7 @@ public class DocumentManager extends GeneralManager implements Serializable {
     }
 
     public void editDocumentType() {
-        openDocumentTypeDialog("/admin/documentTypeDialog");
+        openDocumentTypeDialog("/doc/documentTypeDialog");
     }
 
     public List<DocumentType> getDocumentTypes() {
@@ -444,7 +458,7 @@ public class DocumentManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/admin/" + dialog, options, null);
+        PrimeFaces.current().dialog().openDynamic("/doc/" + dialog, options, null);
 
     }
 
@@ -630,7 +644,7 @@ public class DocumentManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/admin/" + dialog, options, null);
+        PrimeFaces.current().dialog().openDynamic("/doc/" + dialog, options, null);
 
     }
 

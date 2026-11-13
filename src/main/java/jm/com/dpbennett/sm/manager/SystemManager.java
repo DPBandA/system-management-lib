@@ -682,7 +682,7 @@ public final class SystemManager extends GeneralManager {
 
     }
 
-    public void editUserProfile() {
+    public void editUserProfile(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -697,26 +697,7 @@ public final class SystemManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("userProfileDialog", options, null);
-
-    }
-
-    public void editUserProfileDInline() {
-
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() + 125) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(true)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/admin/userProfileDialogDInline", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1259,12 +1240,6 @@ public final class SystemManager extends GeneralManager {
 
         return getStringListAsSelectItems(getEntityManager1(),
                 "notificationTypeList");
-    }
-
-    public List<SelectItem> getAttachmentTypeList() {
-
-        return getStringListAsSelectItems(getEntityManager1(),
-                "attachmentTypeList");
     }
 
     public List<SelectItem> getJamaicaParishes() {
