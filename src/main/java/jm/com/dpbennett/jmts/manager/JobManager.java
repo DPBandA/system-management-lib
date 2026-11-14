@@ -132,6 +132,15 @@ public class JobManager extends GeneralManager
         init();
     }
 
+    @Override
+    public String getApplicationFooter() {
+
+        return SystemOption.getString(getSystemManager().getEntityManager1(),
+                "JMTSFooterTagLine") + " version "
+                + SystemOption.getString(getSystemManager().getEntityManager1(),
+                        "JMTSv");
+    }
+
     public Boolean showOrganization() {
         return SystemOption.getBoolean(getSystemManager().getEntityManager1(),
                 "showOrganization");
