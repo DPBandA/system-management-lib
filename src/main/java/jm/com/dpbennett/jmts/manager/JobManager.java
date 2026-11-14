@@ -156,7 +156,7 @@ public class JobManager extends GeneralManager
             filteredStatusNotes = new ArrayList<>();
         }
 
-        return filteredStatusNotes;
+        return Collections.unmodifiableList(filteredStatusNotes);
     }
 
     public void setFilteredStatusNotes(List<StatusNote> filteredStatusNotes) {
@@ -260,6 +260,7 @@ public class JobManager extends GeneralManager
         return businesses;
     }
 
+    @SuppressWarnings("unchecked")
     public List<Employee> completeActiveEmployee(String query) {
 
         List<Employee> employees = new ArrayList<>();
@@ -1343,6 +1344,7 @@ public class JobManager extends GeneralManager
 
         createJob(em, false, false);
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
+        setFilteredStatusNotes(getStatusNotes());
 
         openJobBrowser();
 
@@ -1852,23 +1854,6 @@ public class JobManager extends GeneralManager
         }
 
         return true;
-    }
-
-    public void createNewJob(ServiceRequest serviceRequest) {
-
-        EntityManager em = getEntityManager1();
-        createJob(em, false, false);
-
-        currentJob.setBusinessOffice(serviceRequest.getBusinessOffice());
-        currentJob.setJobSequenceNumber(serviceRequest.getServiceRequestSequenceNumber());
-        currentJob.getClient().doCopy(serviceRequest.getClient());
-        currentJob.setDepartment(serviceRequest.getDepartment());
-        currentJob.setAssignedTo(serviceRequest.getAssignedTo());
-        if (currentJob.getAutoGenerateJobNumber()) {
-            currentJob.setJobNumber(Job.generateJobNumber(currentJob, em));
-        }
-
-        setIsDirty(true);
     }
 
     public void subContractJob(ActionEvent actionEvent) {
@@ -2462,8 +2447,6 @@ public class JobManager extends GeneralManager
         this.currentJob.setVisited(true);
         this.currentJob.getJobStatusAndTracking().setEditStatus("        ");
         getJobFinanceManager().setEnableOnlyPaymentEditing(false);
-
-        setFilteredStatusNotes(getStatusNotes());
 
         setStatusNoteSearchText("");
         setFilteredStatusNotes(getStatusNotes());

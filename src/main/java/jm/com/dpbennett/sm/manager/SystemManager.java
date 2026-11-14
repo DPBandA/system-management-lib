@@ -1255,9 +1255,9 @@ public final class SystemManager extends GeneralManager {
         List<String> stringList = (List<String>) SystemOption.getOptionValueObject(em, systemOption);
 
         if (stringList != null) {
-            for (String name : stringList) {
-                list.add(new SelectItem(name, name));
-            }
+            stringList.stream()
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
+                    .forEach(name -> list.add(new SelectItem(name, name)));
         }
 
         return list;
