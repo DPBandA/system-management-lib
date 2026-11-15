@@ -27,15 +27,17 @@ Email: info@dpbennett.com.jm
     xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <h:head>
-        
+
         <!-- Mobile responsiveness -->
         <f:facet name="first">
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </f:facet>
-        
+
         <!-- Per-page head -->
         <ui:insert name="head"/>
-        
+
+        <link rel="manifest" href="/jmts/manifest.json"/>
+
         <script type="text/javascript" src="js/app.js"/>
         <script type="text/javascript" src="js/javascript.js"/>
 
@@ -43,6 +45,7 @@ Email: info@dpbennett.com.jm
         <h:outputStylesheet library="webjars" name="primeflex/3.2.1/primeflex.min.css"/>
         <h:outputStylesheet library="jmts-ui" name="css/main.css?v=#{systemManager.time}"/>
         <h:outputStylesheet library="jmts-ui" name="css/jmts.css?v=#{systemManager.time}"/>        
+
     </h:head>
 
     <h:body id="appBody" class="flex flex-column min-h-screen">
@@ -74,5 +77,5 @@ Email: info@dpbennett.com.jm
         </p:panel>
 
     </h:body>
-    
+
 </html>
