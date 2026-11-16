@@ -127,11 +127,19 @@ public class DocumentManager extends GeneralManager implements Serializable {
         this.innerTabIndex = innerTabIndex;
     }
 
+    public void selectTab(int innerTabIndex) {
+
+        PrimeFaces.current().executeScript("PF('" + "DMCenterTabVar" + "').select(" + innerTabIndex + ");");
+
+    }
+
     @Override
     public boolean handleTabChange(String tabTitle) {
 
         switch (tabTitle) {
-
+            case "Documents":
+                selectTab(getInnerTabIndex());
+                return true;
             case "Document Types":
                 setInnerTabIndex(0);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:DMCenterTabView:documentTypeSearchButton");

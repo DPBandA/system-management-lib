@@ -156,7 +156,7 @@ public class JobManager extends GeneralManager
             filteredStatusNotes = new ArrayList<>();
         }
 
-        return Collections.unmodifiableList(filteredStatusNotes);
+        return filteredStatusNotes;
     }
 
     public void setFilteredStatusNotes(List<StatusNote> filteredStatusNotes) {

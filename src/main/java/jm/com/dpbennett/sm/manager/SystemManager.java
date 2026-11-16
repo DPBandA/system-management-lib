@@ -340,19 +340,19 @@ public final class SystemManager extends GeneralManager {
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:categorySearchButton");
                 return true;
             case "Authentication":
-                setInnerTabIndex(5);
+                setInnerTabIndex(4);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:ldapSearchButton");
                 return true;
             case "Notifications":
-                setInnerTabIndex(8);
+                setInnerTabIndex(5);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:notificationSearchButton");
                 return true;
             case "Countries":
-                setInnerTabIndex(10);
+                setInnerTabIndex(6);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:countrySearchButton");
                 return true;
             case "System Settings":
-                setInnerTabIndex(11);
+                setInnerTabIndex(7);
                 setDefaultCommandTarget(":mainTabViewForm:mainTabView:centerTabView:systemOptionSearchButton");
                 return true;
             default:
