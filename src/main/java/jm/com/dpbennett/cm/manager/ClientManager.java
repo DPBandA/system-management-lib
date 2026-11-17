@@ -286,6 +286,9 @@ public class ClientManager extends GeneralManager implements Serializable {
     public void openMainViewTab(String title) {
 
         getSystemManager().setDefaultCommandTarget(":mainTabViewForm:mainTabView:clientSearchButton");
+
+        getSystemManager().getMainTabView().openTab(title);
+
     }
 
     @Override
@@ -478,7 +481,7 @@ public class ClientManager extends GeneralManager implements Serializable {
 
     public void editSelectedClient(String dialog) {
 
-       editSelectedClient(dialog, "Client");
+        editSelectedClient(dialog, "Client");
 
     }
 
@@ -726,7 +729,6 @@ public class ClientManager extends GeneralManager implements Serializable {
             getSelectedClient().getAddresses().add(selectedAddress);
         }
 
-        // tk
         doAddressSearch();
 
         PrimeFaces.current().executeScript("PF('addressFormDialog').hide();");
