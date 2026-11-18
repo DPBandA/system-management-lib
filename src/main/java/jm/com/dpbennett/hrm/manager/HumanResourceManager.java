@@ -1134,7 +1134,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
 
     }
 
-    public void editBusiness() {
+    public void editBusiness(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1149,11 +1149,11 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("businessDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editBusinessOffice() {
+    public void editBusinessOffice(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1168,7 +1168,7 @@ public class HumanResourceManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/hr/businessOfficeDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1489,18 +1489,18 @@ public class HumanResourceManager extends GeneralManager implements Serializable
         openDepartmentPickListDialog();
     }
 
-    public void createNewBusiness() {
+    public void createNewBusiness(String dialog) {
 
         selectedBusiness = new Business();
 
-        editBusiness();
+        editBusiness(dialog);
     }
 
-    public void createNewBusinessOffice() {
+    public void createNewBusinessOffice(String dialog) {
 
         selectedBusinessOffice = new BusinessOffice();
 
-        editBusinessOffice();
+        editBusinessOffice(dialog);
     }
 
     public void createNewSubgroup(String dialog) {
