@@ -420,18 +420,18 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     }
 
-    public void editClassification(ActionEvent actionEvent) {
+    public void editClassification(String dialog) {
 
         getFinanceManager().setSelectedClassification(getCurrentDocument().getClassification());
-        getFinanceManager().editClassification();
+        getFinanceManager().editClassification(dialog);
 
     }
 
-    public void createNewClassification(ActionEvent actionEvent) {
+    public void createNewClassification(String dialog) {
 
         getFinanceManager().setSelectedClassification(new Classification());
         getFinanceManager().getSelectedClassification().setCategory("Legal");
-        getFinanceManager().editClassification();
+        getFinanceManager().editClassification(dialog);
 
     }
 

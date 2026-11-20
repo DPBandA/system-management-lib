@@ -154,8 +154,6 @@ public class PurchasingManager extends GeneralManager implements Serializable {
     @Override
     public void openMainViewTab(String title) {
 
-        getSystemManager().getMainTabView().openTab("Purchase Requisitions");
-
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
     }
 
@@ -484,7 +482,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         this.selectedCashPayment = selectedCashPayment;
     }
 
-    public void createNewCashPayment(ActionEvent event) {
+    public void createNewCashPayment(String dialog) {
         selectedCashPayment = new CashPayment();
         selectedCashPayment.setOwnerId(getSelectedPurchaseRequisition().getId());
         selectedCashPayment.setDateOfPayment(new Date());
@@ -492,11 +490,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         getCashPayments().add(selectedCashPayment);
         BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(), selectedCashPayment);
 
-        editCashPayment(event);
+        editCashPayment(dialog);
 
     }
 
-    public void editCashPayment(ActionEvent event) {
+    public void editCashPayment(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -511,7 +509,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/finance/purch/cashPaymentDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/finance/purch/" + dialog, options, null);
 
     }
 
@@ -682,18 +680,18 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         setEdit(true);
     }
 
-    public void createNewSupplier() {
+    public void createNewSupplier(String dialog) {
         selectedSupplier = new Supplier("", true);
 
-        editSelectedSupplier();
+        editSelectedSupplier(dialog);
     }
 
-    public void addNewSupplier() {
+    public void addNewSupplier(String dialog) {
         selectedSupplier = new Supplier("", true);
 
         openSuppliersTab();
 
-        editSelectedSupplier();
+        editSelectedSupplier(dialog);
     }
 
     public Boolean getIsNewSupplier() {
@@ -943,13 +941,13 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return getFoundSuppliers().size();
     }
 
-    public void editPurchaseReqSupplier() {
+    public void editPurchaseReqSupplier(String dialog) {
         setSelectedSupplier(getSelectedPurchaseRequisition().getSupplier());
 
-        editSelectedSupplier();
+        editSelectedSupplier(dialog);
     }
 
-    public void editSelectedSupplier() {
+    public void editSelectedSupplier(String dialog) {
 
         getSelectedSupplier().setIsNameAndIdEditable(getUser().can("AddSupplier"));
 
@@ -967,7 +965,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .build();
 
         PrimeFaces.current().dialog().openDynamic(
-                "/finance/purch/supplierDialog",
+                "/finance/purch/" + dialog,
                 options, null);
 
     }
@@ -1727,7 +1725,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:purchaseReqSearchButton");
     }
 
-    public void editPurchReqGeneralEmail() {
+    public void editPurchReqGeneralEmail(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1742,12 +1740,11 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("purchaseReqEmailDialog",
-                options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void openPurchaseRequisistionEmailDialog() {
+    public void openPurchaseRequisistionEmailDialog(String dialog) {
         EntityManager em = getSystemManager().getEntityManager1();
         Email email = Email.findActiveEmailByName(em, "pr-email-template");
         String prNum = getSelectedPurchaseRequisition().getNumber();
@@ -1779,7 +1776,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         replace("{workProgress}", getSelectedPurchaseRequisition().getWorkProgress()).
                         replace("{sender}", sender));
 
-        editPurchReqGeneralEmail();
+        editPurchReqGeneralEmail(dialog);
     }
 
     public List getCostTypeList() {
@@ -2534,10 +2531,10 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         }
     }
 
-    public void editPurhaseReqSupplier() {
+    public void editPurhaseReqSupplier(String dialog) {
         setSelectedSupplier(getSelectedPurchaseRequisition().getSupplier());
 
-        editSelectedSupplier();
+        editSelectedSupplier(dialog);
     }
 
     public void purchaseReqSupplierDialogReturn() {
@@ -2559,13 +2556,13 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     }
 
-    public void createNewPurhaseReqSupplier() {
-        createNewSupplier();
+    public void createNewPurhaseReqSupplier(String dialog) {
+        createNewSupplier(dialog);
 
-        editSelectedSupplier();
+        editSelectedSupplier(dialog);
     }
 
-    public void editSelectedPurchaseReq() {
+    public void editSelectedPurchaseReq(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -2580,7 +2577,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("purchreqDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -2620,7 +2617,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
         return BeanUtils.findBean("humanResourceManager");
     }
 
-    public void createNewPurchaseReq() {
+    public void createNewPurchaseReq(String dialog) {
         EntityManager em = getEntityManager1();
         EntityManager hrmem = getHumanResourceManager().getEntityManager1();
         EntityManager smem = getSystemManager().getEntityManager1();
@@ -2633,7 +2630,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         openPurchaseReqsTab();
 
-        editSelectedPurchaseReq();
+        editSelectedPurchaseReq(dialog);
     }
 
     public void cancelDialogEdit(ActionEvent actionEvent) {
@@ -3089,7 +3086,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
         switch (searchType) {
             case "My dept. requisitions":
-                searchDepartmentId = getEmployee().getDepartment().getId();                
+                searchDepartmentId = getEmployee().getDepartment().getId();
                 foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
                         getEntityManager1(),
                         dateSearchField,
@@ -3100,7 +3097,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
                         searchDepartmentId,
                         maxSearchResults);
                 break;
-            case "All requisitions":            
+            case "All requisitions":
                 foundPurchaseReqs = PurchaseRequisition.findByDateSearchField(
                         getEntityManager1(),
                         dateSearchField,

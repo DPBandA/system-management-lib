@@ -462,7 +462,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         this.selectedProcurementMethod = selectedProcurementMethod;
     }
 
-    public void editProcurementMethod() {
+    public void editProcurementMethod(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -477,15 +477,15 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("procurementMethodDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void createNewProcurementMethod() {
+    public void createNewProcurementMethod(String dialog) {
 
         selectedProcurementMethod = new ProcurementMethod();
 
-        editProcurementMethod();
+        editProcurementMethod(dialog);
     }
 
     public void doProcurementMethodSearch() {
@@ -858,13 +858,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    public void createNewService() {
+    public void createNewService(String dialog) {
         selectedService = new Service();
 
-        editService();
+        editService(dialog);
     }
 
-    public void editService() {
+    public void editService(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -879,7 +879,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("serviceDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -899,7 +899,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void editClassification() {
+    public void editClassification(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -914,7 +914,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/finance/classificationDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/finance/" + dialog, options, null);
 
     }
 
@@ -1006,10 +1006,10 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 getSystemManager().getEntityManager1(), "FMAppName");
     }
 
-    public void createNewClassification() {
+    public void createNewClassification(String dialog) {
         selectedClassification = new Classification();
 
-        editClassification();
+        editClassification(dialog);
     }
 
     public PurchasingManager getPurchasingManager() {
@@ -1166,7 +1166,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
         return FinancialUtils.getValueTypes(getSystemManager().getEntityManager1());
     }
 
-    public void editAccountingCode() {
+    public void editAccountingCode(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1181,11 +1181,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("accountingCodeDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editTax() {
+    public void editTax(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1200,11 +1200,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("taxDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editCurrency() {
+    public void editCurrency(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1219,11 +1219,11 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("currencyDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editDiscount() {
+    public void editDiscount(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1238,7 +1238,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("discountDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1421,32 +1421,32 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 null);
     }
 
-    public void createNewAccountingCode() {
+    public void createNewAccountingCode(String dialog) {
 
         selectedAccountingCode = new AccountingCode();
 
-        editAccountingCode();
+        editAccountingCode(dialog);
     }
 
-    public void createNewTax() {
+    public void createNewTax(String dialog) {
 
         selectedTax = new Tax();
 
-        editTax();
+        editTax(dialog);
     }
 
-    public void createNewCurrency() {
+    public void createNewCurrency(String dialog) {
 
         selectedCurrency = new Currency();
 
-        editCurrency();
+        editCurrency(dialog);
     }
 
-    public void createNewDiscount() {
+    public void createNewDiscount(String dialog) {
 
         selectedDiscount = new Discount();
 
-        editDiscount();
+        editDiscount(dialog);
     }
 
     public AccountingCode getSelectedAccountingCode() {
@@ -1538,13 +1538,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    public void createNewJobCategory() {
+    public void createNewJobCategory(String dialog) {
         selectedJobCategory = new JobCategory();
 
-        editJobCategory();
+        editJobCategory(dialog);
     }
 
-    public void editJobCategory() {
+    public void editJobCategory(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1559,7 +1559,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("jobCategoryDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1617,13 +1617,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    public void createNewJobSubCategory() {
+    public void createNewJobSubCategory(String dialog) {
         selectedJobSubcategory = new JobSubCategory();
 
-        editJobSubcategory();
+        editJobSubcategory(dialog);
     }
 
-    public void editJobSubcategory() {
+    public void editJobSubcategory(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1638,7 +1638,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("jobSubcategoryDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -1699,13 +1699,13 @@ public class FinanceManager extends GeneralManager implements Serializable {
 
     }
 
-    public void createNewSector() {
+    public void createNewSector(String dialog) {
         selectedSector = new Sector();
 
-        editSector();
+        editSector(dialog);
     }
 
-    public void editSector() {
+    public void editSector(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1720,7 +1720,7 @@ public class FinanceManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("sectorDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 

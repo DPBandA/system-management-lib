@@ -117,8 +117,6 @@ public class InventoryManager extends GeneralManager implements Serializable {
     @Override
     public void openMainViewTab(String title) {
 
-        getSystemManager().getMainTabView().openTab(title);
-
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
 
     }
@@ -489,15 +487,15 @@ public class InventoryManager extends GeneralManager implements Serializable {
         this.selectedInventoryDisbursement = selectedInventoryDisbursement;
     }
 
-    public void addNewDisbursement() {
+    public void addNewDisbursement(String dialog) {
 
         selectedInventoryDisbursement = new InventoryDisbursement();
 
         selectedInventoryDisbursement.updateCostComponent();
 
-        setEdit(false);
+        setEdit(false); // tk check if this is still necessary
 
-        editSelectedInventoryDisbursement();
+        editSelectedInventoryDisbursement(dialog);
 
     }
 
@@ -577,10 +575,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
         setEdit(true);
     }
 
-    public void editDisbursement(ActionEvent event) {
+    public void editDisbursement(String dialog) {
         setEdit(true);
 
-        editSelectedInventoryDisbursement();
+        editSelectedInventoryDisbursement(dialog);
     }
 
     public void deleteSelectedDisbursement() {
@@ -808,7 +806,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         this.inventoryProductSearchText = inventoryProductSearchText;
     }
 
-    public void createNewInventoryProductInDialog() {
+    public void createNewInventoryProductInDialog(String dialog) {
         MarketProduct inventoryProduct = new MarketProduct();
         inventoryProduct.setType("Inventory");
 
@@ -816,11 +814,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         setSelectedInventoryProduct(inventoryProduct);
 
-        openInventoryProductDialog();
+        openInventoryProductDialog(dialog);
     }
 
-    public void editSelectedInventoryProduct() {
-        openInventoryProductDialog();
+    public void editSelectedInventoryProduct(String dialog) {
+        openInventoryProductDialog(dialog);
     }
 
     public void onInventoryProductCellEdit(CellEditEvent event) {
@@ -858,7 +856,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 null);
     }
 
-    public void openInventoryProductDialog() {
+    public void openInventoryProductDialog(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -873,7 +871,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/finance/ims/inventoryProductDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/finance/ims/" + dialog, options, null);
 
     }
 
@@ -884,11 +882,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
         getSystemManager().setDefaultCommandTarget(":dashboardForm:dashboardAccordion:imSearchButton");
     }
 
-    public void createNewInventoryProduct() {
+    public void createNewInventoryProduct(String dialog) {
         selectedInventoryProduct = new MarketProduct();
         selectedInventoryProduct.setType("Inventory");
 
-        openInventoryProductDialog();
+        openInventoryProductDialog(dialog);
 
         openInventoryProductBrowser();
     }
@@ -971,10 +969,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
         return financeManager;
     }
 
-    public void editInventorySupplier() {
+    public void editInventorySupplier(String dialog) {
         getPurchasingManager().setSelectedSupplier(getSelectedInventory().getSupplier());
 
-        getPurchasingManager().editSelectedSupplier();
+        getPurchasingManager().editSelectedSupplier(dialog);
     }
 
     public void editInventoryCategory() {
@@ -1426,10 +1424,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
     }
 
-    public void editInventoryProduct() {
+    public void editInventoryProduct(String dialog) {
         setSelectedInventoryProduct(getSelectedInventory().getProduct());
 
-        openInventoryProductDialog();
+        openInventoryProductDialog(dialog);
     }
 
     public void onInventoryCellEdit(CellEditEvent event) {
@@ -1485,7 +1483,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
         }
     }
 
-    public void editSelectedInventory() {
+    public void editSelectedInventory(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1500,11 +1498,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("inventoryDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editSelectedInventoryRequisition() {
+    public void editSelectedInventoryRequisition(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1519,11 +1517,11 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("inventoryRequisitionDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void editSelectedInventoryDisbursement() {
+    public void editSelectedInventoryDisbursement(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -1538,7 +1536,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/finance/ims/inventoryDisbursementDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/finance/ims/" + dialog, options, null);
 
     }
 
@@ -1634,7 +1632,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
                 "inventoryDisbursementMethods");
     }
 
-    public void createNewInventory() {
+    public void createNewInventory(String dialog) {
 
         selectedInventory = new Inventory();
         selectedInventory.setType("None");
@@ -1649,10 +1647,10 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         openInventoryTab();
 
-        editSelectedInventory();
+        editSelectedInventory(dialog);
     }
 
-    public void createNewInventoryRequisition() {
+    public void createNewInventoryRequisition(String dialog) {
 
         selectedInventoryRequisition = new InventoryRequisition();
         selectedInventoryRequisition.setType("None");
@@ -1665,7 +1663,7 @@ public class InventoryManager extends GeneralManager implements Serializable {
 
         openInventoryRequisitionTab();
 
-        editSelectedInventoryRequisition();
+        editSelectedInventoryRequisition(dialog);
     }
 
     public void cancelDialogEdit(ActionEvent actionEvent) {
