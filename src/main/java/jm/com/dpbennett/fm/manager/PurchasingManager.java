@@ -421,7 +421,7 @@ public class PurchasingManager extends GeneralManager implements Serializable {
 
     @Override
     public Integer getDialogWidth() {
-        return 700;
+        return 800;
     }
 
     public void onCostComponentRowCancel(RowEditEvent<CostComponent> event) {
