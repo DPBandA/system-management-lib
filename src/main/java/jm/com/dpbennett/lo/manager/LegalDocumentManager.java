@@ -252,17 +252,13 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         return BusinessEntityUtils.validateText(getCurrentDocument().getExternalClient().getName());
     }
 
-    public void editExternalClient() {
+    public void editExternalClient(String dialog) {
 
         getClientManager().setSelectedClient(getCurrentDocument().getExternalClient());
         getClientManager().setClientDialogTitle("Client");
+        
+        getClientManager().editSelectedClient(dialog);
 
-        if (getUser().isRenderMobileUI()) {
-            getClientManager().editSelectedClient("clientDialog-m");
-        } else {
-            getClientManager().editSelectedClient("clientDialog");
-
-        }
     }
 
     public void externalClientDialogReturn() {
@@ -299,30 +295,22 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         }
     }
 
-    public void createNewExternalClient() {
+    public void createNewExternalClient(String dialog) {
 
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client");
+        
+        getClientManager().editSelectedClient(dialog);
 
-        if (getUser().isRenderMobileUI()) {
-            getClientManager().editSelectedClient("clientDialog-m");
-        } else {
-            getClientManager().editSelectedClient("clientDialog");
-
-        }
     }
 
-    public void createNewClient() {
+    public void createNewClient(String dialog) {
         getClientManager().createNewClient(true);
 
         getClientManager().openClientsTab();
+        
+        getClientManager().editSelectedClient(dialog);
 
-        if (getUser().isRenderMobileUI()) {
-            getClientManager().editSelectedClient("clientDialog-m");
-        } else {
-            getClientManager().editSelectedClient("clientDialog");
-
-        }
     }
 
     public DocumentReport getDocumentReport() {
@@ -372,7 +360,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void editDocument() {
+    public void editDocument(String dialog) {
         getCurrentDocument().setIsDirty(false);
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
@@ -388,7 +376,7 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("/legal/legalDocumentDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic("/legal/" + dialog, options, null);
 
     }
 
@@ -530,12 +518,12 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
         }
     }
 
-    public void createNewLegalDocument(ActionEvent action) {
+    public void createNewLegalDocument(String dialog) {
         currentDocument = createNewLegalDocument(getEntityManager1(), getUser());
 
         openDocumentBrowser();
 
-        editDocument();
+        editDocument(dialog);
     }
 
     public void openDocumentBrowser() {
