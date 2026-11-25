@@ -417,7 +417,7 @@ public class ReportManager extends GeneralManager {
 
     }
 
-    public void editReportTemplate() {
+    public void editReportTemplate(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -432,7 +432,7 @@ public class ReportManager extends GeneralManager {
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("reportTemplateDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
@@ -547,13 +547,13 @@ public class ReportManager extends GeneralManager {
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
-    public void createNewReport() {
+    public void createNewReport(String dialog) {
 
         currentReport = new Report();
 
         getSystemManager().getMainTabView().openTab("Report Templates");
 
-        editReportTemplate();
+        editReportTemplate(dialog);
     }
 
     public void createNewDatePeriod() {
