@@ -423,23 +423,26 @@ public class LegalDocumentManager extends GeneralManager implements Serializable
 
     }
 
-    public void createNewDocumentType(ActionEvent actionEvent) {
+    public void createNewDocumentType(String dialog) {
         getDocumentManager().setSelectedDocumentType(new DocumentType());
+        
+        getDocumentManager().editDocumentType();
 
-        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
-                .modal(true)
-                .fitViewport(true)
-                .responsive(true)
-                .width((getDialogWidth() - 200) + "px")
-                .contentWidth("100%")
-                .resizeObserver(true)
-                .resizeObserverCenter(true)
-                .resizable(false)
-                .styleClass("max-w-screen")
-                .iframeStyleClass("max-w-screen")
-                .build();
-
-        PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
+// tk del        
+//        DialogFrameworkOptions options = DialogFrameworkOptions.builder()
+//                .modal(true)
+//                .fitViewport(true)
+//                .responsive(true)
+//                .width((getDialogWidth() - 200) + "px")
+//                .contentWidth("100%")
+//                .resizeObserver(true)
+//                .resizeObserverCenter(true)
+//                .resizable(false)
+//                .styleClass("max-w-screen")
+//                .iframeStyleClass("max-w-screen")
+//                .build();
+//
+//        PrimeFaces.current().dialog().openDynamic("/admin/documentTypeDialog", options, null);
 
     }
 
