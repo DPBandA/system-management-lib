@@ -246,7 +246,7 @@ public class EnergyLabelManager extends GeneralManager
         this.selectedEnergyLabel = selectedEnergyLabel;
     }
 
-    public void editSelectedEnergyLabel() {
+    public void editSelectedEnergyLabel(String dialog) {
 
         DialogFrameworkOptions options = DialogFrameworkOptions.builder()
                 .modal(true)
@@ -261,11 +261,11 @@ public class EnergyLabelManager extends GeneralManager
                 .iframeStyleClass("max-w-screen")
                 .build();
 
-        PrimeFaces.current().dialog().openDynamic("labelDialog", options, null);
+        PrimeFaces.current().dialog().openDynamic(dialog, options, null);
 
     }
 
-    public void createNewEnergyLabel() {
+    public void createNewEnergyLabel(String dialog) {
         EntityManager em = getSystemManager().getEntityManager1();
         selectedEnergyLabel = new EnergyLabel();
 
@@ -286,7 +286,7 @@ public class EnergyLabelManager extends GeneralManager
 
         openEnergyLabelBrowser();
 
-        editSelectedEnergyLabel();
+        editSelectedEnergyLabel(dialog);
     }
 
     @Override
